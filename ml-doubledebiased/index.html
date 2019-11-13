@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Inference - GMMInference.jl</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">GMMInference.jl</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Documentation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Machine Learning in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../ml-intro/">Introduction</a>
+</li>
+                                    
+<li >
+    <a href="../ml-methods/">Methods</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">Inference</a>
+</li>
+                                    
+<li >
+    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../license/">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../ml-methods/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../mlExamplePKH/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/ml-doubledebiased.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#using-machine-learning-to-estimate-causal-effects">Using machine learning to estimate causal effects</a></li>
+            <li><a href="#double-debiased-machine-learning">Double debiased machine learning</a></li>
+            <li><a href="#treatment-heterogeneity">Treatment heterogeneity</a></li>
+        <li class="main "><a href="#bibliography">Bibliography</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<h1 id="using-machine-learning-to-estimate-causal-effects">Using machine learning to estimate causal effects<a class="headerlink" href="#using-machine-learning-to-estimate-causal-effects" title="Permanent link">&para;</a></h1>
+<h2 id="double-debiased-machine-learning">Double debiased machine learning<a class="headerlink" href="#double-debiased-machine-learning" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Chernozhukov, Chetverikov, et al. (<a href="#ref-chernozhukov2018">2018</a>),
+    Chernozhukov et al. (<a href="#ref-chernozhukov2017">2017</a>)</p>
+</li>
+<li>
+<p>Parameter of interest $\theta \in \R^{d_\theta}$</p>
+</li>
+<li>
+<p>Nuisance parameter $\eta \in T$</p>
+</li>
+<li>
+<p>Moment conditions <script type="math/tex; mode=display">
+    \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
+    </script> with $\psi$ known</p>
+</li>
+<li>
+<p>Estimate $\hat{\eta}$ using some machine learning method</p>
+</li>
+<li>
+<p>Estimate $\hat{\theta}$ using cross-fitting</p>
+</li>
+</ul>
+<hr />
+<h3 id="cross-fitting">Cross-fitting<a class="headerlink" href="#cross-fitting" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Randomly partition into $K$ subsets $(I_k)_{k=1}^K$</li>
+<li>$I^c_k = {1, &hellip;, n} \setminus I_k$</li>
+<li>$\hat{\eta}_k =$ estimate of $\eta$ using $I^c_k$</li>
+<li>Estimator: <script type="math/tex; mode=display">
+    \begin{align*}
+    0 = & \frac{1}{K} \sum_{k=1}^K \frac{K}{n} \sum_{i \in I_k}
+    \psi(w_i;\hat{\theta},\hat{\eta}_k) \\
+    0 = & \frac{1}{K} \sum_{k=1}^K \En_k[
+    \psi(w_i;\hat{\theta},\hat{\eta}_k)]
+    \end{align*}
+    </script>
+</li>
+</ul>
+<hr />
+<h3 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Linear score <script type="math/tex; mode=display">
+    \psi(w;\theta,\eta) = \psi^a(w;\eta) \theta + \psi^b(w;\eta)
+    </script>
+</li>
+<li>Near Neyman orthogonality: <script type="math/tex; mode=display">
+    \lambda_n := \sup_{\eta \in \mathcal{T}_n} \norm{\partial \eta
+    \Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right] } \leq \delta_n
+    n^{-1/2}
+    </script>
+</li>
+</ul>
+<hr />
+<h3 id="assumptions-assumptions-1">Assumptions [assumptions-1]<a class="headerlink" href="#assumptions-assumptions-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Rate conditions: for $\delta_n \to 0$ and $\Delta_n \to 0$, we have
+    $\Pr(\hat{\eta}_k \in \mathcal{T}_n) \geq 1-\Delta_n$ and <script type="math/tex; mode=display">
+    \begin{align*}
+    r_n := & \sup_{\eta \in \mathcal{T}_n} \norm{ \Er[\psi^a(W;\eta)] -
+    \Er[\psi^a(W;\eta_0)]} \leq \delta_n \\
+    r_n' := & \sup_{\eta \in \mathcal{T}_n} \Er\left[ \norm{ \psi(W;\theta_0,\eta) -
+      \psi(W;\theta_0,\eta_0)}^2 \right]^{1/2} \leq \delta_n \\
+    \lambda_n' := & \sup_{r \in (0,1), \eta \in \mathcal{T}_n} \norm{
+    \partial_r^2 \Er\left[\psi(W;\theta_0, \eta_0 + r(\eta - \eta_0))
+    \right]} \leq \delta_n/\sqrt{n}
+    \end{align*}
+    </script>
+</li>
+<li>Moments exist and other regularity conditions</li>
+</ul>
+<div class="notes">
+<p>We focus on the case of linear scores to simplify proofs and all of our
+examples have scores linear in $\theta$. Chernozhukov, Chetverikov, et
+al. (<a href="#ref-chernozhukov2018">2018</a>) cover nonlinear scores as well.</p>
+<p>These rate conditions might look a little strange. The rate conditions
+are stated this way because they’re exactly what is needed for the
+result to work. $\Delta_n$ and $\delta_n$ are sequences converging to
+$0$. $\mathcal{T}_n$ is a shrinking neighborhood of $\eta_0$. A good
+exercise would be show that if $\psi$ a smooth function of $\eta$ and
+$\theta$, and
+$\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2} = O(\epsilon_n) = o(n^{-1/4})$,
+then we can meet the above conditions with $r_n = r_n&rsquo; = \epsilon_n$ and
+$\lambda_n&rsquo; = \epsilon_n^2$.</p>
+</div>
+<hr />
+<h3 id="proof-outline">Proof outline:<a class="headerlink" href="#proof-outline" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Let
+    $\hat{J} = \frac{1}{K} \sum_{k=1}^K \En_k [\psi^a(w_i;\hat{\eta}<em n_1="n,1">k)]$,
+    $J_0 = \Er[\psi^a(w_i;\eta_0)]$, $R</em> = \hat{J}-J_0$</p>
+</li>
+<li>
+<p>Show: <script type="math/tex; mode=display">
+    \small
+    \begin{align*}
+    \sqrt{n}(\hat{\theta} - \theta_0) = & -\sqrt{n} J_0^{-1}
+    \En[\psi(w_i;\theta_0,\eta_0)] + \\
+    & + (J_0^{-1} - \hat{J}^{-1})
+    \left(\sqrt{n} \En[\psi(w_i;\theta_0,\eta_0)] + \sqrt{n}R_{n,2}\right) + \\
+    & + \sqrt{n}J_0^{-1}\underbrace{\left(\frac{1}{K} \sum_{k=1}^K \En_k[
+    \psi(w_i;\theta_0,\hat{\eta}_k)] - \En[\psi(w_i;\theta_0,\eta_0)]\right)}_{R_{n,2}}
+    \end{align*}
+    </script>
+</p>
+</li>
+<li>
+<p>Show $\norm{R_{n,1}} = O_p(n^{-1/2} + r_n)$</p>
+</li>
+<li>
+<p>Show $\norm{R_{n,2}}= O_p(n^{-1/2} r_n&rsquo; + \lambda_n + \lambda_n&rsquo;)$</p>
+</li>
+</ul>
+<div class="notes">
+<p>For details see the appendix of Chernozhukov, Chetverikov, et al.
+(<a href="#ref-chernozhukov2018">2018</a>).</p>
+</div>
+<hr />
+<h3 id="proof-outline-lemma-61">Proof outline: Lemma 6.1<a class="headerlink" href="#proof-outline-lemma-61" title="Permanent link">&para;</a></h3>
+<p>Lemma 6.1</p>
+<ol>
+<li>
+<p>If $\Pr(\norm{X_m} &gt; \epsilon_m | Y_m) \to_p 0$, then
+    $\Pr(\norm{X_m}&gt;\epsilon_m) \to 0$.</p>
+</li>
+<li>
+<p>If $\Er[\norm{X_m}^q/\epsilon_m^q | Y_m] \to_p 0$ for $q\geq 1$,
+    then $\Pr(\norm{X_m}&gt;\epsilon_m) \to 0$.</p>
+</li>
+<li>
+<p>If $\norm{X_m} = O_p(A_m)$ conditional on $Y_m$ (i.e. for any
+    $\ell_m \to \infty$, $\Pr(\norm{X_m} &gt; \ell_m A_m | Y_m) \to_p 0$),
+    then $\norm{X_m} = O_p(A_m)$ unconditionally</p>
+</li>
+</ol>
+<div class="notes">
+<ol>
+<li>by dominated convergence</li>
+<li>from Markov’s inequality</li>
+<li>follows from (a)</li>
+</ol>
+</div>
+<hr />
+<h3 id="proof-outline-r_n1">Proof outline: $R_{n,1}$<a class="headerlink" href="#proof-outline-r_n1" title="Permanent link">&para;</a></h3>
+<p>
+<script type="math/tex; mode=display">
+R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
+   \En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)] \right)
+</script>
+</p>
+<ul>
+<li>$\norm{\En_k[\psi^a(w_i;\hat{\eta}<em 1_k="1,k">k)] - \Er[\psi^a(W;\eta_0)]} \leq U</em> + U_{2,k}$
+    where <script type="math/tex; mode=display">
+    \begin{align*}
+    U_{1,k} = & \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] -
+     \Er[\psi^a(W;\hat{\eta}_k)| I^c_k]} \\
+    U_{2,k} = & \norm{ \Er[\psi^a(W;\hat{\eta}_k)| I^c_k] -
+    \Er[\psi^a(W;\eta_0)]}
+    \end{align*}
+    </script>
+</li>
+</ul>
+<hr />
+<h3 id="proof-outline-r_n2">Proof outline: $R_{n,2}$<a class="headerlink" href="#proof-outline-r_n2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>$R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$</li>
+<li>$\sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}<em 3_k="3,k">k) - \psi(w_i;\theta_0,\eta_0) \right]} \leq U</em> + U_{4,k}$
+    where</li>
+</ul>
+<p>
+<script type="math/tex; mode=display">
+\small
+\begin{align*}
+  U_{3,k} = & \norm{ \frac{1}{\sqrt{n}} \sum_{i \in I_k} \left(
+      \psi(w_i;\theta_0, \hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) -
+      \Er[ \psi(w_i;\theta_0, \hat{\eta}_k) -
+           \psi(w_i;\theta_0,\eta_0)] \right) } \\
+  U_{4,k} = & \sqrt{n} \norm{ \Er[
+  \psi(w_i;\theta_0, \hat{\eta}_k) | I_k^c] - \Er[\psi(w_i;\theta_0,\eta_0)]}
+\end{align*}
+</script>
+</p>
+<ul>
+<li>$U_{4,k} = \sqrt{n} \norm{f_k(1)}$ where</li>
+</ul>
+<p>
+<script type="math/tex; mode=display">
+f_k(r) = \Er[\psi(W;\theta_0,\eta_0 + r(\hat{\eta}_k - \eta_0)) |
+I^c_k] - \Er[\psi(W;\theta_0,\eta_0)]
+</script>
+</p>
+<hr />
+<h3 id="asymptotic-normality">Asymptotic normality<a class="headerlink" href="#asymptotic-normality" title="Permanent link">&para;</a></h3>
+<p>
+<script type="math/tex; mode=display"> \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
+\sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I) </script>
+</p>
+<ul>
+<li>
+<p>$\rho_n := n^{-1/2} + r_n + r_n&rsquo; + n^{1/2} (\lambda_n +\lambda_n&rsquo;) \lesssim \delta_n$</p>
+</li>
+<li>
+<p>Influence function
+    <script type="math/tex; mode=display">\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)</script>
+</p>
+</li>
+<li>
+<p>$\sigma^2 := J_0^{-1} \Er<a href="J_0^{-1}">\psi(w;\theta_0,\eta_0) \psi(w;\theta_0,\eta_0)&rsquo;</a>&rsquo;$</p>
+</li>
+</ul>
+<div class="notes">
+<p>This is the DML2 case of theorem 3.1 of Chernozhukov, Chetverikov, et
+al. (<a href="#ref-chernozhukov2018">2018</a>).</p>
+</div>
+<hr />
+<h3 id="creating-orthogonal-moments">Creating orthogonal moments<a class="headerlink" href="#creating-orthogonal-moments" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Need <script type="math/tex; mode=display">
+     \partial \eta\Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right]  \approx 0
+    </script>
+</p>
+</li>
+<li>
+<p>Given an some model, how do we find a suitable $\psi$?</p>
+</li>
+</ul>
+<hr />
+<h3 id="orthogonal-scores-via-concentrating-out">Orthogonal scores via concentrating-out<a class="headerlink" href="#orthogonal-scores-via-concentrating-out" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Original model: <script type="math/tex; mode=display">
+    (\theta_0, \beta_0) = \argmax_{\theta, \beta} \Er[\ell(W;\theta,\beta)]
+    </script>
+</li>
+<li>Define <script type="math/tex; mode=display">
+    \eta(\theta) = \beta(\theta) = \argmax_\beta \Er[\ell(W;\theta,\beta)]
+    </script>
+</li>
+<li>First order condition from
+    $\max_\theta \Er[\ell(W;\theta,\beta(\theta))]$ is <script type="math/tex; mode=display">
+    0 = \Er\left[ \underbrace{\frac{\partial \ell}{\partial \theta} + \frac{\partial \ell}{\partial \beta} \frac{d \beta}{d \theta}}_{\psi(W;\theta,\beta(\theta))} \right]
+    </script>
+</li>
+</ul>
+<hr />
+<h3 id="orthogonal-scores-via-projection">Orthogonal scores via projection<a class="headerlink" href="#orthogonal-scores-via-projection" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Original model:
+    $m: \mathcal{W} \times \R^{d_\theta} \times \R^{d_h} \to \R^{d_m}$
+    <script type="math/tex; mode=display">
+    \Er[m(W;\theta_0,h_0(Z))|R] = 0
+    </script>
+</li>
+<li>Let $A(R)$ be $d_\theta \times d_m$ moment selection matrix,
+    $\Omega(R)$ $d_m \times d_m$ weighting matrix, and <script type="math/tex; mode=display">
+    \begin{align*}
+    \Gamma(R) = & \partial_{v'} \Er[m(W;\theta_0,v)|R]|_{v=h_0(Z)} \\
+    G(Z) = & \Er[A(R)'\Omega(R)^{-1} \Gamma(R)|Z]
+    \Er[\Gamma(R)'\Omega(R)^{-1} \Gamma(R) |Z]^{-1} \\
+    \mu_0(R) = & A(R)'\Omega(R)^{-1} - G(Z) \Gamma(R)'\Omega(R)^{-1}
+    \end{align*}
+    </script>
+</li>
+<li>$\eta = (\mu, h)$ and
+    <script type="math/tex; mode=display"> \psi(W;\theta, \eta) = \mu(R) m(W;\theta, h(Z)) </script>
+</li>
+</ul>
+<div class="notes">
+<p>Chernozhukov, Chetverikov, et al. (<a href="#ref-chernozhukov2018">2018</a>) show
+how to construct orthogonal scores in a few examples via concentrating
+out and projection. Chernozhukov, Hansen, and Spindler
+(<a href="#ref-chernozhukov2015">2015</a>) also discusses creating orthogonal
+scores.</p>
+</div>
+<hr />
+<h3 id="example-average-derivative">Example: average derivative<a class="headerlink" href="#example-average-derivative" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>$x,y \in \R^1$, $\Er[y|x] = f_0(x)$, $p(x) =$ density of $x$</p>
+</li>
+<li>
+<p>$\theta_0 = \Er[f_0&rsquo;(x)]$</p>
+</li>
+<li>
+<p>Joint objective <script type="math/tex; mode=display">
+    \min_{\theta,f} \Er\left[ (y - f(x))^2 + (\theta - f'(x)^2) \right] 
+    </script>
+</p>
+</li>
+<li>
+<p>$f_\theta(x) = \Er[y|x] + \theta \partial_x \log p(x) - f&rsquo;&lsquo;(x) - f&rsquo;(x) \partial_x \log p(x)$</p>
+</li>
+<li>
+<p>Concentrated objective: <script type="math/tex; mode=display"> 
+    \min_\theta \Er\left[ (y - f_\theta(x))^2 + (\theta - f_\theta'(x)^2)
+    \right]
+    </script>
+</p>
+</li>
+<li>
+<p>First order condition at $f_\theta = f_0$ gives <script type="math/tex; mode=display">
+    0 = \Er\left[ (y - f_0(x))\partial_x \log p(x) + (\theta - f_0'(x)) \right]
+    </script>
+</p>
+</li>
+</ul>
+<div class="notes">
+<p>We’ll go over this derivation in lecture, but I don’t think I’ll have
+time to type it here.</p>
+<p>See Chernozhukov, Newey, and Robins (<a href="#ref-cnr2018">2018</a>) for an
+approach to estimating average derivatives (and other linear in $\theta$
+models) that doesn’t require explicitly calculating an orthogonal moment
+condition.</p>
+</div>
+<hr />
+<h3 id="example-average-derivative-with-endogeneity">Example : average derivative with endogeneity<a class="headerlink" href="#example-average-derivative-with-endogeneity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>$x,y \in \R^1$, $p(x) =$ density of $x$</p>
+</li>
+<li>
+<p>Model : $\Er[y - f(x) | z] = 0$ $\theta_0 = \Er[f_0&rsquo;(x)]$</p>
+</li>
+<li>
+<p>Joint objective: <script type="math/tex; mode=display">
+    \min_{\theta,f} \Er\left[ \Er[y - f(x)|z]^2 + (\theta - f'(x))^2 \right] 
+    </script>
+</p>
+</li>
+<li>
+<p>$f_\theta(x) = (T^<em> T)^{-1}\left((T^</em>\Er[y|z])(x) - \theta \partial_x \log p(x)\right)$</p>
+<ul>
+<li>where $T:\mathcal{L}^2_{p} \to \mathcal{L}^2_{\mu_z}$ with
+    $(T f)(z) = \Er[f(x) |z]$</li>
+<li>and $T^<em>:\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with
+    $(T^</em> g)(z) = \Er[g(z) |x]$</li>
+</ul>
+</li>
+<li>
+<p>Orthogonal moment condition : <script type="math/tex; mode=display">
+    0 = \Er\left[ 
+    \Er[y - f(x) | z] (T (T^* T)^{-1} \partial_x \log p)(z) +
+    (\theta - f'(x)) 
+    \right]
+    </script>
+</p>
+</li>
+</ul>
+<div class="notes">
+<p>The first order condition for $f$ in the joint objective function is <script type="math/tex; mode=display">
+\begin{align*}
+0 = \Er \left[ \Er[y-f(x) |z]\Er[v(x)|z] + (\theta - f'(x))(-v'(x)) \right]
+\end{align*}
+</script> Writing these expectations as integrals, integrating by parts to get
+rid of $v&rsquo;(x)$, and switching the order of integration, gives <script type="math/tex; mode=display">
+\begin{align*}
+0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+(\theta-f'(x))\partial_x \log p(x) - f''(x) \right) p(x) dx
+\end{align*}
+</script> Notice that integrating by parts
+$\int f&rsquo;&lsquo;(x) p(x) dx = \int f&rsquo; p&rsquo;(x) dx$ eliminates the terms with $f&rsquo;$
+and $f&rsquo;&lsquo;$, leaving <script type="math/tex; mode=display">
+\begin{align*}
+0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+\theta \partial_x \log p(x) \right) p(x) dx
+\end{align*}
+</script> For this to be $0$ for all $v$, we need <script type="math/tex; mode=display">
+0 = \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+\theta \partial_x \log p(x) 
+</script> or equivalently using $T$ and $T^<em>$, <script type="math/tex; mode=display">
+0 = \left(T^*(E[y|z] - T f)\right)(x)  -
+\theta \partial_x \log p(x) 
+</script> Note that $T$ and $T^</em>$ are linear, and $T^<em>$ is the adjoint of $T$.
+Also, identification of $f$ requires $T$ is one to one. Hence, if $f$ is
+identified, $T^</em> T$ is invertible. Therefore, we can solve for $f$ as:
+<script type="math/tex; mode=display">
+f_\theta(x) = (T^* T)^{-1} \left( (T^* \Er[y |z])(x) - \theta \partial \log p(x) \right)
+</script> Plugging $f_\theta(x)$ back into the objective function and then
+differentiating with respect to $\theta$ gives the orthogonal moment
+condition on the slide. Verifying that this moment condition is indeed
+orthogonal is slightly tedious. Writing out some of the expectations as
+integrals, changing order of integrations, and judiciously factoring out
+terms, will eventually lead to the desired conclusion.</p>
+<p>Carrasco, Florens, and Renault (<a href="#ref-cfr2007">2007</a>) is an excellent
+review about estimating $(T^* T)^{-1}$ and the inverses of other linear
+transformations.</p>
+</div>
+<hr />
+<h3 id="example-average-elasticity">Example: average elasticity<a class="headerlink" href="#example-average-elasticity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Demand $D(p)$, quantities $q$, instruments $z$
+    <script type="math/tex; mode=display">\Er[q-D(p) |z] = 0</script>
+</p>
+</li>
+<li>
+<p>Average elasticity $\theta \Er[D&rsquo;(p)/D(p) | z ]$</p>
+</li>
+<li>
+<p>Joint objective : <script type="math/tex; mode=display">
+    \min_{\theta,D} \Er\left[ \Er[q - D(p)|z]^2 + (\theta - D'(p)/D(p))^2  \right]
+    </script>
+</p>
+</li>
+</ul>
+<hr />
+<h3 id="example-control-function">Example: control function<a class="headerlink" href="#example-control-function" title="Permanent link">&para;</a></h3>
+<p>
+<script type="math/tex; mode=display"> 
+\begin{align*}
+0 = & \Er[d - p(x,z) | x,z] \\
+0 = & \Er[y - x\beta - g(p(x,z)) | x,z]
+\end{align*}
+</script>
+</p>
+<hr />
+<h2 id="treatment-heterogeneity">Treatment heterogeneity<a class="headerlink" href="#treatment-heterogeneity" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Potential outcomes model<ul>
+<li>Treatment $d \in {0,1}$</li>
+<li>Potential outcomes $y(1), y(0)$</li>
+<li>Covariates $x$</li>
+<li>Unconfoundedness or instruments</li>
+</ul>
+</li>
+<li>Objects of interest:<ul>
+<li>Conditional average treatment effect
+    $s_0(x) = \Er[y(1) - y(0) | x]$</li>
+<li>Range and other measures of spread of conditional average
+    treatment effect</li>
+<li>Most and least affected groups</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="fixed-finite-groups">Fixed, finite groups<a class="headerlink" href="#fixed-finite-groups" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>$G_1, &hellip;, G_K$ finite partition of support $(x)$</p>
+</li>
+<li>
+<p>Estimate $\Er[y(1) - y(0) | x \in G_k]$ as above</p>
+</li>
+<li>
+<p>pros: easy inference, reveals some heterogeneity</p>
+</li>
+<li>
+<p>cons: poorly chosen partition hides some heterogeneity, searching
+    partitions violates inference</p>
+</li>
+</ul>
+<hr />
+<h3 id="generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments">Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments<a class="headerlink" href="#generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Chernozhukov, Demirer, et al. (<a href="#ref-cddf2018">2018</a>)</p>
+</li>
+<li>
+<p>Use machine learning to find partition with sample splitting to
+    allow easy inference</p>
+</li>
+<li>
+<p>Randomly partition sample into auxillary and main samples</p>
+</li>
+<li>
+<p>Use any method on auxillary sample to estimate
+    <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
+    <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
+</p>
+</li>
+</ul>
+<hr />
+<h3 id="generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1">Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments [generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1]<a class="headerlink" href="#generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Define $G_k = 1{\ell_{k-1} \leq S(x) \leq \ell_k}$</p>
+</li>
+<li>
+<p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
+    y = \alpha_0 + \alpha_1 B(x) + \sum_k \gamma_k (d-P(X)) 1(G_k) +
+    \epsilon 
+    </script>
+</p>
+</li>
+<li>
+<p>$\hat{\gamma}_k \to_p \Er[y(1) - y(0) | G_k]$</p>
+</li>
+</ul>
+<hr />
+<h3 id="best-linear-projection-of-cate">Best linear projection of CATE<a class="headerlink" href="#best-linear-projection-of-cate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Randomly partition sample into auxillary and main samples</p>
+</li>
+<li>
+<p>Use any method on auxillary sample to estimate
+    <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
+    <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
+</p>
+</li>
+<li>
+<p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
+    y = \alpha_0 + \alpha_1 B(x) + \beta_0 (d-P(x)) + \beta_1
+    (d-P(x))(S(x) - \Er[S(x)]) + \epsilon 
+    </script>
+</p>
+</li>
+<li>
+<p>$\hat{\beta}<em b_0_b_1="b_0,b_1">0, \hat{\beta}_1 \to_p \argmin</em> \Er[(s_0(x) - b_0 - b_1 (S(x)-E[S(x)]))^2]$</p>
+</li>
+</ul>
+<hr />
+<h3 id="inference-on-cate">Inference on CATE<a class="headerlink" href="#inference-on-cate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Inference on $\Er[y(1) - y(0) | x] = s_0(x)$ challenging when $x$
+    high dimensional and/or few restrictions on $s_0$</p>
+</li>
+<li>
+<p>Pointwise results for random forests : Wager and Athey
+    (<a href="#ref-wager2018">2018</a>), Athey, Tibshirani, and Wager
+    (<a href="#ref-athey2016">2016</a>)</p>
+</li>
+<li>
+<p>Recent review of high dimensional inference : Belloni, Chernozhukov,
+    Chetverikov, Hansen, et al. (<a href="#ref-bcchk2018">2018</a>)</p>
+</li>
+</ul>
+<hr />
+<h3 id="random-forest-asymptotic-normality">Random forest asymptotic normality<a class="headerlink" href="#random-forest-asymptotic-normality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Wager and Athey (<a href="#ref-wager2018">2018</a>)</p>
+</li>
+<li>
+<p>$\mu(x) = \Er[y|x]$</p>
+</li>
+<li>
+<p>$\hat{\mu}(x)$ estimate from honest random forest</p>
+<ul>
+<li>
+<p>honest $=$ trees independent of outcomes being averaged</p>
+</li>
+<li>
+<p>sample-splitting or trees formed using another outcome</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Then
+    <script type="math/tex; mode=display"> \frac{\hat{\mu}(x) - \mu(x)}{\hat{\sigma}_n(x)} \leadsto N(0,1) </script>
+</p>
+<ul>
+<li>$\hat{\sigma}_n(x) \to 0$ slower than $n^{-1/2}$</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="random-forest-asymptotic-normality_1">Random forest asymptotic normality<a class="headerlink" href="#random-forest-asymptotic-normality_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Results are pointwise, but what about?<ul>
+<li>$H_0: \mu(x_1) = \mu(x_2)$</li>
+<li>${x: \mu(x) \geq 0 }$</li>
+<li>$\Pr(\mu(x) \leq 0)$</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="uniform-inference">Uniform inference<a class="headerlink" href="#uniform-inference" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Belloni, Chernozhukov, Chetverikov, Hansen, et al.
+    (<a href="#ref-bcchk2018">2018</a>)</li>
+<li>Belloni, Chernozhukov, Chetverikov, and Wei (<a href="#ref-bccw2018">2018</a>)</li>
+</ul>
+<!-- --- -->
+
+<h1 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h1>
+<!-- --- -->
+
+<div class="references" id="refs">
+<div id="ref-athey2016">
+<p>Athey, Susan, Julie Tibshirani, and Stefan Wager. 2016. “Generalized
+Random Forests.” <a href="https://arxiv.org/abs/1610.01271">https://arxiv.org/abs/1610.01271</a>.</p>
+</div>
+<div id="ref-bcchk2018">
+<p>Belloni, Alexandre, Victor Chernozhukov, Denis Chetverikov, Christian
+Hansen, and Kengo Kato. 2018. “High-Dimensional Econometrics and
+Regularized Gmm.” <a href="https://arxiv.org/abs/1806.01888">https://arxiv.org/abs/1806.01888</a>.</p>
+</div>
+<div id="ref-bccw2018">
+<p>Belloni, Alexandre, Victor Chernozhukov, Denis Chetverikov, and Ying
+Wei. 2018. “Uniformly Valid Post-Regularization Confidence Regions for
+Many Functional Parameters in Z-Estimation Framework.” <em>Ann. Statist.</em>
+46 (6B): 3643–75. <a href="https://doi.org/10.1214/17-AOS1671">https://doi.org/10.1214/17-AOS1671</a>.</p>
+</div>
+<div id="ref-cfr2007">
+<p>Carrasco, Marine, Jean-Pierre Florens, and Eric Renault. 2007. “Chapter
+77 Linear Inverse Problems in Structural Econometrics Estimation Based
+on Spectral Decomposition and Regularization.” In, edited by James J.
+Heckman and Edward E. Leamer, 6:5633–5751. Handbook of Econometrics.
+Elsevier.
+<a href="https://doi.org/https://doi.org/10.1016/S1573-4412(07)06077-1">https://doi.org/https://doi.org/10.1016/S1573-4412(07)06077-1</a>.</p>
+</div>
+<div id="ref-chernozhukov2017">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, and Whitney Newey. 2017. “Double/Debiased/Neyman
+Machine Learning of Treatment Effects.” <em>American Economic Review</em> 107
+(5): 261–65. <a href="https://doi.org/10.1257/aer.p20171038">https://doi.org/10.1257/aer.p20171038</a>.</p>
+</div>
+<div id="ref-chernozhukov2018">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, Whitney Newey, and James Robins. 2018.
+“Double/Debiased Machine Learning for Treatment and Structural
+Parameters.” <em>The Econometrics Journal</em> 21 (1): C1–C68.
+<a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.</p>
+</div>
+<div id="ref-cddf2018">
+<p>Chernozhukov, Victor, Mert Demirer, Esther Duflo, and Iván
+Fernández-Val. 2018. “Generic Machine Learning Inference on Heterogenous
+Treatment Effects in Randomized Experimentsxo.” Working Paper 24678.
+Working Paper Series. National Bureau of Economic Research.
+<a href="https://doi.org/10.3386/w24678">https://doi.org/10.3386/w24678</a>.</p>
+</div>
+<div id="ref-chernozhukov2015">
+<p>Chernozhukov, Victor, Christian Hansen, and Martin Spindler. 2015.
+“Valid Post-Selection and Post-Regularization Inference: An Elementary,
+General Approach.” <em>Annual Review of Economics</em> 7 (1): 649–88.
+<a href="https://doi.org/10.1146/annurev-economics-012315-015826">https://doi.org/10.1146/annurev-economics-012315-015826</a>.</p>
+</div>
+<div id="ref-cnr2018">
+<p>Chernozhukov, Victor, Whitney Newey, and James Robins. 2018.
+“Double/de-Biased Machine Learning Using Regularized Riesz
+Representers.” <a href="https://arxiv.org/abs/1802.08667">https://arxiv.org/abs/1802.08667</a>.</p>
+</div>
+<div id="ref-wager2018">
+<p>Wager, Stefan, and Susan Athey. 2018. “Estimation and Inference of
+Heterogeneous Treatment Effects Using Random Forests.” <em>Journal of the
+American Statistical Association</em> 0 (0): 1–15.
+<a href="https://doi.org/10.1080/01621459.2017.1319839">https://doi.org/10.1080/01621459.2017.1319839</a>.</p>
+</div>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

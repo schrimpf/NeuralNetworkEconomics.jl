@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Detecting heterogeneity - GMMInference.jl</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">GMMInference.jl</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Documentation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Machine Learning in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../ml-intro/">Introduction</a>
+</li>
+                                    
+<li >
+    <a href="../ml-methods/">Methods</a>
+</li>
+                                    
+<li >
+    <a href="../ml-doubledebiased/">Inference</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">Detecting heterogeneity</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../license/">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../ml-doubledebiased/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../license/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/mlExamplePKH.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#introduction">Introduction</a></li>
+            <li><a href="#background">Background</a></li>
+            <li><a href="#baseline-characteristics">Baseline characteristics</a></li>
+            <li><a href="#main-results">Main results</a></li>
+        <li class="main "><a href="#exploring-heterogeneity">Exploring heterogeneity</a></li>
+            <li><a href="#machine-learning-as-proxy">Machine learning as proxy</a></li>
+        <li class="main "><a href="#references">References</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<!-- --- -->
+
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
+<h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Program Keluarga Harapan : pilot conditional cash transfer program
+    in Indonesia</p>
+<ul>
+<li>Alatas et al. (<a href="#ref-alatas2011">2011</a>), Triyana
+    (<a href="#ref-triyana2016">2016</a>)</li>
+</ul>
+</li>
+<li>
+<p>Conditional cash transfer: receive cash if</p>
+<ul>
+<li>
+<p>Expectant women: 4 prenatal visits, iron supplement, delivery by
+    doctor or midwife, 2 postnatal visits</p>
+</li>
+<li>
+<p>Children under 5: weighed monthly, vaccinated, vitamin A</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Quarterly transfer of 600,000-2,200,000 rupiah (\$60 - \$220)
+    depending on household composition (15-20% of quaterly consumption)</p>
+</li>
+<li>
+<p>Randomized at subdistrict level : want to capture supply side
+    effects that would occur if policy implemented everywhere</p>
+</li>
+</ul>
+<h2 id="baseline-characteristics">Baseline characteristics<a class="headerlink" href="#baseline-characteristics" title="Permanent link">&para;</a></h2>
+<pre><code class="r">if (!file.exists(&quot;Data_AEJPol-2014-0048/data_final/price_women.dta&quot;))
+{
+  stop(&quot;Please download the data from https://www.aeaweb.org/articles?id=10.1257/pol.20140048 and unzip it in the current directory&quot;)
+}
+
+if (!require(foreign)) install.packages(&quot;foreign&quot;)
+library(foreign)
+all.data &lt;- read.dta(&quot;Data_AEJPol-2014-0048/data_final/price_women.dta&quot;)
+
+# Variables we will use
+vars &lt;- c(&quot;rid_panel&quot;,&quot;prov&quot;,&quot;Location_ID&quot;,&quot;dist&quot;,
+          &quot;wave&quot;,
+          &quot;edu&quot;,&quot;agecat&quot;,&quot;log_xp_percap&quot;,#&quot;hh_land&quot;,&quot;hh_home&quot;,
+          &quot;rhr031&quot;, &quot;rhr032&quot;, &quot;rhr034&quot;, &quot;rhr036&quot;,# &quot;hh_xp&quot;,
+          &quot;death_ch&quot;,&quot;bw&quot;,&quot;bw_low&quot;,
+           &quot;birthfac&quot;, &quot;good_assisted_delivery&quot;, &quot;dummy_A&quot;, &quot;dummy_B&quot;,
+          &quot;dummy_D&quot;,
+          &quot;delivery_fees&quot;, &quot;delivery_fees_prof&quot;, &quot;delivery_fees_doc&quot;,
+          &quot;delivery_fees_midw&quot;, &quot;delivery_fees_trad&quot;,
+          &quot;control_pkh&quot;, &quot;pkh_kec_ever&quot;, &quot;pkh_ever&quot;, &quot;bw_kec&quot;,
+          &quot;bw_low_kec&quot;, &quot;death_ch_kec&quot;,
+          &quot;dummy_A_base&quot;, &quot;dummy_B_base&quot;, &quot;dummy_D_base&quot;,
+          &quot;bid_pkh1&quot;, &quot;bid_pkh1_base&quot; ,
+          &quot;delivery_fees_top&quot;, &quot;delivery_fees_prof_top&quot;, &quot;delivery_fees_doc_top&quot;,
+          &quot;delivery_fees_midw_top&quot;, &quot;delivery_fees_trad_top&quot;,
+          &quot;delivery_fees_top_base&quot;, &quot;delivery_fees_prof_top_base&quot;, &quot;delivery_fees_doc_top_base&quot;,
+          &quot;delivery_fees_midw_top_base&quot;,
+          &quot;delivery_fees_trad_top_base&quot;, names(all.data)[grep(&quot;^hh_&quot;,names(all.data))],
+           &quot;tv&quot;,                              &quot;parabola&quot;       ,                 &quot;fridge&quot;          ,
+          &quot;motorbike&quot;,                       &quot;car&quot;            ,                 &quot;pig&quot;               ,
+          &quot;goat&quot;  ,                          &quot;cow&quot;           ,                  &quot;horse&quot; 
+          )
+pw &lt;- all.data[,vars]
+
+## Rename some variables
+names(pw)[names(pw)==&quot;dummy_A&quot;] &lt;- &quot;doctor_birth&quot;
+names(pw)[names(pw)==&quot;dummy_A_base&quot;] &lt;- &quot;doctor_birth_base&quot;
+names(pw)[names(pw)==&quot;dummy_B&quot;] &lt;- &quot;midwife_birth&quot;
+names(pw)[names(pw)==&quot;dummy_B_base&quot;] &lt;- &quot;midwife_birth_base&quot;
+names(pw)[names(pw)==&quot;dummy_D&quot;] &lt;- &quot;traditional_birth&quot;
+names(pw)[names(pw)==&quot;dummy_D_base&quot;] &lt;- &quot;traditional_birth_base&quot;
+
+# Set household variables to their pretreatment (wave=1) values
+for (v in c(&quot;edu&quot;,&quot;agecat&quot;,&quot;log_xp_percap&quot;, 
+            &quot;rhr031&quot;, &quot;rhr032&quot;, &quot;rhr034&quot;, &quot;rhr036&quot;, names(pw)[grep(&quot;^hh_&quot;,names(pw))],
+            &quot;tv&quot;,&quot;parabola&quot;,&quot;fridge&quot;,&quot;motorbike&quot;,&quot;car&quot;,&quot;pig&quot;,&quot;goat&quot;,&quot;cow&quot;,&quot;horse&quot;)) {
+  temp &lt;- ifelse(pw$wave==1,pw[,v],NA)
+  temp0 &lt;- ave(temp, pw$rid_panel, FUN=function(x) max(x,na.rm=TRUE))
+  pw[,v] &lt;- ifelse(is.finite(temp0), temp0, pw[,v])
+}
+pw$delivery_fees_trad_top[is.na(pw$delivery_fees_trad_top)
+                          &amp;
+                          !is.na(pw$delivery_fees_midw_top)] &lt;- 0
+</code></pre>
+
+<pre><code class="r">adf &lt;- aggregate(subset(pw,wave==1), by=list(subset(pw,wave==1)$control_pkh),
+                 FUN=function(x) mean(x,na.rm=TRUE))
+adf
+</code></pre>
+
+<pre><code>##   Group.1 rid_panel prov Location_ID dist wave      edu   agecat
+## 1       0        NA   NA          NA   NA    1 15.50180 3.405191
+## 2       1        NA   NA          NA   NA    1 14.59808 3.428927
+##   log_xp_percap    rhr031    rhr032    rhr034    rhr036   death_ch
+## 1      11.98384 0.3907714 0.5313627 0.4354722 0.4826965 0.01333814
+## 2      12.00990 0.4068941 0.5458422 0.4427861 0.4765458 0.01137171
+##         bw     bw_low  birthfac good_assisted_delivery doctor_birth
+## 1 3166.346 0.08163265 0.4353201              0.6392936   0.07902870
+## 2 3180.763 0.07678883 0.4402434              0.6232073   0.08778792
+##   midwife_birth traditional_birth delivery_fees delivery_fees_prof
+## 1     0.5876380         0.4189845      284483.6           243728.8
+## 2     0.5619296         0.4315515      298738.9           256254.9
+##   delivery_fees_doc delivery_fees_midw delivery_fees_trad control_pkh
+## 1          82076.82           178308.9           39173.57           0
+## 2         102721.64           176275.7           40711.49           1
+##   pkh_kec_ever pkh_ever   bw_kec bw_low_kec death_ch_kec doctor_birth_base
+## 1            0        0 3165.103 0.08319263   0.01333814        0.07897035
+## 2            0        0 3180.449 0.08287012   0.01137171        0.08718138
+##   midwife_birth_base traditional_birth_base      bid_pkh1 bid_pkh1_base
+## 1          0.5848753              0.4195088  3.574443e-02  3.574443e-02
+## 2          0.5585186              0.4353818 -1.469066e-17 -2.999183e-18
+##   delivery_fees_top delivery_fees_prof_top delivery_fees_doc_top
+## 1          274278.3               233523.5              64174.41
+## 2          278295.7               235811.7              72279.24
+##   delivery_fees_midw_top delivery_fees_trad_top delivery_fees_top_base
+## 1               167942.7               36862.44               273320.4
+## 2               162837.3               37162.07               275470.0
+##   delivery_fees_prof_top_base delivery_fees_doc_top_base
+## 1                    232340.5                   63631.20
+## 2                    232639.0                   70302.13
+##   delivery_fees_midw_top_base delivery_fees_trad_top_base hh_serial_no_w1
+## 1                    166914.5                    37767.86        2.898702
+## 2                    162082.5                    38660.42        2.871713
+##   hh_survey_date_w1 hh_adult  hh_5_15    hh_u5 hh_serial_no_w2
+## 1          17368.93 3.426614 1.858130 1.631684             NaN
+## 2          17367.48 3.363539 1.887016 1.638240             NaN
+##   hh_serial_no_w3    hh_u2   hh_3_6  hh_7_15  hh_phone hh_rf_tile
+## 1             NaN 1.231982 1.496021 2.336163 0.1167988  0.7119683
+## 2             NaN 1.232099 1.467532 2.340625 0.1122957  0.7157072
+##   hh_rf_shingle hh_rf_fiber  hh_rf_oth hh_wall_plaster hh_wall_brick
+## 1     0.2025955   0.1304975 0.04578226       0.3183129     0.1503244
+## 2     0.1943852   0.1339730 0.04442075       0.3471926     0.1368159
+##   hh_wall_wood hh_wall_fiber hh_wall_oth hh_fl_tile hh_fl_plaster
+## 1    0.2599135     0.3604903  0.03208363  0.2058399     0.3713050
+## 2    0.2356077     0.3681592  0.03020611  0.2160625     0.3901919
+##   hh_fl_wood hh_fl_dirt   hh_fl_oth hh_drink_pam hh_drink_mechwell
+## 1  0.1398702  0.3738284 0.000000000    0.1528479         0.2025955
+## 2  0.1346837  0.3471926 0.000355366    0.1464108         0.2174840
+##   hh_drink_well hh_drink_spring hh_drink_oth hh_drinkhome hh_drinkdist
+## 1     0.4913482       0.1870944   0.08723864    0.2826244     1052.188
+## 2     0.4626866       0.1915423   0.09985785    0.2782516     1064.803
+##   hh_waterdrink hh_water_pam hh_water_mechwell hh_water_well
+## 1     0.8280461    0.1171593         0.2004326     0.4783706
+## 2     0.8312011    0.1055437         0.2235252     0.4552239
+##   hh_water_spring hh_water_river hh_water_oth hh_waterhome hh_waterdist
+## 1       0.1856525     0.09841384   0.04109589   0.05839942     610.1139
+## 2       0.1847903     0.09630419   0.04157783   0.05934613     634.7447
+##   hh_toilet_own hh_toilet_pub hh_toilet_none hh_toilet_1 hh_toilet_2
+## 1     0.4340303     0.1784427      0.4480894   0.2811824   0.1049027
+## 2     0.4648188     0.1844350      0.4097370   0.3280028   0.1080313
+##   hh_toilet_3 hh_waste_tank hh_waste_hole hh_waste_river hh_waste_field
+## 1   0.2505407     0.2606345     0.2487383      0.3695025      0.2119683
+## 2   0.2313433     0.3120114     0.2341862      0.3454158      0.1968728
+##   hh_waste_oth hh_listrik    hh_pln hh_kitchen hh_cook_wood
+## 1            0  0.8601298 0.8417448  0.8936554    0.8136265
+## 2            0  0.8681592 0.8464819  0.9033404    0.7782516
+##   hh_cook_kerosene hh_cook_gas hh_cook_oth   hh_kec   hh_land   hh_home
+## 1        0.2105263  0.03640952           0 9400.184 0.3734679 0.8846431
+## 2        0.2469794  0.03375977           0 9618.802 0.3848614 0.8749112
+##   hh_land_miss hh_home_miss    hh_xp hh_xp_all        tv   parabola
+## 1            0   0.03028118 3.024874  2.601298 0.5313627 0.03893295
+## 2            0   0.02949538 3.096304  2.676617 0.5458422 0.04015636
+##       fridge motorbike        car       pig      goat       cow      horse
+## 1 0.05803893 0.2011536 0.03496756 0.1196828 0.1456381 0.1121125 0.03640952
+## 2 0.05685856 0.1986496 0.03269367 0.1364606 0.1552950 0.1186923 0.03802416
+</code></pre>
+<h2 id="main-results">Main results<a class="headerlink" href="#main-results" title="Permanent link">&para;</a></h2>
+<h3 id="delivery-attendant-usage">Delivery attendant usage<a class="headerlink" href="#delivery-attendant-usage" title="Permanent link">&para;</a></h3>
+<pre><code class="r">library(lfe)
+lhs &lt;- &quot;pkh_kec_ever + doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | 0 | Location_ID&quot;
+itt &lt;- list(felm(as.formula(paste(&quot;doctor_birth ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;midwife_birth ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;traditional_birth ~&quot;,lhs)),data=pw))
+lhs &lt;- &quot;doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | (pkh_ever ~ pkh_kec_ever) | Location_ID&quot;
+iv &lt;-   list(felm(as.formula(paste(&quot;doctor_birth ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;midwife_birth ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;traditional_birth ~&quot;,lhs)),data=pw))
+
+library(stargazer)
+stargazer(itt, type=&quot;html&quot;,
+  title=&quot;ITT estimates&quot;, dep.var.labels =
+  c(&quot;Doctor&quot;,&quot;Midwife&quot;,&quot;Traditional&quot;), keep=&quot;pkh&quot;,
+  omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
+</code></pre>
+
+<table style="text-align:center">
+<p><caption markdown="1">
+<strong>ITT estimates</strong>
+</caption>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1" colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1">
+</td>
+<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+Doctor
+</td>
+<td markdown="1">
+Midwife
+</td>
+<td markdown="1">
+Traditional
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(1)
+</td>
+<td markdown="1">
+(2)
+</td>
+<td markdown="1">
+(3)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+pkh_kec_ever
+</td>
+<td markdown="1">
+0.043<sup>***</sup>
+</td>
+<td markdown="1">
+0.094<sup>***</sup>
+</td>
+<td markdown="1">
+-0.090<sup>***</sup>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(0.012)
+</td>
+<td markdown="1">
+(0.017)
+</td>
+<td markdown="1">
+(0.016)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+Observations
+</td>
+<td markdown="1">
+6,629
+</td>
+<td markdown="1">
+6,629
+</td>
+<td markdown="1">
+6,629
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr></p>
+</table>
+<hr />
+<h3 id="delivery-attendant-usage-delivery-attendant-usage-1">Delivery attendant usage [delivery-attendant-usage-1]<a class="headerlink" href="#delivery-attendant-usage-delivery-attendant-usage-1" title="Permanent link">&para;</a></h3>
+<pre><code class="r">stargazer(iv, type=&quot;html&quot;,
+  title=&quot;IV effect of program participation&quot;, dep.var.labels =
+  c(&quot;Doctor&quot;,&quot;Midwife&quot;,&quot;Traditional&quot;), keep=&quot;pkh&quot;,
+  omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
+</code></pre>
+
+<table style="text-align:center">
+<p><caption markdown="1">
+<strong>IV effect of program participation</strong>
+</caption>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1" colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1">
+</td>
+<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+Doctor
+</td>
+<td markdown="1">
+Midwife
+</td>
+<td markdown="1">
+Traditional
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(1)
+</td>
+<td markdown="1">
+(2)
+</td>
+<td markdown="1">
+(3)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+<code>pkh_ever(fit)</code>
+</td>
+<td markdown="1">
+0.091<sup>***</sup>
+</td>
+<td markdown="1">
+0.198<sup>***</sup>
+</td>
+<td markdown="1">
+-0.189<sup>***</sup>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(0.025)
+</td>
+<td markdown="1">
+(0.036)
+</td>
+<td markdown="1">
+(0.035)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+Observations
+</td>
+<td markdown="1">
+6,629
+</td>
+<td markdown="1">
+6,629
+</td>
+<td markdown="1">
+6,629
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr></p>
+</table>
+<hr />
+<h3 id="health-outcomes">Health outcomes<a class="headerlink" href="#health-outcomes" title="Permanent link">&para;</a></h3>
+<pre><code class="r">library(lfe)
+lhs &lt;- &quot;pkh_kec_ever + doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | 0 | Location_ID&quot;
+itt &lt;- list(felm(as.formula(paste(&quot;death_ch ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;bw ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;bw_low ~&quot;,lhs)),data=pw))
+
+lhs &lt;- &quot;doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | (pkh_ever ~ pkh_kec_ever) | Location_ID&quot;
+iv &lt;- list(felm(as.formula(paste(&quot;death_ch ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;bw ~&quot;,lhs)),data=pw),
+            felm(as.formula(paste(&quot;bw_low ~&quot;,lhs)),data=pw))
+
+library(stargazer)
+stargazer(itt, type=&quot;html&quot;,
+  title=&quot;ITT estimates&quot;, dep.var.labels =
+  c(&quot;Infant mortality&quot;,&quot;Birthweight&quot;,&quot;Low birthweight&quot;), keep=&quot;pkh&quot;,
+  omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
+</code></pre>
+
+<table style="text-align:center">
+<p><caption markdown="1">
+<strong>ITT estimates</strong>
+</caption>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1" colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1">
+</td>
+<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+Infant mortality
+</td>
+<td markdown="1">
+Birthweight
+</td>
+<td markdown="1">
+Low birthweight
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(1)
+</td>
+<td markdown="1">
+(2)
+</td>
+<td markdown="1">
+(3)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+pkh_kec_ever
+</td>
+<td markdown="1">
+0.005
+</td>
+<td markdown="1">
+-5.559
+</td>
+<td markdown="1">
+0.017
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(0.004)
+</td>
+<td markdown="1">
+(23.805)
+</td>
+<td markdown="1">
+(0.012)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+Observations
+</td>
+<td markdown="1">
+8,303
+</td>
+<td markdown="1">
+4,988
+</td>
+<td markdown="1">
+4,988
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr></p>
+</table>
+<hr />
+<h3 id="health-outcomes-health-outcomes-1">Health outcomes [health-outcomes-1]<a class="headerlink" href="#health-outcomes-health-outcomes-1" title="Permanent link">&para;</a></h3>
+<pre><code class="r">stargazer(iv, type=&quot;html&quot;,
+  title=&quot;IV effect of program participation&quot;, dep.var.labels =
+  c(&quot;Infant mortality&quot;,&quot;Birthweight&quot;,&quot;Lowbirthweigt&quot;), keep=&quot;pkh&quot;,
+  omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
+</code></pre>
+
+<table style="text-align:center">
+<p><caption markdown="1">
+<strong>IV effect of program participation</strong>
+</caption>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1" colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1">
+</td>
+<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+Infant mortality
+</td>
+<td markdown="1">
+Birthweight
+</td>
+<td markdown="1">
+Lowbirthweigt
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(1)
+</td>
+<td markdown="1">
+(2)
+</td>
+<td markdown="1">
+(3)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+<code>pkh_ever(fit)</code>
+</td>
+<td markdown="1">
+0.011
+</td>
+<td markdown="1">
+-12.674
+</td>
+<td markdown="1">
+0.039
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+(0.008)
+</td>
+<td markdown="1">
+(54.269)
+</td>
+<td markdown="1">
+(0.026)
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+<td markdown="1">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left">
+Observations
+</td>
+<td markdown="1">
+8,303
+</td>
+<td markdown="1">
+4,988
+</td>
+<td markdown="1">
+4,988
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr></p>
+</table>
+<h1 id="exploring-heterogeneity">Exploring heterogeneity<a class="headerlink" href="#exploring-heterogeneity" title="Permanent link">&para;</a></h1>
+<h2 id="machine-learning-as-proxy">Machine learning as proxy<a class="headerlink" href="#machine-learning-as-proxy" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Generic machine learning approach of Chernozhukov et al.
+    (<a href="#ref-cddf2018">2018</a>)</p>
+</li>
+<li>
+<p>Estimate machine learning proxies for $B(x) = \Er[y(0)|x]$ and
+    $S(x) = \Er[y(1) - y(0) |x]$</p>
+</li>
+<li>
+<p>Use proxies to :</p>
+<ul>
+<li>
+<p>Estimate best linear projection on true $\Er[y(1) - y(0)|x]$</p>
+</li>
+<li>
+<p>Estimate $\Er[y(1) - y(0) | groups]$</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="heterogeneity-in-cate-for-birthweight">Heterogeneity in CATE for Birthweight<a class="headerlink" href="#heterogeneity-in-cate-for-birthweight" title="Permanent link">&para;</a></h3>
+<pre><code class="r">## Function for Generic machine learning of Chernozhukov, Demirer, Duflo, &amp; Fernandez-Val (2018)
+genericML &lt;- function(x,y,treat, fit.function, predict.function,
+                      n.split=10, n.group=5, clusterid=NULL) {
+  if (!is.null(clusterid)) require(sandwich) 
+  blp &lt;- matrix(NA, nrow=n.split, ncol=2)
+  blp.se &lt;- blp
+  gate &lt;- matrix(NA, nrow=n.split, ncol=n.group)
+  gate.se &lt;- gate 
+  baseline &lt;- matrix(NA, nrow=nrow(x), ncol=n.split)
+  cate &lt;- matrix(NA, nrow=nrow(x), ncol=n.split)
+  Lambda &lt;- matrix(NA, nrow=n.split, ncol=2)
+  for(i in 1:n.split) {
+    main &lt;- runif(nrow(x))&gt;0.5
+    fit1 &lt;- fit.function(x[!main &amp; treat==1,], y[!main &amp; treat==1])
+    fit0 &lt;- fit.function(x[!main &amp; treat==0,], y[!main &amp; treat==0])
+    B &lt;- as.vector(predict.function(fit0,x))
+    S &lt;- as.vector(predict.function(fit1,x)) - B
+    baseline[,i] &lt;- B
+    cate[,i] &lt;- S
+    ES &lt;- mean(S)
+    ## BLP
+    # assume P(treat|x) = P(treat) = mean(treat)
+    p &lt;- mean(treat)
+    df &lt;- data.frame(y, B, treat, S, main)
+    reg &lt;- lm(y ~ B + I(treat-p) + I((treat-p)*(S-ES)), data=subset(df, main))
+    blp[i,] &lt;- reg$coef[3:4]
+    if (is.null(clusterid)) blp.se[i,] &lt;- sqrt(diag(vcovHC(reg))[3:4])
+    else blp.se[i,] &lt;- sqrt(diag(vcovCL(reg, clusterid[main]))[3:4])
+    Lambda[i,1] &lt;- reg$coefficient[4]^2*var(S)
+    ## GATES
+    cut &lt;- quantile(S, probs=seq(0,1,length.out=(n.group+1)))
+    cut[n.group+1] &lt;- cut[n.group+1] + 1 
+    for(k in 1:n.group) {
+      df[,sprintf(&quot;G.%d&quot;,k)] &lt;- (cut[k]&lt;=S &amp; S&lt;cut[k+1])
+    }
+    greg &lt;- lm(as.formula(paste(c(&quot;y ~ B &quot;, sprintf(&quot;I((treat-p)*G.%d)&quot;,1:n.group)), collapse=&quot; + &quot;)),
+                data=subset(df,main))    
+    gc &lt;- grep(&quot;G&quot;, names(greg$coefficients))
+    gate[i,] &lt;- greg$coefficients[gc]
+    if (is.null(clusterid)) gate.se[i,] &lt;- sqrt(diag(vcovHC(greg))[gc])
+    else gate.se[i,] &lt;- sqrt(diag(vcovCL(greg, clusterid[main]))[gc])
+    Lambda[i,2] &lt;- sum(gate[i,]^2)/n.group
+  }
+  out &lt;- list( gate=gate, gate.se=gate.se, blp=blp, blp.se=blp.se, Lambda=Lambda, baseline=baseline, cate=cate)
+}
+
+genericML.summary &lt;- function(gml)
+{
+  blp &lt;- apply(gml$blp, 2, function(x) median(x, na.rm=TRUE))
+  blp.se &lt;- apply(gml$blp.se, 2, function(x) median(x, na.rm=TRUE))
+  gate &lt;- apply(gml$gate, 2, function(x) median(x, na.rm=TRUE))
+  gate.se &lt;- apply(gml$gate.se, 2, function(x) median(x, na.rm=TRUE))
+  Lambda &lt;- apply(gml$Lambda, 2, function(x) median(x, na.rm=TRUE))
+  return(list(blp=blp, blp.se=blp.se, gate=gate, gate.se=gate.se, Lambda=Lambda))
+}
+</code></pre>
+
+<pre><code class="r">library(glmnet)
+
+# create x matrix
+fmla.l &lt;- bw ~ pkh_kec_ever +
+  as.factor(edu)*as.factor(agecat) + log_xp_percap + hh_land + hh_home + as.factor(dist) +
+  hh_phone + hh_rf_tile + hh_rf_shingle + hh_rf_fiber +
+  hh_wall_plaster + hh_wall_brick + hh_wall_wood + hh_wall_fiber +
+  hh_fl_tile + hh_fl_plaster + hh_fl_wood + hh_fl_dirt +
+  hh_water_pam + hh_water_mechwell + hh_water_well + hh_water_spring + hh_water_river + 
+  hh_waterhome + 
+  hh_toilet_own + hh_toilet_pub + hh_toilet_none +
+  hh_waste_tank + hh_waste_hole + hh_waste_river + hh_waste_field +
+  hh_kitchen +
+  hh_cook_wood + hh_cook_kerosene + hh_cook_gas +
+  tv + fridge + motorbike + car + goat + cow + horse
+m &lt;- lm(fmla.l, data=pw, x=TRUE, y=TRUE)
+treat &lt;- m$x[,2]
+Xl &lt;- m$x[,3:ncol(m$x)]
+scale &lt;- sd(m$y)
+center &lt;- mean(m$y)
+yl &lt;- (m$y-center)/scale
+lid &lt;- as.factor(pw[as.numeric(rownames(m$x)),]$Location_ID)
+</code></pre>
+
+<pre><code class="r">gml.lasso &lt;- genericML(Xl,m$y, treat, 
+                   function(x,y) cv.glmnet(x,(y-center)/scale,alpha=1,parallel=FALSE, intercept=TRUE, nfolds=20),
+                   function(model, x) { predict(model, x, s=model$lambda.min, type=&quot;response&quot;)*scale + center },
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(grf)
+gml.rf &lt;- genericML(Xl,m$y, treat, 
+                   function(x,y) regression_forest(x, (y-center)/scale, tune.parameters=TRUE),
+                   function(model, x) { predict(model,x)$predictions*scale + center},
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(RSNNS)
+gml.nn &lt;- genericML(Xl,m$y, treat, 
+                   function(x,y) mlp(x,(y-center)/scale,linOut=TRUE, size=c(10,10), learnFunc=&quot;SCG&quot;),
+                   function(model, x) { predict(model,x)*scale + center},
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(GGally)
+df &lt;- data.frame(Lasso=apply(gml.lasso$cate,1,median),
+                 Forest=apply(gml.rf$cate,1,median),
+                 Neural=apply(gml.nn$cate,1,median))
+ggpairs(df, lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
+</code></pre>
+
+<p><img alt="plot of chunk cateplot" src="../figure/cateplot-1.png" /></p>
+<hr />
+<h3 id="best-linear-projection-of-cate">Best linear projection of CATE<a class="headerlink" href="#best-linear-projection-of-cate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Randomly partition sample into auxillary and main samples</p>
+</li>
+<li>
+<p>Use any method on auxillary sample to estimate
+    <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
+    <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
+</p>
+</li>
+<li>
+<p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
+    y = \alpha_0 + \alpha_1 B(x) + \beta_0 (d-P(x)) + \beta_1
+    (d-P(x))(S(x) - \Er[S(x)]) + \epsilon 
+    </script>
+</p>
+</li>
+<li>
+<p>$\hat{\beta}<em b_0_b_1="b_0,b_1">0, \hat{\beta}_1 \to_p \argmin</em> \Er[(s_0(x) - b_0 - b_1 (S(x)-E[S(x)]))^2]$</p>
+</li>
+<li>
+<p>$\Lambda = \beta_1^2 Var(S(x)) = corr(s_0(x),S(X))^2 Var(s_0(x))$</p>
+</li>
+</ul>
+<hr />
+<pre><code class="r">library(kableExtra)
+colfn &lt;- function(gml) {
+  s &lt;- genericML.summary(gml)
+  c(s$blp[1], s$blp.se[1], s$blp[2], s$blp.se[2], s$Lambda[1])
+}
+tbl &lt;- cbind(colfn(gml.lasso), colfn(gml.rf), colfn(gml.nn))
+colnames(tbl) &lt;- c(&quot;Lasso&quot;,&quot;Regression forest&quot;,&quot;Neural network&quot;)
+rownames(tbl) &lt;- c(&quot;ATE=b0&quot;,&quot;se&quot;,&quot;b1&quot;,&quot;se&quot;,&quot;Lambda&quot;)
+
+kable_styling(kable(tbl,
+                    caption=&quot;Machine learning proxies as BLP of CATE on Birthweight&quot;,
+                    format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+                                    &quot;responsive&quot;), full_width=TRUE)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+Machine learning proxies as BLP of CATE on Birthweight
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Regression forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+ATE=b0
+</td>
+<td markdown="1" style="text-align:right;">
+-11.381
+</td>
+<td markdown="1" style="text-align:right;">
+-1.751
+</td>
+<td markdown="1" style="text-align:right;">
+6.185
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+31.414
+</td>
+<td markdown="1" style="text-align:right;">
+32.285
+</td>
+<td markdown="1" style="text-align:right;">
+32.309
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+b1
+</td>
+<td markdown="1" style="text-align:right;">
+0.371
+</td>
+<td markdown="1" style="text-align:right;">
+0.369
+</td>
+<td markdown="1" style="text-align:right;">
+0.044
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.547
+</td>
+<td markdown="1" style="text-align:right;">
+0.491
+</td>
+<td markdown="1" style="text-align:right;">
+0.115
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Lambda
+</td>
+<td markdown="1" style="text-align:right;">
+601.155
+</td>
+<td markdown="1" style="text-align:right;">
+683.726
+</td>
+<td markdown="1" style="text-align:right;">
+372.192
+</td>
+</tr>
+</tbody></p>
+</table>
+<hr />
+<h3 id="group-average-treatment-effects-group-average-treatment-effects">Group average treatment effects [group-average-treatment-effects]<a class="headerlink" href="#group-average-treatment-effects-group-average-treatment-effects" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Define $G_k = 1{\ell_{k-1} \leq S(x) \leq \ell_k}$ with
+    $\ell_k = k/5$ quantile of $S(x)$</p>
+</li>
+<li>
+<p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
+    y = \alpha_0 + \alpha_1 B(x) + \sum_k \gamma_k (d-P(X)) 1(G_k) +
+    \epsilon 
+    </script>
+</p>
+</li>
+<li>
+<p>$\hat{\gamma}_k \to_p \Er[y(1) - y(0) | G_k]$</p>
+</li>
+<li>
+<p>$\bar{\Lambda} = \frac{1}{K} \sum_k \gamma_k^2$</p>
+</li>
+</ul>
+<hr />
+<pre><code class="r">library(kableExtra)
+colfn &lt;- function(gml) {
+  s &lt;- genericML.summary(gml)
+  c(s$gate[1], s$gate.se[1],
+    s$gate[2], s$gate.se[2],
+    s$gate[3], s$gate.se[3],
+    s$gate[4], s$gate.se[4],
+    s$gate[5], s$gate.se[5], 
+    s$Lambda[2])
+}
+tbl &lt;- cbind(colfn(gml.lasso), colfn(gml.rf), colfn(gml.nn))
+colnames(tbl) &lt;- c(&quot;Lasso&quot;,&quot;Regression forest&quot;,&quot;Neural network&quot;)
+rownames(tbl) &lt;- c(as.vector(sapply(1:5, function(x) c(sprintf(&quot;GATE %d&quot;,x),&quot;se&quot;))),&quot;Lambda&quot;)
+
+kable_styling(kable(tbl,
+                    caption=&quot;GATE on Birthweight&quot;,
+                    format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+                                    &quot;responsive&quot;), full_width=TRUE)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+GATE on Birthweight
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Regression forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 1
+</td>
+<td markdown="1" style="text-align:right;">
+-48.985
+</td>
+<td markdown="1" style="text-align:right;">
+-3.950
+</td>
+<td markdown="1" style="text-align:right;">
+19.586
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+69.276
+</td>
+<td markdown="1" style="text-align:right;">
+69.646
+</td>
+<td markdown="1" style="text-align:right;">
+62.126
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 2
+</td>
+<td markdown="1" style="text-align:right;">
+21.303
+</td>
+<td markdown="1" style="text-align:right;">
+-21.106
+</td>
+<td markdown="1" style="text-align:right;">
+-30.948
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+74.528
+</td>
+<td markdown="1" style="text-align:right;">
+60.761
+</td>
+<td markdown="1" style="text-align:right;">
+67.161
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 3
+</td>
+<td markdown="1" style="text-align:right;">
+-9.369
+</td>
+<td markdown="1" style="text-align:right;">
+-44.090
+</td>
+<td markdown="1" style="text-align:right;">
+-11.807
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+65.917
+</td>
+<td markdown="1" style="text-align:right;">
+66.654
+</td>
+<td markdown="1" style="text-align:right;">
+66.981
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 4
+</td>
+<td markdown="1" style="text-align:right;">
+1.730
+</td>
+<td markdown="1" style="text-align:right;">
+10.772
+</td>
+<td markdown="1" style="text-align:right;">
+-13.668
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+66.391
+</td>
+<td markdown="1" style="text-align:right;">
+67.695
+</td>
+<td markdown="1" style="text-align:right;">
+66.693
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 5
+</td>
+<td markdown="1" style="text-align:right;">
+-22.329
+</td>
+<td markdown="1" style="text-align:right;">
+5.736
+</td>
+<td markdown="1" style="text-align:right;">
+52.466
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+66.335
+</td>
+<td markdown="1" style="text-align:right;">
+77.828
+</td>
+<td markdown="1" style="text-align:right;">
+77.496
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Lambda
+</td>
+<td markdown="1" style="text-align:right;">
+5998.909
+</td>
+<td markdown="1" style="text-align:right;">
+4268.074
+</td>
+<td markdown="1" style="text-align:right;">
+3912.912
+</td>
+</tr>
+</tbody></p>
+</table>
+<hr />
+<h3 id="heterogeneity-in-cate-on-midwife-utilization">Heterogeneity in CATE on Midwife utilization<a class="headerlink" href="#heterogeneity-in-cate-on-midwife-utilization" title="Permanent link">&para;</a></h3>
+<pre><code class="r"># create x matrix
+mwb &lt;- pw[as.numeric(rownames(m$x)),]$midwife_birth
+</code></pre>
+
+<pre><code class="r">mw.lasso &lt;- genericML(Xl,mwb, treat, 
+                   function(x,y) cv.glmnet(x,y,family=&quot;binomial&quot;,
+                                           alpha=1,parallel=FALSE, intercept=TRUE, nfolds=20),
+                   function(model, x) { predict(model, x, s=model$lambda.min, type=&quot;response&quot;) },
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(grf)
+mw.rf &lt;- genericML(Xl,mwb, treat, 
+                   function(x,y) regression_forest(x, y, tune.parameters=TRUE),
+                   function(model, x) { predict(model,x)$predictions },
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(RSNNS)
+mw.nn &lt;- genericML(Xl,mwb, treat, 
+                   function(x,y) mlp(x, y, linOut=FALSE, size=c(10,10), learnFunc=&quot;SCG&quot;),
+                   function(model, x) { predict(model,x) },
+                   n.split=11,n.group=5, clusterid=lid)
+</code></pre>
+
+<pre><code class="r">library(GGally)
+df &lt;- data.frame(Lasso=apply(mw.lasso$cate,1,median),
+                 Forest=apply(mw.rf$cate,1,median),
+                 Neural=apply(mw.nn$cate,1,median))
+ggpairs(df, lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
+</code></pre>
+
+<p><img alt="plot of chunk cateplot-mw" src="../figure/cateplot-mw-1.png" /></p>
+<hr />
+<pre><code class="r">library(kableExtra)
+colfn &lt;- function(gml) {
+  s &lt;- genericML.summary(gml)
+  c(s$blp[1], s$blp.se[1], s$blp[2], s$blp.se[2], s$Lambda[1])
+}
+tbl &lt;- cbind(colfn(mw.lasso), colfn(mw.rf), colfn(mw.nn))
+colnames(tbl) &lt;- c(&quot;Lasso&quot;,&quot;Regression forest&quot;,&quot;Neural network&quot;)
+rownames(tbl) &lt;- c(&quot;ATE=b0&quot;,&quot;se&quot;,&quot;b1&quot;,&quot;se&quot;,&quot;Lambda&quot;)
+
+kable_styling(kable(tbl,
+                    caption=&quot;Machine learning proxies as BLP of CATE on Midwife Use&quot;,
+                    format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+                                    &quot;responsive&quot;), full_width=TRUE)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+Machine learning proxies as BLP of CATE on Midwife Use
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Regression forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+ATE=b0
+</td>
+<td markdown="1" style="text-align:right;">
+0.048
+</td>
+<td markdown="1" style="text-align:right;">
+0.056
+</td>
+<td markdown="1" style="text-align:right;">
+0.043
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.023
+</td>
+<td markdown="1" style="text-align:right;">
+0.023
+</td>
+<td markdown="1" style="text-align:right;">
+0.024
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+b1
+</td>
+<td markdown="1" style="text-align:right;">
+0.466
+</td>
+<td markdown="1" style="text-align:right;">
+0.625
+</td>
+<td markdown="1" style="text-align:right;">
+0.207
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.189
+</td>
+<td markdown="1" style="text-align:right;">
+0.240
+</td>
+<td markdown="1" style="text-align:right;">
+0.089
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Lambda
+</td>
+<td markdown="1" style="text-align:right;">
+0.003
+</td>
+<td markdown="1" style="text-align:right;">
+0.003
+</td>
+<td markdown="1" style="text-align:right;">
+0.003
+</td>
+</tr>
+</tbody></p>
+</table>
+<hr />
+<pre><code class="r">library(kableExtra)
+colfn &lt;- function(gml) {
+  s &lt;- genericML.summary(gml)
+  c(s$gate[1], s$gate.se[1],
+    s$gate[2], s$gate.se[2],
+    s$gate[3], s$gate.se[3],
+    s$gate[4], s$gate.se[4],
+    s$gate[5], s$gate.se[5], 
+    s$Lambda[2])
+}
+tbl &lt;- cbind(colfn(mw.lasso), colfn(mw.rf), colfn(mw.nn))
+colnames(tbl) &lt;- c(&quot;Lasso&quot;,&quot;Regression forest&quot;,&quot;Neural network&quot;)
+rownames(tbl) &lt;- c(as.vector(sapply(1:5, function(x) c(sprintf(&quot;GATE %d&quot;,x),&quot;se&quot;))),&quot;Lambda&quot;)
+
+kable_styling(kable(tbl,
+                    caption=&quot;GATE on Midwife Use&quot;,
+                    format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+                                    &quot;responsive&quot;), full_width=TRUE)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+GATE on Midwife Use
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Regression forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 1
+</td>
+<td markdown="1" style="text-align:right;">
+-0.002
+</td>
+<td markdown="1" style="text-align:right;">
+0.030
+</td>
+<td markdown="1" style="text-align:right;">
+-0.027
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.045
+</td>
+<td markdown="1" style="text-align:right;">
+0.054
+</td>
+<td markdown="1" style="text-align:right;">
+0.060
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 2
+</td>
+<td markdown="1" style="text-align:right;">
+0.017
+</td>
+<td markdown="1" style="text-align:right;">
+-0.024
+</td>
+<td markdown="1" style="text-align:right;">
+0.035
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.050
+</td>
+<td markdown="1" style="text-align:right;">
+0.054
+</td>
+<td markdown="1" style="text-align:right;">
+0.052
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 3
+</td>
+<td markdown="1" style="text-align:right;">
+0.010
+</td>
+<td markdown="1" style="text-align:right;">
+0.038
+</td>
+<td markdown="1" style="text-align:right;">
+0.003
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.054
+</td>
+<td markdown="1" style="text-align:right;">
+0.050
+</td>
+<td markdown="1" style="text-align:right;">
+0.050
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 4
+</td>
+<td markdown="1" style="text-align:right;">
+0.089
+</td>
+<td markdown="1" style="text-align:right;">
+0.080
+</td>
+<td markdown="1" style="text-align:right;">
+0.058
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.053
+</td>
+<td markdown="1" style="text-align:right;">
+0.046
+</td>
+<td markdown="1" style="text-align:right;">
+0.050
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+GATE 5
+</td>
+<td markdown="1" style="text-align:right;">
+0.166
+</td>
+<td markdown="1" style="text-align:right;">
+0.189
+</td>
+<td markdown="1" style="text-align:right;">
+0.136
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+se
+</td>
+<td markdown="1" style="text-align:right;">
+0.053
+</td>
+<td markdown="1" style="text-align:right;">
+0.052
+</td>
+<td markdown="1" style="text-align:right;">
+0.052
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Lambda
+</td>
+<td markdown="1" style="text-align:right;">
+0.007
+</td>
+<td markdown="1" style="text-align:right;">
+0.011
+</td>
+<td markdown="1" style="text-align:right;">
+0.006
+</td>
+</tr>
+</tbody></p>
+</table>
+<hr />
+<h3 id="covariate-means-by-group-covariate-means-by-group">Covariate means by group [covariate-means-by-group]<a class="headerlink" href="#covariate-means-by-group-covariate-means-by-group" title="Permanent link">&para;</a></h3>
+<pre><code class="r">df &lt;- pw[as.numeric(rownames(m$x)),]
+df$edu99 &lt;- df$edu==99
+df$educ &lt;- df$edu
+df$educ[df$educ==99] &lt;- NA
+vars &lt;- c(&quot;log_xp_percap&quot;,&quot;agecat&quot;,&quot;educ&quot;,&quot;tv&quot;,&quot;goat&quot;,
+          &quot;hh_toilet_own&quot;,&quot;motorbike&quot;,&quot;hh_cook_wood&quot;,&quot;pkh_ever&quot;)
+
+tmp &lt;- data.frame()
+
+groupMeans &lt;- function(var, gml, clusterid) {
+  n.group &lt;- ncol(gml$gate)
+  gate &lt;- matrix(NA, nrow=nrow(gml$gate), ncol=ncol(gml$gate))
+  gate.se &lt;- gate
+  dat &lt;- data.frame(y=var)
+  for (i in 1:ncol(gml$cate)) {
+    S &lt;- gml$cate[,i]
+    cut &lt;- quantile(S, probs=seq(0,1,length.out=(n.group+1)))
+    cut[n.group+1] &lt;- cut[n.group+1] + 1 
+    for(k in 1:n.group) {
+      dat[,sprintf(&quot;G.%d&quot;,k)] &lt;- 1*(cut[k]&lt;=S &amp; S&lt;cut[k+1])
+    }
+    greg &lt;- lm(as.formula(paste(c(&quot;y ~ -1&quot;, sprintf(&quot;G.%d&quot;,1:n.group)), collapse=&quot; + &quot;)),
+                data=dat)
+    gc &lt;- grep(&quot;G&quot;, names(greg$coefficients))
+    gate[i,] &lt;- greg$coefficients[gc]
+    if (is.null(clusterid)) gate.se[i,] &lt;- sqrt(diag(vcovHC(greg))[gc])
+    else gate.se[i,] &lt;- sqrt(diag(vcovCL(greg,clusterid))[gc])
+  }
+  return(list(mean=apply(gate, 2, function(x) median(x,na.rm=TRUE)),
+              se = apply(gate.se, 2, function(x) median(x,na.rm=TRUE))))
+}
+methods &lt;- c(&quot;Lasso&quot;,&quot;Forest&quot;,&quot;Neural&quot;)
+gmls &lt;- list(mw.lasso,mw.rf,mw.nn)
+for(v in vars) {
+  for (m in 1:length(methods)) {
+    gm &lt;- groupMeans(df[,v], gmls[[m]], lid)    
+    tmp &lt;- rbind(tmp, data.frame(group=1:length(gm$mean),variable=v, method=methods[m],
+                                 mean=gm$mean, se=gm$se))
+  }
+
+}
+library(ggplot2)
+
+fig &lt;- ggplot(data=tmp, aes(x=group, y=mean, colour=method)) +
+  geom_line() +
+  geom_line(aes(y=(mean+1.96*se), colour=method), linetype=2) +
+  geom_line(aes(y=(mean-1.96*se), colour=method), linetype=2) +
+  facet_wrap(~ variable,scales=&quot;free_y&quot;) + theme_minimal()
+print(fig)
+</code></pre>
+
+<p><img alt="plot of chunk clan" src="../figure/clan-1.png" /></p>
+<!--- # Comparing estimation methods --->
+
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<hr />
+<div class="references" id="refs">
+<div id="ref-alatas2011">
+<p>Alatas, Vivi, Nur Cahyadi, Elisabeth Ekasari, Sarah Harmoun, Budi
+Hidayat, Edgar Janz, Jon Jellema, H Tuhiman, and M Wai-Poi. 2011.
+“Program Keluarga Harapan : Impact Evaluation of Indonesia’s Pilot
+Household Conditional Cash Transfer Program.” World Bank.
+<a href="http://documents.worldbank.org/curated/en/589171468266179965/Program-Keluarga-Harapan-impact-evaluation-of-Indonesias-Pilot-Household-Conditional-Cash-Transfer-Program">http://documents.worldbank.org/curated/en/589171468266179965/Program-Keluarga-Harapan-impact-evaluation-of-Indonesias-Pilot-Household-Conditional-Cash-Transfer-Program</a>.</p>
+</div>
+<div id="ref-cddf2018">
+<p>Chernozhukov, Victor, Mert Demirer, Esther Duflo, and Iván
+Fernández-Val. 2018. “Generic Machine Learning Inference on Heterogenous
+Treatment Effects in Randomized Experimentsxo.” Working Paper 24678.
+Working Paper Series. National Bureau of Economic Research.
+<a href="https://doi.org/10.3386/w24678">https://doi.org/10.3386/w24678</a>.</p>
+</div>
+<div id="ref-triyana2016">
+<p>Triyana, Margaret. 2016. “Do Health Care Providers Respond to
+Demand-Side Incentives? Evidence from Indonesia.” <em>American Economic
+Journal: Economic Policy</em> 8 (4): 255–88.
+<a href="https://doi.org/10.1257/pol.20140048">https://doi.org/10.1257/pol.20140048</a>.</p>
+</div>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

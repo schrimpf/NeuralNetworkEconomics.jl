@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Methods - GMMInference.jl</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">GMMInference.jl</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Documentation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Machine Learning in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../ml-intro/">Introduction</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">Methods</a>
+</li>
+                                    
+<li >
+    <a href="../ml-doubledebiased/">Inference</a>
+</li>
+                                    
+<li >
+    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../license/">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../ml-intro/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../ml-doubledebiased/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/ml-methods.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#introduction-to-machine-learning">Introduction to machine learning</a></li>
+            <li><a href="#some-prediction-examples">Some prediction examples</a></li>
+            <li><a href="#lasso">Lasso</a></li>
+            <li><a href="#random-forests">Random forests</a></li>
+            <li><a href="#neural-networks">Neural Networks</a></li>
+        <li class="main "><a href="#bibliography">Bibliography</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<h1 id="introduction-to-machine-learning">Introduction to machine learning<a class="headerlink" href="#introduction-to-machine-learning" title="Permanent link">&para;</a></h1>
+<div class="notes">
+<div class="alert alert-danger">
+<p>Friedman, Hastie, and Tibshirani (<a href="#ref-friedman2008">2009</a>) and James
+et al. (<a href="#ref-james2013">2013</a>) are commonly recommended textbooks on
+machine learning. James et al. (<a href="#ref-james2013">2013</a>) is less
+technical of the two, but neither book is especially difficult. Efron
+and Hastie (<a href="#ref-efron2016">2016</a>) covers similar material and is
+slightly more advanced.</p>
+</div>
+</div>
+<!-- --- -->
+
+<h2 id="some-prediction-examples">Some prediction examples<a class="headerlink" href="#some-prediction-examples" title="Permanent link">&para;</a></h2>
+<p>Machine learning is tailored for prediction, let’s look at some data and
+see how well it works</p>
+<hr />
+<h3 id="predicting-house-prices">Predicting house prices<a class="headerlink" href="#predicting-house-prices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Example from Mullainathan and Spiess (<a href="#ref-mullainathan2017">2017</a>)</li>
+<li>Training on 10000 observations from AHS</li>
+<li>Predict log house price using 150 variables</li>
+<li>Holdout sample of 41808</li>
+</ul>
+<hr />
+<h3 id="ahs-variables-ahs-variables">AHS variables [ahs-variables]<a class="headerlink" href="#ahs-variables-ahs-variables" title="Permanent link">&para;</a></h3>
+<pre><code class="r">ahs &lt;- readRDS(&quot;ahs2011forjep.rdata&quot;)$df
+print(summary(ahs[,1:20]))
+</code></pre>
+
+<pre><code>##     LOGVALUE     REGION    METRO     METRO3    PHONE      KITCHEN  
+##  Min.   : 0.00   1: 5773   1:10499   1:11928   -7: 1851   1:51513  
+##  1st Qu.:11.56   2:13503   2: 1124   2:39037   1 :49353   2:  295  
+##  Median :12.10   3:15408   3:  202   9:  843   2 :  604            
+##  Mean   :12.06   4:17124   4:  103                                 
+##  3rd Qu.:12.61             7:39880                                 
+##  Max.   :15.48                                                     
+##  MOBILTYP   WINTEROVEN WINTERKESP WINTERELSP WINTERWOOD WINTERNONE
+##  -1:49868   -8:  133   -8:  133   -8:  133   -8:  133   -8:  133  
+##  1 :  927   -7:   50   -7:   50   -7:   50   -7:   50   -7:   50  
+##  2 : 1013   1 :  446   1 :  813   1 : 8689   1 :   61   1 :41895  
+##             2 :51179   2 :50812   2 :42936   2 :51564   2 : 9730  
+##                                                                   
+##                                                                   
+##  NEWC       DISH      WASH      DRY       NUNIT2    BURNER     COOK     
+##  -9:50485   1:42221   1:50456   1:49880   1:44922   -6:51567   1:51567  
+##  1 : 1323   2: 9587   2: 1352   2: 1928   2: 2634   1 :   87   2:  241  
+##                                           3: 2307   2 :  154            
+##                                           4: 1945                       
+##                                                                         
+##                                                                         
+##  OVEN      
+##  -6:51654  
+##  1 :  127  
+##  2 :   27  
+##            
+##            
+##
+</code></pre>
+<hr />
+<pre><code class="r">library(GGally)
+ggpairs(ahs[,c(&quot;LOGVALUE&quot;,&quot;ROOMS&quot;, &quot;LOT&quot;,&quot;UNITSF&quot;,&quot;BUILT&quot;)],
+        lower=list(continuous=&quot;points&quot;, combo=&quot;facethist&quot;,
+                   discrete=&quot;facetbar&quot;),
+        diag=list(continuous=&quot;barDiag&quot;,discrete=&quot;barDiag&quot;)) +
+  theme_minimal()
+</code></pre>
+
+<p><img alt="plot of chunk ahsfig" src="../figure/ahsfig-1.png" /></p>
+<hr />
+<pre><code class="r"># use ms-reproduce.R from course git repo to download and run Mullainathon &amp; Spiess data and code to
+# create jepfittedmodels-table1.csv. Be aware that this will take many hours.
+tbl &lt;- read.csv(&quot;jepfittedmodels-table1.csv&quot;)
+tab &lt;- tbl[,3:ncol(tbl)]
+rownames(tab) &lt;- tbl[,2]
+tab &lt;- tab[1:5, c(1,2,3,5)]
+colnames(tab) &lt;- c(&quot;in sample MSE&quot;, &quot;in sample R^2&quot;, &quot;out of sample MSE&quot;, &quot;out of sample R^2&quot;)
+library(kableExtra)
+</code></pre>
+
+<pre><code class="r">kable_styling(kable(tab,
+                    caption=&quot;Performance of different algorithms in predicting housing values&quot;,
+                    format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+                                    &quot;responsive&quot;), full_width=TRUE)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+Performance of different algorithms in predicting housing values
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+in sample MSE
+</th>
+<th markdown="1" style="text-align:right;">
+in sample R\^2
+</th>
+<th markdown="1" style="text-align:right;">
+out of sample MSE
+</th>
+<th markdown="1" style="text-align:right;">
+out of sample R\^2
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+OLS
+</td>
+<td markdown="1" style="text-align:right;">
+0.589
+</td>
+<td markdown="1" style="text-align:right;">
+0.473
+</td>
+<td markdown="1" style="text-align:right;">
+0.674
+</td>
+<td markdown="1" style="text-align:right;">
+0.417
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Tree
+</td>
+<td markdown="1" style="text-align:right;">
+0.675
+</td>
+<td markdown="1" style="text-align:right;">
+0.396
+</td>
+<td markdown="1" style="text-align:right;">
+0.758
+</td>
+<td markdown="1" style="text-align:right;">
+0.345
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Lasso
+</td>
+<td markdown="1" style="text-align:right;">
+0.603
+</td>
+<td markdown="1" style="text-align:right;">
+0.460
+</td>
+<td markdown="1" style="text-align:right;">
+0.656
+</td>
+<td markdown="1" style="text-align:right;">
+0.433
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Forest
+</td>
+<td markdown="1" style="text-align:right;">
+0.166
+</td>
+<td markdown="1" style="text-align:right;">
+0.851
+</td>
+<td markdown="1" style="text-align:right;">
+0.632
+</td>
+<td markdown="1" style="text-align:right;">
+0.454
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+Ensemble
+</td>
+<td markdown="1" style="text-align:right;">
+0.216
+</td>
+<td markdown="1" style="text-align:right;">
+0.807
+</td>
+<td markdown="1" style="text-align:right;">
+0.625
+</td>
+<td markdown="1" style="text-align:right;">
+0.460
+</td>
+</tr>
+</tbody></p>
+</table>
+<hr />
+<pre><code class="r">library(ggplot2)
+load(file=&quot;jeperrorfig.RData&quot;)
+print(fig)
+</code></pre>
+
+<p><img alt="plot of chunk jep1" src="../figure/jep1-1.png" /></p>
+<hr />
+<pre><code class="r">load(file=&quot;jeperrorfig.RData&quot;)
+print(fig2)
+</code></pre>
+
+<p><img alt="plot of chunk jep2" src="../figure/jep2-1.png" /></p>
+<hr />
+<h3 id="predicting-pipeline-revenues">Predicting pipeline revenues<a class="headerlink" href="#predicting-pipeline-revenues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Data on US natural gas pipelines<ul>
+<li>Combination of FERC Form 2, EIA Form 176, and other sources,
+    compiled by me</li>
+<li>1996-2016, 236 pipeline companies, 1219 company-year
+    observations</li>
+</ul>
+</li>
+<li>Predict: $y =$ profits from transmission of natural gas</li>
+<li>Covariates: year, capital, discovered gas reserves, well head gas
+    price, city gate gas price, heating degree days, state(s) that each
+    pipeline operates in</li>
+</ul>
+<div class="notes">
+<p>This is a dataset that I put together for a current research project.
+I’m happy to share it upon request, but it is not ready to be posted
+publicly yet.</p>
+</div>
+<hr />
+<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+# data has problems before 1996 due to format change
+data &lt;- subset(data,report_yr&gt;=1996)
+# replace NA state weights with 0's
+data[,59:107][is.na(data[,59:107])] &lt;- 0
+# spaces in variable names will create problems later
+names(data) &lt;- gsub(&quot; &quot;,&quot;.&quot;,names(data))
+summary(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;cityPrice&quot;,&quot;wellPrice&quot;)])
+</code></pre>
+
+<pre><code>##   transProfit         transPlant_bal_beg_yr   cityPrice      
+##  Min.   : -31622547   Min.   :0.000e+00     Min.   : 0.4068  
+##  1st Qu.:   2586031   1st Qu.:2.404e+07     1st Qu.: 3.8666  
+##  Median :  23733170   Median :1.957e+08     Median : 5.1297  
+##  Mean   :  93517513   Mean   :7.772e+08     Mean   : 5.3469  
+##  3rd Qu.: 129629013   3rd Qu.:1.016e+09     3rd Qu.: 6.5600  
+##  Max.   :1165050214   Max.   :1.439e+10     Max.   :12.4646  
+##  NA's   :2817         NA's   :2692          NA's   :1340     
+##    wellPrice     
+##  Min.   :0.0008  
+##  1st Qu.:2.1230  
+##  Median :3.4370  
+##  Mean   :3.7856  
+##  3rd Qu.:5.1795  
+##  Max.   :9.6500  
+##  NA's   :2637
+</code></pre>
+<hr />
+<pre><code class="r">library(GGally)
+ggpairs(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;cityPrice&quot;,&quot;wellPrice&quot;)],
+        lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
+</code></pre>
+
+<p><img alt="plot of chunk pipeline-figure" src="../figure/pipeline-figure-1.png" /></p>
+<hr />
+<h3 id="predicting-pipeline-revenues-methods">Predicting pipeline revenues : methods<a class="headerlink" href="#predicting-pipeline-revenues-methods" title="Permanent link">&para;</a></h3>
+<ul>
+<li>OLS : 67 covariates (year dummies and state(s) create a lot)</li>
+<li>Lasso</li>
+<li>Random forests</li>
+<li>Randomly choose 75% of sample to fit the models, then look at
+    prediction accuracy in remaining 25%</li>
+</ul>
+<div class="notes">
+<p>We are focusing on Lasso and random forests because these are the two
+methods that econometricians have worked on the most. Other methods such
+as neural nets and support vector machines are also worth exploring. For
+now, you can think of Lasso and random forests these as black boxes that
+generate predictions from data. We will go into more detail soon.</p>
+</div>
+<pre><code class="r">## Create X matrix for OLS and random forests
+xnames &lt;-c(&quot;transPlant_bal_beg_yr&quot;,   &quot;reserve&quot;,   &quot;wellPrice&quot;,  &quot;cityPrice&quot;,
+           &quot;plantArea&quot;,  &quot;heatDegDays&quot;,
+           names(data)[59:107] )
+yname &lt;- &quot;transProfit&quot;
+fmla &lt;- paste(yname,&quot;~&quot;,paste(xnames,collapse=&quot; + &quot;),&quot;+ as.factor(report_yr)&quot;)
+ols &lt;- lm(fmla,data=data,x=TRUE,y=TRUE)
+X &lt;- ols$x[,!(colnames(ols$x) %in% c(&quot;(Intercept)&quot;)) &amp;
+            !is.na(ols$coefficients)]
+y &lt;- ols$y
+train &lt;- runif(nrow(X))&lt;0.75
+
+# OLS prediction on training set
+y.t &lt;- y[train]
+X.t &lt;- X[train,]
+ols &lt;- lm(y.t ~ X.t)
+y.hat.ols &lt;- ols$coefficients[1] + X %*% ols$coefficients[2:(length(ols$coef))]
+df &lt;- data.frame(y=y, y.hat=y.hat.ols, train=train, method=&quot;ols&quot;)
+
+## Lasso
+library(glmnet)
+# Create larger X matrix for lasso
+fmla.l &lt;- paste(yname,&quot;~ (&quot;,
+                paste(xnames,collapse=&quot; + &quot;),&quot;)*(report_yr + transPlant_bal_beg_yr +
+    reserve + wellPrice + cityPrice + plantArea + heatDegDays) + &quot;,
+                paste(sprintf(&quot;I(%s^2)&quot;,xnames[1:6],collapse=&quot; + &quot;))
+                )
+reg &lt;- lm(fmla.l, data=data, x=TRUE,y=TRUE)
+Xl &lt;- reg$x[,!(colnames(reg$x) %in% c(&quot;(Intercept)&quot;)) &amp;
+             !is.na(reg$coefficients)]
+lasso &lt;- cv.glmnet(Xl[train,],y[train],alpha=1,parallel=FALSE,
+                   standardize=TRUE, intercept=TRUE, nfolds = 50)
+y.hat.lasso &lt;- predict(lasso, Xl, s=lasso$lambda.min, type=&quot;response&quot;)
+df &lt;- rbind(df,  data.frame(y=y, y.hat=as.vector(y.hat.lasso),
+                            train=train, method=&quot;lasso&quot;))
+
+## Random forest
+library(grf)
+rf &lt;- regression_forest(X[train,],y[train],tune.parameters = TRUE)
+y.hat.rf  &lt;-  predict(rf, X)$predictions
+df &lt;- rbind(df, data.frame(y=y, y.hat=y.hat.rf, train=train,
+                           method=&quot;random forest&quot;))
+
+# Neural network
+library(RSNNS)
+n &lt;- nrow(X[train,])
+p &lt;- ncol(X)
+rn &lt;- floor(n^(1/(2*(1+1/(1+p))))/2)
+xn &lt;- normalizeData(X)
+yn &lt;- normalizeData(y)
+nn &lt;- mlp(x=xn[train,], y=yn[train], linOut=TRUE, size=rn)
+yn.hat.nn &lt;- predict(nn, xn)
+y.hat.nn &lt;- denormalizeData(yn.hat.nn, getNormParameters(yn))
+df &lt;- rbind(df, data.frame(y=y, y.hat=y.hat.nn, train=train,
+                           method=&quot;neural network&quot;))
+</code></pre>
+
+<hr />
+<pre><code class="r">ggplot(data=df,aes(x=y,y=y.hat,colour=method,shape=train)) +  geom_point(alpha=0.5) +
+  geom_line(aes(y=y)) + theme_minimal()
+</code></pre>
+
+<p><img alt="plot of chunk pipelinePredPlot" src="../figure/pipelinePredPlot-1.png" /></p>
+<hr />
+<pre><code class="r">df$trainf &lt;- factor(df$train, levels=c(&quot;TRUE&quot;, &quot;FALSE&quot;))
+df$error &lt;- df$y - df$y.hat
+ggplot(data=df,aes(x=error,colour=method)) +
+  geom_density() + theme_minimal() +
+  xlim(quantile(df$error,c(0.01,0.99))) +
+  facet_grid(trainf ~ .,labeller=label_both)
+</code></pre>
+
+<p><img alt="plot of chunk pipelineErrorPlot" src="../figure/pipelineErrorPlot-1.png" /></p>
+<hr />
+<pre><code class="r">library(kableExtra)
+fn &lt;- function(df)  with(df,c(mean((y.hat - y)^2)/var(y),
+                              mean(abs(y.hat - y))/mean(abs(y-mean(y)))))
+tab1 &lt;-unlist(by(subset(df,train), df$method[train],  FUN=fn))
+tab1 &lt;- (matrix(tab1,nrow=2))
+rownames(tab1) &lt;- c(&quot;relative MSE&quot;,&quot;relative MAE&quot;)
+colnames(tab1) &lt;- c(&quot;OLS&quot;,&quot;Lasso&quot;,&quot;Random forest&quot;,&quot;Neural Network&quot;)
+tab2 &lt;- unlist(by(subset(df,!train), df$method[!train],  FUN=fn))
+tab2 &lt;- (matrix(tab2,nrow=2))
+rownames(tab2) &lt;- c(&quot;relative MSE&quot;,&quot;relative MAE&quot;)
+colnames(tab2) &lt;- c(&quot;OLS&quot;,&quot;Lasso&quot;,&quot;Random forest&quot;,&quot;Neural Network&quot;)
+
+kable_styling(kable(tab1, caption=&quot;Training sample&quot;, format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+              &quot;responsive&quot;), full_width=F)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+Training sample
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+OLS
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Random forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural Network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+relative MSE
+</td>
+<td markdown="1" style="text-align:right;">
+0.110
+</td>
+<td markdown="1" style="text-align:right;">
+0.031
+</td>
+<td markdown="1" style="text-align:right;">
+0.063
+</td>
+<td markdown="1" style="text-align:right;">
+0.012
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+relative MAE
+</td>
+<td markdown="1" style="text-align:right;">
+0.265
+</td>
+<td markdown="1" style="text-align:right;">
+0.137
+</td>
+<td markdown="1" style="text-align:right;">
+0.179
+</td>
+<td markdown="1" style="text-align:right;">
+0.111
+</td>
+</tr>
+</tbody></p>
+</table>
+<pre><code class="r">kable_styling(kable(tab2, caption=&quot;Hold-out sample&quot;, format=&quot;html&quot;, digits=3),
+              bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
+              &quot;responsive&quot;), full_width=F)
+</code></pre>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<p><caption markdown="1">
+Hold-out sample
+</caption>
+<thead markdown="1">
+<tr markdown="1">
+<th markdown="1" style="text-align:left;">
+</th>
+<th markdown="1" style="text-align:right;">
+OLS
+</th>
+<th markdown="1" style="text-align:right;">
+Lasso
+</th>
+<th markdown="1" style="text-align:right;">
+Random forest
+</th>
+<th markdown="1" style="text-align:right;">
+Neural Network
+</th>
+</tr>
+</thead>
+<tbody markdown="1">
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+relative MSE
+</td>
+<td markdown="1" style="text-align:right;">
+0.125
+</td>
+<td markdown="1" style="text-align:right;">
+0.064
+</td>
+<td markdown="1" style="text-align:right;">
+0.093
+</td>
+<td markdown="1" style="text-align:right;">
+0.092
+</td>
+</tr>
+<tr markdown="1">
+<td markdown="1" style="text-align:left;">
+relative MAE
+</td>
+<td markdown="1" style="text-align:right;">
+0.288
+</td>
+<td markdown="1" style="text-align:right;">
+0.199
+</td>
+<td markdown="1" style="text-align:right;">
+0.232
+</td>
+<td markdown="1" style="text-align:right;">
+0.278
+</td>
+</tr>
+</tbody></p>
+</table>
+<div class="notes">
+<p>In this table, relative MSE is the mean squared error relative to the
+variance of $y$, that is <script type="math/tex; mode=display">
+    \text{relative MSE} = \frac{\En[(y_i - \hat{y}_i)^2]} {\En[ (y_i - \bar{y})^2]}.
+</script> It is equal to $1-R^2$. Similarly, relative MAE is <script type="math/tex; mode=display">
+    \text{relative MAE} = \frac{\En[|y_i - \hat{y}_i|]} {\En[|y_i - \bar{y}|]}.
+</script>
+</p>
+<div class="alert alert-danger">
+<p>$\En$ denotes the empirical expectation,
+$\En[y_i] = \frac{1}{n}\sum_{i=1}^n y_i$.</p>
+</div>
+</div>
+<!-- --- -->
+
+<h2 id="lasso">Lasso<a class="headerlink" href="#lasso" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Lasso solves a penalized (regularized) regression problem <script type="math/tex; mode=display">
+    \hat{\beta} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
+    \frac{\lambda}{n} \norm{ \hat{\Psi} \beta}_1
+    </script>
+</li>
+<li>Penalty parameter $\lambda$</li>
+<li>Diagonal matrix $\hat{\Psi} = diag(\hat{\psi})$</li>
+<li>Dimension of $x_i$ is $p$ and implicitly depends on $n$<ul>
+<li>can have $p &gt;&gt; n$</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>We are following the notation used in Chernozhukov, Hansen, and Spindler
+(<a href="#ref-hdm">2016</a>). Note that this vignette has been updated since it
+was published in the R Journal. To obtain the most recent version,
+install the hdm package in R, load it, and then open the vignette.</p>
+<pre><code class="r">install.packages(&quot;hdm&quot;)
+library(hdm)
+vignette(&quot;hdm_introduction&quot;)
+</code></pre>
+
+<p>The choice of penalty (or regularization) parameter, $\lambda$, is
+important. When $\lambda = 0$, Lasso is the same as OLS. As $\lambda$
+increases, the Lasso estimates will shrink toward 0. For large enough
+$\lambda$, some components of $\hat{\beta}$ become exactly 0. As
+$\lambda$ increases more, more and more components of $\hat{\beta}$ will
+be exactly $0$.</p>
+<p>For some intuition about why Lasso results in some coefficients being
+zero, note that <script type="math/tex; mode=display">
+\hat{\beta}^{lasso} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
+\frac{\lambda}{n} \norm{\beta}_1
+</script> is equivalent to
+<script type="math/tex; mode=display">\hat{\beta}^{lasso} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] \text{ s.t. }
+\norm{\beta}_1 \leq s
+</script> for some $s$. In this problem, the boundary of the constraint set
+will be a diamond. The level sets of the objective will be elipses.
+Generically, the solution will lie on one of the corners of the
+$\norm{\beta}_1 = 1$ set. See Friedman, Hastie, and Tibshirani
+(<a href="#ref-friedman2008">2009</a>) or James et al. (<a href="#ref-james2013">2013</a>) for
+more details.</p>
+<p>Most machine learning methods involve some form of regularization with
+an associated regularization parameter. In choosing the regularization
+parameter, we face a bias-variance tradeoff. As $\lambda$ increases,
+variance decreases, but bias increases.</p>
+<p>Machine learning algorithms typically choose regularization parameters
+through cross-validation. Although cross-validation leads to good
+predictive performance, the statistical properties are not always known.
+Chernozhukov, Hansen, and Spindler (<a href="#ref-hdm">2016</a>) say, “In high
+dimensional settings cross-validation is very popular; but it lacks a
+theoretical justification for use in the present context.” However,
+there has been some recent progress on convergence rates for Lasso with
+cross-validation, see Chetverikov, Liao, and Chernozhukov
+(<a href="#ref-chetverikov2017">2016</a>).</p>
+<p>The diagonal matrix $\hat{\Psi}$ is used to make the estimator invariant
+to scaling of $x_i$, and to allow for heteroskedasticity. If reading
+about Lasso or using code from other authors, be careful some do not
+include $\hat{\Psi}$ and use $\lambda$ instead of $\frac{\lambda}{n}$.</p>
+</div>
+<hr />
+<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+data &lt;- subset(data,report_yr&gt;=1996)
+library(glmnet)
+mod &lt;- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+# standardize everything so that coefficients are similar scale when plotted
+mod$y &lt;- (mod$y - mean(mod$y))/sd(mod$y)
+for(c in 2:ncol(mod$x)) {
+  mod$x[,c] &lt;- (mod$x[,c] - mean(mod$x[,c]))/sd(mod$x[,c])
+}
+lassoPath &lt;- glmnet(mod$x, mod$y, alpha=1)
+plot(lassoPath, xvar=&quot;lambda&quot;, label=TRUE)
+</code></pre>
+
+<p><img alt="plot of chunk unnamed-chunk-3" src="../figure/unnamed-chunk-3-1.png" /></p>
+<hr />
+<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+data &lt;- subset(data,report_yr&gt;=1996)
+library(glmnet)
+mod &lt;- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+# standardize everything so that coefficients are similar scale when plotted
+mod$y &lt;- (mod$y - mean(mod$y))/sd(mod$y)
+for(c in 2:ncol(mod$x)) {
+  mod$x[,c] &lt;- (mod$x[,c] - mean(mod$x[,c]))/sd(mod$x[,c])
+}
+cv &lt;- cv.glmnet(mod$x, mod$y, alpha=1)
+plot(cv)
+</code></pre>
+
+<p><img alt="plot of chunk unnamed-chunk-4" src="../figure/unnamed-chunk-4-1.png" /></p>
+<hr />
+<h3 id="statistical-properties-of-lasso">Statistical properties of Lasso<a class="headerlink" href="#statistical-properties-of-lasso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Model : <script type="math/tex; mode=display">
+    y_i = x_i'\beta_0 + \epsilon_i
+    </script>
+<ul>
+<li>$\Er[x_i \epsilon_i] = 0$</li>
+<li>$\beta_0 \in \R^n$</li>
+<li>$p$, $\beta_0$, $x_i$, and $s$ implicitly depend on $n$</li>
+<li>$\log p = o(n^{1/3})$<ul>
+<li>$p$ may increase with $n$ and can have $p&gt;n$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Sparsity $s$<ul>
+<li>Exact : $\norm{\beta_0}_0 = s = o(n)$</li>
+<li>Approximate : $|\beta_{0,j}| &lt; Aj^{-a}$, $a &gt; 1/2$,
+    $s \propto n^{1/(2a)}$</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>$\norm{\beta}_0$ is the number of non-zero components of $\beta$.</p>
+<p>The approximate sparsity setting means if $|\beta_{0,j}| &lt; Aj^{-a}$,
+then, there exists a sparse approximation, say $\beta_{a}$, with $s$
+nonzero elements, such that the approximation error, <script type="math/tex; mode=display">
+    \En[(x_i'(\beta_a - \beta_0))^2] = c_s^2
+</script> will vanish quickly if $s \propto n^{1/2a}$. Just how quickly will it
+vanish? An easy upper bound is <script type="math/tex; mode=display">
+\begin{align*}
+    c_s^2 \leq & \En\left[\left( \sum_{j={s+1}}^p x_ij \beta_{0,j} \right)^2
+    \right] \\
+    \leq & \En\left[ \left(\sum_{j={s+1}}^p x_ij A j^{-a} \right)^2 \right]
+\end{align*}
+</script> To simplify the alegebra, let’s assume $\En[x_i x_i&rsquo;] = I_p$, then <script type="math/tex; mode=display">
+\begin{align*}
+   c_s^2 \leq & \sum_{j={s+1}}^p A^2 j^{-2a} \\
+    & \leq \sum_{j={s+1}}^\infty A^2 j^{-2a} = A^2 s^{-2a} \zeta(2a) \\
+   c_s^2 \lesssim s^{-2a}
+\end{align*}
+</script> where $\zeta(2a) = \sum_{j=1}^\infty j^{-2a}$ is the Riemann Zeta
+function (all that matters here is that $\zeta(2a)$ is finite for
+$2a&gt;1$). Then if $s \propto n^{(1+\delta)/2a}$, we would get
+$c_s \lesssim n^{-(1+\delta)/2}$. Importantly, $\sqrt{n} c_s = o(1)$, so
+in the sort of expansions that we would do to show that $\hat{\theta}$
+is $\sqrt{n}$ asymptotically normal, the bias term would vanish.</p>
+<!-- Lasso can also be applied to nonparametric regression models such as -->
+<!-- $$ -->
+<!-- y_i = f(z_i) + \epsilon_i -->
+<!-- $$ -->
+<!-- Let $x_i = P(z_i)$ be a set of transformations of $z$, such as powers -->
+<!-- or splines. Define $\beta_0$ as the solution to the oracle problem -->
+<!-- $$ -->
+<!-- \beta_0 = \argmin_\beta \En[(f(z_i) - x_i'\beta)^2] + -->
+<!-- \frac{\lambda}{n} \norm{\beta}_0 -->
+<!-- $$ -->
+<!-- and $c_s^2$ to be the minimized value. If we want to estimate $f(z)$ -->
+<!-- instead of $x_i'\beta_0$, then we must add $c_s$ to the rates of -->
+<!-- convergence below. There will then be some tradeoff between estimation -->
+<!-- error increasing with $s$ and approximation error ($c_s$) decreasing -->
+<!-- with $s$. If $z$ is $d_z$ dimensional and $f$ is $\ell$-times -->
+<!-- differentiable, we know from @stone1982 that the fastest possible -->
+<!-- $\mathcal{L}^2$ rate of convergence for any estimate of $f$ is -->
+<!-- $n^{\frac{-\ell}{2\ell + d_z}}$.  -->
+
+</div>
+<hr />
+<h3 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h3>
+<ul>
+<li>With $\lambda = 2c \sqrt{n} \Phi^{-1}(1-\gamma/(2p))$ <script type="math/tex; mode=display">
+    \sqrt{\En[(x_i'(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
+    \log (p) },
+    </script>
+</li>
+</ul>
+<p>
+<script type="math/tex; mode=display">
+\norm{\hat{\beta}^{lasso} - \beta_0}_2 \lesssim_P \sqrt{ (s/n)
+\log (p) },
+</script>
+</p>
+<p>and</p>
+<p>
+<script type="math/tex; mode=display">
+    \norm{\hat{\beta}^{lasso} - \beta_0}_1 \lesssim_P \sqrt{ (s^2/n)
+\log (p) }
+</script>
+</p>
+<ul>
+<li>
+<p>Constant $c&gt;1$</p>
+<ul>
+<li>
+<p>Small $\gamma \to 0$ with $n$, and
+    $\log(1/\gamma) \lesssim \log(p)$</p>
+</li>
+<li>
+<p>Rank like condition on $x_i$</p>
+</li>
+</ul>
+</li>
+<li>
+<p>near-oracle rate</p>
+</li>
+</ul>
+<div class="notes">
+<p>In the semiparametric estimation problems that we’re focused on, our
+object of interest is some finite dimensional parameter $\theta$ that
+depends on our data some high dimensional parameter, like $\beta_0$ in
+the Lasso. To analyze estimates of $\hat{\theta}(data, \hat{\beta})$, a
+key step will be to show that we can replace $\hat{\beta}$ with
+$\beta_0$. The rate of convergence of $\hat{\beta}$ will be important
+for making this possible. Thus, the main thing that we care about for
+the Lasso and other machine learning estimators will be their rates of
+converagence.</p>
+<p>The notation $A_n \lesssim_P B_n$ is read $A_n$ is bounded in
+probability by $B_n$ and means that for any $\epsilon&gt;0$, there exists
+$M$, $N$ such that $\Pr(|A_n/B_n| &gt; M) &lt; \epsilon$ for all $n &gt; N$. This
+is also often denoted by $A_n = O(B_n)$.</p>
+<p>These rate results are from Belloni et al. (<a href="#ref-belloni2012">2012</a>).
+Since this setup allows $p&gt;n$, $x$ cannot be assumed to have full rank.
+Instead, an assumption about the eigenvalues of $X&rsquo;X$ restricted to the
+nonzero components of $\beta_0$, plays a similar. See Belloni et al.
+(<a href="#ref-belloni2012">2012</a>) for details.</p>
+<p>This convergence rate is called the near-oracle rate, because it is
+nearly as good as what we get if an oracle told us which components of
+$\beta_0$ are nonzero. In that case OLS using just those $s$ components
+gives the fastest possible rate, which is</p>
+<p>
+<script type="math/tex; mode=display">
+\sqrt{\En[(x_i'(\hat{\beta}^{OLS} - \beta_0))^2]} \propto \sqrt{s/n}.
+</script>
+</p>
+</div>
+<hr />
+<h3 id="rate-of-convergence-rate-of-convergence-1">Rate of convergence [rate-of-convergence-1]<a class="headerlink" href="#rate-of-convergence-rate-of-convergence-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Using cross-validation to choose $\lambda$ known bounds are worse<ul>
+<li>With Gaussian errors:
+    $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n) \log (p) } \log(pn)^{7/8}$,</li>
+<li>Without Gaussian error
+    $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \left( \frac{s \log(pn)^2}{n} \right)^{1/4}$</li>
+<li>Chetverikov, Liao, and Chernozhukov
+    (<a href="#ref-chetverikov2017">2016</a>)</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>These results are for an exactly sparse setting. Do they hold under
+approximate sparsity?</p>
+</div>
+<hr />
+<h3 id="other-statistical-properties">Other statistical properties<a class="headerlink" href="#other-statistical-properties" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Inference on $\beta$: not the goal in our motivating examples<ul>
+<li>Difficult, but some recent results</li>
+<li>See Lee et al. (<a href="#ref-lee2016">2016</a>), Taylor and Tibshirani
+    (<a href="#ref-taylor2017">2017</a>), Caner and Kock
+    (<a href="#ref-caner2018">2018</a>)</li>
+</ul>
+</li>
+<li>Model selection: not the goal in our motivating examples<ul>
+<li>Under stronger conditions, Lasso correctly selects the nonzero
+    components of $\beta_0$</li>
+<li>See Belloni and Chernozhukov (<a href="#ref-belloni2011">2011</a>)</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>In the statistics literature on high dimensional and nonparametric
+estimation, you will come across the terms “adaptive” and “honest.”
+Adaptivity of an estimator refers to the situation where the rate of
+convergence depends on some unknown parameter. In the case of Lasso, the
+sparsity index of the true model, $s$, is an unknown parameter affecting
+the rate of convergence. Without knowing or estimating $s$, Lasso
+attains the above rate of convergence for a wide range of admissable
+$s$. Thus, Lasso is adaptive to the unknown sparsity index.</p>
+<p>“Honest” is a property of an inference method. A confidence region is
+honest if it has correct coverage for a large class of true models. For
+the Lasso, an honest confidence region would be valid for a wide range
+of sparsity, $s$. An honest, adaptive confidence region would be one
+that is valide for a wide range of $s$ and whose size shrinks as quickly
+as if $s$ were known. Achieving both adaptivity and honesty is
+impossible in the most general setting. For example, although an $\ell$
+times differentiable function of a $p$ dimensional variable can be
+adaptively estimated at rate $n^{-\ell}{2\ell + p}$, Li
+(<a href="#ref-li1989">1989</a>) showed that an honest confidence region can
+contract at most at rate $n^{-1/4}$ (not adaptive to $\ell$). However,
+an adaptive confidence region can be constructed if further restrictions
+are placed on the set of possible models, see Nickl and Geer
+(<a href="#ref-nickl2013">2013</a>) for such a result for Lasso..</p>
+</div>
+<hr />
+<h3 id="post-lasso">Post-Lasso<a class="headerlink" href="#post-lasso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Two steps :</p>
+<ol>
+<li>
+<p>Estimate $\hat{\beta}^{lasso}$</p>
+</li>
+<li>
+<p>${\hat{\beta}}^{post} =$ OLS regression of $y$ on components of
+    $x$ with nonzero $\hat{\beta}^{lasso}$</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Same rates of convergence as Lasso</p>
+</li>
+<li>
+<p>Under some conditions post-Lasso has lower bias</p>
+<ul>
+<li>If Lasso selects correct model, post-Lasso converges at the
+    oracle rate</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>Post-Lasso removes some of the regularizaton bias of Lasso. The rate of
+convergence of post-Lasso is always as fast as Lasso, and under
+conditions that allow perfect model selection, post-Lasso converges
+slightly faster (by a factor $\log(p)$). See Belloni et al.
+(<a href="#ref-belloni2012">2012</a>) for details.</p>
+</div>
+<!-- --- -->
+
+<!-- ------------------------------------------------------------------------------------------->
+
+<h2 id="random-forests">Random forests<a class="headerlink" href="#random-forests" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="regression-trees">Regression trees<a class="headerlink" href="#regression-trees" title="Permanent link">&para;</a></h3>
+<ul>
+<li>$y_i \in R$ on $x_i \in \R^p$</li>
+<li>Want to estimate $\Er[y | x]$</li>
+<li>Locally constant estimate <script type="math/tex; mode=display">
+    \hat{t}(x) = \sum_m^M c_m 1\{x \in R_m \}
+    </script>
+</li>
+<li>Rectangular regions $R_m$ determined by tree</li>
+</ul>
+<hr />
+<h3 id="simulated-data">Simulated data<a class="headerlink" href="#simulated-data" title="Permanent link">&para;</a></h3>
+<pre><code class="r">n &lt;- 1000
+x &lt;- runif(n)
+y &lt;- runif(n)
+f &lt;- function(x,z) {
+  1/3*(sin(5*x)*sqrt(z)*exp(-(z-0.5)^2))
+}
+f0 &lt;- f(x,y)
+z &lt;- f0 + rnorm(n)*0.1
+tree.df &lt;- data.frame(x=x,y=y,z=z)
+# plot true function and data
+x.g &lt;- seq(0,1,length.out=100)
+y.g &lt;- seq(0,1,length.out=100)
+f0.g &lt;- t(outer(x.g,y.g,f))
+
+library(plotly)
+fig &lt;- plot_ly( colors=&quot;YlOrBr&quot;)
+fig &lt;- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
+fig &lt;- add_surface(fig, x=x.g, y=y.g, z=f0.g, opacity=1)
+fig
+</code></pre>
+
+<p><img alt="plot of chunk tree" src="../figure/tree-1.png" /></p>
+<hr />
+<h3 id="estimated-tree">Estimated tree<a class="headerlink" href="#estimated-tree" title="Permanent link">&para;</a></h3>
+<pre><code class="r"># fit regression tree
+library(party)
+tree &lt;- ctree(z ~ x + y, data=tree.df)
+
+# plot estimate
+x.g &lt;- seq(0,1,length.out=100)
+y.g &lt;- seq(0,1,length.out=100)
+df &lt;- expand.grid(x.g,y.g)
+names(df) &lt;- c(&quot;x&quot;,&quot;y&quot;)
+fhat.g &lt;- matrix(predict(tree, newdata=df),nrow=length(x.g), byrow=TRUE)
+library(plotly)
+fig &lt;- plot_ly(colors=&quot;YlOrBr&quot;)
+fig &lt;- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
+fig &lt;- add_surface(fig, x=x.g, y=y.g, z=fhat.g, opacity=1)
+fig
+</code></pre>
+
+<p><img alt="plot of chunk treefit" src="../figure/treefit-1.png" /></p>
+<hr />
+<h3 id="estimated-tree_1">Estimated tree<a class="headerlink" href="#estimated-tree_1" title="Permanent link">&para;</a></h3>
+<pre><code class="r">plot(tree)
+</code></pre>
+
+<p><img alt="plot of chunk treeplot" src="../figure/treeplot-1.png" /></p>
+<hr />
+<h3 id="tree-algorithm">Tree algorithm<a class="headerlink" href="#tree-algorithm" title="Permanent link">&para;</a></h3>
+<ul>
+<li>For each region, solve <script type="math/tex; mode=display">
+      \min_{j,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
+          (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
+          (y_i - c_2)^2 \right]
+    </script>
+</li>
+<li>Repeat with $R = {x:x_{i,j} \leq s^<em>} \cap R$ and
+    $R =  {x:x_{i,j} \leq s^</em>} \cap R$</li>
+<li>Stop when $|R| =$ some chosen minimum size</li>
+<li>Prune tree
+    <script type="math/tex; mode=display"> \min_{tree \subset T} \sum (\hat{f}(x)-y)^2 + \alpha|\text{terminal
+    nodes in tree}| </script>
+</li>
+</ul>
+<div class="notes">
+<p>There are many variations on this tree building algorithm. They all
+share some rule to decide on which variable and where to split. They all
+have some kind of stopping rule, but not necessarily the same one. For
+example, some algorithms stop splitting into new branches when the
+improvement in $R^2$ becomes small. These trees don’t need subsequent
+pruning, but also may fail to find later splits that might be important.</p>
+<p>As with lasso, regression trees involve some regularization. In the
+above description, both the minimum leaf size and $\alpha$ in the
+pruning step serve as regularization parameters.</p>
+<p>A potential advantage of regression trees is that their output might be
+interpretable, especially if there are not many branches. Some
+disadvantages are that they often are not very good predictors, and
+small perturbations in data can lead to seemingly large changes in the
+tree.</p>
+</div>
+<hr />
+<h3 id="random-forests_1">Random forests<a class="headerlink" href="#random-forests_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Average randomized regression trees</li>
+<li>Trees randomized by<ul>
+<li>Bootstrap or subsampling</li>
+<li>Randomize branches: <script type="math/tex; mode=display">
+      \min_{j \in S,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
+      (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
+      (y_i - c_2)^2 \right]
+      </script> where $S$ is random subset of ${1, &hellip;, p}$</li>
+</ul>
+</li>
+<li>Variance reduction</li>
+</ul>
+<hr />
+<h3 id="rate-of-convergence-regression-tree">Rate of convergence: regression tree<a class="headerlink" href="#rate-of-convergence-regression-tree" title="Permanent link">&para;</a></h3>
+<ul>
+<li>$x \in [0,1]^p$, $\Er[y|x]$ Lipschitz in $x$</li>
+<li>Crude calculation for single tree, let denote $R_i$ node that
+    contains $x_i$ <script type="math/tex; mode=display">
+    \begin{align*}
+    \Er(\hat{t}(x_i) - \Er[y|x_i])^2 = & \overbrace{\Er(\hat{t}(x_i) -
+    \Er[y|x\in R_i])^2}^{variance} +
+    \overbrace{(\Er[y|x \in R_i] - \Er[y|x])^2}^{bias^2} \\
+    = & O_p(1/m) +  O\left(L^2
+    \left(\frac{m}{n}\right)^{2/p}\right)
+    \end{align*}
+    </script> optimal $m = O(n^{2/(2+p)})$ gives <script type="math/tex; mode=display">
+    \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-2}{2+p}})
+    </script>
+</li>
+</ul>
+<div class="notes">
+<p>By a crude calculation, I mean lets treat the tree as fixed. The the
+variance term is simply from estimating a conditional mean. This
+analysis could be made more rigorous by assuming the tree was estimated
+by sample splitting — use half the data to construct the tree and the
+remaining half to estimate the mean of $y$ in each node. Athey and
+Wager, and others, refer to such trees as “honest.” I suppose that this
+is because sample splitting facilitates honest inference afterward.</p>
+<p>The order of the bias term comes from considering the width of the
+pieces of a $p$ dimensional cube split evenly into $n/m$ pieces.</p>
+<p>Remember that for our motivating semiparametric problems, we need
+$\sqrt{n} \Er[(\hat{t}(x_i) - \Er[y|x_i])^2]$ to vanish. The above rate
+convergence is too slow for $p&gt;2$. The calculation of the above was
+admittedly crude, and may not be exact. However, Stone
+(<a href="#ref-stone1982">1982</a>) showed that if $\Er[y|x]$ is $\ell$ times
+differentiable, the fastest possible rate of convergence for any
+estimator is $n^{\frac{-\ell}{2\ell + p}}$. To have any hope of a fast
+enough rate, we need to assume the function we’re estimating is very
+smooth (high $\ell$), or place some other restriction on the class of
+functions we allow (like sparsity for the Lasso). Lipschitz continuity
+is slightly weaker than once differentiable on a compact set, so it
+should come as no surprise that the rate of convergence would be slow.</p>
+</div>
+<hr />
+<h3 id="rate-of-convergence-random-forest">Rate of convergence: random forest<a class="headerlink" href="#rate-of-convergence-random-forest" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Result from Biau (<a href="#ref-biau2012">2012</a>)</li>
+<li>Assume $\Er[y|x]=\Er[y|x_{(s)}]$, $x_{(s)}$ subset of $s$ variables,
+    then <script type="math/tex; mode=display">
+    \Er[(\hat{r}(x_i) - \Er[y|x_i])^2] =
+    O_p\left(\frac{1}{m\log(n/m)^{s/2p}}\right) +
+    O_p\left(\left(\frac{m}{n}\right)^{\frac{0.75}{s\log 2}} \right)
+    </script> or with optimal $m$ <script type="math/tex; mode=display">
+    \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-0.75}{s\log 2+0.75}})
+    </script>
+</li>
+</ul>
+<div class="notes">
+<p>This result from Biau (<a href="#ref-biau2012">2012</a>) assumes the forest is
+estimated with sample splitting. This avoids the difficult to analyze
+correlation between the nodes and $y$.</p>
+<p>Wager and Walther (<a href="#ref-wager2015">2015</a>) analyze what happens when the
+same data is used to construct the tree and average in each node. They
+get a slightly higher upper bound for the variance of
+$\frac{\log(p)\log(n)}{m}$. Wager and Walther (<a href="#ref-wager2015">2015</a>)
+also allow $p$ to increase with $n$, whereas the previous analysis
+treated $p$ as fixed.</p>
+<p>These convergence rate results for random forests are not fast enough
+for our purpose. Does this mean that random forests should not be used
+in semiparametric estimation? Not necessarily. We’re asking too much of
+random forests. There is no estimator for an arbitrary Lipschitz
+function that can have fast enough a rate of convergence. A restriction
+on the set of possible functions is needed to reduce the approximation
+bias. With Lasso, the assumption of (approximate) sparsity played that
+role. Chernozhukov et al. (<a href="#ref-chernozhukov2018">2018</a>) advise that
+random forests could be a good choice for semiparametric estimation when
+the function of interest is “well-approximated by a random forest.”
+Unfortunately, there does not appear to be a clean mathematical way to
+describe the class of functions well-approximated by a forest.</p>
+</div>
+<hr />
+<h3 id="other-statistical-properties_1">Other statistical properties<a class="headerlink" href="#other-statistical-properties_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pointwise asymptotic normality : Wager and Athey
+    (<a href="#ref-wager2018">2018</a>)</li>
+</ul>
+<div class="notes"></div>
+<!-- --->
+
+<hr />
+<h3 id="simulation-study">Simulation study<a class="headerlink" href="#simulation-study" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Partially linear model</li>
+<li>DGP :<ul>
+<li>$x_i \in \R^p$ with $x_{ij} \sim U(0,1)$</li>
+<li>$d_i = m(x_i) + v_i$</li>
+<li>$y_i = d_i\theta + f(x_i) + \epsilon_i$</li>
+<li>$m()$, $f()$ either linear or step functions</li>
+</ul>
+</li>
+<li>Estimate by OLS, Lasso, and random forest<ul>
+<li>Lasso &amp; random forest use orthogonal moments <script type="math/tex; mode=display">
+       \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
+      </script>
+</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>The point of this simulation is to see whether the slower convergence
+rate of random forests matters for the semiparametric problems we have
+in mind. Our theory results suggest that estimates of $\theta$ using
+random forests with $p&gt;2$ will be asymptotically biased. Specifically,
+the term <script type="math/tex; mode=display">
+d_n = \En[(m(x_i) - \hat{m}(x_i))(\mu(x_i) - \hat{\mu}(x_i))]
+</script> will be $O_p(n^{\frac{-2}{2+p}})$, so
+$\sqrt{n} d_n = O_p(n^{\frac{p-2}{2(2+p)}})$. However, this calculation
+is only an upper bound on $d_n$. For a given DGP, $d_n$ might be
+smaller.</p>
+<p>In this simulation exercise, when $m()$ and $f()$ are linear, they are
+not easy to approximate by a regression tree, so I expect the random
+forest estimator to behave relatively poorly. OLS and Lasso on the other
+hand will do very well, and are included mainly as benchmarks. When
+$m()$ and $f()$ are step functions (specifically,
+$f(x) = m(x) = \sum_{j=1}^p 1(x_{j}&gt;1/2)$), I thought they would be well
+approximated by a regression tree (and random forest). For OLS and
+Lasso, $x$ is still only included linearly in the estimation, so those
+estimators will do poorly in the step function DGP. Throughout the
+simulation $p$ is much less than $n$, so Lasso and OLS will generally
+give very similar results.</p>
+</div>
+<hr />
+<pre><code class="r">rm(list=ls())
+p &lt;- 4 # number of x's
+mu.linear &lt;- function(x) x%*%rep(1,p)
+m.linear &lt;- function(x) x%*%rep(2,p)
+mu.step &lt;- function(x) (x&gt;0.5)%*%rep(1,p)
+m.step &lt;- function(x) (x&gt;0.5)%*%rep(2,p)
+theta &lt;- 1
+
+simulate &lt;- function(n,p,mu,m) {
+  theta &lt;- 1
+  x &lt;- matrix(runif(n*p), ncol=p)
+  d &lt;- m(x) + rnorm(n)
+  y &lt;- theta*d + mu(x) + rnorm(n)
+  data.frame(y=y,d=d,x=x)
+}
+
+library(grf)
+library(hdm)
+df &lt;- simulate(100,p,mu.linear,m.linear)
+mrfparams &lt;- NULL
+murfparams &lt;- NULL
+n.save &lt;- NULL
+partial.linear.rf &lt;- function(df) {
+  x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+  if (is.null(mrfparams) || n.save!=nrow(df)) {
+    # to save time, we only tune once per cluster worker and data set
+    # size
+    cat(&quot;tuning&quot;)
+    m.rf  &lt;- regression_forest(df[,x.names], df$d, num.trees=1000,
+                               tune.parameters=TRUE)
+    mrfparams &lt;&lt;- m.rf$tunable.params
+    mu.rf  &lt;- regression_forest(df[,x.names], df$y, num.trees=1000,
+                                tune.parameters=TRUE)
+    n.save &lt;&lt;- nrow(df)
+    murfparams &lt;&lt;- mu.rf$tunable.params
+  } else {
+    cat(&quot;not tuning&quot;)
+    m.rf  &lt;- regression_forest(df[,x.names], df$d, num.trees=200,
+                               tune.parameters=FALSE,
+                               min.node.size =
+                                 as.numeric(mrfparams[&quot;min.node.size&quot;]),
+                               alpha = as.numeric(mrfparams[&quot;alpha&quot;]),
+                               imbalance.penalty=as.numeric(mrfparams[&quot;imbalance.penalty&quot;]),
+                               sample.fraction = as.numeric(mrfparams[&quot;sample.fraction&quot;]),
+                               mtry=as.numeric(mrfparams[&quot;mtry&quot;]))
+    mu.rf  &lt;- regression_forest(df[,x.names], df$y, num.trees=200,
+                                tune.parameters=FALSE,
+                               min.node.size =
+                                 as.numeric(murfparams[&quot;min.node.size&quot;]),
+                               alpha = as.numeric(murfparams[&quot;alpha&quot;]),
+                               imbalance.penalty=as.numeric(murfparams[&quot;imbalance.penalty&quot;]),
+                               sample.fraction = as.numeric(murfparams[&quot;sample.fraction&quot;]),
+                               mtry=as.numeric(murfparams[&quot;mtry&quot;]))
+
+  }
+  vhat &lt;- df$d - predict(m.rf)$predictions
+  ehat &lt;- df$y - predict(mu.rf)$predictions
+  lm(ehat ~ vhat)
+}
+
+## Manual sample splitting --- this turns out to be unneccessary. The
+## default behavior of predict.regression_forest is to return
+## predictions on the training data using only trees that were not fit
+## on each observation. In other words, regression_forest already does
+## the sample splitting for us.
+##
+## rf.tuneOnce &lt;- function(x.names, y.name) {
+##   parms &lt;- NULL
+##   function(df) {
+##     if (is.null(parms)) {
+##       rf  &lt;- regression_forest(df[,x.names], df[,y.name], num.trees=500,
+##                                  tune.parameters=TRUE)
+##       parms &lt;&lt;- rf$tunable.params
+##       rf
+##     } else {
+##       rf &lt;- regression_forest(df[,x.names], df[,y.name], num.trees=200,
+##                               tune.parameters=FALSE,
+##                               honesty=FALSE,
+##                               min.node.size =
+##                                 as.numeric(parms[&quot;min.node.size&quot;]),
+##                               alpha = as.numeric(parms[&quot;alpha&quot;]),
+##                               imbalance.penalty=as.numeric(parms[&quot;imbalance.penalty&quot;]),
+##                               sample.fraction = as.numeric(parms[&quot;sample.fraction&quot;]),
+##                               mtry=as.numeric(parms[&quot;mtry&quot;]))
+##     }
+##   }
+## }
+## n.save.split &lt;- NULL
+## m.hat.rf &lt;- NULL
+## mu.hat.rf  &lt;- NULL
+## partial.linear.split.rf &lt;- function(df , splits=3) {
+##   x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+##   if (is.null(n.save.split) || n.save.split != nrow(df)) {
+##     n.save.split &lt;&lt;- nrow(df)
+##     m.hat.rf &lt;&lt;- rf.tuneOnce(x.names,&quot;d&quot;)
+##     mu.hat.rf &lt;&lt;- rf.tuneOnce(x.names,&quot;y&quot;)
+##   }
+##   df$group &lt;- sample(1:splits, nrow(df), replace=TRUE)
+##   vhat &lt;- df$d
+##   ehat &lt;- df$y
+##   for(g in 1:splits) {
+##     sdf &lt;- subset(df, group!=g)
+##     m &lt;- m.hat.rf(sdf)
+##     mu &lt;- mu.hat.rf(sdf)
+##     vhat[df$group==g] &lt;- df$d[df$group==g] -
+##       predict(m, newx=df[df$group==g,x.names])$predictions
+##     ehat[df$group==g] &lt;- df$y[df$group==g] -
+##       predict(mu, newx=df[df$group==g,x.names])$predictions
+##   }
+##   lm(ehat ~ vhat)
+## }
+
+
+partial.linear.lasso &lt;- function(df) {
+  x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+  fmla &lt;- as.formula(paste(c(&quot;y ~ d&quot;,x.names), collapse=&quot; + &quot;))
+  rlassoEffects(fmla, data=df, I = ~ d)
+}
+
+#summary(partial.linear.lasso(df))
+
+# simulate a bunch of times in parallel
+simulations &lt;- 500 # number of simulations
+library(parallel)
+cl &lt;- makeCluster(detectCores()/2)  # change as you see fit
+clusterEvalQ(cl,library(hdm))
+clusterEvalQ(cl,library(grf))
+
+# R Socket cluster spawns new R sessions with empty environments, we
+# need to make sure they load any needed libraries and have access to
+# things from the main environment that they use
+design &lt;- c(&quot;linear&quot;) #,&quot;step&quot;)
+sim.df &lt;- data.frame()
+start.time &lt;- Sys.time()
+for (d in design) {
+  if (d==&quot;linear&quot;) {
+    m &lt;- m.linear
+    mu &lt;- mu.linear
+  } else {
+    m &lt;- m.step
+    mu &lt;- mu.step
+  }
+  for (p in c(2,4,6,8)) {
+    for (n in c(100, 200, 400, 800, 1600)) {
+      clusterExport(cl,c(&quot;simulate&quot;,&quot;partial.linear.lasso&quot;,
+                         &quot;partial.linear.rf&quot;,&quot;p&quot;,&quot;mu&quot;,&quot;m&quot;,
+                         &quot;mrfparams&quot;,&quot;murfparams&quot;, &quot;n.save&quot;))
+#                         &quot;partial.linear.split.rf&quot;, &quot;n.save.split&quot;,
+#                         &quot;m.hat.rf&quot;,&quot;mu.hat.rf&quot;,&quot;rf.tuneOnce&quot;))
+
+      thetas &lt;- parSapply(cl, rep(n,simulations), function(n)
+      {
+        df &lt;- simulate(n, p, mu, m)
+        x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+        fmla &lt;- as.formula(paste(c(&quot;y ~ d&quot;,x.names), collapse=&quot; + &quot;))
+        c(lm(fmla,data=df)$coef[2],
+          partial.linear.rf(df)$coef[2],
+          #partial.linear.split.rf(df)$coef[2],
+          partial.linear.lasso(df)$coefficients)
+      }
+      )
+      tmp &lt;- (data.frame(t(thetas)) - 1)*sqrt(n)
+      names(tmp) &lt;- c(&quot;OLS&quot;,&quot;Random.Forest&quot;,&quot;Lasso&quot;)
+      tmp$n &lt;- n
+      tmp$p &lt;- p
+      tmp$design &lt;- d
+      sim.df &lt;- rbind(sim.df, tmp)
+      cat(&quot;finished sample size &quot;,n,&quot;\n&quot;)
+      cat(&quot;Elapsed time &quot;, Sys.time()-start.time,&quot;\n&quot;)
+    }
+    cat(&quot;finished p = &quot;,p,&quot;\n&quot;)
+  }
+  cat(&quot;finished design = &quot;, d,&quot;\n&quot;)
+}
+stopCluster(cl)
+save(sim.df, file=&quot;partialLinearSim.Rdata&quot;)
+</code></pre>
+
+<pre><code class="r">library(ggplot2)
+library(reshape2)
+library(latex2exp)
+TeX &lt;- latex2exp::TeX
+load(&quot;partialLinearSim.Rdata&quot;) # see partialLinearSim.R for simulation
+                               # code
+df &lt;- melt(sim.df, measure.vars=c(&quot;OLS&quot;,&quot;Random.Forest&quot;,&quot;Lasso&quot;))
+ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
+  ggtitle(&quot;p=2&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsim" src="../figure/plsim-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=4&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsim3" src="../figure/plsim3-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=6&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsim4" src="../figure/plsim4-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=8&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsim8" src="../figure/plsim8-1.png" /></p>
+<div class="notes">
+<p>Random forests do not seem to work very well in this context. Even when
+the functions being estimated are step functions, random forests do not
+produce a good estimate of $\theta$. One caveat here is that I was not
+very careful about the tuning parameters for the random forests. It’s
+possible that there exists a careful choice of tuning parameters that
+results in a better estimator.</p>
+<div class="alert alert-danger">
+<p><strong><em>Research idea:</em></strong> create a generalization of random forests that is
+adaptive to the smoothness of the function being estimated. Two classic
+papers on adaptive regression estimators are Speckman
+(<a href="#ref-speckman1985">1985</a>) and Donoho and Johnstone
+(<a href="#ref-donoho1995">1995</a>). Friedberg et al. (<a href="#ref-friedberg2018">2018</a>)
+develop a local linear forest estimator. Combining their idea of using
+forests to form local neighborhoods with a smoothness adaptive variant
+of kernel or local polynomial regression should lead to a smoothness
+adaptive forest.</p>
+</div>
+</div>
+<hr />
+<!-- ### Generalized random forests -->
+
+<!-- --------------------------------------------------------------->
+
+<h2 id="neural-networks">Neural Networks<a class="headerlink" href="#neural-networks" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Target function $f: \R^p \to \R$<ul>
+<li>e.g. $f(x) = \Er[y|x]$</li>
+</ul>
+</li>
+<li>Approximate with single hidden layer neural network : <script type="math/tex; mode=display">
+    \hat{f}(x) = \sum_{j=1}^r \beta_j (a_j'a_j \vee 1)^{-1}
+    \psi(a_j'x + b_j)
+    </script>
+<ul>
+<li>Activation function $\psi$<ul>
+<li>Examples: Sigmoid $\psi(t) = 1/(1+e^{-t})$, Tanh
+    $\psi(t) = \frac{e^t -e^{-t}}{e^t + e^{-t}}$, Heavyside
+    $\psi(t) = t 1(t\geq 0)$</li>
+</ul>
+</li>
+<li>Weights $a_j$</li>
+<li>Bias $b_j$</li>
+</ul>
+</li>
+<li>Able to approximate any $f$, Hornik, Stinchcombe, and White
+    (<a href="#ref-hornik1989">1989</a>)</li>
+</ul>
+<hr />
+<pre><code class="r">library(RSNNS)
+library(devtools)
+# download plot.nnet function from github
+source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
+
+load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+data &lt;- subset(data,report_yr&gt;=1996)
+mod &lt;- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+
+xn &lt;- normalizeData(mod$x[,2:ncol(mod$x)])
+yn &lt;- normalizeData(mod$y)
+nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(10))
+plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk nnpic" src="../figure/nnpic-1.png" /></p>
+<hr />
+<h3 id="deep-neural-networks">Deep Neural Networks<a class="headerlink" href="#deep-neural-networks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Many hidden layers<ul>
+<li>$x^{(0)} = x$</li>
+<li>$x^{(\ell)}_j = \psi(a_j^{(\ell)} x^{(\ell-1)} + b_j^{(\ell)})$</li>
+</ul>
+</li>
+</ul>
+<hr />
+<pre><code class="r">nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(5,10,3,5, 6))
+plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk deepnnpic" src="../figure/deepnnpic-1.png" /></p>
+<hr />
+<h3 id="rate-of-convergence_1">Rate of convergence<a class="headerlink" href="#rate-of-convergence_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
+<li>$f(x) = \Er[y|x]$ with Fourier representation
+    <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
+    $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
+<li>Network sieve : <script type="math/tex; mode=display"> \begin{align*}
+    \mathcal{G}_n = \{ &
+    g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
+    \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
+    \end{align*}
+    </script>
+</li>
+</ul>
+<div class="notes">
+<p>The setup in Chen and White (<a href="#ref-chen1999">1999</a>) is more general.
+They consider estimating both $f$ and its first $m$ derivatives. Here,
+we focus on the case of just estimating $f$. Chen and White
+(<a href="#ref-chen1999">1999</a>) also consider estimation of functions other than
+conditional expectations.</p>
+<p>The restriction on $f$ in the second bullet is used to control
+approximation error. The second bullet says that $f$ is the inverse
+Fourier transform of measure $\sigma_f$. The bite of the restriction on
+$f$ comes from the requirement that $\sigma_f$ be absolutely integral,
+$\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$. It would be a good
+exercise to check whether this restriction is satisfied by some familiar
+types of functions. Barron (<a href="#ref-barron1993">1993</a>) first showed that
+neural networks approximate this class of functions well, and compares
+the approximation rate of neural networks to other function
+approximation results.</p>
+</div>
+<hr />
+<h3 id="rate-of-convergence-rate-of-convergence-3">Rate of convergence [rate-of-convergence-3]<a class="headerlink" href="#rate-of-convergence-rate-of-convergence-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Estimate <script type="math/tex; mode=display">
+    \hat{f} = \argmin_{g \in \mathcal{G}_n} \En [(y_i - g(x_i))^2]
+    </script>
+</p>
+</li>
+<li>
+<p>For fixed $p$, if $r_n^{2(1+1/(1+p))} \log(r_n) = O(n)$, $B_n \geq$
+    some constant <script type="math/tex; mode=display">
+    \Er[(\hat{f}(x) - f(x))^2] = O\left((n/\log(n))^{\frac{-(1 + 2/(p+1))}
+    {2(1+1/(p+1))}}\right)
+    </script>
+</p>
+</li>
+</ul>
+<div class="notes">
+<p>It is easy to see that regardless of $p$,
+$\sqrt{n}\Er[(\hat{f}(x) - f(x))^2] \to 0$. Therefore, neural networks
+would be suitable for estimating the nuisance functions in our examples
+above.</p>
+<p>There is a gap between applied use of neural networks and this
+statistical theory. These rate results are for networks with a single
+hidden layer. In prediction applications, the best performance is
+typically achieved by deep neural networks with many hidden layers.
+Intuitively, multiple hidden layers should do at least as well as a
+single hidden layer.</p>
+<p>There are some recent theoretical results that formalize this intuition.
+FIXME: ADD CITATIONS.</p>
+</div>
+<hr />
+<h3 id="simulation-study_1">Simulation Study<a class="headerlink" href="#simulation-study_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Same setup as for random forests earlier</li>
+<li>Partially linear model</li>
+<li>DGP :<ul>
+<li>$x_i \in \R^p$ with $x_{ij} \sim U(0,1)$</li>
+<li>$d_i = m(x_i) + v_i$</li>
+<li>$y_i = d_i\theta + f(x_i) + \epsilon_i$</li>
+<li>$m()$, $f()$ either linear or step functions</li>
+</ul>
+</li>
+<li>Estimate by OLS, Neural network with &amp; without cross-fitting<ul>
+<li>Using orthogonal moments <script type="math/tex; mode=display">
+       \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
+      </script>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<pre><code class="r">rm(list=ls())
+p &lt;- 4 # number of x's
+mu.linear &lt;- function(x) x%*%rep(1,p)
+m.linear &lt;- function(x) x%*%rep(2,p)
+mu.step &lt;- function(x) (x&gt;0.5)%*%rep(1,p)
+m.step &lt;- function(x) (x&gt;0.5)%*%rep(2,p)
+theta &lt;- 1
+
+simulate &lt;- function(n,p,mu,m) {
+  theta &lt;- 1
+  x &lt;- matrix(runif(n*p), ncol=p)
+  d &lt;- m(x) + rnorm(n)
+  y &lt;- theta*d + mu(x) + rnorm(n)
+  data.frame(y=y,d=d,x=x)
+}
+
+library(grf)
+library(hdm)
+df &lt;- simulate(100,p,mu.linear,m.linear)
+mrfparams &lt;- NULL
+murfparams &lt;- NULL
+n.save &lt;- NULL
+partial.linear.rf &lt;- function(df) {
+  x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+  if (is.null(mrfparams) || n.save!=nrow(df)) {
+    # to save time, we only tune once per cluster worker and data set
+    # size
+    cat(&quot;tuning&quot;)
+    m.rf  &lt;- regression_forest(df[,x.names], df$d, num.trees=1000,
+                               tune.parameters=TRUE)
+    mrfparams &lt;&lt;- m.rf$tunable.params
+    mu.rf  &lt;- regression_forest(df[,x.names], df$y, num.trees=1000,
+                                tune.parameters=TRUE)
+    n.save &lt;&lt;- nrow(df)
+    murfparams &lt;&lt;- mu.rf$tunable.params
+  } else {
+    cat(&quot;not tuning&quot;)
+    m.rf  &lt;- regression_forest(df[,x.names], df$d, num.trees=200,
+                               tune.parameters=FALSE,
+                               min.node.size =
+                                 as.numeric(mrfparams[&quot;min.node.size&quot;]),
+                               alpha = as.numeric(mrfparams[&quot;alpha&quot;]),
+                               imbalance.penalty=as.numeric(mrfparams[&quot;imbalance.penalty&quot;]),
+                               sample.fraction = as.numeric(mrfparams[&quot;sample.fraction&quot;]),
+                               mtry=as.numeric(mrfparams[&quot;mtry&quot;]))
+    mu.rf  &lt;- regression_forest(df[,x.names], df$y, num.trees=200,
+                                tune.parameters=FALSE,
+                               min.node.size =
+                                 as.numeric(murfparams[&quot;min.node.size&quot;]),
+                               alpha = as.numeric(murfparams[&quot;alpha&quot;]),
+                               imbalance.penalty=as.numeric(murfparams[&quot;imbalance.penalty&quot;]),
+                               sample.fraction = as.numeric(murfparams[&quot;sample.fraction&quot;]),
+                               mtry=as.numeric(murfparams[&quot;mtry&quot;]))
+
+  }
+  vhat &lt;- df$d - predict(m.rf)$predictions
+  ehat &lt;- df$y - predict(mu.rf)$predictions
+  lm(ehat ~ vhat)
+}
+
+## Manual sample splitting --- this turns out to be unneccessary. The
+## default behavior of predict.regression_forest is to return
+## predictions on the training data using only trees that were not fit
+## on each observation. In other words, regression_forest already does
+## the sample splitting for us.
+##
+## rf.tuneOnce &lt;- function(x.names, y.name) {
+##   parms &lt;- NULL
+##   function(df) {
+##     if (is.null(parms)) {
+##       rf  &lt;- regression_forest(df[,x.names], df[,y.name], num.trees=500,
+##                                  tune.parameters=TRUE)
+##       parms &lt;&lt;- rf$tunable.params
+##       rf
+##     } else {
+##       rf &lt;- regression_forest(df[,x.names], df[,y.name], num.trees=200,
+##                               tune.parameters=FALSE,
+##                               honesty=FALSE,
+##                               min.node.size =
+##                                 as.numeric(parms[&quot;min.node.size&quot;]),
+##                               alpha = as.numeric(parms[&quot;alpha&quot;]),
+##                               imbalance.penalty=as.numeric(parms[&quot;imbalance.penalty&quot;]),
+##                               sample.fraction = as.numeric(parms[&quot;sample.fraction&quot;]),
+##                               mtry=as.numeric(parms[&quot;mtry&quot;]))
+##     }
+##   }
+## }
+## n.save.split &lt;- NULL
+## m.hat.rf &lt;- NULL
+## mu.hat.rf  &lt;- NULL
+## partial.linear.split.rf &lt;- function(df , splits=3) {
+##   x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+##   if (is.null(n.save.split) || n.save.split != nrow(df)) {
+##     n.save.split &lt;&lt;- nrow(df)
+##     m.hat.rf &lt;&lt;- rf.tuneOnce(x.names,&quot;d&quot;)
+##     mu.hat.rf &lt;&lt;- rf.tuneOnce(x.names,&quot;y&quot;)
+##   }
+##   df$group &lt;- sample(1:splits, nrow(df), replace=TRUE)
+##   vhat &lt;- df$d
+##   ehat &lt;- df$y
+##   for(g in 1:splits) {
+##     sdf &lt;- subset(df, group!=g)
+##     m &lt;- m.hat.rf(sdf)
+##     mu &lt;- mu.hat.rf(sdf)
+##     vhat[df$group==g] &lt;- df$d[df$group==g] -
+##       predict(m, newx=df[df$group==g,x.names])$predictions
+##     ehat[df$group==g] &lt;- df$y[df$group==g] -
+##       predict(mu, newx=df[df$group==g,x.names])$predictions
+##   }
+##   lm(ehat ~ vhat)
+## }
+
+
+partial.linear.lasso &lt;- function(df) {
+  x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+  fmla &lt;- as.formula(paste(c(&quot;y ~ d&quot;,x.names), collapse=&quot; + &quot;))
+  rlassoEffects(fmla, data=df, I = ~ d)
+}
+
+#summary(partial.linear.lasso(df))
+
+# simulate a bunch of times in parallel
+simulations &lt;- 500 # number of simulations
+library(parallel)
+cl &lt;- makeCluster(detectCores()/2)  # change as you see fit
+clusterEvalQ(cl,library(hdm))
+clusterEvalQ(cl,library(grf))
+
+# R Socket cluster spawns new R sessions with empty environments, we
+# need to make sure they load any needed libraries and have access to
+# things from the main environment that they use
+design &lt;- c(&quot;linear&quot;) #,&quot;step&quot;)
+sim.df &lt;- data.frame()
+start.time &lt;- Sys.time()
+for (d in design) {
+  if (d==&quot;linear&quot;) {
+    m &lt;- m.linear
+    mu &lt;- mu.linear
+  } else {
+    m &lt;- m.step
+    mu &lt;- mu.step
+  }
+  for (p in c(2,4,6,8)) {
+    for (n in c(100, 200, 400, 800, 1600)) {
+      clusterExport(cl,c(&quot;simulate&quot;,&quot;partial.linear.lasso&quot;,
+                         &quot;partial.linear.rf&quot;,&quot;p&quot;,&quot;mu&quot;,&quot;m&quot;,
+                         &quot;mrfparams&quot;,&quot;murfparams&quot;, &quot;n.save&quot;))
+#                         &quot;partial.linear.split.rf&quot;, &quot;n.save.split&quot;,
+#                         &quot;m.hat.rf&quot;,&quot;mu.hat.rf&quot;,&quot;rf.tuneOnce&quot;))
+
+      thetas &lt;- parSapply(cl, rep(n,simulations), function(n)
+      {
+        df &lt;- simulate(n, p, mu, m)
+        x.names &lt;- names(df)[grep(&quot;x.&quot;,names(df))]
+        fmla &lt;- as.formula(paste(c(&quot;y ~ d&quot;,x.names), collapse=&quot; + &quot;))
+        c(lm(fmla,data=df)$coef[2],
+          partial.linear.rf(df)$coef[2],
+          #partial.linear.split.rf(df)$coef[2],
+          partial.linear.lasso(df)$coefficients)
+      }
+      )
+      tmp &lt;- (data.frame(t(thetas)) - 1)*sqrt(n)
+      names(tmp) &lt;- c(&quot;OLS&quot;,&quot;Random.Forest&quot;,&quot;Lasso&quot;)
+      tmp$n &lt;- n
+      tmp$p &lt;- p
+      tmp$design &lt;- d
+      sim.df &lt;- rbind(sim.df, tmp)
+      cat(&quot;finished sample size &quot;,n,&quot;\n&quot;)
+      cat(&quot;Elapsed time &quot;, Sys.time()-start.time,&quot;\n&quot;)
+    }
+    cat(&quot;finished p = &quot;,p,&quot;\n&quot;)
+  }
+  cat(&quot;finished design = &quot;, d,&quot;\n&quot;)
+}
+stopCluster(cl)
+save(sim.df, file=&quot;partialLinearSim.Rdata&quot;)
+</code></pre>
+
+<pre><code class="r">library(ggplot2)
+library(reshape2)
+library(latex2exp)
+TeX &lt;- latex2exp::TeX
+load(&quot;partialLinearSimNet.Rdata&quot;) # see partialLinearSim.R for simulation
+                               # code
+df &lt;- melt(sim.df, measure.vars=names(sim.df)[1:3])
+ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
+  ggtitle(&quot;p=2&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsimnet" src="../figure/plsimnet-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=4&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsimnet3" src="../figure/plsimnet3-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=6&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsimnet4" src="../figure/plsimnet4-1.png" /></p>
+<hr />
+<pre><code class="r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
+  ggtitle(&quot;p=8&quot;)
+</code></pre>
+
+<p><img alt="plot of chunk plsimnet8" src="../figure/plsimnet8-1.png" /></p>
+<div class="notes">
+<p>The performance of the neural network estimator appears okay, but not
+outstanding in these simulations. In the linear model, the neural
+network estimator performs slightly worse than OLS. In the step function
+model, the neural network estimator performs slight better than the
+misspecified OLS, but neither appears to work well. In both cases, it
+appears that the neural network estimator produces occassional outliers.
+I believe that this is related to the fact that the minimization problem
+defining the neural network is actually very difficult to solve. In the
+simulation above, I suspect the outlying estimates are due to
+minimization problems. In the simulations, I simply set
+$r_n = n^{1/(2(1+1/(1+p)))}$. It’s likely that a more careful choice of
+$r_n$, perhaps using cross-validation, would give better results.</p>
+</div>
+<!-- --- -->
+
+<h1 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h1>
+<!-- --- -->
+
+<div class="references" id="refs">
+<div id="ref-barron1993">
+<p>Barron, A. R. 1993. “Universal Approximation Bounds for Superpositions
+of a Sigmoidal Function.” <em>IEEE Transactions on Information Theory</em> 39
+(3): 930–45. <a href="https://doi.org/10.1109/18.256500">https://doi.org/10.1109/18.256500</a>.</p>
+</div>
+<div id="ref-belloni2012">
+<p>Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen. 2012. “Sparse
+Models and Methods for Optimal Instruments with an Application to
+Eminent Domain.” <em>Econometrica</em> 80 (6): 2369–2429.
+<a href="https://doi.org/10.3982/ECTA9626">https://doi.org/10.3982/ECTA9626</a>.</p>
+</div>
+<div id="ref-belloni2011">
+<p>Belloni, Alexandre, and Victor Chernozhukov. 2011. “High Dimensional
+Sparse Econometric Models: An Introduction.” In <em>Inverse Problems and
+High-Dimensional Estimation: Stats in the Château Summer School, August
+31 - September 4, 2009</em>, edited by Pierre Alquier, Eric Gautier, and
+Gilles Stoltz, 121–56. Berlin, Heidelberg: Springer Berlin Heidelberg.
+<a href="https://doi.org/10.1007/978-3-642-19989-9_3">https://doi.org/10.1007/978-3-642-19989-9_3</a>.</p>
+</div>
+<div id="ref-biau2012">
+<p>Biau, Gérard. 2012. “Analysis of a Random Forests Model.” <em>Journal of
+Machine Learning Research</em> 13 (Apr): 1063–95.
+<a href="http://www.jmlr.org/papers/v13/biau12a.html">http://www.jmlr.org/papers/v13/biau12a.html</a>.</p>
+</div>
+<div id="ref-caner2018">
+<p>Caner, Mehmet, and Anders Bredahl Kock. 2018. “Asymptotically Honest
+Confidence Regions for High Dimensional Parameters by the Desparsified
+Conservative Lasso.” <em>Journal of Econometrics</em> 203 (1): 143–68.
+<a href="https://doi.org/https://doi.org/10.1016/j.jeconom.2017.11.005">https://doi.org/https://doi.org/10.1016/j.jeconom.2017.11.005</a>.</p>
+</div>
+<div id="ref-chen1999">
+<p>Chen, Xiaohong, and H. White. 1999. “Improved Rates and Asymptotic
+Normality for Nonparametric Neural Network Estimators.” <em>IEEE
+Transactions on Information Theory</em> 45 (2): 682–91.
+<a href="https://doi.org/10.1109/18.749011">https://doi.org/10.1109/18.749011</a>.</p>
+</div>
+<div id="ref-chernozhukov2018">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, Whitney Newey, and James Robins. 2018.
+“Double/Debiased Machine Learning for Treatment and Structural
+Parameters.” <em>The Econometrics Journal</em> 21 (1): C1–C68.
+<a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.</p>
+</div>
+<div id="ref-hdm">
+<p>Chernozhukov, Victor, Chris Hansen, and Martin Spindler. 2016. “hdm:
+High-Dimensional Metrics.” <em>R Journal</em> 8 (2): 185–99.
+<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">https://journal.r-project.org/archive/2016/RJ-2016-040/index.html</a>.</p>
+</div>
+<div id="ref-chetverikov2017">
+<p>Chetverikov, Denis, Zhipeng Liao, and Victor Chernozhukov. 2016. “On
+Cross-Validated Lasso.” <a href="https://arxiv.org/abs/1605.02214">https://arxiv.org/abs/1605.02214</a>.</p>
+</div>
+<div id="ref-donoho1995">
+<p>Donoho, David L., and Iain M. Johnstone. 1995. “Adapting to Unknown
+Smoothness via Wavelet Shrinkage.” <em>Journal of the American Statistical
+Association</em> 90 (432): 1200–1224. <a href="http://www.jstor.org/stable/2291512">http://www.jstor.org/stable/2291512</a>.</p>
+</div>
+<div id="ref-efron2016">
+<p>Efron, Bradley, and Trevor Hastie. 2016. <em>Computer Age Statistical
+Inference</em>. Vol. 5. Cambridge University Press.
+<a href="https://web.stanford.edu/~hastie/CASI/">https://web.stanford.edu/~hastie/CASI/</a>.</p>
+</div>
+<div id="ref-friedberg2018">
+<p>Friedberg, Rina, Julie Tibshirani, Susan Athey, and Stefan Wager. 2018.
+“Local Linear Forests.” <a href="https://arxiv.org/abs/1807.11408">https://arxiv.org/abs/1807.11408</a>.</p>
+</div>
+<div id="ref-friedman2008">
+<p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2009. <em>The
+Elements of Statistical Learning</em>. Springer series in statistics.
+<a href="https://web.stanford.edu/~hastie/ElemStatLearn/">https://web.stanford.edu/~hastie/ElemStatLearn/</a>.</p>
+</div>
+<div id="ref-hornik1989">
+<p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White. 1989. “Multilayer
+Feedforward Networks Are Universal Approximators.” <em>Neural Networks</em> 2
+(5): 359–66.
+<a href="https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8">https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8</a>.</p>
+</div>
+<div id="ref-james2013">
+<p>James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
+2013. <em>An Introduction to Statistical Learning</em>. Vol. 112. Springer.
+<a href="http://www-bcf.usc.edu/%7Egareth/ISL/">http://www-bcf.usc.edu/%7Egareth/ISL/</a>.</p>
+</div>
+<div id="ref-lee2016">
+<p>Lee, Jason D., Dennis L. Sun, Yuekai Sun, and Jonathan E. Taylor. 2016.
+“Exact Post-Selection Inference, with Application to the Lasso.” <em>Ann.
+Statist.</em> 44 (3): 907–27. <a href="https://doi.org/10.1214/15-AOS1371">https://doi.org/10.1214/15-AOS1371</a>.</p>
+</div>
+<div id="ref-li1989">
+<p>Li, Ker-Chau. 1989. “Honest Confidence Regions for Nonparametric
+Regression.” <em>Ann. Statist.</em> 17 (3): 1001–8.
+<a href="https://doi.org/10.1214/aos/1176347253">https://doi.org/10.1214/aos/1176347253</a>.</p>
+</div>
+<div id="ref-mullainathan2017">
+<p>Mullainathan, Sendhil, and Jann Spiess. 2017. “Machine Learning: An
+Applied Econometric Approach.” <em>Journal of Economic Perspectives</em> 31
+(2): 87–106. <a href="https://doi.org/10.1257/jep.31.2.87">https://doi.org/10.1257/jep.31.2.87</a>.</p>
+</div>
+<div id="ref-nickl2013">
+<p>Nickl, Richard, and Sara van de Geer. 2013. “Confidence Sets in Sparse
+Regression.” <em>Ann. Statist.</em> 41 (6): 2852–76.
+<a href="https://doi.org/10.1214/13-AOS1170">https://doi.org/10.1214/13-AOS1170</a>.</p>
+</div>
+<div id="ref-speckman1985">
+<p>Speckman, Paul. 1985. “Spline Smoothing and Optimal Rates of Convergence
+in Nonparametric Regression Models.” <em>The Annals of Statistics</em> 13 (3):
+970–83. <a href="http://www.jstor.org/stable/2241119">http://www.jstor.org/stable/2241119</a>.</p>
+</div>
+<div id="ref-stone1982">
+<p>Stone, Charles J. 1982. “Optimal Global Rates of Convergence for
+Nonparametric Regression.” <em>The Annals of Statistics</em> 10 (4): 1040–53.
+<a href="http://www.jstor.org/stable/2240707">http://www.jstor.org/stable/2240707</a>.</p>
+</div>
+<div id="ref-taylor2017">
+<p>Taylor, Jonathan, and Robert Tibshirani. 2017. “Post-Selection Inference
+for -Penalized Likelihood Models.” <em>Canadian Journal of Statistics</em> 46
+(1): 41–61. <a href="https://doi.org/10.1002/cjs.11313">https://doi.org/10.1002/cjs.11313</a>.</p>
+</div>
+<div id="ref-wager2018">
+<p>Wager, Stefan, and Susan Athey. 2018. “Estimation and Inference of
+Heterogeneous Treatment Effects Using Random Forests.” <em>Journal of the
+American Statistical Association</em> 0 (0): 1–15.
+<a href="https://doi.org/10.1080/01621459.2017.1319839">https://doi.org/10.1080/01621459.2017.1319839</a>.</p>
+</div>
+<div id="ref-wager2015">
+<p>Wager, Stefan, and Guenther Walther. 2015. “Adaptive Concentration of
+Regression Trees, with Application to Random Forests.”
+<a href="https://arxiv.org/abs/1503.06388">https://arxiv.org/abs/1503.06388</a>.</p>
+</div>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

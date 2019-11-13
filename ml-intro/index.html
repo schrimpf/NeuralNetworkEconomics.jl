@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Introduction - GMMInference.jl</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">GMMInference.jl</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Documentation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Machine Learning in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li class="active">
+    <a href="./">Introduction</a>
+</li>
+                                    
+<li >
+    <a href="../ml-methods/">Methods</a>
+</li>
+                                    
+<li >
+    <a href="../ml-doubledebiased/">Inference</a>
+</li>
+                                    
+<li >
+    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../license/">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="..">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../ml-methods/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/ml-intro.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#introduction">Introduction</a></li>
+            <li><a href="#example-partially-linear-model">Example: partially linear model</a></li>
+            <li><a href="#example-matching">Example: Matching</a></li>
+            <li><a href="#example-matching_1">Example: Matching</a></li>
+            <li><a href="#example-iv">Example: IV</a></li>
+            <li><a href="#example-late">Example: LATE</a></li>
+            <li><a href="#general-setup">General setup</a></li>
+        <li class="main "><a href="#references-by-topic">References by topic</a></li>
+        <li class="main "><a href="#references-references">References [references]</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<!-- --- -->
+
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
+<div class="notes">
+<p>These notes will examine the incorportion of machine learning methods in
+classic econometric techniques for estimating causal effects. More
+specifally, we will focus on estimating treatment effects using matching
+and instrumental variables. In these estimators (and many others) there
+is a low-dimensional parameter of interest, such as the average
+treatment effect, but estimating it requires also estimating a
+potentially high dimensional nuisance parameter, such as the propensity
+score. Machine learning methods were developed for prediction with high
+dimensional data. It is then natural to try to use machine learning for
+estimating high dimensional nuisance parameters. Care must be taken when
+doing so though because the flexibility and complexity that make machine
+learning so good at prediction also pose challenges for inference.</p>
+<!-- <div class="alert alert-danger"> -->
+<!-- ### About this document  -->
+<!-- This document was created using Rmarkdown. The code is available in -->
+<!-- [on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same  -->
+<!-- document generates both the slides and these notes. The contents of -->
+<!-- the slides are reproduced here with a white background. Additional -->
+<!-- information has a beige background. Example code has a grey -->
+<!-- background. Display of code is toggleable. Divs, like this one, are -->
+<!-- red. -->
+<!-- If you want to print this document, printing works reasonably with -->
+<!-- Chrome, but not Firefox. -->
+<!-- </div> -->
+
+</div>
+<!-- --- -->
+
+<h2 id="example-partially-linear-model">Example: partially linear model<a class="headerlink" href="#example-partially-linear-model" title="Permanent link">&para;</a></h2>
+<p>
+<script type="math/tex; mode=display">
+    y_i = \theta d_i + f(x_i) + \epsilon_i
+</script>
+</p>
+<ul>
+<li>Interested in $\theta$</li>
+<li>Assume $\Er[\epsilon|d,x] = 0$</li>
+<li>Nuisance parameter $f()$</li>
+<li>E.g. Donohue and Levitt (<a href="#ref-donohue2001">2001</a>)</li>
+</ul>
+<div class="notes">
+<p>The simplest example of the setting we will analyze is a partially
+linear model. We have some regressor of interest, $d$, and we want to
+estimate the effect of $d$ on $y$. We have a rich enough set of controls
+that we are willing to believe that $\Er[\epsilon|d,x] = 0$. $d_i$ and
+$y_i$ are scalars, while $x_i$ is a vector. We are not interested in $x$
+per se, but we need to include it to avoid omitted variable bias.</p>
+<p>Typical applied econometric practice would be to choose some transfrom
+of $x$, say $X = T(x)$, where $X$ could be some subset of $x$, along
+with interactions, powers, and so on. Then estimate a linear regression
+<script type="math/tex; mode=display">
+y = \theta d + X'\beta + \epsilon
+</script> and then perhaps also report results for a handful of different
+choices of $T(x)$.</p>
+<p>Some downsides to the typical applied econometric practice include:</p>
+<ul>
+<li>
+<p>The choice of T is arbitrary, which opens the door to specification
+    searching and p-hacking.</p>
+</li>
+<li>
+<p>If $x$ is high dimensional, and $X$ is low dimensional, a poor
+    choice will lead to omitted variable bias. Even if $x$ is low
+    dimensional, if $f(x)$ is poorly approximated by $X&rsquo;\beta$, there
+    will be omitted variable bias.</p>
+</li>
+</ul>
+<p>In some sense, machine learning can be thought of as a way to choose $T$
+is an automated and data-driven way. There will be still be a choice of
+machine learning method and often tuning parameters for that method, so
+some arbitrary decisions remain. Hopefully though these decisions have
+less impact.</p>
+<p>You may already be familiar with traditional nonparametric econometric
+methods like series / sieves and kernels. These share much in common
+with machine learning. What makes machine learning different that
+traditional nonparametric methods? Machine learning methods appear to
+have better predictive performance, and arguably more practical
+data-driven methods to choose tuning parameters. Machine learning
+methods can deal with high dimensional $x$, while traditional
+nonparametric methods focus on situations with low dimensional $x$.</p>
+<p><strong>Example : Effect of abortion on crime</strong></p>
+<p>Donohue and Levitt (<a href="#ref-donohue2001">2001</a>) estimate a regression of
+state crime rates on crime type relevant abortion rates and controls, <script type="math/tex; mode=display">
+y_{it} = \theta a_{it} + x_{it}'\beta + \delta_i + \gamma_t +
+\epsilon_{it}.
+</script> $a_{it}$ is a weighted average of lagged abortion rates in state $i$,
+with the weight on the $\ell$th lag equal to the fraction of age $\ell$
+people who commit a given crime type. The covariates $x$ are the log of
+lagged prisoners per capita, the log of lagged police per capita, the
+unemployment rate, per-capita income, the poverty rate, AFDC generosity
+at time t − 15, a dummy for concealed weapons law, and beer consumption
+per cap. Alexandre Belloni, Chernozhukov, and Hansen
+(<a href="#ref-belloni2014">2014</a><a href="#ref-belloni2014">a</a>) reanalyze this setup
+using lasso to allow a more flexible specification of controls. They
+allow for many interactions and quadratic terms, leading to 284
+controls.</p>
+</div>
+<!--- -->
+
+<h2 id="example-matching">Example: Matching<a class="headerlink" href="#example-matching" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Binary treatment $d_i \in {0,1}$</li>
+<li>Potential outcomes $y_i(0), y_i(1)$, observe $y_i = y_i(d_i)$</li>
+<li>Interested in average treatment effect :
+    $\theta = \Er[y_i(1) - y_i(0)]$</li>
+<li>Covariates $x_i$</li>
+<li>Assume unconfoundedness : $d_i \indep y_i(1), y_i(0) | x_i$</li>
+<li>E.g. Connors et al. (<a href="#ref-connors1996">1996</a>)</li>
+</ul>
+<div class="notes">
+<p>The partially linear and matching models are closely related. If the
+conditional mean independence assumption of the partially linear model
+is strengthing to conditional indepence then the partially linear model
+is a special case of the matching model with constant treatment effects,
+$y_i(1) - y_i(0) = \theta$. Thus the matching model can be viewed as a
+generalization of the partially linear model that allows for treatment
+effect heterogeneity.</p>
+</div>
+<!-- --- -->
+
+<h2 id="example-matching_1">Example: Matching<a class="headerlink" href="#example-matching_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Estimatable formulae for ATE : <script type="math/tex; mode=display">
+    \begin{align*}
+    \theta = & \Er\left[\frac{y_i d_i}{\Pr(d = 1 | x_i)} - \frac{y_i
+        (1-d_i)}{1-\Pr(d=1|x_i)} \right] \\
+    \theta = & \Er\left[\Er[y_i | d_i = 1, x_i] - \Er[y_i | d_i = 0 , x_i]\right] \\
+    \theta = & \Er\left[ \begin{array}{l} d_i \frac{y_i - \Er[y_i | d_i = 1,
+        x_i]}{\Pr(d=1|x_i)} - (1-d_i)\frac{y_i - \Er[y_i | d_i = 0,
+        x_i]}{1-\Pr(d=1|x_i)} + \\ + \Er[y_i | d_i = 1, x_i] - \Er[y_i | d_i = 0 ,
+        x_i]\end{array}\right]
+    \end{align*}
+    </script>
+</li>
+</ul>
+<div class="notes">
+<p>All the expectations in these three formulae involve observable data.
+Thus, we can form an estimate of $\theta$ be replacing the expectations
+and conditional expectations with appropriate estimators. For example,
+to use the first formula, we could estimate a logit model for the
+probability of treatment, <script type="math/tex; mode=display">
+\hat{\Pr}(d=1|x_i) = \frac{e^{X_i' \hat{\beta}}}{1+e^{X_i'\hat{\beta}}}
+</script> where, as above, $X$ is a some chosen transformation of $x_i$. Then
+we simply take an average to estimate $\theta$. <script type="math/tex; mode=display">
+\hat{\theta} = \frac{1}{n} \sum_{i=1}^n \frac{y_i d_i}{\hat{\Pr}(d=1|x_i)} -
+\frac{y_i(1-d_i)} {1-\hat{\Pr}(d=1|x_i)}
+</script> As in the partially linear model, estimating the parameter of
+interest, $\theta$, requires estimating a potentially high dimensional
+nuisance parameter, in this case $\hat{\Pr}(d=1|x)$. Similarly, the
+second expression would require estimating conditional expectations of
+$y$ as nuisance parameters. The third expression requires estimating
+both conditional expecations of $y$ and $d$.</p>
+<p>The third expression might appear needlessly complicated, but we will
+see later that it has some desirable properties that will make using it
+essential when very flexible machine learning estimators for the
+conditional expectations are used.</p>
+<p>The origin of the name “matching” can be seen in the second expression.
+One way to estimate that expression would be to take each person in the
+treatment group, find someone with the same (or nearly the same) $x$ in
+the control group, difference the outcome of this matched pair, and then
+average over the whole sample. (Actually this gives the average
+treatment effect on the treated. For the ATE, you would also have to do
+the same with roles of the groups switched and average all the
+differences.) When $x$ is multi-dimensional, there is some ambiguity
+about what it means for two $x$ values to be nearly the same. An
+important insight of Rosenbaum and Rubin (<a href="#ref-rosenbaum1983">1983</a>) is
+that it is sufficient to match on the propensity score, $P(d=1|x)$,
+instead.</p>
+<p><strong>Example: effectiveness of heart catheterization</strong></p>
+<p>Connors et al. (<a href="#ref-connors1996">1996</a>) use matching to estimate the
+effectiveness of heart catheterization in critically ill patients. Their
+dataset contains 5735 patients and 72 covariates. Athey et al.
+(<a href="#ref-athey2017b">2017</a>) reanalyze this data using a variety of machine
+learning methods.</p>
+<div class="alert alert-danger">
+<p><strong>References:</strong> Imbens (<a href="#ref-imbens2004">2004</a>) reviews the traditional
+econometric literature on matching. Imbens (<a href="#ref-imbens2015">2015</a>)
+focuses on practical advice for matching and includes a brief mention of
+incorporating machine learning.</p>
+</div>
+<p>Both the partially linear model and treatment effects model can be
+extended to situations with endogeneity and instrumental variables.</p>
+</div>
+<!-- --- -->
+
+<h2 id="example-iv">Example: IV<a class="headerlink" href="#example-iv" title="Permanent link">&para;</a></h2>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+y_i = & \theta d_i + f(x_i) + \epsilon_i \\
+d_i = & g(x_i, z_i) + u_i
+\end{align*}
+</script>
+</p>
+<ul>
+<li>Interested in $\theta$</li>
+<li>Assume $\Er[\epsilon|x,z] = 0$, $\Er[u|x,z]=0$</li>
+<li>Nuisance parameters $f()$, $g()$</li>
+<li>E.g. Angrist and Krueger (<a href="#ref-angrist1991">1991</a>)</li>
+</ul>
+<div class="notes">
+<p>Most of the remarks about the partially linear model also apply here.</p>
+<p>Hartford et al. (<a href="#ref-hartford2017">2017</a>) estimate a generalization of
+this model with $y_i = f(d_i, x_i) +\epsilon$ using deep neural
+networks.</p>
+<p><strong>Example : compulsory schooling and earnings</strong></p>
+<p>Angrist and Krueger (<a href="#ref-angrist1991">1991</a>) use quarter of birth as
+an instrument for years of schooling to estimate the effect of schooling
+on earnings. Since compulsory schooling laws typically specify a minimum
+age at which a person can leave school instead of a minimum years of
+schooling, people born at different times of the year can be required to
+complete one more or one less year of schooling. Compulsory schooling
+laws and their effect on attained schooling can vary with state and
+year. Hence, Angrist and Krueger (<a href="#ref-angrist1991">1991</a>) considered
+specifying $g(x,z)$ as all interactions of quarter of birth, state, and
+year dummies. Having so many instruments leads to statistical problems
+with 2SLS.</p>
+</div>
+<!-- --- -->
+
+<h2 id="example-late">Example: LATE<a class="headerlink" href="#example-late" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Binary instrumet $z_i \in {0,1}$</li>
+<li>Potential treatments $d_i(0), d_i(1) \in {0,1}$, $d_i = d_i(Z_i)$</li>
+<li>Potential outcomes $y_i(0), y_i(1)$, observe $y_i = y_i(d_i)$</li>
+<li>Covariates $x_i$</li>
+<li>$(y_i(1), y_i(0), d_i(1), d_i(0)) \indep z_i | x_i$</li>
+<li>Local average treatment effect: <script type="math/tex; mode=display">
+    \begin{align*}
+    \theta = & \Er\left[\Er[y_i(1) - y_i(0) | x, d_i(1) > d_i(0)]\right] \\
+         = & \Er\left[\frac{\Er[y|z=1,x] - \Er[y|z=0,x]}
+                        {\Er[d|z=1,x]-\Er[d|z=0,x]} \right]
+    \end{align*}
+    </script>
+</li>
+</ul>
+<div class="notes">
+<p>See Abadie (<a href="#ref-abadie2003">2003</a>).</p>
+<p>Belloni et al. (<a href="#ref-belloni2017">2017</a>) analyze estimation of this
+model using Lasso and other machine learning methods.</p>
+</div>
+<!-- --- -->
+
+<h2 id="general-setup">General setup<a class="headerlink" href="#general-setup" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Parameter of interest $\theta \in \R^{d_\theta}$</p>
+</li>
+<li>
+<p>Nuisance parameter $\eta \in T$</p>
+</li>
+<li>
+<p>Moment conditions <script type="math/tex; mode=display">
+    \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
+    </script> with $\psi$ known</p>
+</li>
+<li>
+<p>Estimate $\hat{\eta}$ using some machine learning method</p>
+</li>
+<li>
+<p>Estimate $\hat{\theta}$ from <script type="math/tex; mode=display">
+    \En[\psi(w_i;\hat{\theta},\hat{\eta}) ] = 0
+    </script>
+</p>
+</li>
+</ul>
+<div class="notes">
+<p>We are following the setup and notation of Chernozhukov et al.
+(<a href="#ref-chernozhukov2018">2018</a>). As in the examples, the dimension of
+$\theta$ is fixed and small. The dimension of $\eta$ is large and might
+be increasing with sample size. $T$ is some normed vector space.</p>
+</div>
+<!-- --- -->
+
+<hr />
+<h3 id="example-partially-linear-model_1">Example: partially linear model<a class="headerlink" href="#example-partially-linear-model_1" title="Permanent link">&para;</a></h3>
+<p>
+<script type="math/tex; mode=display">
+    y_i = \theta_0 d_i + f_0(x_i) + \epsilon_i
+</script>
+</p>
+<ul>
+<li>
+<p>Compare the estimates from</p>
+<ol>
+<li>$\En[d_i(y_i - \tilde{\theta} d_i - \hat{f}(x_i)) ] = 0$</li>
+</ol>
+<p>and</p>
+<ol>
+<li>$\En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) - \theta (d_i - \hat{m}(x_i)))] = 0$</li>
+</ol>
+<p>where $m(x) = \Er[d|x]$ and $\mu(y) = \Er[y|x]$</p>
+</li>
+</ul>
+<div class="notes">
+<p><strong>Example: partially linear model</strong> In the partially linear model,</p>
+<p>
+<script type="math/tex; mode=display">
+    y_i = \theta_0 d_i + f_0(x_i) + \epsilon_i
+</script>
+</p>
+<p>we can let $w_i = (y_i, x_i)$ and $\eta = f$. There are a variety of
+candidates for $\psi$. An obvious (but flawed) one is
+$\psi(w_i; \theta, \eta) = (y_i - \theta_0 d_i - f_0(x_i))d_i$. With
+this choice of $\psi$, we have</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+0 = & \En[d_i(y_i - \hat{\theta} d_i - \hat{f}(x_i)) ] \\
+\hat{\theta} = & \En[d_i^2]^{-1} \En[d_i (y_i - \hat{f}(x_i))] \\
+(\hat{\theta} - \theta_0) = &  \En[d_i^2]^{-1} \En[d_i \epsilon_i] +
+    \En[d_i^2]^{-1} \En[d_i (f_0(x_i) - \hat{f}(x_i))]
+\end{align*}
+</script>
+</p>
+<p>The first term of this expression is quite promising. $d_i$ and
+$\epsilon_i$ are both finite dimensional random variables, so a law of
+large numbers will apply to $\En[d_i^2]$, and a central limit theorem
+would apply to $\sqrt{n} \En[d_i \epsilon_i]$. Unfortunately, the second
+expression is problematic. To accomodate high dimensional $x$ and allow
+for flexible $f()$, machine learning estimators must introduce some sort
+of regularization to control variance. This regularization also
+introduces some bias. The bias generally vanishes, but at a slower than
+$\sqrt{n}$ rate. Hence</p>
+<p>
+<script type="math/tex; mode=display">
+\sqrt{n} \En[d_i (f_0(x_i) - \hat{f}(x_i))] \to \infty.
+</script>
+</p>
+<p>To get around this problem, we must modify our estimate of $\theta$. Let
+$m(x) = \Er[d|x]$ and $\mu(y) = \Er[y|x]$. Let $\hat{m}()$ and
+$\hat{\mu}()$ be some estimates. Then we can estimate $\theta$ by
+partialling out:</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+0 = & \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] \\
+\hat{\theta} = & \En[(d_i -\hat{m}(x_i))^2]^{-1} \En[(d_i -
+\hat{m}(x_i))(y_i - \hat{\mu}(x_i))] \\
+(\hat{\theta} - \theta_0) = & \En[(d_i -\hat{m}(x_i))^2]^{-1} \left(\En[(d_i -
+\hat{m}(x_i))\epsilon_i] + \En[(d_i - \hat{m}(x_i))(\mu(x_i) -
+\hat{\mu}(x_i))] \right) \\
+= & \En[(d_i -\hat{m}(x_i))^2]^{-1} \left( a + b +c + d \right)
+\end{align*}
+</script>
+</p>
+<p>where</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+a = & \En[(d_i -m(x_i))\epsilon_i] \\
+b = & \En[(m(x_i)-\hat{m}(x_i))\epsilon_i] \\
+c = & \En[v_i(\mu(x_i) - \hat{\mu}(x_i))] \\
+d = & \En[(m(x_i) - \hat{m}(x_i))(\mu(x_i) - \hat{\mu}(x_i))]
+\end{align*}
+</script>
+</p>
+<p>with $v_i = d_i - \Er[d_i | x_i]$. The term $a$ is well behaved and
+$\sqrt{n}a \leadsto N(0,\Sigma)$ under standard conditions. Although
+terms $b$ and $c$ appear similar to the problematic term in the initial
+estimator, they are better behaved because $\Er[v|x] = 0$ and
+$\Er[\epsilon|x] = 0$. This makes it possible, but difficult to show
+that $\sqrt{n}b \to_p = 0$ and $\sqrt{n} c \to_p = 0$, see
+e.g. Alexandre Belloni, Chernozhukov, and Hansen
+(<a href="#ref-belloni2014">2014</a><a href="#ref-belloni2014">a</a>). However, the conditions
+on $\hat{m}$ and $\hat{\mu}$ needed to show this are slightly
+restrictive, and appropriate conditions might not be known for all
+estimators. Chernozhukov et al. (<a href="#ref-chernozhukov2018">2018</a>) describe
+a sample splitting modification to $\hat{\theta}$ that allows
+$\sqrt{n} b$ and $\sqrt{n} c$ to vanish under weaker conditions
+(essentially the same rate condition as needed for $\sqrt{n} d$ to
+vanish.)</p>
+<p>The last term, $d$, is a considerable improvement upon the first
+estimator. Instead of involving the error in one estimate, it now
+involes the product of the error in two estimates. By the Cauchy-Schwarz
+inequality, <script type="math/tex; mode=display">
+d \leq \sqrt{\En[(m(x_i) - \hat{m}(x_i))^2]} \sqrt{\En[(\mu(x_i) - \hat{\mu}(x_i))^2]}.
+</script> So if the estimates of $m$ and $\mu$ converge at rates faster than
+$n^{-1/4}$, then $\sqrt{n} d \to_p 0$. This $n^{-1/4}$ rate is reached
+by many machine learning estimators.</p>
+</div>
+<!-- --- -->
+
+<hr />
+<h3 id="lessons-from-the-example">Lessons from the example<a class="headerlink" href="#lessons-from-the-example" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Need an extra condition on moments – Neyman orthogonality <script type="math/tex; mode=display">
+    \partial \eta \Er[\psi(W;\theta_0,\eta_0)](\eta-\eta_0) = 0
+    </script>
+</p>
+</li>
+<li>
+<p>Want estimators faster than $n^{-1/4}$ in the prediction norm, <script type="math/tex; mode=display">
+    \sqrt{\En[(\hat{\eta}(x_i) - \eta(x_i))^2]} \lesssim_P n^{-1/4}
+    </script>
+</p>
+</li>
+<li>
+<p>Also want estimators that satisfy something like
+    <script type="math/tex; mode=display"> \sqrt{n} \En[(\eta(x_i)-\hat{\eta}(x_i))\epsilon_i] = o_p(1) </script>
+</p>
+<ul>
+<li>Sample splitting will make this easier</li>
+</ul>
+</li>
+</ul>
+<!-- --- -->
+
+<h1 id="references-by-topic">References by topic<a class="headerlink" href="#references-by-topic" title="Permanent link">&para;</a></h1>
+<ul>
+<li>Matching<ul>
+<li><strong>Imbens (<a href="#ref-imbens2015">2015</a>)</strong></li>
+<li>Imbens (<a href="#ref-imbens2004">2004</a>)</li>
+</ul>
+</li>
+<li>Surveys on machine learning in econometrics<ul>
+<li><strong>Athey and Imbens (<a href="#ref-athey2017">2017</a>)</strong></li>
+<li>Mullainathan and Spiess (<a href="#ref-mullainathan2017">2017</a>)</li>
+<li>Athey and Imbens (<a href="#ref-athey2018">2018</a>)</li>
+<li>Athey et al. (<a href="#ref-athey2017b">2017</a>)</li>
+<li>Athey and Imbens (<a href="#ref-athey2015">2015</a>), Athey and Imbens
+    (<a href="#ref-athey2018">2018</a>)</li>
+</ul>
+</li>
+<li>Machine learning<ul>
+<li>Breiman and others (<a href="#ref-breiman2001">2001</a>)</li>
+<li>Friedman, Hastie, and Tibshirani (<a href="#ref-friedman2008">2009</a>)</li>
+<li>James et al. (<a href="#ref-james2013">2013</a>)</li>
+<li>Efron and Hastie (<a href="#ref-efron2016">2016</a>)</li>
+</ul>
+</li>
+<li>Introduction to lasso<ul>
+<li>Belloni and Chernozhukov (<a href="#ref-belloni2011">2011</a>)</li>
+<li>Friedman, Hastie, and Tibshirani (<a href="#ref-friedman2008">2009</a>)
+    section 3.4</li>
+<li>Chernozhukov, Hansen, and Spindler (<a href="#ref-hdm">2016</a>)</li>
+</ul>
+</li>
+<li>Introduction to random forests<ul>
+<li>Friedman, Hastie, and Tibshirani (<a href="#ref-friedman2008">2009</a>)
+    section 9.2</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p><strong>Bold</strong> references are recommended reading. They are generally shorter
+and less technical than some of the others. Aspiring econometricians
+should read much more than just the bold references.</p>
+</div>
+<ul>
+<li>Neyman orthogonalization<ul>
+<li><strong>Chernozhukov, Chetverikov, et al.
+    (<a href="#ref-chernozhukov2017">2017</a>)</strong></li>
+<li>Chernozhukov, Hansen, and Spindler
+    (<a href="#ref-chernozhukov2015">2015</a>)</li>
+<li>Chernozhukov et al. (<a href="#ref-chernozhukov2018">2018</a>)</li>
+<li>Belloni et al. (<a href="#ref-belloni2017">2017</a>)</li>
+</ul>
+</li>
+<li>Lasso for causal inference<ul>
+<li><strong>Alexandre Belloni, Chernozhukov, and Hansen
+    (<a href="#ref-belloni2014jep">2014</a><a href="#ref-belloni2014jep">b</a>)</strong></li>
+<li>Belloni et al. (<a href="#ref-belloni2012">2012</a>)</li>
+<li>Alexandre Belloni, Chernozhukov, and Hansen
+    (<a href="#ref-belloni2014">2014</a><a href="#ref-belloni2014">a</a>)</li>
+<li>Chernozhukov, Goldman, et al. (<a href="#ref-chernozhukov2016b">2017</a>)</li>
+<li>Chernozhukov, Hansen, and Spindler (<a href="#ref-hdm">2016</a>) hdm R
+    package</li>
+</ul>
+</li>
+<li>Random forests for causal inference<ul>
+<li>Athey, Tibshirani, and Wager (<a href="#ref-athey2016">2016</a>)</li>
+<li>Wager and Athey (<a href="#ref-wager2018">2018</a>)</li>
+<li>Tibshirani et al. (<a href="#ref-grf">2018</a>) grf R package</li>
+<li>Athey and Imbens (<a href="#ref-athey2016b">2016</a>)</li>
+</ul>
+</li>
+</ul>
+<div class="notes">
+<p>There is considerable overlap among these categories. The papers listed
+under Neyman orthogonalization all include use of lasso and some include
+random forests. The papers on lasso all involve some use of
+orthogonalization.</p>
+</div>
+<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
+<div class="references" id="refs">
+<div id="ref-abadie2003">
+<p>Abadie, Alberto. 2003. “Semiparametric Instrumental Variable Estimation
+of Treatment Response Models.” <em>Journal of Econometrics</em> 113 (2):
+231–63. <a href="https://doi.org/https://doi.org/10.1016/S0304-4076(02)00201-4">https://doi.org/https://doi.org/10.1016/S0304-4076(02)00201-4</a>.</p>
+</div>
+<div id="ref-angrist1991">
+<p>Angrist, Joshua D., and Alan B. Krueger. 1991. “Does Compulsory School
+Attendance Affect Schooling and Earnings?” <em>The Quarterly Journal of
+Economics</em> 106 (4): pp. 979–1014. <a href="http://www.jstor.org/stable/2937954">http://www.jstor.org/stable/2937954</a>.</p>
+</div>
+<div id="ref-athey2015">
+<p>Athey, Susan, and Guido Imbens. 2015. “Lectures on Machine Learning.”
+NBER Summer Institute.
+<a href="http://www.nber.org/econometrics_minicourse_2015/">http://www.nber.org/econometrics_minicourse_2015/</a>.</p>
+</div>
+<div id="ref-athey2016b">
+<p>———. 2016. “Recursive Partitioning for Heterogeneous Causal Effects.”
+<em>Proceedings of the National Academy of Sciences</em> 113 (27): 7353–60.
+<a href="https://doi.org/10.1073/pnas.1510489113">https://doi.org/10.1073/pnas.1510489113</a>.</p>
+</div>
+<div id="ref-athey2018">
+<p>———. 2018. “Machine Learning and Econometrics.” AEA Continuing
+Education. <a href="https://www.aeaweb.org/conference/cont-ed/2018-webcasts">https://www.aeaweb.org/conference/cont-ed/2018-webcasts</a>.</p>
+</div>
+<div id="ref-athey2017b">
+<p>Athey, Susan, Guido Imbens, Thai Pham, and Stefan Wager. 2017.
+“Estimating Average Treatment Effects: Supplementary Analyses and
+Remaining Challenges.” <em>American Economic Review</em> 107 (5): 278–81.
+<a href="https://doi.org/10.1257/aer.p20171042">https://doi.org/10.1257/aer.p20171042</a>.</p>
+</div>
+<div id="ref-athey2017">
+<p>Athey, Susan, and Guido W. Imbens. 2017. “The State of Applied
+Econometrics: Causality and Policy Evaluation.” <em>Journal of Economic
+Perspectives</em> 31 (2): 3–32. <a href="https://doi.org/10.1257/jep.31.2.3">https://doi.org/10.1257/jep.31.2.3</a>.</p>
+</div>
+<div id="ref-athey2016">
+<p>Athey, Susan, Julie Tibshirani, and Stefan Wager. 2016. “Generalized
+Random Forests.” <a href="https://arxiv.org/abs/1610.01271">https://arxiv.org/abs/1610.01271</a>.</p>
+</div>
+<div id="ref-belloni2012">
+<p>Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen. 2012. “Sparse
+Models and Methods for Optimal Instruments with an Application to
+Eminent Domain.” <em>Econometrica</em> 80 (6): 2369–2429.
+<a href="https://doi.org/10.3982/ECTA9626">https://doi.org/10.3982/ECTA9626</a>.</p>
+</div>
+<div id="ref-belloni2017">
+<p>Belloni, A., V. Chernozhukov, I. Fernández-Val, and C. Hansen. 2017.
+“Program Evaluation and Causal Inference with High-Dimensional Data.”
+<em>Econometrica</em> 85 (1): 233–98. <a href="https://doi.org/10.3982/ECTA12723">https://doi.org/10.3982/ECTA12723</a>.</p>
+</div>
+<div id="ref-belloni2011">
+<p>Belloni, Alexandre, and Victor Chernozhukov. 2011. “High Dimensional
+Sparse Econometric Models: An Introduction.” In <em>Inverse Problems and
+High-Dimensional Estimation: Stats in the Château Summer School, August
+31 - September 4, 2009</em>, edited by Pierre Alquier, Eric Gautier, and
+Gilles Stoltz, 121–56. Berlin, Heidelberg: Springer Berlin Heidelberg.
+<a href="https://doi.org/10.1007/978-3-642-19989-9_3">https://doi.org/10.1007/978-3-642-19989-9_3</a>.</p>
+</div>
+<div id="ref-belloni2014">
+<p>Belloni, Alexandre, Victor Chernozhukov, and Christian Hansen. 2014a.
+“Inference on Treatment Effects After Selection Among High-Dimensional
+Controls†.” <em>The Review of Economic Studies</em> 81 (2): 608–50.
+<a href="https://doi.org/10.1093/restud/rdt044">https://doi.org/10.1093/restud/rdt044</a>.</p>
+</div>
+<div id="ref-belloni2014jep">
+<p>———. 2014b. “High-Dimensional Methods and Inference on Structural and
+Treatment Effects.” <em>Journal of Economic Perspectives</em> 28 (2): 29–50.
+<a href="https://doi.org/10.1257/jep.28.2.29">https://doi.org/10.1257/jep.28.2.29</a>.</p>
+</div>
+<div id="ref-breiman2001">
+<p>Breiman, Leo, and others. 2001. “Statistical Modeling: The Two Cultures
+(with Comments and a Rejoinder by the Author).” <em>Statistical Science</em> 16
+(3): 199–231. <a href="https://projecteuclid.org/euclid.ss/1009213726">https://projecteuclid.org/euclid.ss/1009213726</a>.</p>
+</div>
+<div id="ref-chernozhukov2017">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, and Whitney Newey. 2017. “Double/Debiased/Neyman
+Machine Learning of Treatment Effects.” <em>American Economic Review</em> 107
+(5): 261–65. <a href="https://doi.org/10.1257/aer.p20171038">https://doi.org/10.1257/aer.p20171038</a>.</p>
+</div>
+<div id="ref-chernozhukov2018">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, Whitney Newey, and James Robins. 2018.
+“Double/Debiased Machine Learning for Treatment and Structural
+Parameters.” <em>The Econometrics Journal</em> 21 (1): C1–C68.
+<a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.</p>
+</div>
+<div id="ref-chernozhukov2016b">
+<p>Chernozhukov, Victor, Matt Goldman, Vira Semenova, and Matt Taddy. 2017.
+“Orthogonal Machine Learning for Demand Estimation: High Dimensional
+Causal Inference in Dynamic Panels.”
+<a href="https://arxiv.org/abs/1712.09988v2">https://arxiv.org/abs/1712.09988v2</a>.</p>
+</div>
+<div id="ref-hdm">
+<p>Chernozhukov, Victor, Chris Hansen, and Martin Spindler. 2016. “hdm:
+High-Dimensional Metrics.” <em>R Journal</em> 8 (2): 185–99.
+<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">https://journal.r-project.org/archive/2016/RJ-2016-040/index.html</a>.</p>
+</div>
+<div id="ref-chernozhukov2015">
+<p>Chernozhukov, Victor, Christian Hansen, and Martin Spindler. 2015.
+“Valid Post-Selection and Post-Regularization Inference: An Elementary,
+General Approach.” <em>Annual Review of Economics</em> 7 (1): 649–88.
+<a href="https://doi.org/10.1146/annurev-economics-012315-015826">https://doi.org/10.1146/annurev-economics-012315-015826</a>.</p>
+</div>
+<div id="ref-connors1996">
+<p>Connors, Alfred F., Theodore Speroff, Neal V. Dawson, Charles Thomas,
+Frank E. Harrell Jr, Douglas Wagner, Norman Desbiens, et al. 1996. “The
+Effectiveness of Right Heart Catheterization in the Initial Care of
+Critically Ill Patients.” <em>JAMA</em> 276 (11): 889–97.
+<a href="https://doi.org/10.1001/jama.1996.03540110043030">https://doi.org/10.1001/jama.1996.03540110043030</a>.</p>
+</div>
+<div id="ref-donohue2001">
+<p>Donohue, John J., III, and Steven D. Levitt. 2001. “The Impact of
+Legalized Abortion on Crime*.” <em>The Quarterly Journal of Economics</em> 116
+(2): 379–420. <a href="https://doi.org/10.1162/00335530151144050">https://doi.org/10.1162/00335530151144050</a>.</p>
+</div>
+<div id="ref-efron2016">
+<p>Efron, Bradley, and Trevor Hastie. 2016. <em>Computer Age Statistical
+Inference</em>. Vol. 5. Cambridge University Press.
+<a href="https://web.stanford.edu/~hastie/CASI/">https://web.stanford.edu/~hastie/CASI/</a>.</p>
+</div>
+<div id="ref-friedman2008">
+<p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2009. <em>The
+Elements of Statistical Learning</em>. Springer series in statistics.
+<a href="https://web.stanford.edu/~hastie/ElemStatLearn/">https://web.stanford.edu/~hastie/ElemStatLearn/</a>.</p>
+</div>
+<div id="ref-hartford2017">
+<p>Hartford, Jason, Greg Lewis, Kevin Leyton-Brown, and Matt Taddy. 2017.
+“Deep IV: A Flexible Approach for Counterfactual Prediction.” In
+<em>Proceedings of the 34th International Conference on Machine Learning</em>,
+edited by Doina Precup and Yee Whye Teh, 70:1414–23. Proceedings of
+Machine Learning Research. International Convention Centre, Sydney,
+Australia: PMLR. <a href="http://proceedings.mlr.press/v70/hartford17a.html">http://proceedings.mlr.press/v70/hartford17a.html</a>.</p>
+</div>
+<div id="ref-imbens2004">
+<p>Imbens, Guido W. 2004. “Nonparametric Estimation of Average Treatment
+Effects Under Exogeneity: A Review.” <em>The Review of Economics and
+Statistics</em> 86 (1): 4–29. <a href="https://doi.org/10.1162/003465304323023651">https://doi.org/10.1162/003465304323023651</a>.</p>
+</div>
+<div id="ref-imbens2015">
+<p>———. 2015. “Matching Methods in Practice: Three Examples.” <em>Journal of
+Human Resources</em> 50 (2): 373–419.
+<a href="https://doi.org/10.3368/jhr.50.2.373">https://doi.org/10.3368/jhr.50.2.373</a>.</p>
+</div>
+<div id="ref-james2013">
+<p>James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
+2013. <em>An Introduction to Statistical Learning</em>. Vol. 112. Springer.
+<a href="http://www-bcf.usc.edu/%7Egareth/ISL/">http://www-bcf.usc.edu/%7Egareth/ISL/</a>.</p>
+</div>
+<div id="ref-mullainathan2017">
+<p>Mullainathan, Sendhil, and Jann Spiess. 2017. “Machine Learning: An
+Applied Econometric Approach.” <em>Journal of Economic Perspectives</em> 31
+(2): 87–106. <a href="https://doi.org/10.1257/jep.31.2.87">https://doi.org/10.1257/jep.31.2.87</a>.</p>
+</div>
+<div id="ref-rosenbaum1983">
+<p>Rosenbaum, Paul R., and Donald B. Rubin. 1983. “The Central Role of the
+Propensity Score in Observational Studies for Causal Effects.”
+<em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.</p>
+</div>
+<div id="ref-grf">
+<p>Tibshirani, Julie, Susan Athey, Stefan Wager, Rina Friedberg, Luke
+Miner, and Marvin Wright. 2018. <em>Grf: Generalized Random Forests
+(Beta)</em>. <a href="https://CRAN.R-project.org/package=grf">https://CRAN.R-project.org/package=grf</a>.</p>
+</div>
+<div id="ref-wager2018">
+<p>Wager, Stefan, and Susan Athey. 2018. “Estimation and Inference of
+Heterogeneous Treatment Effects Using Random Forests.” <em>Journal of the
+American Statistical Association</em> 0 (0): 1–15.
+<a href="https://doi.org/10.1080/01621459.2017.1319839">https://doi.org/10.1080/01621459.2017.1319839</a>.</p>
+</div>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
