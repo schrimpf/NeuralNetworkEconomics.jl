@@ -1,0 +1,588 @@
+---
+title       : "Machine Learning and Causal Inference"
+subtitle    : "Inference for causal effects"
+author      : Paul Schrimpf
+job         :
+date        : "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: "../ml.bib"
+output      :
+    html_document :
+        toc : true
+        toc_depth : 2
+        toc_float : true
+        number_sections : true
+        theme : journal
+        css : 628notes.css
+        code_folding: hide
+        lib_dir : deps
+        self_cononontained : false
+        fig_width: 8
+        fig_height: 6
+    ioslides_presentation :
+        self_contained: false
+        code_folding: hide
+        lib_dir : deps
+        theme : journal
+        fig_width: 8
+        fig_height: 6
+## To create html files from this, in R enter'source("../renderAll.R"); renderAll("filename.Rmd")'
+
+---
+
+[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike
+4.0 International
+License](http://creativecommons.org/licenses/by-sa/4.0/) 
+
+$$
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+$$
+
+```{r setup, cache=FALSE, echo=FALSE}
+library(knitr)
+if (exists("slides") && slides) {
+  opts_chunk$set(echo=FALSE)
+  opts_chunk$set(warning=FALSE)
+  opts_chunk$set(message=FALSE)
+}
+```
+
+
+# Using machine learning to estimate causal effects
+
+## Double debiased machine learning
+
+- @chernozhukov2018, @chernozhukov2017
+
+- Parameter of interest $\theta \in \R^{d_\theta}$
+
+- Nuisance parameter $\eta \in T$
+
+- Moment conditions
+$$
+\Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
+$$
+with $\psi$ known
+
+- Estimate $\hat{\eta}$ using some machine learning method
+
+- Estimate $\hat{\theta}$ using cross-fitting
+
+---
+
+### Cross-fitting
+
+- Randomly partition into $K$ subsets $(I_k)_{k=1}^K$
+- $I^c_k = \{1, ..., n\} \setminus I_k$
+- $\hat{\eta}_k =$ estimate of $\eta$ using $I^c_k$
+- Estimator:
+$$
+\begin{align*}
+0 = & \frac{1}{K} \sum_{k=1}^K \frac{K}{n} \sum_{i \in I_k}
+\psi(w_i;\hat{\theta},\hat{\eta}_k) \\
+0 = & \frac{1}{K} \sum_{k=1}^K \En_k[
+\psi(w_i;\hat{\theta},\hat{\eta}_k)]
+\end{align*}
+$$
+
+---
+
+### Assumptions
+
+- Linear score
+$$
+\psi(w;\theta,\eta) = \psi^a(w;\eta) \theta + \psi^b(w;\eta)
+$$
+- Near Neyman orthogonality:
+$$
+\lambda_n := \sup_{\eta \in \mathcal{T}_n} \norm{\partial \eta
+\Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right] } \leq \delta_n
+n^{-1/2}
+$$
+
+---
+
+### Assumptions{-}
+
+- Rate conditions: for $\delta_n \to 0$ and $\Delta_n \to 0$, we have
+$\Pr(\hat{\eta}_k \in \mathcal{T}_n) \geq 1-\Delta_n$ and
+$$
+\begin{align*}
+r_n := & \sup_{\eta \in \mathcal{T}_n} \norm{ \Er[\psi^a(W;\eta)] -
+\Er[\psi^a(W;\eta_0)]} \leq \delta_n \\
+r_n' := & \sup_{\eta \in \mathcal{T}_n} \Er\left[ \norm{ \psi(W;\theta_0,\eta) -
+    \psi(W;\theta_0,\eta_0)}^2 \right]^{1/2} \leq \delta_n \\
+\lambda_n' := & \sup_{r \in (0,1), \eta \in \mathcal{T}_n} \norm{
+\partial_r^2 \Er\left[\psi(W;\theta_0, \eta_0 + r(\eta - \eta_0))
+\right]} \leq \delta_n/\sqrt{n}
+\end{align*}
+$$
+- Moments exist and other regularity conditions
+
+<div class="notes">
+We focus on the case of linear scores to simplify
+proofs and all of our examples have scores linear in $\theta$.
+@chernozhukov2018 cover nonlinear scores as well.
+
+These rate conditions might look a little strange. The rate conditions are stated
+this way because they're exactly what is needed for the result to
+work.
+$\Delta_n$ and $\delta_n$ are sequences converging to $0$. $\mathcal{T}_n$ is a
+shrinking neighborhood of $\eta_0$.
+A good exercise would be show that if $\psi$ a smooth function
+of $\eta$ and $\theta$, and $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2}
+= O(\epsilon_n) = o(n^{-1/4})$, then we can meet the above conditions
+with $r_n = r_n' = \epsilon_n$ and $\lambda_n' = \epsilon_n^2$.
+</div>
+
+---
+
+### Proof outline:
+
+- Let $\hat{J} = \frac{1}{K} \sum_{k=1}^K \En_k
+  [\psi^a(w_i;\hat{\eta}_k)]$, $J_0 = \Er[\psi^a(w_i;\eta_0)]$,
+  $R_{n,1} = \hat{J}-J_0$
+  
+- Show:
+$$
+\small
+\begin{align*}
+\sqrt{n}(\hat{\theta} - \theta_0) = & -\sqrt{n} J_0^{-1}
+\En[\psi(w_i;\theta_0,\eta_0)] + \\
+& + (J_0^{-1} - \hat{J}^{-1})
+\left(\sqrt{n} \En[\psi(w_i;\theta_0,\eta_0)] + \sqrt{n}R_{n,2}\right) + \\
+& + \sqrt{n}J_0^{-1}\underbrace{\left(\frac{1}{K} \sum_{k=1}^K \En_k[
+\psi(w_i;\theta_0,\hat{\eta}_k)] - \En[\psi(w_i;\theta_0,\eta_0)]\right)}_{R_{n,2}}
+\end{align*}
+$$
+
+- Show $\norm{R_{n,1}} = O_p(n^{-1/2} + r_n)$
+
+- Show $\norm{R_{n,2}}= O_p(n^{-1/2} r_n' + \lambda_n + \lambda_n')$
+
+<div class="notes">
+For details see the appendix of @chernozhukov2018.
+</div>
+
+---
+
+### Proof outline: Lemma 6.1
+
+Lemma 6.1
+
+(a) If $\Pr(\norm{X_m} > \epsilon_m | Y_m) \to_p 0$, then
+    $\Pr(\norm{X_m}>\epsilon_m) \to 0$.
+
+(b) If $\Er[\norm{X_m}^q/\epsilon_m^q | Y_m] \to_p 0$ for $q\geq 1$,
+    then $\Pr(\norm{X_m}>\epsilon_m) \to 0$.
+
+(c) If $\norm{X_m} = O_p(A_m)$ conditional on $Y_m$ (i.e. for any
+    $\ell_m \to \infty$, $\Pr(\norm{X_m} > \ell_m A_m | Y_m) \to_p
+    0$), then $\norm{X_m} = O_p(A_m)$ unconditionally
+
+<div class="notes">
+(a) by dominated convergence
+(b) from Markov's inequality
+(c) follows from (a)
+</div>
+
+---
+
+### Proof outline: $R_{n,1}$
+
+$$
+R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
+   \En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)] \right)
+$$
+
+- $\norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
+  U_{1,k} + U_{2,k}$
+  where
+  $$
+  \begin{align*}
+  U_{1,k} = & \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] -
+   \Er[\psi^a(W;\hat{\eta}_k)| I^c_k]} \\
+  U_{2,k} = & \norm{ \Er[\psi^a(W;\hat{\eta}_k)| I^c_k] -
+  \Er[\psi^a(W;\eta_0)]}
+  \end{align*}
+  $$
+
+---
+
+### Proof outline: $R_{n,2}$
+
+- $R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[
+  \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$
+- $\sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
+  \psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}$
+  where
+
+$$
+\small
+\begin{align*}
+  U_{3,k} = & \norm{ \frac{1}{\sqrt{n}} \sum_{i \in I_k} \left(
+      \psi(w_i;\theta_0, \hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) -
+      \Er[ \psi(w_i;\theta_0, \hat{\eta}_k) -
+           \psi(w_i;\theta_0,\eta_0)] \right) } \\
+  U_{4,k} = & \sqrt{n} \norm{ \Er[
+  \psi(w_i;\theta_0, \hat{\eta}_k) | I_k^c] - \Er[\psi(w_i;\theta_0,\eta_0)]}
+\end{align*}
+$$
+
+- $U_{4,k} = \sqrt{n} \norm{f_k(1)}$ where
+
+$$
+f_k(r) = \Er[\psi(W;\theta_0,\eta_0 + r(\hat{\eta}_k - \eta_0)) |
+I^c_k] - \Er[\psi(W;\theta_0,\eta_0)]
+$$
+
+---
+
+### Asymptotic normality
+
+$$ \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
+\sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I) $$
+
+- $\rho_n := n^{-1/2} + r_n + r_n' + n^{1/2} (\lambda_n +\lambda_n')
+  \lesssim \delta_n$
+
+- Influence function
+$$\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)$$
+
+- $\sigma^2 := J_0^{-1} \Er[\psi(w;\theta_0,\eta_0) \psi(w;\theta_0,\eta_0)'](J_0^{-1})'$
+
+<div class="notes">
+This is the DML2 case of theorem 3.1 of @chernozhukov2018.
+</div>
+
+---
+
+### Creating orthogonal moments
+
+- Need
+$$
+ \partial \eta\Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right]  \approx 0
+$$
+
+- Given an some model, how do we find a suitable $\psi$?
+
+---
+
+### Orthogonal scores via concentrating-out
+
+- Original model:
+$$
+(\theta_0, \beta_0) = \argmax_{\theta, \beta} \Er[\ell(W;\theta,\beta)]
+$$
+- Define
+$$
+\eta(\theta) = \beta(\theta) = \argmax_\beta \Er[\ell(W;\theta,\beta)]
+$$
+- First order condition from $\max_\theta
+\Er[\ell(W;\theta,\beta(\theta))]$ is
+$$
+0 = \Er\left[ \underbrace{\frac{\partial \ell}{\partial \theta} + \frac{\partial \ell}{\partial \beta} \frac{d \beta}{d \theta}}_{\psi(W;\theta,\beta(\theta))} \right]
+$$
+
+---
+
+### Orthogonal scores via projection
+
+- Original model: $m: \mathcal{W} \times \R^{d_\theta} \times \R^{d_h} \to \R^{d_m}$
+$$
+\Er[m(W;\theta_0,h_0(Z))|R] = 0
+$$
+- Let $A(R)$ be $d_\theta \times d_m$ moment selection matrix, $\Omega(R)$ $d_m \times d_m$ weighting matrix, and
+$$
+\begin{align*}
+\Gamma(R) = & \partial_{v'} \Er[m(W;\theta_0,v)|R]|_{v=h_0(Z)} \\
+G(Z) = & \Er[A(R)'\Omega(R)^{-1} \Gamma(R)|Z]
+\Er[\Gamma(R)'\Omega(R)^{-1} \Gamma(R) |Z]^{-1} \\
+\mu_0(R) = & A(R)'\Omega(R)^{-1} - G(Z) \Gamma(R)'\Omega(R)^{-1}
+\end{align*}
+$$
+- $\eta = (\mu, h)$ and
+$$ \psi(W;\theta, \eta) = \mu(R) m(W;\theta, h(Z)) $$
+
+<div class="notes">
+@chernozhukov2018 show how to construct orthogonal scores in a few
+examples via concentrating out and projection.  @chernozhukov2015 also
+discusses creating orthogonal scores. 
+</div>
+
+---
+
+### Example: average derivative
+
+- $x,y \in \R^1$, $\Er[y|x] = f_0(x)$, $p(x) =$ density of $x$
+
+- $\theta_0 = \Er[f_0'(x)]$
+
+- Joint objective
+$$
+\min_{\theta,f} \Er\left[ (y - f(x))^2 + (\theta - f'(x)^2) \right] 
+$$
+
+- $f_\theta(x) = \Er[y|x] + \theta \partial_x \log p(x) - f''(x) -
+  f'(x) \partial_x \log p(x)$
+
+- Concentrated objective: 
+$$ 
+\min_\theta \Er\left[ (y - f_\theta(x))^2 + (\theta - f_\theta'(x)^2)
+\right]
+$$
+
+- First order condition at $f_\theta = f_0$ gives
+$$
+0 = \Er\left[ (y - f_0(x))\partial_x \log p(x) + (\theta - f_0'(x)) \right]
+$$
+
+<div class="notes">
+We'll go over this derivation in lecture, but I don't think I'll have
+time to type it here. 
+
+See @cnr2018 for an approach to estimating average derivatives (and
+other linear in $\theta$ models) that doesn't require explicitly
+calculating an orthogonal moment condition.
+</div>
+
+---
+
+### Example : average derivative with endogeneity
+
+- $x,y \in \R^1$, $p(x) =$ density of $x$
+- Model : $\Er[y - f(x) | z] = 0$ $\theta_0 = \Er[f_0'(x)]$
+
+- Joint objective:
+$$
+\min_{\theta,f} \Er\left[ \Er[y - f(x)|z]^2 + (\theta - f'(x))^2 \right] 
+$$
+
+- $f_\theta(x) = (T^* T)^{-1}\left((T^*\Er[y|z])(x) - \theta \partial_x \log p(x)\right)$
+    - where $T:\mathcal{L}^2_{p} \to \mathcal{L}^2_{\mu_z}$ with 
+    $(T f)(z) = \Er[f(x) |z]$
+    - and $T^*:\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with 
+    $(T^* g)(z) = \Er[g(z) |x]$
+
+- Orthogonal moment condition :
+$$
+0 = \Er\left[ 
+\Er[y - f(x) | z] (T (T^* T)^{-1} \partial_x \log p)(z) +
+(\theta - f'(x)) 
+\right]
+$$
+
+<div class="notes">
+The first order condition for $f$ in the joint objective function is
+$$
+\begin{align*}
+0 = \Er \left[ \Er[y-f(x) |z]\Er[v(x)|z] + (\theta - f'(x))(-v'(x)) \right]
+\end{align*}
+$$
+Writing these expectations as integrals, integrating by parts to get
+rid of $v'(x)$, and
+switching the order of integration, gives
+$$
+\begin{align*}
+0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+(\theta-f'(x))\partial_x \log p(x) - f''(x) \right) p(x) dx
+\end{align*}
+$$
+Notice that integrating by parts $\int f''(x) p(x) dx = \int f' p'(x)
+dx$ eliminates the terms with $f'$ and $f''$, leaving
+$$
+\begin{align*}
+0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+\theta \partial_x \log p(x) \right) p(x) dx
+\end{align*}
+$$
+For this to be $0$ for all $v$, we need 
+$$
+0 = \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
+\theta \partial_x \log p(x) 
+$$
+or equivalently using $T$ and $T^*$,
+$$
+0 = \left(T^*(E[y|z] - T f)\right)(x)  -
+\theta \partial_x \log p(x) 
+$$
+Note that $T$ and $T^*$ are linear, and $T^*$ is the adjoint of
+$T$. Also, identification of $f$ requires $T$ is one to one. Hence, if
+$f$ is identified, $T^* T$ is invertible. Therefore, we can solve for
+$f$ as:
+$$
+f_\theta(x) = (T^* T)^{-1} \left( (T^* \Er[y |z])(x) - \theta \partial \log p(x) \right)
+$$
+Plugging $f_\theta(x)$ back into the objective function and then
+differentiating with respect to $\theta$ gives the orthogonal moment
+condition on the slide. Verifying that this moment condition is indeed
+orthogonal is slightly tedious. Writing out some of the expectations as
+integrals, changing order of integrations, and judiciously factoring
+out terms, will eventually lead to the desired conclusion. 
+
+@cfr2007 is an excellent review about estimating $(T^* T)^{-1}$ and 
+the inverses of other linear transformations.
+</div>
+
+---
+
+### Example: average elasticity
+
+- Demand $D(p)$, quantities $q$, instruments $z$
+$$\Er[q-D(p) |z] = 0$$
+
+- Average elasticity $\theta \Er[D'(p)/D(p) | z ]$
+
+- Joint objective :
+$$
+\min_{\theta,D} \Er\left[ \Er[q - D(p)|z]^2 + (\theta - D'(p)/D(p))^2  \right]
+$$
+
+---
+
+### Example: control function
+
+$$ 
+\begin{align*}
+0 = & \Er[d - p(x,z) | x,z] \\
+0 = & \Er[y - x\beta - g(p(x,z)) | x,z]
+\end{align*}
+$$
+
+--- 
+
+## Treatment heterogeneity
+
+- Potential outcomes model
+     - Treatment $d \in \{0,1\}$
+     - Potential outcomes $y(1), y(0)$
+     - Covariates $x$
+     - Unconfoundedness or instruments
+     
+ - Objects of interest:
+     - Conditional average treatment effect $s_0(x) = \Er[y(1) - y(0) | x]$
+     - Range and other measures of spread of conditional average
+       treatment effect
+     - Most and least affected groups
+
+---
+
+### Fixed, finite groups
+
+- $G_1, ..., G_K$ finite partition of support $(x)$
+
+- Estimate $\Er[y(1) - y(0) | x \in G_k]$ as above
+
+- pros: easy inference, reveals some heterogeneity
+
+- cons: poorly chosen partition hides some heterogeneity, searching 
+  partitions violates inference
+
+---
+
+### Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments 
+
+- @cddf2018
+
+- Use machine learning to find partition with sample splitting to
+  allow easy inference
+  
+- Randomly partition sample into auxillary and main samples
+
+- Use any method on auxillary sample to estimate 
+$$S(x) = \widehat{\Er[y(1) - y(0) | x]}$$
+and
+$$B(x) = \widehat{\Er[y(0)|x]}$$
+
+--- 
+
+### Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments{-}
+
+- Define $G_k = 1\{\ell_{k-1} \leq S(x) \leq \ell_k\}$
+- Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$
+$$ 
+y = \alpha_0 + \alpha_1 B(x) + \sum_k \gamma_k (d-P(X)) 1(G_k) +
+\epsilon 
+$$
+
+- $\hat{\gamma}_k \to_p \Er[y(1) - y(0) | G_k]$
+
+--- 
+
+### Best linear projection of CATE
+
+- Randomly partition sample into auxillary and main samples
+
+- Use any method on auxillary sample to estimate 
+$$S(x) = \widehat{\Er[y(1) - y(0) | x]}$$
+and
+$$B(x) = \widehat{\Er[y(0)|x]}$$
+
+- Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$
+$$ 
+y = \alpha_0 + \alpha_1 B(x) + \beta_0 (d-P(x)) + \beta_1
+(d-P(x))(S(x) - \Er[S(x)]) + \epsilon 
+$$
+
+- $\hat{\beta}_0, \hat{\beta}_1 \to_p \argmin_{b_0,b_1} \Er[(s_0(x) -
+  b_0 - b_1 (S(x)-E[S(x)]))^2]$
+
+---
+
+### Inference on CATE 
+
+- Inference on $\Er[y(1) - y(0) | x] = s_0(x)$ challenging when $x$
+  high dimensional and/or few restrictions on $s_0$ 
+
+- Pointwise results for random forests : @wager2018, @athey2016
+
+- Recent review of high dimensional inference : @bcchk2018
+
+--- 
+
+### Random forest asymptotic normality
+
+- @wager2018
+
+- $\mu(x) = \Er[y|x]$
+
+- $\hat{\mu}(x)$ estimate from honest random forest 
+
+    - honest $=$ trees independent of outcomes being averaged
+    
+    - sample-splitting or trees formed using another outcome
+
+- Then
+$$ \frac{\hat{\mu}(x) - \mu(x)}{\hat{\sigma}_n(x)} \leadsto N(0,1) $$
+    - $\hat{\sigma}_n(x) \to 0$ slower than $n^{-1/2}$ 
+    
+---
+
+### Random forest asymptotic normality
+
+- Results are pointwise, but what about?
+    - $H_0: \mu(x_1) = \mu(x_2)$
+    - $\{x: \mu(x) \geq 0 \}$
+    - $\Pr(\mu(x) \leq 0)$ 
+    
+---
+
+### Uniform inference
+
+- @bcchk2018
+- @bccw2018
+
+<!-- --- -->
+
+# Bibliography
+
+<!-- --- -->

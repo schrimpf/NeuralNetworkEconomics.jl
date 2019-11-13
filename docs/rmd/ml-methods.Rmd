@@ -1,0 +1,1185 @@
+---
+title       : "Machine Learning and Causal Inference"
+subtitle    : "Machine learning methods"
+author      : Paul Schrimpf
+job         :
+date        : "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: "../ml.bib"
+output      :
+    html_document :
+        toc : true
+        toc_depth : 2
+        toc_float : true
+        number_sections : true
+        theme : journal
+        css : 628notes.css
+        code_folding: hide
+        lib_dir : deps
+        self_cononontained : false
+        fig_width: 8
+        fig_height: 6
+    ioslides_presentation :
+        self_contained: false
+        code_folding: hide
+        lib_dir : deps
+        theme : journal
+        fig_width: 8
+        fig_height: 6
+## To create html files from this, in R enter'source("../renderAll.R"); renderAll("filename.Rmd")'
+
+---
+
+[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike
+4.0 International
+License](http://creativecommons.org/licenses/by-sa/4.0/) 
+
+$$
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+$$
+
+```{r setup, cache=FALSE, echo=FALSE}
+library(knitr)
+if (exists("slides") && slides) {
+  opts_chunk$set(echo=FALSE)
+  opts_chunk$set(warning=FALSE)
+  opts_chunk$set(message=FALSE)
+}
+rootdir=opts_knit$get("root.dir")
+```
+
+# Introduction to machine learning
+
+
+<div class="notes">
+<div class="alert alert-danger">
+@friedman2008 and @james2013 are commonly recommended textbooks on
+machine learning. @james2013 is less technical of the two, but neither
+book is especially difficult. @efron2016 covers similar material and
+is slightly more advanced.
+</div>
+</div>
+
+<!-- --- -->
+
+## Some prediction examples
+
+Machine learning is tailored for prediction, let's look at some data
+and see how well it works
+
+---
+
+### Predicting house prices
+
+- Example from @mullainathan2017
+- Training on 10000 observations from AHS
+- Predict log house price using 150 variables
+- Holdout sample of 41808
+
+---
+
+### AHS variables{-}
+```{r, ahsvars, cache=TRUE}
+ahs <- readRDS("ahs2011forjep.rdata")$df
+print(summary(ahs[,1:20]))
+```
+---
+
+```{r, ahsfig, cache=TRUE, warning=FALSE,message=FALSE}
+library(GGally)
+ggpairs(ahs[,c("LOGVALUE","ROOMS", "LOT","UNITSF","BUILT")],
+        lower=list(continuous="points", combo="facethist",
+                   discrete="facetbar"),
+        diag=list(continuous="barDiag",discrete="barDiag")) +
+  theme_minimal()
+```
+
+---
+
+```{r, msresults, results='hide', cache=TRUE}
+# use ms-reproduce.R from course git repo to download and run Mullainathon & Spiess data and code to
+# create jepfittedmodels-table1.csv. Be aware that this will take many hours.
+tbl <- read.csv("jepfittedmodels-table1.csv")
+tab <- tbl[,3:ncol(tbl)]
+rownames(tab) <- tbl[,2]
+tab <- tab[1:5, c(1,2,3,5)]
+colnames(tab) <- c("in sample MSE", "in sample R^2", "out of sample MSE", "out of sample R^2")
+library(kableExtra)
+```
+```{r, results='as-is', cache=TRUE}
+kable_styling(kable(tab,
+                    caption="Performance of different algorithms in predicting housing values",
+                    format="html", digits=3),
+              bootstrap_options = c("striped", "hover", "condensed",
+                                    "responsive"), full_width=TRUE)
+```
+
+---
+
+```{r, jep1, cache=TRUE, warning=FALSE}
+library(ggplot2)
+load(file="jeperrorfig.RData")
+print(fig)
+```
+
+---
+
+```{r, jep2, cache=TRUE, warning=FALSE}
+load(file="jeperrorfig.RData")
+print(fig2)
+```
+
+---
+
+### Predicting pipeline revenues
+
+- Data on US natural gas pipelines
+   - Combination of FERC Form 2, EIA Form 176, and other sources,
+     compiled by me
+   - 1996-2016, 236 pipeline companies, 1219 company-year observations
+- Predict: $y =$ profits from transmission of natural gas
+- Covariates: year, capital, discovered gas reserves, well head gas price,
+     city gate gas price, heating degree days, state(s) that each
+     pipeline operates in
+
+<div class="notes">
+This is a dataset that I put together for a current research
+project. I'm happy to share it upon request, but it is not ready to
+be posted publicly yet.
+</div>
+
+---
+
+```{r, loadpipeline, results='show', warning=FALSE, cache=TRUE}
+load("~/natural-gas-pipelines/dataAndCode/pipelines.Rdata")
+# data has problems before 1996 due to format change
+data <- subset(data,report_yr>=1996)
+# replace NA state weights with 0's
+data[,59:107][is.na(data[,59:107])] <- 0
+# spaces in variable names will create problems later
+names(data) <- gsub(" ",".",names(data))
+summary(data[,c("transProfit","transPlant_bal_beg_yr","cityPrice","wellPrice")])
+```
+
+---
+
+```{r, pipeline-figure, cache=TRUE, results='hide', warning=FALSE,message=FALSE}
+library(GGally)
+ggpairs(data[,c("transProfit","transPlant_bal_beg_yr","cityPrice","wellPrice")],
+        lower=list(continuous="smooth"))  + theme_minimal()
+```
+
+---
+
+### Predicting pipeline revenues : methods
+
+- OLS : 67 covariates (year dummies and state(s) create a lot)
+- Lasso
+- Random forests
+- Randomly choose 75% of sample to fit the models, then look at
+  prediction accuracy in remaining 25%
+
+<div class="notes">
+We are focusing on Lasso and random forests because these are the
+two methods that econometricians have worked on the most. Other
+methods such as neural nets and support vector machines are also
+worth exploring. For now, you can think of Lasso and random
+forests these as black boxes that generate predictions from
+data. We will go into more detail soon.
+</div>
+
+```{r, pipeline-predict, cache=TRUE}
+## Create X matrix for OLS and random forests
+xnames <-c("transPlant_bal_beg_yr",   "reserve",   "wellPrice",  "cityPrice",
+           "plantArea",  "heatDegDays",
+           names(data)[59:107] )
+yname <- "transProfit"
+fmla <- paste(yname,"~",paste(xnames,collapse=" + "),"+ as.factor(report_yr)")
+ols <- lm(fmla,data=data,x=TRUE,y=TRUE)
+X <- ols$x[,!(colnames(ols$x) %in% c("(Intercept)")) &
+            !is.na(ols$coefficients)]
+y <- ols$y
+train <- runif(nrow(X))<0.75
+
+# OLS prediction on training set
+y.t <- y[train]
+X.t <- X[train,]
+ols <- lm(y.t ~ X.t)
+y.hat.ols <- ols$coefficients[1] + X %*% ols$coefficients[2:(length(ols$coef))]
+df <- data.frame(y=y, y.hat=y.hat.ols, train=train, method="ols")
+
+## Lasso
+library(glmnet)
+# Create larger X matrix for lasso
+fmla.l <- paste(yname,"~ (",
+                paste(xnames,collapse=" + "),")*(report_yr + transPlant_bal_beg_yr +
+    reserve + wellPrice + cityPrice + plantArea + heatDegDays) + ",
+                paste(sprintf("I(%s^2)",xnames[1:6],collapse=" + "))
+                )
+reg <- lm(fmla.l, data=data, x=TRUE,y=TRUE)
+Xl <- reg$x[,!(colnames(reg$x) %in% c("(Intercept)")) &
+             !is.na(reg$coefficients)]
+lasso <- cv.glmnet(Xl[train,],y[train],alpha=1,parallel=FALSE,
+                   standardize=TRUE, intercept=TRUE, nfolds = 50)
+y.hat.lasso <- predict(lasso, Xl, s=lasso$lambda.min, type="response")
+df <- rbind(df,  data.frame(y=y, y.hat=as.vector(y.hat.lasso),
+                            train=train, method="lasso"))
+
+## Random forest
+library(grf)
+rf <- regression_forest(X[train,],y[train],tune.parameters = TRUE)
+y.hat.rf  <-  predict(rf, X)$predictions
+df <- rbind(df, data.frame(y=y, y.hat=y.hat.rf, train=train,
+                           method="random forest"))
+
+# Neural network
+library(RSNNS)
+n <- nrow(X[train,])
+p <- ncol(X)
+rn <- floor(n^(1/(2*(1+1/(1+p))))/2)
+xn <- normalizeData(X)
+yn <- normalizeData(y)
+nn <- mlp(x=xn[train,], y=yn[train], linOut=TRUE, size=rn)
+yn.hat.nn <- predict(nn, xn)
+y.hat.nn <- denormalizeData(yn.hat.nn, getNormParameters(yn))
+df <- rbind(df, data.frame(y=y, y.hat=y.hat.nn, train=train,
+                           method="neural network"))
+```
+
+---
+
+```{r, pipelinePredPlot, cache=TRUE, warning=FALSE, dependson=c("loadpipeline","pipeline-predict")}
+ggplot(data=df,aes(x=y,y=y.hat,colour=method,shape=train)) +  geom_point(alpha=0.5) +
+  geom_line(aes(y=y)) + theme_minimal()
+```
+
+---
+
+```{r, pipelineErrorPlot, cache=TRUE, warning=FALSE, dependson=c("loadpipeline","pipeline-predict")}
+df$trainf <- factor(df$train, levels=c("TRUE", "FALSE"))
+df$error <- df$y - df$y.hat
+ggplot(data=df,aes(x=error,colour=method)) +
+  geom_density() + theme_minimal() +
+  xlim(quantile(df$error,c(0.01,0.99))) +
+  facet_grid(trainf ~ .,labeller=label_both)
+```
+
+---
+
+```{r, pipelinePredSummary, cache=TRUE, results='as-is', dependson=c("loadpipeline","pipeline-predict")}
+
+library(kableExtra)
+fn <- function(df)  with(df,c(mean((y.hat - y)^2)/var(y),
+                              mean(abs(y.hat - y))/mean(abs(y-mean(y)))))
+tab1 <-unlist(by(subset(df,train), df$method[train],  FUN=fn))
+tab1 <- (matrix(tab1,nrow=2))
+rownames(tab1) <- c("relative MSE","relative MAE")
+colnames(tab1) <- c("OLS","Lasso","Random forest","Neural Network")
+tab2 <- unlist(by(subset(df,!train), df$method[!train],  FUN=fn))
+tab2 <- (matrix(tab2,nrow=2))
+rownames(tab2) <- c("relative MSE","relative MAE")
+colnames(tab2) <- c("OLS","Lasso","Random forest","Neural Network")
+
+kable_styling(kable(tab1, caption="Training sample", format="html", digits=3),
+              bootstrap_options = c("striped", "hover", "condensed",
+              "responsive"), full_width=F)
+kable_styling(kable(tab2, caption="Hold-out sample", format="html", digits=3),
+              bootstrap_options = c("striped", "hover", "condensed",
+              "responsive"), full_width=F)
+```
+
+<div class="notes">
+In this table, relative MSE is the mean squared error relative to the
+variance of $y$, that is
+$$
+    \text{relative MSE} = \frac{\En[(y_i - \hat{y}_i)^2]} {\En[ (y_i - \bar{y})^2]}.
+$$
+It is equal to $1-R^2$. Similarly, relative MAE is
+$$
+    \text{relative MAE} = \frac{\En[|y_i - \hat{y}_i|]} {\En[|y_i - \bar{y}|]}.
+$$
+
+<div class="alert alert-danger">
+$\En$ denotes the empirical expectation, $\En[y_i] = \frac{1}{n}\sum_{i=1}^n y_i$.
+</div>
+</div>
+<!-- --- -->
+
+## Lasso
+
+- Lasso solves a penalized (regularized) regression problem
+$$
+\hat{\beta} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
+\frac{\lambda}{n} \norm{ \hat{\Psi} \beta}_1
+$$
+- Penalty parameter $\lambda$
+- Diagonal matrix $\hat{\Psi}  = diag(\hat{\psi})$
+- Dimension of $x_i$ is $p$ and implicitly depends on $n$
+    - can have $p >> n$
+
+<div class="notes">
+We are following the notation used in @hdm. Note that this
+vignette has been updated since it was published in the R Journal. To
+obtain the most recent version, install the hdm package in R, load it,
+and then open the vignette.
+
+```{r, eval=FALSE}
+install.packages("hdm")
+library(hdm)
+vignette("hdm_introduction")
+```
+
+The choice of penalty (or regularization) parameter, $\lambda$, is
+important. When $\lambda = 0$, Lasso is the same as OLS. As $\lambda$
+increases, the Lasso estimates will shrink toward 0. For large enough
+$\lambda$, some components of $\hat{\beta}$ become exactly 0. As
+$\lambda$ increases more, more and more components of $\hat{\beta}$
+will be exactly $0$.
+
+For some intuition about why Lasso results in some coefficients being
+zero, note that
+$$
+\hat{\beta}^{lasso} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
+\frac{\lambda}{n} \norm{\beta}_1
+$$
+is equivalent to
+$$\hat{\beta}^{lasso} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] \text{ s.t. }
+\norm{\beta}_1 \leq s
+$$
+for some $s$. In this problem, the boundary of the constraint set will
+be a diamond. The level sets of the objective will be
+elipses. Generically, the solution will lie on one of the corners of
+the $\norm{\beta}_1 = 1$ set. See @friedman2008 or @james2013 for more
+details.
+
+Most machine learning methods involve some form
+of regularization with an associated regularization parameter. In
+choosing the regularization parameter, we face a bias-variance
+tradeoff. As $\lambda$ increases, variance decreases, but bias
+increases.
+
+Machine learning algorithms typically choose regularization parameters
+through cross-validation. Although
+cross-validation leads to good predictive performance, the statistical
+properties are not always known. @hdm say, "In high dimensional settings
+cross-validation is very popular; but it lacks a theoretical
+justification for use in the present context." However, there has been
+some recent progress on convergence rates for Lasso with
+cross-validation, see @chetverikov2017.
+
+The diagonal matrix $\hat{\Psi}$ is used to make the estimator
+invariant to scaling of $x_i$, and to allow for heteroskedasticity.
+If reading about Lasso or using code from other authors, be careful
+some do not include $\hat{\Psi}$ and use $\lambda$ instead of
+$\frac{\lambda}{n}$.
+
+</div>
+
+---
+
+```{r, cache=TRUE}
+load("~/natural-gas-pipelines/dataAndCode/pipelines.Rdata")
+data <- subset(data,report_yr>=1996)
+library(glmnet)
+mod <- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+# standardize everything so that coefficients are similar scale when plotted
+mod$y <- (mod$y - mean(mod$y))/sd(mod$y)
+for(c in 2:ncol(mod$x)) {
+  mod$x[,c] <- (mod$x[,c] - mean(mod$x[,c]))/sd(mod$x[,c])
+}
+lassoPath <- glmnet(mod$x, mod$y, alpha=1)
+plot(lassoPath, xvar="lambda", label=TRUE)
+```
+
+---
+
+```{r, cache=TRUE}
+load("~/natural-gas-pipelines/dataAndCode/pipelines.Rdata")
+data <- subset(data,report_yr>=1996)
+library(glmnet)
+mod <- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+# standardize everything so that coefficients are similar scale when plotted
+mod$y <- (mod$y - mean(mod$y))/sd(mod$y)
+for(c in 2:ncol(mod$x)) {
+  mod$x[,c] <- (mod$x[,c] - mean(mod$x[,c]))/sd(mod$x[,c])
+}
+cv <- cv.glmnet(mod$x, mod$y, alpha=1)
+plot(cv)
+```
+
+---
+
+### Statistical properties of Lasso
+
+- Model :
+$$
+y_i = x_i'\beta_0 + \epsilon_i
+$$
+    - $\Er[x_i \epsilon_i] = 0$
+    - $\beta_0 \in \R^n$
+    - $p$, $\beta_0$, $x_i$, and $s$ implicitly depend on $n$
+    - $\log p = o(n^{1/3})$
+        - $p$ may increase with $n$ and can have $p>n$
+- Sparsity $s$
+    - Exact : $\norm{\beta_0}_0 = s = o(n)$
+    - Approximate : $|\beta_{0,j}| < Aj^{-a}$, $a > 1/2$, $s \propto n^{1/(2a)}$
+
+<div class="notes">
+$\norm{\beta}_0$ is the number of non-zero components of $\beta$.
+
+The approximate sparsity setting means if $|\beta_{0,j}| < Aj^{-a}$,
+then, there exists a sparse approximation, say $\beta_{a}$, with $s$
+nonzero elements, such that the approximation error,
+$$
+    \En[(x_i'(\beta_a - \beta_0))^2] = c_s^2
+$$
+will vanish quickly if $s \propto n^{1/2a}$. Just how quickly will it
+vanish? An easy upper bound is
+$$
+\begin{align*}
+    c_s^2 \leq & \En\left[\left( \sum_{j={s+1}}^p x_ij \beta_{0,j} \right)^2
+    \right] \\
+    \leq & \En\left[ \left(\sum_{j={s+1}}^p x_ij A j^{-a} \right)^2 \right]
+\end{align*}
+$$
+To simplify the alegebra, let's assume $\En[x_i x_i'] = I_p$, then
+$$
+\begin{align*}
+   c_s^2 \leq & \sum_{j={s+1}}^p A^2 j^{-2a} \\
+    & \leq \sum_{j={s+1}}^\infty A^2 j^{-2a} = A^2 s^{-2a} \zeta(2a) \\
+   c_s^2 \lesssim s^{-2a}
+\end{align*}
+$$
+where $\zeta(2a) = \sum_{j=1}^\infty j^{-2a}$ is the Riemann Zeta
+function (all that matters here is that $\zeta(2a)$ is finite for
+$2a>1$).  Then if $s \propto n^{(1+\delta)/2a}$, we would get $c_s \lesssim
+n^{-(1+\delta)/2}$. Importantly, $\sqrt{n} c_s = o(1)$, so in the sort of
+expansions that we would do to show that $\hat{\theta}$ is $\sqrt{n}$
+asymptotically normal, the bias term would vanish.
+
+<!-- Lasso can also be applied to nonparametric regression models such as -->
+<!-- $$ -->
+<!-- y_i = f(z_i) + \epsilon_i -->
+<!-- $$ -->
+<!-- Let $x_i = P(z_i)$ be a set of transformations of $z$, such as powers -->
+<!-- or splines. Define $\beta_0$ as the solution to the oracle problem -->
+<!-- $$ -->
+<!-- \beta_0 = \argmin_\beta \En[(f(z_i) - x_i'\beta)^2] + -->
+<!-- \frac{\lambda}{n} \norm{\beta}_0 -->
+<!-- $$ -->
+<!-- and $c_s^2$ to be the minimized value. If we want to estimate $f(z)$ -->
+<!-- instead of $x_i'\beta_0$, then we must add $c_s$ to the rates of -->
+<!-- convergence below. There will then be some tradeoff between estimation -->
+<!-- error increasing with $s$ and approximation error ($c_s$) decreasing -->
+<!-- with $s$. If $z$ is $d_z$ dimensional and $f$ is $\ell$-times -->
+<!-- differentiable, we know from @stone1982 that the fastest possible -->
+<!-- $\mathcal{L}^2$ rate of convergence for any estimate of $f$ is -->
+<!-- $n^{\frac{-\ell}{2\ell + d_z}}$.  -->
+
+</div>
+
+---
+
+### Rate of convergence
+
+- With $\lambda = 2c \sqrt{n} \Phi^{-1}(1-\gamma/(2p))$
+$$
+\sqrt{\En[(x_i'(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
+\log (p) },
+$$
+
+$$
+\norm{\hat{\beta}^{lasso} - \beta_0}_2 \lesssim_P \sqrt{ (s/n)
+\log (p) },
+$$
+
+and
+
+$$
+    \norm{\hat{\beta}^{lasso} - \beta_0}_1 \lesssim_P \sqrt{ (s^2/n)
+\log (p) }
+$$
+
+    - Constant $c>1$
+
+    - Small $\gamma \to 0$ with $n$, and $\log(1/\gamma) \lesssim \log(p)$
+
+    - Rank like condition on $x_i$
+
+- near-oracle rate
+
+<div class="notes">
+In the semiparametric estimation problems that we're focused on, our
+object of interest is some finite dimensional parameter $\theta$ that
+depends on our data some high dimensional parameter, like $\beta_0$ in
+the Lasso. To analyze estimates of $\hat{\theta}(data, \hat{\beta})$,
+a key step will be to show that we can replace $\hat{\beta}$ with
+$\beta_0$. The rate of convergence of $\hat{\beta}$ will be important
+for making this possible. Thus, the main thing that we care about for
+the Lasso and other machine learning estimators will be their rates of
+converagence.
+
+The notation $A_n \lesssim_P B_n$ is read $A_n$ is bounded in
+probability by $B_n$ and means that for any $\epsilon>0$, there exists
+$M$, $N$ such that $\Pr(|A_n/B_n| > M) < \epsilon$ for all $n >
+N$. This is also often denoted by $A_n = O(B_n)$.
+
+These rate results are from @belloni2012. Since this setup allows
+$p>n$, $x$ cannot be assumed to have full rank. Instead, an assumption
+about the eigenvalues of $X'X$ restricted to the nonzero components of
+$\beta_0$, plays a similar. See @belloni2012 for details.
+
+This convergence rate is called the near-oracle rate, because it is
+nearly as good as what we get if an oracle told us which components of
+$\beta_0$ are nonzero. In that case OLS using just those $s$
+components gives the fastest possible rate, which is
+
+$$
+\sqrt{\En[(x_i'(\hat{\beta}^{OLS} - \beta_0))^2]} \propto \sqrt{s/n}.
+$$
+
+</div>
+
+---
+
+### Rate of convergence{-}
+
+- Using cross-validation to choose $\lambda$ known bounds are worse
+    - With Gaussian errors: $\sqrt{\En[(x_i'(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
+\log (p) } \log(pn)^{7/8}$,
+    - Without Gaussian error $\sqrt{\En[(x_i'(\hat{\beta}^{lasso} -
+      \beta_0))^2 ] } \lesssim_P \left( \frac{s \log(pn)^2}{n} \right)^{1/4}$
+    - @chetverikov2017
+
+<div class="notes">
+These results are for an exactly sparse setting. Do they hold
+under approximate sparsity?
+</div>
+
+---
+
+### Other statistical properties
+
+- Inference on $\beta$: not the goal in our motivating
+  examples
+    - Difficult, but some recent results
+    - See @lee2016, @taylor2017, @caner2018
+
+- Model selection: not the goal in our motivating examples
+    - Under stronger conditions, Lasso correctly selects the nonzero
+      components of $\beta_0$
+    - See @belloni2011
+
+<div class="notes">
+In the statistics literature on high dimensional and nonparametric
+estimation, you will come across the terms "adaptive" and "honest."
+Adaptivity of an estimator refers to the situation where the rate of
+convergence depends on some unknown parameter. In the case of Lasso,
+the sparsity index of the true model, $s$, is an unknown parameter
+affecting the rate of convergence. Without knowing or estimating $s$,
+Lasso attains the above rate of convergence for a wide range of
+admissable $s$. Thus, Lasso is adaptive to the unknown sparsity
+index.
+
+"Honest" is a property of an inference method. A confidence region is
+honest if it has correct coverage for a large class of true
+models. For the Lasso, an honest confidence region would be valid for
+a wide range of sparsity, $s$. An honest, adaptive confidence region
+would be one that is valide for a wide range of $s$ and whose size
+shrinks as quickly as if $s$ were known. Achieving both adaptivity and
+honesty is impossible in the most general setting. For example,
+although an $\ell$ times differentiable function of a $p$ dimensional
+variable can be adaptively estimated at rate $n^{-\ell}{2\ell + p}$,
+@li1989 showed that an honest confidence region can contract at most
+at rate $n^{-1/4}$ (not adaptive to $\ell$).
+However, an adaptive confidence region can be constructed if further
+restrictions are placed on the set of possible models, see @nickl2013
+for such a result for Lasso..
+</div>
+
+---
+
+### Post-Lasso
+
+- Two steps :
+
+    1. Estimate $\hat{\beta}^{lasso}$
+
+    2. ${\hat{\beta}}^{post} =$ OLS regression of $y$ on
+       components of $x$ with nonzero $\hat{\beta}^{lasso}$
+
+- Same rates of convergence as Lasso
+- Under some conditions post-Lasso has lower bias
+    - If Lasso selects correct model, post-Lasso converges at the
+      oracle rate
+
+<div class="notes">
+Post-Lasso removes some of the regularizaton bias of Lasso. The rate
+of convergence of post-Lasso is always as fast as Lasso, and under
+conditions that allow perfect model selection, post-Lasso converges
+slightly faster (by a factor $\log(p)$). See @belloni2012 for
+details.
+</div>
+
+<!-- --- -->
+
+<!-- ------------------------------------------------------------------------------------------->
+
+## Random forests
+
+---
+
+### Regression trees
+
+- $y_i \in R$ on $x_i \in \R^p$
+- Want to estimate $\Er[y | x]$
+- Locally constant estimate
+$$
+\hat{t}(x) = \sum_m^M c_m 1\{x \in R_m \}
+$$
+- Rectangular regions $R_m$ determined by tree
+
+---
+
+### Simulated data
+
+```{r, tree, cache=TRUE}
+n <- 1000
+x <- runif(n)
+y <- runif(n)
+f <- function(x,z) {
+  1/3*(sin(5*x)*sqrt(z)*exp(-(z-0.5)^2))
+}
+f0 <- f(x,y)
+z <- f0 + rnorm(n)*0.1
+tree.df <- data.frame(x=x,y=y,z=z)
+# plot true function and data
+x.g <- seq(0,1,length.out=100)
+y.g <- seq(0,1,length.out=100)
+f0.g <- t(outer(x.g,y.g,f))
+
+library(plotly)
+fig <- plot_ly( colors="YlOrBr")
+fig <- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
+fig <- add_surface(fig, x=x.g, y=y.g, z=f0.g, opacity=1)
+fig
+```
+
+---
+
+### Estimated tree
+
+```{r, treefit, cache=TRUE, dependson="tree"}
+# fit regression tree
+library(party)
+tree <- ctree(z ~ x + y, data=tree.df)
+
+# plot estimate
+x.g <- seq(0,1,length.out=100)
+y.g <- seq(0,1,length.out=100)
+df <- expand.grid(x.g,y.g)
+names(df) <- c("x","y")
+fhat.g <- matrix(predict(tree, newdata=df),nrow=length(x.g), byrow=TRUE)
+library(plotly)
+fig <- plot_ly(colors="YlOrBr")
+fig <- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
+fig <- add_surface(fig, x=x.g, y=y.g, z=fhat.g, opacity=1)
+fig
+```
+
+---
+
+### Estimated tree
+
+```{r, treeplot, cache=TRUE, dependson="treefit"}
+plot(tree)
+```
+
+---
+
+### Tree algorithm
+
+- For each region, solve
+$$
+    \min_{j,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
+        (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
+        (y_i - c_2)^2 \right]
+$$
+- Repeat with $R = \{x:x_{i,j} \leq s^*\} \cap R$ and $R =
+   \{x:x_{i,j} \leq s^*\} \cap R$
+- Stop when $|R| =$ some chosen minimum size
+- Prune tree
+$$ \min_{tree \subset T} \sum (\hat{f}(x)-y)^2 + \alpha|\text{terminal
+nodes in tree}| $$
+
+<div class="notes">
+There are many variations on this tree building algorithm. They all
+share some rule to decide on which variable and where to split. They
+all have some kind of stopping rule, but not necessarily the same
+one. For example, some algorithms stop splitting into new branches
+when the improvement in $R^2$ becomes small. These trees don't need
+subsequent pruning, but also may fail to find later splits that might
+be important.
+
+As with lasso, regression trees involve some regularization. In the
+above description, both the minimum leaf size and $\alpha$ in the
+pruning step serve as regularization parameters.
+
+A potential advantage of regression trees is that their output might
+be interpretable, especially if there are not many branches. Some
+disadvantages are that they often are not very good predictors, and
+small perturbations in data can lead to seemingly large changes in the
+tree.
+</div>
+---
+
+### Random forests
+
+- Average randomized regression trees
+- Trees randomized by
+    - Bootstrap or subsampling
+    - Randomize branches:
+    $$
+    \min_{j \in S,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
+        (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
+        (y_i - c_2)^2 \right]
+    $$
+    where $S$ is random subset of $\{1, ..., p\}$
+- Variance reduction
+
+---
+
+### Rate of convergence: regression tree
+
+- $x \in [0,1]^p$, $\Er[y|x]$ Lipschitz in $x$
+- Crude calculation for single tree, let denote $R_i$ node that
+  contains $x_i$
+ $$
+  \begin{align*}
+  \Er(\hat{t}(x_i) - \Er[y|x_i])^2 = & \overbrace{\Er(\hat{t}(x_i) -
+  \Er[y|x\in R_i])^2}^{variance} +
+  \overbrace{(\Er[y|x \in R_i] - \Er[y|x])^2}^{bias^2} \\
+  = & O_p(1/m) +  O\left(L^2
+  \left(\frac{m}{n}\right)^{2/p}\right)
+  \end{align*}
+  $$
+  optimal $m = O(n^{2/(2+p)})$ gives
+  $$
+  \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-2}{2+p}})
+  $$
+
+<div class="notes">
+By a crude calculation, I mean lets treat the tree
+as fixed. The the variance term is simply from estimating a
+conditional mean. This analysis could be made more rigorous by
+assuming the tree was estimated by sample splitting --- use half the
+data to construct the tree and the remaining half to estimate the mean
+of $y$ in each node. Athey and Wager, and others, refer to such
+trees as "honest." I suppose that this is because sample splitting
+facilitates honest inference afterward.
+
+The order of the bias term comes from considering the width of the
+pieces of a $p$ dimensional cube split evenly into $n/m$ pieces.
+
+Remember that for our motivating semiparametric problems, we need
+$\sqrt{n} \Er[(\hat{t}(x_i) - \Er[y|x_i])^2]$ to vanish. The above
+rate convergence is too slow for $p>2$. The calculation of the
+above was admittedly crude, and may not be exact.
+However, @stone1982 showed that if $\Er[y|x]$ is $\ell$ times
+differentiable, the fastest possible rate of convergence for any
+estimator is $n^{\frac{-\ell}{2\ell + p}}$. To have any hope of a fast
+enough rate, we need to assume the function we're estimating is very smooth
+(high $\ell$), or place some other restriction on the class of
+functions we allow (like sparsity for the Lasso). Lipschitz continuity
+is slightly weaker than once differentiable on a compact set, so it
+should come as no surprise that the rate of convergence would be slow.
+</div>
+
+---
+
+### Rate of convergence: random forest
+
+
+- Result from @biau2012
+- Assume $\Er[y|x]=\Er[y|x_{(s)}]$, $x_{(s)}$ subset of $s$
+  variables, then
+  $$
+  \Er[(\hat{r}(x_i) - \Er[y|x_i])^2] =
+  O_p\left(\frac{1}{m\log(n/m)^{s/2p}}\right) +
+  O_p\left(\left(\frac{m}{n}\right)^{\frac{0.75}{s\log 2}} \right)
+  $$
+  or with optimal $m$
+  $$
+  \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-0.75}{s\log 2+0.75}})
+  $$
+
+<div class="notes">
+This result from @biau2012 assumes the forest is estimated with
+sample splitting. This avoids the difficult to analyze correlation
+between the nodes and $y$.
+
+@wager2015 analyze what happens when the same data is used to
+construct the tree and average in each node. They get a slightly
+higher upper bound for the variance of $\frac{\log(p)\log(n)}{m}$.
+@wager2015 also allow $p$ to increase with $n$, whereas the previous
+analysis treated $p$ as fixed.
+
+These convergence rate results for random forests are not fast enough
+for our purpose. Does this mean that random
+forests should not be used in semiparametric estimation? Not
+necessarily. We're asking too much of random forests. There is no
+estimator for an arbitrary Lipschitz function that can have fast
+enough a rate of convergence.  A restriction on the set of
+possible functions is needed to reduce the approximation bias. With
+Lasso, the assumption of (approximate) sparsity played that role.
+@chernozhukov2018 advise that random
+forests could be a good choice for semiparametric estimation when the
+function of interest is "well-approximated by a random forest."
+Unfortunately, there does not appear to be a clean mathematical way to
+describe the class of functions well-approximated by a forest.
+</div>
+
+---
+
+### Other statistical properties
+
+- Pointwise asymptotic normality : @wager2018
+
+<div class="notes">
+
+</div>
+
+<!-- --->
+
+---
+
+### Simulation study
+
+- Partially linear model
+- DGP :
+    - $x_i \in \R^p$ with $x_{ij} \sim U(0,1)$
+    - $d_i = m(x_i) + v_i$
+    - $y_i = d_i\theta + f(x_i) + \epsilon_i$
+    - $m()$, $f()$ either linear or step functions
+- Estimate by OLS, Lasso, and random forest
+    - Lasso & random forest use orthogonal moments
+    $$
+     \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
+    $$
+
+<div class="notes">
+The point of this simulation is to see whether the slower convergence
+rate of random forests matters for the semiparametric problems we have
+in mind. Our theory results suggest that estimates of $\theta$ using
+random forests with $p>2$ will be asymptotically biased. Specifically,
+the term
+$$
+d_n = \En[(m(x_i) - \hat{m}(x_i))(\mu(x_i) - \hat{\mu}(x_i))]
+$$
+will be $O_p(n^{\frac{-2}{2+p}})$, so $\sqrt{n} d_n =
+O_p(n^{\frac{p-2}{2(2+p)}})$. However, this calculation is only an
+upper bound on $d_n$. For a given DGP, $d_n$ might be smaller.
+
+In this simulation exercise, when $m()$ and $f()$ are linear, they are
+not easy to approximate by a regression tree, so I expect the random
+forest estimator to behave relatively poorly. OLS and Lasso on the
+other hand will do very well, and are included mainly as
+benchmarks. When $m()$ and $f()$ are step functions (specifically,
+$f(x) = m(x) = \sum_{j=1}^p 1(x_{j}>1/2)$), I thought they would be
+well approximated by a regression tree (and random forest). For OLS
+and Lasso, $x$ is still only included linearly in the estimation, so
+those estimators will do poorly in the step function DGP. Throughout
+the simulation $p$ is much less than $n$, so Lasso and OLS will
+generally give very similar results.
+</div>
+
+---
+
+```{r, code=readLines(paste(rootdir,"partialLinear.R", sep="/")), eval=FALSE}
+```
+
+```{r, plsim, cache=TRUE}
+library(ggplot2)
+library(reshape2)
+library(latex2exp)
+TeX <- latex2exp::TeX
+load("partialLinearSim.Rdata") # see partialLinearSim.R for simulation
+                               # code
+df <- melt(sim.df, measure.vars=c("OLS","Random.Forest","Lasso"))
+ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
+  ggtitle("p=2")
+
+```
+
+---
+
+```{r, plsim3, cache=TRUE, dependson="plsim"}
+ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=4")
+
+```
+
+---
+
+```{r, plsim4, cache=TRUE, dependson="plsim"}
+ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=6")
+
+```
+
+---
+
+```{r, plsim8, cache=TRUE, dependson="plsim"}
+ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=8")
+
+```
+
+<div class="notes">
+Random forests do not seem to work very well in this context. Even
+when the functions being estimated are step functions, random forests
+do not produce a good estimate of $\theta$. One caveat here is that I
+was not very careful about the tuning parameters for the random
+forests. It's possible that there exists a careful choice of tuning
+parameters that results in a better estimator.
+
+<div class="alert alert-danger">
+***Research idea:*** create a generalization of random forests that is
+adaptive to the smoothness of the function being estimated. Two classic
+papers on adaptive regression estimators are @speckman1985 and
+@donoho1995.  @friedberg2018 develop a local linear forest
+estimator. Combining their idea of using forests to form local
+neighborhoods with a smoothness adaptive variant of kernel or local
+polynomial regression should lead to a smoothness adaptive
+forest.
+</div>
+</div>
+
+---
+
+<!-- ### Generalized random forests -->
+
+<!-- --------------------------------------------------------------->
+
+## Neural Networks
+
+- Target function $f: \R^p \to \R$
+    - e.g. $f(x) = \Er[y|x]$
+- Approximate with single hidden layer neural network :
+$$
+\hat{f}(x) = \sum_{j=1}^r \beta_j (a_j'a_j \vee 1)^{-1}
+\psi(a_j'x + b_j)
+$$
+    - Activation function $\psi$
+       - Examples: Sigmoid $\psi(t) = 1/(1+e^{-t})$, Tanh $\psi(t) =
+         \frac{e^t -e^{-t}}{e^t + e^{-t}}$, Heavyside $\psi(t) = t 1(t\geq 0)$
+    - Weights $a_j$
+    - Bias $b_j$
+- Able to approximate any $f$, @hornik1989
+
+---
+
+```{r, nnpic, cache=TRUE, warning=FALSE, message=FALSE}
+library(RSNNS)
+library(devtools)
+# download plot.nnet function from github
+source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
+
+load("~/natural-gas-pipelines/dataAndCode/pipelines.Rdata")
+data <- subset(data,report_yr>=1996)
+mod <- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
+            cityPrice + plantArea + heatDegDays, data=data, x=T, y=T)
+
+xn <- normalizeData(mod$x[,2:ncol(mod$x)])
+yn <- normalizeData(mod$y)
+nn <- mlp(x=xn, y=yn, linOut=TRUE, size=c(10))
+plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab="transProfit")
+```
+
+---
+
+### Deep Neural Networks
+
+- Many hidden layers
+    - $x^{(0)} = x$
+    - $x^{(\ell)}_j = \psi(a_j^{(\ell)} x^{(\ell-1)} + b_j^{(\ell)})$
+
+---
+
+```{r, deepnnpic, cache=TRUE, dependson="nnpic", warning=FALSE, message=FALSE}
+nn <- mlp(x=xn, y=yn, linOut=TRUE, size=c(5,10,3,5, 6))
+plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab="transProfit")
+```
+
+---
+
+### Rate of convergence
+
+- @chen1999
+- $f(x) = \Er[y|x]$ with Fourier representation
+$$ f(x) = \int e^{i a'x} d\sigma_f(a) $$
+  where $\int (\sqrt{a'a} \vee 1) d|\sigma_f|(a) < \infty$
+- Network sieve :
+$$ \begin{align*}
+\mathcal{G}_n = \{ &
+g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
+\psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
+\end{align*}
+$$
+
+
+<div class="notes">
+The setup in @chen1999 is more general. They consider estimating both
+$f$ and its first $m$ derivatives. Here, we focus on the case of just
+estimating $f$. @chen1999 also consider estimation of functions other
+than conditional expectations.
+
+The restriction on $f$ in the second bullet is used to control
+approximation error. The second bullet says that $f$ is the inverse
+Fourier transform of measure $\sigma_f$. The bite of the restriction
+on $f$ comes from the requirement that $\sigma_f$ be absolutely
+integral, $\int (\sqrt{a'a} \vee 1) d|\sigma_f|(a) < \infty$. It would
+be a good exercise to check whether this restriction is satisfied by
+some familiar types of functions. @barron1993 first showed that neural
+networks approximate this class of functions well, and compares the
+approximation rate of neural networks to other function approximation
+results.
+</div>
+
+---
+
+### Rate of convergence{-}
+
+- Estimate
+$$
+\hat{f} = \argmin_{g \in \mathcal{G}_n} \En [(y_i - g(x_i))^2]
+$$
+
+- For fixed $p$, if $r_n^{2(1+1/(1+p))} \log(r_n) = O(n)$, $B_n \geq$ some constant
+  $$
+\Er[(\hat{f}(x) - f(x))^2] = O\left((n/\log(n))^{\frac{-(1 + 2/(p+1))}
+{2(1+1/(p+1))}}\right)
+  $$
+
+<div class="notes">
+It is easy to see that regardless of $p$, $\sqrt{n}\Er[(\hat{f}(x) -
+f(x))^2] \to 0$. Therefore, neural networks would be suitable for
+estimating the nuisance functions in our examples above.
+
+There is a gap between applied use of neural networks and this
+statistical theory. These rate results are for networks with a single
+hidden layer. In prediction applications, the best performance is
+typically achieved by deep neural networks with many hidden
+layers. Intuitively, multiple hidden layers should do at least as well
+as a single hidden layer. 
+
+There are some recent theoretical results that formalize this intuition.
+FIXME: ADD CITATIONS.
+</div>
+
+---
+
+### Simulation Study
+
+- Same setup as for random forests earlier
+- Partially linear model
+- DGP :
+    - $x_i \in \R^p$ with $x_{ij} \sim U(0,1)$
+    - $d_i = m(x_i) + v_i$
+    - $y_i = d_i\theta + f(x_i) + \epsilon_i$
+    - $m()$, $f()$ either linear or step functions
+- Estimate by OLS, Neural network with & without cross-fitting
+    - Using orthogonal moments
+    $$
+     \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
+    $$
+
+---
+
+```{r, code=readLines(paste(rootdir,"partialLinear.R", sep="/")), eval=FALSE}
+```
+
+```{r, plsimnet, cache=TRUE}
+library(ggplot2)
+library(reshape2)
+library(latex2exp)
+TeX <- latex2exp::TeX
+load("partialLinearSimNet.Rdata") # see partialLinearSim.R for simulation
+                               # code
+df <- melt(sim.df, measure.vars=names(sim.df)[1:3])
+ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
+  ggtitle("p=2")
+
+```
+
+---
+
+```{r, plsimnet3, cache=TRUE, dependson="plsimnet"}
+ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=4")
+
+```
+
+---
+
+```{r, plsimnet4, cache=TRUE, dependson="plsimnet"}
+ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=6")
+
+```
+
+---
+
+```{r, plsimnet8, cache=TRUE, dependson="plsimnet"}
+ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+  facet_grid(n ~ design) + geom_density() + theme_minimal() +
+  xlab(unname(TeX("$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$"))) +
+  ggtitle("p=8")
+```
+<div class="notes">
+The performance of the neural network estimator appears okay, but not
+outstanding in these simulations. In the linear model, the neural
+network estimator performs slightly worse than OLS. In the step function
+model, the neural network estimator performs slight better than the
+misspecified OLS, but neither appears to work well. In both cases, it
+appears that the neural network estimator produces occassional
+outliers. I believe that this is related to the fact that the
+minimization problem defining the neural network is actually very
+difficult to solve. In the simulation above, I suspect the outlying
+estimates are due to minimization problems. In the simulations, I
+simply set $r_n = n^{1/(2(1+1/(1+p)))}$. It's likely that a more
+careful choice of $r_n$, perhaps using cross-validation, would give
+better results.
+</div>
+
+<!-- --- -->
+
+# Bibliography
+
+<!-- --- -->
+

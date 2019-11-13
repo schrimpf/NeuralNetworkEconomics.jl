@@ -1,5 +1,10 @@
+"""
+    module NeuralNetworkEconomics
+
+Functions for and documents about using neural networks in economics. 
+"""
 module NeuralNetworkEconomics
 
-greet() = print("Hello World!")
+
 
 end # module

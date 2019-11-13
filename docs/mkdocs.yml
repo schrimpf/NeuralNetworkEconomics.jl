@@ -1,0 +1,41 @@
+site_name:        GMMInference.jl
+repo_url:         https://github.com/schrimpf/GMMInference.jl
+site_description: GMM estimation and inference.
+site_author:      Paul Schrimpf
+copyright:        Paul Schrimpf
+
+theme: journal
+
+extra_css:
+  - assets/Documenter.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML
+  - assets/mathjaxhelper.js
+
+markdown_extensions:
+  - extra
+  - tables
+  - meta
+  - fenced_code
+  - smarty
+  - toc:
+     permalink: True
+  - sane_lists
+  - admonition
+  - footnotes
+  - mdx_math
+  - attr_list  
+
+docs_dir: 'build'
+
+nav:
+  - Package Documentation: index.md
+  - Machine Learning in Economics:
+    - Introduction: ml-intro.md
+    - Methods: ml-methods.md
+    - Inference: ml-doubledebiased.md
+    - Detecting heterogeneity: mlExamplePKH.md
+  - About:
+    - License: license.md
+    
