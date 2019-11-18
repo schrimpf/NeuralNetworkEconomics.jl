@@ -72,6 +72,15 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../slp/">Introduction</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -361,13 +370,8 @@ print(fig2)
     price, city gate gas price, heating degree days, state(s) that each
     pipeline operates in</li>
 </ul>
-<div class="notes">
-<p>This is a dataset that I put together for a current research project.
-I’m happy to share it upon request, but it is not ready to be posted
-publicly yet.</p>
-</div>
 <hr />
-<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+<pre><code class="r">load(&quot;pipelines.Rdata&quot;)
 # data has problems before 1996 due to format change
 data &lt;- subset(data,report_yr&gt;=1996)
 # replace NA state weights with 0's

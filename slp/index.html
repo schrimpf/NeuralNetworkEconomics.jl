@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Introduction -  </title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href=".."> </a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Docs</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../ml-intro/">Introduction</a>
+</li>
+                                    
+<li >
+    <a href="../ml-methods/">Methods</a>
+</li>
+                                    
+<li >
+    <a href="../ml-doubledebiased/">Inference</a>
+</li>
+                                    
+<li >
+    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li class="active">
+    <a href="./">Introduction</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../license/">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../mlExamplePKH/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../license/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/slp.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#about-this-document">About this document</a></li>
+        <li class="main "><a href="#introduction">Introduction</a></li>
+            <li><a href="#additional-reading">Additional Reading</a></li>
+        <li class="main "><a href="#single-layer-neural-networks">Single Layer Neural Networks</a></li>
+        <li class="main "><a href="#training">Training</a></li>
+        <li class="main "><a href="#rate-of-convergence">Rate of convergence</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
+github</a>. The same
+document generates both static webpages and associated (jupyter
+notebook)<script type="math/tex; mode=display">neural.ipynb</script>.</p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
+<p>Neural networks, especially deep neural networks, have come to dominate
+some areas of machine learning. Neural networks are especially prominent
+in natural language processing, image classification, and reinforcement
+learning. This documents gives a brief introduction to neural networks.</p>
+<p>Examples in this document will use
+<a href="https://fluxml.ai/Flux.jl/stable/"><code>Flux.jl</code></a>. An alternative Julia
+package for deep learning is
+<a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code></a>. There is a
+good discussion comparing Flux and Knet <a href="https://discourse.julialang.org/t/state-of-deep-learning-in-julia/28049">on
+discourse.</a>.
+We will not have Knet examples here, but the documentation for Knet is
+excellent and worth reading even if you plan to use Flux.</p>
+<h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Goodfellow, Bengio, and Courville (<a href="#ref-goodfellow2016">n.d.</a>)
+    <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
+<li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
+    documentation</a>
+    especially the textbook</li>
+<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
+    Julia:Fundamentals for Data Science, MachineLearning and Artificial
+    Intelligence</em></li>
+</ul>
+<h1 id="single-layer-neural-networks">Single Layer Neural Networks<a class="headerlink" href="#single-layer-neural-networks" title="Permanent link">&para;</a></h1>
+<p>We will describe neural networks from a perspective of nonparametric
+estimation. Suppose we have a target function, $f: \R^p \to \R$. In many
+applications the target function will be a conditional expectation,
+$f(x) = \Er[y|x]$.</p>
+<p>A single layer neural network approximates $f$ as follows <script type="math/tex; mode=display">
+\hat{f}(x) = \sum_{j=1}^r \beta_j 
+\psi(w_j'x + b_j)
+</script> Here $r$ is the width of the layer. $\beta_j$ are scalars.
+$\psi:\R \to \R$ is a nonlinear activation function. Common activation
+functions include:</p>
+<ul>
+<li>
+<p>Sigmoid $\psi(t) = 1/(1+e^{-t})$</p>
+</li>
+<li>
+<p>Tanh $\psi(t) = \frac{e^t -e^{-t}}{e^t + e^{-t}}$</p>
+</li>
+<li>
+<p>Rectified linear $\psi(t) = t 1(t\geq 0)$</p>
+</li>
+</ul>
+<p>The $w_j \in \R^p$ are called weights and $b_j \in \R$ are biases.</p>
+<p>You may have heard about the universal approximation theorem. This
+refers to the fact that as $r$ increases, a neural network can
+approximate any function. Mathematically, for some large class of
+functions $\mathcal{F}$,</p>
+<p>
+<script type="math/tex; mode=display">
+\sup_{f \in \mathcal{F}} \lim_{r \to \infty} \inf_{\beta, w, b} \Vert
+f(x) - \sum_{j=1}^r \beta_j \psi(w_j'x+b_j) \Vert = 0
+</script>
+</p>
+<p>Hornik, Stinchcombe, and White (<a href="#ref-hornik1989">1989</a>) contains one of
+the earliest results along these lines. Some introductory texts mention
+the universal approximation theorem as though it is something special
+for neural networks. This is incorrect. In particular, the universal
+approximation theorem does not explain why neural networks seem to be
+unusually good at prediction. Most nonparametric estimation methods
+(kernel, series, forests, etc) satisfy a similar conditions.</p>
+<h1 id="training">Training<a class="headerlink" href="#training" title="Permanent link">&para;</a></h1>
+<p>Models in <code>Flux.jl</code> all involve a differentiable loss function. The loss
+function is minimized by a variant of gradient descent. Gradients are
+usually calculated using reverse automatic differentiation
+(backpropagation is a variant of reverse automatic differentiation
+specialized for the structue of neural networks). A low level way to use
+<code>Flux.jl</code> is to write your loss function as a typical Julia function, as
+in the following code block.</p>
+<pre><code class="julia">using Plots, Flux, Statistics
+# some function to estimate
+f(x) = sin(x^x)/2^((x^x-π/2)/π)
+function simulate(n,σ=1)
+  x = rand(n,1).*π
+  y = f.(x) .+ randn(n).*σ
+  (x,y)
+end
+
+&quot;&quot;&quot;
+   slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1 )
+
+Construct a single layer perception with width `r`. 
+&quot;&quot;&quot;
+function slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1)
+  # Parameters to be minimized wrt have to be declared for tracking
+  # for reverse mode autodiff.
+  w = param(randn(dimx,r))
+  b = param(randn(1,r))
+  β = param(randn(r))
+  θ = Tracker.Params([β, w, b])
+  pred(x) = activation(x*w.+b)*β
+  loss(x,y) = mean((y.-pred(x)).^2)
+  return(θ=θ, predict=pred,loss=loss)
+end
+x, y = simulate(1000, 0.5)
+xg = 0:0.01:π
+rs = [2, 3, 5, 7, 9]
+</code></pre>
+
+<pre><code>5-element Array{Int64,1}:
+ 2
+ 3
+ 5
+ 7
+ 9
+</code></pre>
+<pre><code class="julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
+for r in eachindex(rs)
+  m = slp(rs[r])
+  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
+  figs[r]=scatter!(x,y, alpha=0.3)
+  maxiter = 5000
+  for i = 1:maxiter
+    Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
+    if (i % (maxiter ÷ 5))==0
+      l=Tracker.data(m.loss(x,y))
+      figs[r]=plot!(xg,Tracker.data(m.predict(xg)), lab=&quot;$i iterations, loss=$l&quot;)
+    end
+  end
+end
+plot(figs...)
+</code></pre>
+
+<p><img alt="" src="../figures/slp_3_1.png" /></p>
+<p>Notice how even though a wider network can approximate $f$ better, wider
+networks also take more training iterations to minimize the loss. This
+is typical of any minimization algorithm — the number of iterations
+increases with the problem size.</p>
+<p>Each invocation of <code>Flux.train!</code> completes one iteration of gradient
+descent. As you might guess from this API, it is common to train neural
+networks for a fixed number of iterations instead of until convergence
+to a local minimum. The number of training iterations can act as a
+regularization parameter.</p>
+<p><code>Flux.jl</code> also contains some higher level functions for creating loss
+functions for neural networks. Here is the same network as in the
+previous code block, but using the higher level API.</p>
+<pre><code class="julia">dimx = 1
+figs = Array{typeof(plot(0)),1}(undef,length(rs))
+for r in eachindex(rs)
+  m = Chain(Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
+  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
+  figs[r]=scatter!(x,y, alpha=0.3)  
+  maxiter = 5000
+  for i = 1:maxiter
+    Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
+    if (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(x'), y'))
+      figs[r]=plot!(xg,Tracker.data(m(xg'))', lab=&quot;$i iterations, loss=$l&quot;)
+    end
+  end
+end
+plot(figs..., title=&quot;Sigmoid&quot;)
+</code></pre>
+
+<p><img alt="" src="../figures/slp_4_1.png" /></p>
+<p>The figures may not appear identical to the first example since the
+initial values differ.</p>
+<p>Large applications of neural networks often use rectified linear
+activation for efficiency. Let’s see how the same example behaves with
+(leaky) rectified linear activation.</p>
+<pre><code class="julia">dimx = 1
+figs = Array{typeof(plot(0)),1}(undef,length(rs))
+for r in eachindex(rs)
+  m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change 
+  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
+  figs[r]=scatter!(x,y, alpha=0.3)  
+  maxiter = 5000
+  for i = 1:maxiter
+    Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad()) #,
+                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
+    if (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(x'), y'))
+      figs[r]=plot!(xg,Tracker.data(m(xg'))', lab=&quot;$i iterations, loss=$l&quot;)
+    end
+  end
+end
+plot(figs..., title=&quot;ReLu&quot;)
+</code></pre>
+
+<p><img alt="" src="../figures/slp_5_1.png" /></p>
+<h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
+<ul>
+<li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
+<li>$f(x) = \Er[y|x]$ with Fourier representation
+    <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
+    $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
+<li>Network sieve : <script type="math/tex; mode=display"> \begin{align*}
+    \mathcal{G}_n = \{ &
+    g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
+    \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
+    \end{align*}
+    </script>
+</li>
+</ul>
+<p>The setup in Chen and White (<a href="#ref-chen1999">1999</a>) is more general.
+They consider estimating both $f$ and its first $m$ derivatives. Here,
+we focus on the case of just estimating $f$. Chen and White
+(<a href="#ref-chen1999">1999</a>) also consider estimation of functions other than
+conditional expectations.</p>
+<p>The restriction on $f$ in the second bullet is used to control
+approximation error. The second bullet says that $f$ is the inverse
+Fourier transform of measure $\sigma_f$. The bite of the restriction on
+$f$ comes from the requirement that $\sigma_f$ be absolutely integral,
+$\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$. It would be a good
+exercise to check whether this restriction is satisfied by some familiar
+types of functions. Barron (<a href="#ref-barron1993">1993</a>) first showed that
+neural networks approximate this class of functions well, and compares
+the approximation rate of neural networks to other function
+approximation results.</p>
+<div class="references" id="refs">
+<div id="ref-barron1993">
+<p>Barron, A. R. 1993. “Universal Approximation Bounds for Superpositions
+of a Sigmoidal Function.” <em>IEEE Transactions on Information Theory</em> 39
+(3): 930–45. <a href="https://doi.org/10.1109/18.256500">https://doi.org/10.1109/18.256500</a>.</p>
+</div>
+<div id="ref-chen1999">
+<p>Chen, Xiaohong, and H. White. 1999. “Improved Rates and Asymptotic
+Normality for Nonparametric Neural Network Estimators.” <em>IEEE
+Transactions on Information Theory</em> 45 (2): 682–91.
+<a href="https://doi.org/10.1109/18.749011">https://doi.org/10.1109/18.749011</a>.</p>
+</div>
+<div id="ref-goodfellow2016">
+<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. n.d. <em>Deep
+Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
+</div>
+<div id="ref-hornik1989">
+<p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White. 1989. “Multilayer
+Feedforward Networks Are Universal Approximators.” <em>Neural Networks</em> 2
+(5): 359–66.
+<a href="https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8">https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8</a>.</p>
+</div>
+<div id="ref-klok2019">
+<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
+Julia:Fundamentals for Data Science, Machinelearning and Artificial
+Intelligence</em>. DRAFT.
+<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
+</div>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
