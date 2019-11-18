@@ -140,8 +140,8 @@ License</a></p>
 <h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
 github</a>. The same
-document generates both static webpages and associated (jupyter
-notebook)<script type="math/tex; mode=display">slp.ipynb</script>.</p>
+document generates both static webpages and associated <a href="../slp.ipynb">jupyter
+notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
 \def\indep{\perp\!\!\!\perp}
@@ -274,21 +274,43 @@ for r in eachindex(rs)
     Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(m.loss(x,y))
-      @display &quot;$i iteration, loss=$l&quot;
+      println(&quot;$i iteration, loss=$l&quot;)
       figs[r]=plot!(xg,Tracker.data(m.predict(xg))) #, lab=&quot;$i iterations, loss=$l&quot;)
     end
   end
 end
 </code></pre>
 
-<pre><code>Error: LoadError: UndefVarError: @display not defined
-in expression starting at none:10
+<pre><code>1000 iteration, loss=0.3290077210105611
+2000 iteration, loss=0.2807986603619935
+3000 iteration, loss=0.265157539249332
+4000 iteration, loss=0.25863031117932045
+5000 iteration, loss=0.25583798367648847
+1000 iteration, loss=0.3172316306510282
+2000 iteration, loss=0.2785425790553236
+3000 iteration, loss=0.2629610884244914
+4000 iteration, loss=0.2546851846024121
+5000 iteration, loss=0.2531279475540013
+1000 iteration, loss=0.3091030072869277
+2000 iteration, loss=0.2927215199130735
+3000 iteration, loss=0.28572878081186653
+4000 iteration, loss=0.2806191460547027
+5000 iteration, loss=0.2757036481913938
+1000 iteration, loss=0.30581903986975667
+2000 iteration, loss=0.2857782150582308
+3000 iteration, loss=0.27267647080160623
+4000 iteration, loss=0.2654190425703386
+5000 iteration, loss=0.2614191053579672
+1000 iteration, loss=0.3048528643501064
+2000 iteration, loss=0.294790343516291
+3000 iteration, loss=0.2828043945799718
+4000 iteration, loss=0.2729555670333174
+5000 iteration, loss=0.2668846204027194
 </code></pre>
 <pre><code class="julia">plot(figs...)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_3_1.png" /></p>
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
 is typical of any minimization algorithm — the number of iterations
@@ -313,21 +335,43 @@ for r in eachindex(rs)
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(Flux.mse(m(x'), y'))
-      @display &quot;$i iteration, loss=$l&quot;
+      println(&quot;$i iteration, loss=$l&quot;)
       figs[r]=plot!(xg,Tracker.data(m(xg'))')#, lab=&quot;$i iterations, loss=$l&quot;)
     end
   end
 end
 </code></pre>
 
-<pre><code>Error: LoadError: UndefVarError: @display not defined
-in expression starting at none:11
+<pre><code>1000 iteration, loss=0.31834717414986796
+2000 iteration, loss=0.27547015218115556
+3000 iteration, loss=0.2650481908676505
+4000 iteration, loss=0.2615274233520728
+5000 iteration, loss=0.2595011818422149
+1000 iteration, loss=0.33287597953115394
+2000 iteration, loss=0.32136193007368763
+3000 iteration, loss=0.27953449577288897
+4000 iteration, loss=0.26542259488463016
+5000 iteration, loss=0.2601493104968424
+1000 iteration, loss=0.3099920519983593
+2000 iteration, loss=0.2917687749042323
+3000 iteration, loss=0.28246049693406555
+4000 iteration, loss=0.27539924265585747
+5000 iteration, loss=0.2688202719660268
+1000 iteration, loss=0.30330455005352513
+2000 iteration, loss=0.2878439282706598
+3000 iteration, loss=0.2829433894637187
+4000 iteration, loss=0.2799039605614631
+5000 iteration, loss=0.27714391629018226
+1000 iteration, loss=0.3338539081337899
+2000 iteration, loss=0.3287796516437119
+3000 iteration, loss=0.3057442513246996
+4000 iteration, loss=0.28617590173325286
+5000 iteration, loss=0.2708732236144369
 </code></pre>
 <pre><code class="julia">plot(figs..., title=&quot;Sigmoid&quot;)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_4_1.png" /></p>
 <p>The figures may not appear identical to the first example since the
 initial values differ.</p>
 <p>Large applications of neural networks often use rectified linear
@@ -345,21 +389,43 @@ for r in eachindex(rs)
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(Flux.mse(m(x'), y'))
-      @display &quot;$i iteration, loss=$l&quot;
+      println(&quot;$i iteration, loss=$l&quot;)
       figs[r]=plot!(xg,Tracker.data(m(xg'))')#, lab=&quot;$i iterations, loss=$l&quot;)
     end
   end
 end
 </code></pre>
 
-<pre><code>Error: LoadError: UndefVarError: @display not defined
-in expression starting at none:11
+<pre><code>1000 iteration, loss=0.3121117793071286
+2000 iteration, loss=0.31196137075517
+3000 iteration, loss=0.3119586386582882
+4000 iteration, loss=0.3119593901481877
+5000 iteration, loss=0.31195971855933596
+1000 iteration, loss=0.3119716151434345
+2000 iteration, loss=0.31193981766714274
+3000 iteration, loss=0.3119192446707223
+4000 iteration, loss=0.31187488029142973
+5000 iteration, loss=0.31176990427852125
+1000 iteration, loss=0.30373780015242985
+2000 iteration, loss=0.30177585469527424
+3000 iteration, loss=0.30030991229554294
+4000 iteration, loss=0.29915315848968566
+5000 iteration, loss=0.29830289017342837
+1000 iteration, loss=0.3159883943516261
+2000 iteration, loss=0.31452976729072385
+3000 iteration, loss=0.3137682264114405
+4000 iteration, loss=0.3134272981975322
+5000 iteration, loss=0.31322881236459327
+1000 iteration, loss=0.31271998164415193
+2000 iteration, loss=0.3124917243064098
+3000 iteration, loss=0.31235600521122137
+4000 iteration, loss=0.3123294828344058
+5000 iteration, loss=0.312325008489763
 </code></pre>
 <pre><code class="julia">plot(figs..., title=&quot;ReLu&quot;)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_5_1.png" /></p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
