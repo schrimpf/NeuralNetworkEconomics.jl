@@ -268,7 +268,7 @@ rs = [2, 3, 5, 7, 9]
 for r in eachindex(rs)
   m = slp(rs[r])
   figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, markeralpha=0.1, markersize=1, markerstrockwidth=0, lab=&quot;&quot;)
+  figs[r]=scatter!(x,y, markeralpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 5000
   for i = 1:maxiter
     Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
@@ -281,13 +281,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>Error: Unknown key: markerstrockwidth
+<pre><code>1000 iteration, loss=0.2959547381660714
+2000 iteration, loss=0.25284800592271184
+3000 iteration, loss=0.24135476980369552
+4000 iteration, loss=0.2368634284492551
+5000 iteration, loss=0.234805656802936
+1000 iteration, loss=0.29284945173382576
+2000 iteration, loss=0.2500811954733925
+3000 iteration, loss=0.24403342538360556
+4000 iteration, loss=0.2412329072125698
+5000 iteration, loss=0.23915083700057235
+1000 iteration, loss=0.2746239101771621
+2000 iteration, loss=0.24985388314972978
+3000 iteration, loss=0.240839440528064
+4000 iteration, loss=0.23767530417965513
+5000 iteration, loss=0.23616681958808083
+1000 iteration, loss=0.28564304772423793
+2000 iteration, loss=0.2569267622746759
+3000 iteration, loss=0.24567833108576967
+4000 iteration, loss=0.24020830662624895
+5000 iteration, loss=0.23792888794030362
+1000 iteration, loss=0.2894858168391849
+2000 iteration, loss=0.27781526102163373
+3000 iteration, loss=0.26959933928121854
+4000 iteration, loss=0.261583054605649
+5000 iteration, loss=0.2495283668511052
 </code></pre>
 <pre><code class="julia">plot(figs..., legend=false)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_3_1.png" /></p>
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
 is typical of any minimization algorithm — the number of iterations
@@ -305,7 +328,7 @@ figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = Chain(Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
   figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrockwidth=0, lab=&quot;&quot;)
+  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 5000
   for i = 1:maxiter
     Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
@@ -319,13 +342,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>Error: Unknown key: markerstrockwidth
+<pre><code>1000 iteration, loss=0.2960784608584514
+2000 iteration, loss=0.26068685345677545
+3000 iteration, loss=0.24187692981643544
+4000 iteration, loss=0.23715217200418762
+5000 iteration, loss=0.23560753155132927
+1000 iteration, loss=0.2779236202804255
+2000 iteration, loss=0.2549886462786896
+3000 iteration, loss=0.24026248831648872
+4000 iteration, loss=0.23643274722255736
+5000 iteration, loss=0.23490941523004003
+1000 iteration, loss=0.3096573269323143
+2000 iteration, loss=0.29695947297931746
+3000 iteration, loss=0.256871609774632
+4000 iteration, loss=0.24470535612574426
+5000 iteration, loss=0.24097675859001025
+1000 iteration, loss=0.30883279396223356
+2000 iteration, loss=0.30417216460322105
+3000 iteration, loss=0.27316859875590555
+4000 iteration, loss=0.26021159086751317
+5000 iteration, loss=0.2526589377105267
+1000 iteration, loss=0.29226874215814247
+2000 iteration, loss=0.28079839737728485
+3000 iteration, loss=0.2694368570230302
+4000 iteration, loss=0.26390030653778856
+5000 iteration, loss=0.26051208534433246
 </code></pre>
 <pre><code class="julia">plot(figs..., legend=false) #, title=&quot;Sigmoid&quot;)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_4_1.png" /></p>
 <p>The figures may not appear identical to the first example since the
 initial values differ.</p>
 <p>Large applications of neural networks often use rectified linear
@@ -336,7 +382,7 @@ figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change 
   figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrockwidth=0, lab=&quot;&quot;)
+  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 5000
   for i = 1:maxiter
     Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad()) #,
@@ -350,13 +396,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>Error: Unknown key: markerstrockwidth
+<pre><code>1000 iteration, loss=0.30593864643731583
+2000 iteration, loss=0.30593582553645277
+3000 iteration, loss=0.30593069428519065
+4000 iteration, loss=0.30592534046684783
+5000 iteration, loss=0.3059319863801143
+1000 iteration, loss=0.288395978956115
+2000 iteration, loss=0.2882325814712326
+3000 iteration, loss=0.28790130776087275
+4000 iteration, loss=0.2872069361987903
+5000 iteration, loss=0.28593946663109726
+1000 iteration, loss=0.2984493744458148
+2000 iteration, loss=0.2972715944555373
+3000 iteration, loss=0.2964868748747674
+4000 iteration, loss=0.29590901616926174
+5000 iteration, loss=0.29570884393130425
+1000 iteration, loss=0.29512371462465326
+2000 iteration, loss=0.29399383680088714
+3000 iteration, loss=0.2938115488966753
+4000 iteration, loss=0.29377320312730776
+5000 iteration, loss=0.2937535317988166
+1000 iteration, loss=0.28054973156958324
+2000 iteration, loss=0.27931690463014097
+3000 iteration, loss=0.2643720659685516
+4000 iteration, loss=0.25924093237386514
+5000 iteration, loss=0.25635283789007307
 </code></pre>
 <pre><code class="julia">plot(figs..., legend=false) #, title=&quot;ReLu&quot;)
 </code></pre>
 
-<pre><code>Error: UndefRefError: access to undefined reference
-</code></pre>
+<p><img alt="" src="../figures/slp_5_1.png" /></p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
