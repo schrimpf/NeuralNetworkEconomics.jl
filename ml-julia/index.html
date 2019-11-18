@@ -14,6 +14,7 @@
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
+        <link href="../assets/extra.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -205,30 +206,14 @@ println(R&quot;summary(data[,1:5])&quot;)
 </code></pre>
 
 <pre><code>5×8 DataFrame
-│ Row │ variable        │ mean     │ min                                │ m
-edian │ max                                           │ nunique │ nmissing 
-│ eltype                                    │
-│     │ Symbol          │ Union…   │ Any                                │ U
-nion… │ Any                                           │ Union…  │ Union…   
-│ Type                                      │
-├─────┼─────────────────┼──────────┼────────────────────────────────────┼──
-──────┼───────────────────────────────────────────────┼─────────┼──────────
-┼───────────────────────────────────────────┤
-│ 1   │ respondent_id   │ 184.3    │ 1                                  │ 1
-48.0  │ 745                                           │         │          
-│ Int64                                     │
-│ 2   │ report_yr       │ 2003.49  │ 1991                               │ 2
-003.0 │ 2016                                          │         │          
-│ Int64                                     │
-│ 3   │ report_prd      │ 12.0     │ 12                                 │ 1
-2.0   │ 12                                            │         │ 3371     
-│ Union{Missing, Int64}                     │
-│ 4   │ major           │ 0.701178 │ 0                                  │ 1
-.0    │ 1                                             │         │ 2180     
-│ Union{Missing, Bool}                      │
-│ 5   │ respondent_name │          │ Algonquin Gas Transmission Company │  
-      │ Southern Natural Gas Company                  │ 440     │ 3123     
-│ Union{Missing, CategoricalString{UInt32}} │
+│ Row │ variable        │ mean     │ min                                │ median │ max                                           │ nunique │ nmissing │ eltype                                    │
+│     │ Symbol          │ Union…   │ Any                                │ Union… │ Any                                           │ Union…  │ Union…   │ Type                                      │
+├─────┼─────────────────┼──────────┼────────────────────────────────────┼────────┼───────────────────────────────────────────────┼─────────┼──────────┼───────────────────────────────────────────┤
+│ 1   │ respondent_id   │ 184.3    │ 1                                  │ 148.0  │ 745                                           │         │          │ Int64                                     │
+│ 2   │ report_yr       │ 2003.49  │ 1991                               │ 2003.0 │ 2016                                          │         │          │ Int64                                     │
+│ 3   │ report_prd      │ 12.0     │ 12                                 │ 12.0   │ 12                                            │         │ 3371     │ Union{Missing, Int64}                     │
+│ 4   │ major           │ 0.701178 │ 0                                  │ 1.0    │ 1                                             │         │ 2180     │ Union{Missing, Bool}                      │
+│ 5   │ respondent_name │          │ Algonquin Gas Transmission Company │        │ Southern Natural Gas Company                  │ 440     │ 3123     │ Union{Missing, CategoricalString{UInt32}} │
 </code></pre>
 <pre><code class="julia">for c in 59:107 # columns of state mileage, want missing-&gt;0
   replace!(x-&gt;(ismissing(x) || isnan(x)) ? 0.0 : x, data[!,c])
@@ -237,26 +222,16 @@ println(describe(data[:,59:65]))
 </code></pre>
 
 <pre><code>7×8 DataFrame
-│ Row │ variable       │ mean       │ min     │ median  │ max      │ nuniqu
-e │ nmissing │ eltype                  │
-│     │ Symbol         │ Float64    │ Float64 │ Float64 │ Float64  │ Nothin
-g │ Int64    │ Union                   │
-├─────┼────────────────┼────────────┼─────────┼─────────┼──────────┼───────
-──┼──────────┼─────────────────────────┤
-│ 1   │ North Carolina │ 0.00358525 │ 0.0     │ 0.0     │ 1.0      │       
-  │ 0        │ Union{Missing, Float64} │
-│ 2   │ Tennessee      │ 0.0061488  │ 0.0     │ 0.0     │ 0.635202 │       
-  │ 0        │ Union{Missing, Float64} │
-│ 3   │ Virginia       │ 0.00552028 │ 0.0     │ 0.0     │ 1.0      │       
-  │ 0        │ Union{Missing, Float64} │
-│ 4   │ Illinois       │ 0.0134891  │ 0.0     │ 0.0     │ 1.0      │       
-  │ 0        │ Union{Missing, Float64} │
-│ 5   │ Indiana        │ 0.0058707  │ 0.0     │ 0.0     │ 0.550302 │       
-  │ 0        │ Union{Missing, Float64} │
-│ 6   │ Kentucky       │ 0.0133474  │ 0.0     │ 0.0     │ 1.0      │       
-  │ 0        │ Union{Missing, Float64} │
-│ 7   │ Gulf of Mexico │ 0.0140981  │ 0.0     │ 0.0     │ 0.825409 │       
-  │ 0        │ Union{Missing, Float64} │
+│ Row │ variable       │ mean       │ min     │ median  │ max      │ nunique │ nmissing │ eltype                  │
+│     │ Symbol         │ Float64    │ Float64 │ Float64 │ Float64  │ Nothing │ Int64    │ Union                   │
+├─────┼────────────────┼────────────┼─────────┼─────────┼──────────┼─────────┼──────────┼─────────────────────────┤
+│ 1   │ North Carolina │ 0.00358525 │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
+│ 2   │ Tennessee      │ 0.0061488  │ 0.0     │ 0.0     │ 0.635202 │         │ 0        │ Union{Missing, Float64} │
+│ 3   │ Virginia       │ 0.00552028 │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
+│ 4   │ Illinois       │ 0.0134891  │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
+│ 5   │ Indiana        │ 0.0058707  │ 0.0     │ 0.0     │ 0.550302 │         │ 0        │ Union{Missing, Float64} │
+│ 6   │ Kentucky       │ 0.0133474  │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
+│ 7   │ Gulf of Mexico │ 0.0140981  │ 0.0     │ 0.0     │ 0.825409 │         │ 0        │ Union{Missing, Float64} │
 </code></pre>
 <p>Suppose we want to estimate the coefficient on <code>transPlant</code> (capital) in
 a partially linear model with <code>transProfit</code> (profit) as the outcome.
@@ -335,7 +310,7 @@ model.</p>
 <pre><code>LassoRegressor(lambda = 1.0,
                fit_intercept = true,
                penalize_intercept = false,
-               solver = nothing,) @ 1…90
+               solver = nothing,) @ 1…05
 </code></pre>
 <p>Let’s fit lasso to the same pipeline data as above.</p>
 <pre><code class="julia">lasso_model.lambda = 1.0
@@ -351,7 +326,7 @@ println(yhat[1:10])
 <pre><code class="julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 1.4352627196487409
+<pre><code>MSE/var(y) = 1.4387817003946868
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -374,7 +349,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.12609827212538255
+<pre><code>MSE/var(y) = 0.1290925293641761
 </code></pre>
 <pre><code class="julia">
 # Get the fitted coefficients
@@ -383,7 +358,7 @@ intercept = fitted_params(m).fitted_params[1].intercept
 sum(abs.(coef).&gt;1e-8) # number non-zero
 </code></pre>
 
-<pre><code>55
+<pre><code>54
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
@@ -399,7 +374,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.12915622104272134
+<pre><code>MSE/var(y) = 0.12282947298011132
 </code></pre>
 <pre><code class="julia">using Plots
 cvmse = m.report.measurements
@@ -441,7 +416,7 @@ loss(x,y) =  mse(x,y) + penalty(y)
 @show loss(X_train,y_train)
 </code></pre>
 
-<pre><code>loss(X_train, y_train) = 1.0075752252848986 (tracked)
+<pre><code>loss(X_train, y_train) = 0.9692287376443155 (tracked)
 </code></pre>
 <pre><code class="julia">
 # minimize loss
@@ -471,7 +446,7 @@ descent. Each call to <code>Flux.train!</code> runs one iteration of the specifi
 solver. To find a locaol minimum, <code>Flux.train!</code> can be called repeatedly
 until progress stops. The above loop is a simple way to do this. The
 <code>@epoch</code> macro can also be useful.</p>
-<p>Gradient descent works well for neural networks, but are is ideal for
+<p>Gradient descent works well for neural networks, but is not ideal for
 Lasso. Without further adjustment, gradient descent gets stuck in a
 cycle as jumps from one side of the other of the absolute value in the
 lasso penalty. Nonetheless, the results are near the true minimum, even

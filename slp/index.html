@@ -14,6 +14,7 @@
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
+        <link href="../assets/extra.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -127,6 +128,10 @@
             <li><a href="#additional-reading">Additional Reading</a></li>
         <li class="main "><a href="#single-layer-neural-networks">Single Layer Neural Networks</a></li>
         <li class="main "><a href="#training">Training</a></li>
+            <li><a href="#low-level">Low level</a></li>
+            <li><a href="#chain-interface">Chain interface</a></li>
+            <li><a href="#initial-values">Initial values</a></li>
+            <li><a href="#rectified-linear">Rectified linear</a></li>
         <li class="main "><a href="#rate-of-convergence">Rate of convergence</a></li>
         <li class="main "><a href="#references-references">References [references]</a></li>
     </ul>
@@ -224,10 +229,11 @@ unusually good at prediction. Most nonparametric estimation methods
 function is minimized by a variant of gradient descent. Gradients are
 usually calculated using reverse automatic differentiation
 (backpropagation is a variant of reverse automatic differentiation
-specialized for the structue of neural networks). A low level way to use
-<code>Flux.jl</code> is to write your loss function as a typical Julia function, as
-in the following code block.</p>
-<pre><code class="julia">using Plots, Flux, Statistics
+specialized for the structue of neural networks).</p>
+<h2 id="low-level">Low level<a class="headerlink" href="#low-level" title="Permanent link">&para;</a></h2>
+<p>A low level way to use <code>Flux.jl</code> is to write your loss function as a
+typical Julia function, as in the following code block.</p>
+<pre><code class="julia">using Plots, Flux, Statistics, ColorSchemes
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
@@ -255,20 +261,14 @@ end
 x, y = simulate(1000, 0.5)
 xg = 0:0.01:π
 rs = [2, 3, 5, 7, 9]
+cscheme = colorschemes[:Wistia];
 </code></pre>
 
-<pre><code>5-element Array{Int64,1}:
- 2
- 3
- 5
- 7
- 9
-</code></pre>
 <pre><code class="julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = slp(rs[r])
   figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, markeralpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+  figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 5000
   for i = 1:maxiter
     Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
@@ -281,31 +281,31 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.36459813952551995
-2000 iteration, loss=0.3210134724071039
-3000 iteration, loss=0.29088305072398035
-4000 iteration, loss=0.28247541062570525
-5000 iteration, loss=0.27702871839620025
-1000 iteration, loss=0.31619743896450453
-2000 iteration, loss=0.289145995679642
-3000 iteration, loss=0.2850558430630951
-4000 iteration, loss=0.2826594514858182
-5000 iteration, loss=0.28054558637957644
-1000 iteration, loss=0.30250887064522053
-2000 iteration, loss=0.2863999064604222
-3000 iteration, loss=0.2802210999588891
-4000 iteration, loss=0.27751097203126196
-5000 iteration, loss=0.2762049530070484
-1000 iteration, loss=0.31047499221539065
-2000 iteration, loss=0.2998353756220838
-3000 iteration, loss=0.295440033548468
-4000 iteration, loss=0.29338579567671486
-5000 iteration, loss=0.2920383287846179
-1000 iteration, loss=0.31193771363631534
-2000 iteration, loss=0.2953835774197014
-3000 iteration, loss=0.28660141135460265
-4000 iteration, loss=0.28235274234397734
-5000 iteration, loss=0.2798143742474541
+<pre><code>1000 iteration, loss=0.35187377045760343
+2000 iteration, loss=0.3030997096446414
+3000 iteration, loss=0.2867697697571996
+4000 iteration, loss=0.28009053546637414
+5000 iteration, loss=0.27717401276638176
+1000 iteration, loss=0.35656781807711563
+2000 iteration, loss=0.30604007507553704
+3000 iteration, loss=0.28818879079989
+4000 iteration, loss=0.27794094256961827
+5000 iteration, loss=0.27598777547358605
+1000 iteration, loss=0.32183165663144575
+2000 iteration, loss=0.2993312138323814
+3000 iteration, loss=0.28629108776237777
+4000 iteration, loss=0.2821055204855411
+5000 iteration, loss=0.27944631610517146
+1000 iteration, loss=0.34582096365659554
+2000 iteration, loss=0.3274069763481203
+3000 iteration, loss=0.315842336714982
+4000 iteration, loss=0.30527219250531984
+5000 iteration, loss=0.2968186766965368
+1000 iteration, loss=0.34188411422221243
+2000 iteration, loss=0.31300824716165904
+3000 iteration, loss=0.29785141724286945
+4000 iteration, loss=0.2914000966758362
+5000 iteration, loss=0.2876983363699656
 </code></pre>
 <pre><code class="julia">plot(figs..., legend=false)
 </code></pre>
@@ -320,112 +320,267 @@ descent. As you might guess from this API, it is common to train neural
 networks for a fixed number of iterations instead of until convergence
 to a local minimum. The number of training iterations can act as a
 regularization parameter.</p>
+<h2 id="chain-interface">Chain interface<a class="headerlink" href="#chain-interface" title="Permanent link">&para;</a></h2>
 <p><code>Flux.jl</code> also contains some higher level functions for creating loss
 functions for neural networks. Here is the same network as in the
 previous code block, but using the higher level API.</p>
 <pre><code class="julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
+initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
+xt = reshape(Float32.(x), 1, length(x))
+yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
-  m = Chain(Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
-  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
+  l = rs[r]
+  m = Chain(x-&gt;Flux.normalise(x, dims=2), Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
+  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+  maxiter = 3000
   for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
-                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
-    if (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(x'), y'))
-      println(&quot;$i iteration, loss=$l&quot;)
-      figs[r]=plot!(xg,Tracker.data(m(xg'))', lab=&quot;&quot;)#, lab=&quot;$i iterations, loss=$l&quot;)
+    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
+    if i==1 || (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(xt), yt))
+      println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
+      yg = Tracker.data(m(xg'))'
+      loc=Int64.(ceil(length(xg)*i/maxiter))
+      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                    annotations=(xg[loc], yg[loc],
+                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                            color=get(cscheme, i/maxiter)) )
+                    )
+    end
+  end
+  display(figs[r])
+end
+</code></pre>
+
+<pre><code>2 units, 1 iterations, loss=1.1212063
+2 units, 600 iterations, loss=0.34136242
+2 units, 1200 iterations, loss=0.30768567
+2 units, 1800 iterations, loss=0.27602
+2 units, 2400 iterations, loss=0.27197394
+2 units, 3000 iterations, loss=0.27111578
+3 units, 1 iterations, loss=1.3064177
+3 units, 600 iterations, loss=0.32764384
+3 units, 1200 iterations, loss=0.287901
+3 units, 1800 iterations, loss=0.2759437
+3 units, 2400 iterations, loss=0.272396
+3 units, 3000 iterations, loss=0.27125964
+5 units, 1 iterations, loss=3.446831
+5 units, 600 iterations, loss=0.34293026
+5 units, 1200 iterations, loss=0.29056904
+5 units, 1800 iterations, loss=0.2783606
+5 units, 2400 iterations, loss=0.2734273
+5 units, 3000 iterations, loss=0.27161375
+7 units, 1 iterations, loss=1.8559349
+7 units, 600 iterations, loss=0.31222627
+7 units, 1200 iterations, loss=0.28732938
+7 units, 1800 iterations, loss=0.27882624
+7 units, 2400 iterations, loss=0.27457473
+7 units, 3000 iterations, loss=0.2726361
+9 units, 1 iterations, loss=2.0564733
+9 units, 600 iterations, loss=0.31998497
+9 units, 1200 iterations, loss=0.29000384
+9 units, 1800 iterations, loss=0.28058207
+9 units, 2400 iterations, loss=0.27560407
+9 units, 3000 iterations, loss=0.27318403
+</code></pre>
+<p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
+<img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
+<img alt="" src="../figures/slp_4_5.png" /></p>
+<pre><code class="julia">#plot(figs...)
+</code></pre>
+
+<p>The figures do not appear identical to the first example since the
+initial values differ, and the above code first normalises the $x$s.</p>
+<h2 id="initial-values">Initial values<a class="headerlink" href="#initial-values" title="Permanent link">&para;</a></h2>
+<p>Initial values are especially important with neural networks because
+activation functions tend to be flat at the extremes. This causes the
+gradient of the loss function to vanish in some regions of the parameter
+space. For gradient descent to be successful, it is important to avoid
+regions with vanishing gradients. The default initial values of $w$ and
+$b$ used by Flux tend to work better with normalised $x$. The initial
+activation are shown below.</p>
+<pre><code class="julia">plot(initmfigs..., legend=false)
+</code></pre>
+
+<p><img alt="" src="../figures/slp_5_1.png" /></p>
+<p>At these initial values, $w&rsquo;x + b$, does change sign for each
+activation, but $w&rsquo;x$ is small enough that $\psi(w&rsquo;x + b)$ is
+approximately linear. This will make it initially difficult to
+distinguish $\beta \psi&rsquo;$ from $w$,</p>
+<p>We can improve the fit by choosing initial values even more carefully.
+The following code choses initial $w$ and $b$ to make sure the
+activation functions vary nonlinearly in the support of $x$. The initial
+activations functions are plotted below.</p>
+<pre><code class="julia">dimx = 1
+figs = Array{typeof(plot(0)),1}(undef,length(rs))
+initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
+xt = reshape(x, 1, length(x))
+yt = reshape(y, 1, length(y))
+for r in eachindex(rs)
+  l = rs[r]
+  m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
+  # adjust initial weights to make sure each node is nonlinear in support of X
+  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  # adjust initial intercepts to be in the support of w*x  
+  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  # make initial output weights optimal given first layer
+  X = vcat(1, Tracker.data(m[1](xt)))
+  bols = (X*X') \ (X*Float32.(y))
+  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
+  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
+  initmfigs[r] = plot(xg, Tracker.data(m[1](xg'))', lab=&quot;&quot;, legend=false)
+  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+  maxiter = 3000
+  for i = 1:maxiter
+    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
+    if i==1 || (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(xt), yt))
+      println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
+      yg = Tracker.data(m(xg'))'
+      loc=Int64.(ceil(length(xg)*i/maxiter))
+      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                    annotations=(xg[loc], yg[loc],
+                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                            color=get(cscheme, i/maxiter)) )
+                    )
     end
   end
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.34328264420787413
-2000 iteration, loss=0.3152596078765985
-3000 iteration, loss=0.29289051665468624
-4000 iteration, loss=0.27907118407334885
-5000 iteration, loss=0.2761198097622866
-1000 iteration, loss=0.34533597083192014
-2000 iteration, loss=0.3058906364424622
-3000 iteration, loss=0.2902575993149563
-4000 iteration, loss=0.2793537182142363
-5000 iteration, loss=0.2772772170800452
-1000 iteration, loss=0.35292111358944434
-2000 iteration, loss=0.3412763015427057
-3000 iteration, loss=0.29461136364944585
-4000 iteration, loss=0.2859306298529273
-5000 iteration, loss=0.2826885698802751
-1000 iteration, loss=0.353535038216071
-2000 iteration, loss=0.3497081378123104
-3000 iteration, loss=0.3280844482960235
-4000 iteration, loss=0.2937756876565442
-5000 iteration, loss=0.28587454424651315
-1000 iteration, loss=0.3341226722102595
-2000 iteration, loss=0.3207549105410589
-3000 iteration, loss=0.31113207389436603
-4000 iteration, loss=0.3041090582922291
-5000 iteration, loss=0.3003961099828297
+<pre><code>2 units, 1 iterations, loss=0.35411441273278366
+2 units, 600 iterations, loss=0.285143241092943
+2 units, 1200 iterations, loss=0.28431112061054775
+2 units, 1800 iterations, loss=0.2835012436021289
+2 units, 2400 iterations, loss=0.28178562162331633
+2 units, 3000 iterations, loss=0.2719681254795772
+3 units, 1 iterations, loss=0.28854351926927346
+3 units, 600 iterations, loss=0.27044174671453736
+3 units, 1200 iterations, loss=0.26922973169343023
+3 units, 1800 iterations, loss=0.26874074537875176
+3 units, 2400 iterations, loss=0.26844088152892426
+3 units, 3000 iterations, loss=0.26821847236687146
+5 units, 1 iterations, loss=0.2813986964445288
+5 units, 600 iterations, loss=0.2735395129274911
+5 units, 1200 iterations, loss=0.2717286334642842
+5 units, 1800 iterations, loss=0.2708627425565637
+5 units, 2400 iterations, loss=0.27027577017392845
+5 units, 3000 iterations, loss=0.26983327846331207
+7 units, 1 iterations, loss=0.27588889303810693
+7 units, 600 iterations, loss=0.26832442003008605
+7 units, 1200 iterations, loss=0.26757752721772243
+7 units, 1800 iterations, loss=0.2671432817466463
+7 units, 2400 iterations, loss=0.2668354664586659
+7 units, 3000 iterations, loss=0.26660203436586843
+9 units, 1 iterations, loss=0.26599568319286265
+9 units, 600 iterations, loss=0.264760649327605
+9 units, 1200 iterations, loss=0.26464831211946105
+9 units, 1800 iterations, loss=0.2645840649853074
+9 units, 2400 iterations, loss=0.2645389410821379
+9 units, 3000 iterations, loss=0.26450373708533514
 </code></pre>
-<pre><code class="julia">plot(figs..., legend=false) #, title=&quot;Sigmoid&quot;)
+<pre><code class="julia">nothing
 </code></pre>
 
-<p><img alt="" src="../figures/slp_4_1.png" /></p>
-<p>The figures may not appear identical to the first example since the
-initial values differ.</p>
+<pre><code class="julia">plot(initmfigs..., legend=false)
+</code></pre>
+
+<p><img alt="" src="../figures/slp_7_1.png" /></p>
+<p>And the fit figures.</p>
+<pre><code class="julia">for f in figs
+  display(f)
+end
+</code></pre>
+
+<p><img alt="" src="../figures/slp_8_1.png" /> <img alt="" src="../figures/slp_8_2.png" />
+<img alt="" src="../figures/slp_8_3.png" /> <img alt="" src="../figures/slp_8_4.png" />
+<img alt="" src="../figures/slp_8_5.png" /></p>
+<h2 id="rectified-linear">Rectified linear<a class="headerlink" href="#rectified-linear" title="Permanent link">&para;</a></h2>
 <p>Large applications of neural networks often use rectified linear
 activation for efficiency. Let’s see how the same example behaves with
 (leaky) rectified linear activation.</p>
 <pre><code class="julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
-  m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change 
-  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
-  figs[r]=scatter!(x,y, alpha=0.1, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
+  l = rs[r]
+  m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
+  # adjust initial weights to make sure each node is nonlinear in support of X
+  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  # # adjust initial intercepts to be in the support of w*x  
+  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  # # make initial output weights optimal given first layer
+  X = vcat(1, Tracker.data(m[1](xt)))
+  bols = (X*X') \ (X*Float32.(y))
+  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
+  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
+  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+  maxiter = 3000
   for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x'),y'), Flux.params(m), [(x, y)], Flux.AMSGrad()) #,
-                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(x'),y')),100))
-    if (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(x'), y'))
-      println(&quot;$i iteration, loss=$l&quot;)
-      figs[r]=plot!(xg,Tracker.data(m(xg'))', lab=&quot;&quot;)#, lab=&quot;$i iterations, loss=$l&quot;)
+    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
+    if i==1 || (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(xt), yt))
+      println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
+      yg = Tracker.data(m(xg'))'
+      loc=Int64.(ceil(length(xg)*i/maxiter))
+      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                    annotations=(xg[loc], yg[loc],
+                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                            color=get(cscheme, i/maxiter)) )
+                    )
     end
   end
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.33177312399660513
-2000 iteration, loss=0.33157392688562615
-3000 iteration, loss=0.3315261570421441
-4000 iteration, loss=0.331512013793234
-5000 iteration, loss=0.3314990097605468
-1000 iteration, loss=0.33257420245639613
-2000 iteration, loss=0.3321385609333078
-3000 iteration, loss=0.33189274328486107
-4000 iteration, loss=0.33173872394927467
-5000 iteration, loss=0.331641114251807
-1000 iteration, loss=0.333842035288768
-2000 iteration, loss=0.3336797257850798
-3000 iteration, loss=0.3336299129116696
-4000 iteration, loss=0.33361622353536685
-5000 iteration, loss=0.3336041814044054
-1000 iteration, loss=0.3266673426505615
-2000 iteration, loss=0.3196423019665883
-3000 iteration, loss=0.31813361188166955
-4000 iteration, loss=0.3172505137659546
-5000 iteration, loss=0.31655033036700186
-1000 iteration, loss=0.32181419321812893
-2000 iteration, loss=0.3205625839079932
-3000 iteration, loss=0.31961309692416723
-4000 iteration, loss=0.3189372707338553
-5000 iteration, loss=0.31841712463977845
+<pre><code>2 units, 1 iterations, loss=0.315528737499848
+2 units, 600 iterations, loss=0.2996165874473663
+2 units, 1200 iterations, loss=0.2940454552235756
+2 units, 1800 iterations, loss=0.29197703738734077
+2 units, 2400 iterations, loss=0.2906250754101413
+2 units, 3000 iterations, loss=0.28957276239328394
+3 units, 1 iterations, loss=0.3286613011855983
+3 units, 600 iterations, loss=0.3014535516677888
+3 units, 1200 iterations, loss=0.299183255883381
+3 units, 1800 iterations, loss=0.29795671007941166
+3 units, 2400 iterations, loss=0.29689688663869496
+3 units, 3000 iterations, loss=0.29617175276903557
+5 units, 1 iterations, loss=0.3254322243576177
+5 units, 600 iterations, loss=0.3119235290830368
+5 units, 1200 iterations, loss=0.3039768453966807
+5 units, 1800 iterations, loss=0.29111945958521734
+5 units, 2400 iterations, loss=0.28817516700295565
+5 units, 3000 iterations, loss=0.2869244877185609
+7 units, 1 iterations, loss=0.26817422713511035
+7 units, 600 iterations, loss=0.27035103152403894
+7 units, 1200 iterations, loss=0.2701666166276396
+7 units, 1800 iterations, loss=0.26996695290411576
+7 units, 2400 iterations, loss=0.2698171809180466
+7 units, 3000 iterations, loss=0.2697615097001755
+9 units, 1 iterations, loss=0.27247664825568557
+9 units, 600 iterations, loss=0.28037179595284945
+9 units, 1200 iterations, loss=0.27935382967264705
+9 units, 1800 iterations, loss=0.278790859855241
+9 units, 2400 iterations, loss=0.27831672638666227
+9 units, 3000 iterations, loss=0.27799175127125747
 </code></pre>
-<pre><code class="julia">plot(figs..., legend=false) #, title=&quot;ReLu&quot;)
+<pre><code class="julia">plot(initmfigs..., legend=false) 
+
+for f in figs
+  display(f)
+end
 </code></pre>
 
-<p><img alt="" src="../figures/slp_5_1.png" /></p>
+<p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
+<img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
+<img alt="" src="../figures/slp_9_5.png" /></p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
