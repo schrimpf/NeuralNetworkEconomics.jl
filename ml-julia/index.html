@@ -310,7 +310,7 @@ model.</p>
 <pre><code>LassoRegressor(lambda = 1.0,
                fit_intercept = true,
                penalize_intercept = false,
-               solver = nothing,) @ 1…05
+               solver = nothing,) @ 2…60
 </code></pre>
 <p>Let’s fit lasso to the same pipeline data as above.</p>
 <pre><code class="julia">lasso_model.lambda = 1.0
@@ -326,7 +326,7 @@ println(yhat[1:10])
 <pre><code class="julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 1.4387817003946868
+<pre><code>MSE/var(y) = 1.4734944469534543
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -349,7 +349,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.1290925293641761
+<pre><code>MSE/var(y) = 0.1302218664602367
 </code></pre>
 <pre><code class="julia">
 # Get the fitted coefficients
@@ -358,7 +358,7 @@ intercept = fitted_params(m).fitted_params[1].intercept
 sum(abs.(coef).&gt;1e-8) # number non-zero
 </code></pre>
 
-<pre><code>54
+<pre><code>56
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
@@ -374,7 +374,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.12282947298011132
+<pre><code>MSE/var(y) = 0.13170341963283844
 </code></pre>
 <pre><code class="julia">using Plots
 cvmse = m.report.measurements
@@ -416,7 +416,7 @@ loss(x,y) =  mse(x,y) + penalty(y)
 @show loss(X_train,y_train)
 </code></pre>
 
-<pre><code>loss(X_train, y_train) = 0.9692287376443155 (tracked)
+<pre><code>loss(X_train, y_train) = 1.017489917959785 (tracked)
 </code></pre>
 <pre><code class="julia">
 # minimize loss

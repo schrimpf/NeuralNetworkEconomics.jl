@@ -261,7 +261,7 @@ end
 x, y = simulate(1000, 0.5)
 xg = 0:0.01:π
 rs = [2, 3, 5, 7, 9]
-cscheme = colorschemes[:Wistia];
+cscheme = colorschemes[:BrBG_4];
 </code></pre>
 
 <pre><code class="julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -275,42 +275,24 @@ for r in eachindex(rs)
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(m.loss(x,y))
       println(&quot;$i iteration, loss=$l&quot;)
-      figs[r]=plot!(xg,Tracker.data(m.predict(xg)), lab=&quot;&quot;) #, lab=&quot;$i iterations, loss=$l&quot;)
+      yg = Tracker.data(m.predict(xg))
+      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                    annotations=(xg[loc], yg[loc],
+                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                            color=get(cscheme, i/maxiter)) )
+                    )
     end
   end
+  display(figs[r])
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.35187377045760343
-2000 iteration, loss=0.3030997096446414
-3000 iteration, loss=0.2867697697571996
-4000 iteration, loss=0.28009053546637414
-5000 iteration, loss=0.27717401276638176
-1000 iteration, loss=0.35656781807711563
-2000 iteration, loss=0.30604007507553704
-3000 iteration, loss=0.28818879079989
-4000 iteration, loss=0.27794094256961827
-5000 iteration, loss=0.27598777547358605
-1000 iteration, loss=0.32183165663144575
-2000 iteration, loss=0.2993312138323814
-3000 iteration, loss=0.28629108776237777
-4000 iteration, loss=0.2821055204855411
-5000 iteration, loss=0.27944631610517146
-1000 iteration, loss=0.34582096365659554
-2000 iteration, loss=0.3274069763481203
-3000 iteration, loss=0.315842336714982
-4000 iteration, loss=0.30527219250531984
-5000 iteration, loss=0.2968186766965368
-1000 iteration, loss=0.34188411422221243
-2000 iteration, loss=0.31300824716165904
-3000 iteration, loss=0.29785141724286945
-4000 iteration, loss=0.2914000966758362
-5000 iteration, loss=0.2876983363699656
+<pre><code>1000 iteration, loss=0.30472480917458217
+Error: UndefVarError: loc not defined
 </code></pre>
-<pre><code class="julia">plot(figs..., legend=false)
+<pre><code class="julia">#plot(figs..., legend=false)
 </code></pre>
 
-<p><img alt="" src="../figures/slp_3_1.png" /></p>
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
 is typical of any minimization algorithm — the number of iterations
@@ -355,36 +337,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=1.1212063
-2 units, 600 iterations, loss=0.34136242
-2 units, 1200 iterations, loss=0.30768567
-2 units, 1800 iterations, loss=0.27602
-2 units, 2400 iterations, loss=0.27197394
-2 units, 3000 iterations, loss=0.27111578
-3 units, 1 iterations, loss=1.3064177
-3 units, 600 iterations, loss=0.32764384
-3 units, 1200 iterations, loss=0.287901
-3 units, 1800 iterations, loss=0.2759437
-3 units, 2400 iterations, loss=0.272396
-3 units, 3000 iterations, loss=0.27125964
-5 units, 1 iterations, loss=3.446831
-5 units, 600 iterations, loss=0.34293026
-5 units, 1200 iterations, loss=0.29056904
-5 units, 1800 iterations, loss=0.2783606
-5 units, 2400 iterations, loss=0.2734273
-5 units, 3000 iterations, loss=0.27161375
-7 units, 1 iterations, loss=1.8559349
-7 units, 600 iterations, loss=0.31222627
-7 units, 1200 iterations, loss=0.28732938
-7 units, 1800 iterations, loss=0.27882624
-7 units, 2400 iterations, loss=0.27457473
-7 units, 3000 iterations, loss=0.2726361
-9 units, 1 iterations, loss=2.0564733
-9 units, 600 iterations, loss=0.31998497
-9 units, 1200 iterations, loss=0.29000384
-9 units, 1800 iterations, loss=0.28058207
-9 units, 2400 iterations, loss=0.27560407
-9 units, 3000 iterations, loss=0.27318403
+<pre><code>2 units, 1 iterations, loss=0.35436347
+2 units, 600 iterations, loss=0.28920898
+2 units, 1200 iterations, loss=0.270453
+2 units, 1800 iterations, loss=0.25283998
+2 units, 2400 iterations, loss=0.25148967
+2 units, 3000 iterations, loss=0.25099522
+3 units, 1 iterations, loss=0.7615872
+3 units, 600 iterations, loss=0.26830274
+3 units, 1200 iterations, loss=0.25632748
+3 units, 1800 iterations, loss=0.25287
+3 units, 2400 iterations, loss=0.25158483
+3 units, 3000 iterations, loss=0.25095615
+5 units, 1 iterations, loss=0.530557
+5 units, 600 iterations, loss=0.2753241
+5 units, 1200 iterations, loss=0.2582122
+5 units, 1800 iterations, loss=0.2531055
+5 units, 2400 iterations, loss=0.2514935
+5 units, 3000 iterations, loss=0.25091508
+7 units, 1 iterations, loss=1.0650935
+7 units, 600 iterations, loss=0.28389275
+7 units, 1200 iterations, loss=0.26162043
+7 units, 1800 iterations, loss=0.2564348
+7 units, 2400 iterations, loss=0.2538039
+7 units, 3000 iterations, loss=0.25237575
+9 units, 1 iterations, loss=1.3130563
+9 units, 600 iterations, loss=0.29749793
+9 units, 1200 iterations, loss=0.26947337
+9 units, 1800 iterations, loss=0.25973657
+9 units, 2400 iterations, loss=0.25611424
+9 units, 3000 iterations, loss=0.25409535
 </code></pre>
 <p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
 <img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
@@ -453,36 +435,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.35411441273278366
-2 units, 600 iterations, loss=0.285143241092943
-2 units, 1200 iterations, loss=0.28431112061054775
-2 units, 1800 iterations, loss=0.2835012436021289
-2 units, 2400 iterations, loss=0.28178562162331633
-2 units, 3000 iterations, loss=0.2719681254795772
-3 units, 1 iterations, loss=0.28854351926927346
-3 units, 600 iterations, loss=0.27044174671453736
-3 units, 1200 iterations, loss=0.26922973169343023
-3 units, 1800 iterations, loss=0.26874074537875176
-3 units, 2400 iterations, loss=0.26844088152892426
-3 units, 3000 iterations, loss=0.26821847236687146
-5 units, 1 iterations, loss=0.2813986964445288
-5 units, 600 iterations, loss=0.2735395129274911
-5 units, 1200 iterations, loss=0.2717286334642842
-5 units, 1800 iterations, loss=0.2708627425565637
-5 units, 2400 iterations, loss=0.27027577017392845
-5 units, 3000 iterations, loss=0.26983327846331207
-7 units, 1 iterations, loss=0.27588889303810693
-7 units, 600 iterations, loss=0.26832442003008605
-7 units, 1200 iterations, loss=0.26757752721772243
-7 units, 1800 iterations, loss=0.2671432817466463
-7 units, 2400 iterations, loss=0.2668354664586659
-7 units, 3000 iterations, loss=0.26660203436586843
-9 units, 1 iterations, loss=0.26599568319286265
-9 units, 600 iterations, loss=0.264760649327605
-9 units, 1200 iterations, loss=0.26464831211946105
-9 units, 1800 iterations, loss=0.2645840649853074
-9 units, 2400 iterations, loss=0.2645389410821379
-9 units, 3000 iterations, loss=0.26450373708533514
+<pre><code>2 units, 1 iterations, loss=0.3088273000317558
+2 units, 600 iterations, loss=0.2575219502156656
+2 units, 1200 iterations, loss=0.25736631190095843
+2 units, 1800 iterations, loss=0.2572223717098106
+2 units, 2400 iterations, loss=0.2570867113327823
+2 units, 3000 iterations, loss=0.2569557095372713
+3 units, 1 iterations, loss=0.259812387468395
+3 units, 600 iterations, loss=0.24904424795045094
+3 units, 1200 iterations, loss=0.24811639685358053
+3 units, 1800 iterations, loss=0.2475980553775825
+3 units, 2400 iterations, loss=0.24721801168295424
+3 units, 3000 iterations, loss=0.24690262460020013
+5 units, 1 iterations, loss=0.25726167807321076
+5 units, 600 iterations, loss=0.25028345530860585
+5 units, 1200 iterations, loss=0.24891019836636952
+5 units, 1800 iterations, loss=0.2480179613898816
+5 units, 2400 iterations, loss=0.24731310904434178
+5 units, 3000 iterations, loss=0.2467257257285448
+7 units, 1 iterations, loss=0.25195873908297456
+7 units, 600 iterations, loss=0.24553419939027676
+7 units, 1200 iterations, loss=0.2450750789124235
+7 units, 1800 iterations, loss=0.24475459242003503
+7 units, 2400 iterations, loss=0.2444655227667202
+7 units, 3000 iterations, loss=0.24419882498097087
+9 units, 1 iterations, loss=0.24088785186244327
+9 units, 600 iterations, loss=0.24085648607322233
+9 units, 1200 iterations, loss=0.24081099023317673
+9 units, 1800 iterations, loss=0.24079224885865802
+9 units, 2400 iterations, loss=0.2407810822471446
+9 units, 3000 iterations, loss=0.2407722102243151
 </code></pre>
 <pre><code class="julia">nothing
 </code></pre>
@@ -540,36 +522,36 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.315528737499848
-2 units, 600 iterations, loss=0.2996165874473663
-2 units, 1200 iterations, loss=0.2940454552235756
-2 units, 1800 iterations, loss=0.29197703738734077
-2 units, 2400 iterations, loss=0.2906250754101413
-2 units, 3000 iterations, loss=0.28957276239328394
-3 units, 1 iterations, loss=0.3286613011855983
-3 units, 600 iterations, loss=0.3014535516677888
-3 units, 1200 iterations, loss=0.299183255883381
-3 units, 1800 iterations, loss=0.29795671007941166
-3 units, 2400 iterations, loss=0.29689688663869496
-3 units, 3000 iterations, loss=0.29617175276903557
-5 units, 1 iterations, loss=0.3254322243576177
-5 units, 600 iterations, loss=0.3119235290830368
-5 units, 1200 iterations, loss=0.3039768453966807
-5 units, 1800 iterations, loss=0.29111945958521734
-5 units, 2400 iterations, loss=0.28817516700295565
-5 units, 3000 iterations, loss=0.2869244877185609
-7 units, 1 iterations, loss=0.26817422713511035
-7 units, 600 iterations, loss=0.27035103152403894
-7 units, 1200 iterations, loss=0.2701666166276396
-7 units, 1800 iterations, loss=0.26996695290411576
-7 units, 2400 iterations, loss=0.2698171809180466
-7 units, 3000 iterations, loss=0.2697615097001755
-9 units, 1 iterations, loss=0.27247664825568557
-9 units, 600 iterations, loss=0.28037179595284945
-9 units, 1200 iterations, loss=0.27935382967264705
-9 units, 1800 iterations, loss=0.278790859855241
-9 units, 2400 iterations, loss=0.27831672638666227
-9 units, 3000 iterations, loss=0.27799175127125747
+<pre><code>2 units, 1 iterations, loss=0.37421495604130545
+2 units, 600 iterations, loss=0.30441563382558
+2 units, 1200 iterations, loss=0.2986053686940071
+2 units, 1800 iterations, loss=0.29842387819319055
+2 units, 2400 iterations, loss=0.2983685970853709
+2 units, 3000 iterations, loss=0.2983318699047731
+3 units, 1 iterations, loss=0.28519629487232157
+3 units, 600 iterations, loss=0.26513749792413366
+3 units, 1200 iterations, loss=0.26321679864668024
+3 units, 1800 iterations, loss=0.26216353880698284
+3 units, 2400 iterations, loss=0.2616056134716333
+3 units, 3000 iterations, loss=0.2612757011062495
+5 units, 1 iterations, loss=0.26220736857619403
+5 units, 600 iterations, loss=0.258385289255493
+5 units, 1200 iterations, loss=0.2551627618685285
+5 units, 1800 iterations, loss=0.2526917349075987
+5 units, 2400 iterations, loss=0.25170188947673616
+5 units, 3000 iterations, loss=0.2509223838036709
+7 units, 1 iterations, loss=0.2517272398802207
+7 units, 600 iterations, loss=0.25230692546018874
+7 units, 1200 iterations, loss=0.2522133005387618
+7 units, 1800 iterations, loss=0.25217825633235713
+7 units, 2400 iterations, loss=0.25210858074998693
+7 units, 3000 iterations, loss=0.25201329405290396
+9 units, 1 iterations, loss=0.2503249711664288
+9 units, 600 iterations, loss=0.24805364175606823
+9 units, 1200 iterations, loss=0.24647723865759508
+9 units, 1800 iterations, loss=0.24582358964536896
+9 units, 2400 iterations, loss=0.24535359394405776
+9 units, 3000 iterations, loss=0.24502292206356208
 </code></pre>
 <pre><code class="julia">plot(initmfigs..., legend=false) 
 
