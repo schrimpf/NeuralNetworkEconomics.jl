@@ -128,6 +128,7 @@
         <li class="main "><a href="#mljjl">MLJ.jl</a></li>
         <li class="main "><a href="#fluxjl">Flux.jl</a></li>
         <li class="main "><a href="#additional-resources">Additional Resources</a></li>
+        <li class="main "><a href="#references-references">References [references]</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -1065,7 +1066,7 @@ model.</p>
 <pre><code>LassoRegressor(lambda = 1.0,
                fit_intercept = true,
                penalize_intercept = false,
-               solver = nothing,) @ 1…18
+               solver = nothing,) @ 3…01
 </code></pre>
 <p>Let’s fit lasso to the same pipeline data as above.</p>
 <pre><code class="julia">lasso_model.lambda = 1.0
@@ -1081,7 +1082,7 @@ println(yhat[1:10])
 <pre><code class="julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 1.431034060082509
+<pre><code>MSE/var(y) = 1.442273607989569
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -1104,7 +1105,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.11639661000467057
+<pre><code>MSE/var(y) = 0.13005679647954763
 </code></pre>
 <pre><code class="julia">
 # Get the fitted coefficients
@@ -1113,7 +1114,7 @@ intercept = fitted_params(m).fitted_params[1].intercept
 sum(abs.(coef).&gt;1e-8) # number non-zero
 </code></pre>
 
-<pre><code>53
+<pre><code>57
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
@@ -1129,7 +1130,7 @@ yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 
-<pre><code>MSE/var(y) = 0.11593492795132113
+<pre><code>MSE/var(y) = 0.12689851218912734
 </code></pre>
 <pre><code class="julia">using Plots
 cvmse = m.report.measurements
@@ -1144,7 +1145,7 @@ for machine learning. It seems to be emerging as the leading Julia
 package for neural networks and deep learning, but other machine
 learning models can also be implemented using <code>Flux.jl</code>.</p>
 <p>Let’s create a lasso model in <code>Flux.jl</code>.</p>
-<pre><code class="julia">using Flux
+<pre><code class="julia">using Flux, LinearAlgebra
 # Scale the variables
 Xstd = Flux.normalise(Matrix(X))
 X_train = Xstd[train,:]
@@ -1171,7 +1172,7 @@ loss(x,y) =  mse(x,y) + penalty(y)
 @show loss(X_train,y_train)
 </code></pre>
 
-<pre><code>Error: UndefVarError: norm not defined
+<pre><code>loss(X_train, y_train) = 0.9691098903400395 (tracked)
 </code></pre>
 <pre><code class="julia">
 # minimize loss
@@ -1185,11 +1186,7 @@ for i in 1:maxiter
   mse_test[i] = Tracker.data(mse(X_test, y_test))
   obj[i] = Tracker.data(loss(X_train,y_train))
 end
-</code></pre>
-
-<pre><code>Error: UndefVarError: norm not defined
-</code></pre>
-<pre><code class="julia">lo = 1
+lo = 1
 hi = 250
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
@@ -1216,6 +1213,7 @@ though it never exactly gets there.</p>
     Julia:Fundamentals for Data Science, MachineLearning and Artificial
     Intelligence</em></li>
 </ul>
+<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
 <div class="references" id="refs">
 <div id="ref-hdm">
 <p>Chernozhukov, Victor, Chris Hansen, and Martin Spindler. 2016. “hdm:
