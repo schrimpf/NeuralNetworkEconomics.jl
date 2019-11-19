@@ -132,6 +132,7 @@
             <li><a href="#chain-interface">Chain interface</a></li>
             <li><a href="#initial-values">Initial values</a></li>
             <li><a href="#rectified-linear">Rectified linear</a></li>
+            <li><a href="#stochastic-gradient-descent">Stochastic Gradient descent</a></li>
         <li class="main "><a href="#rate-of-convergence">Rate of convergence</a></li>
         <li class="main "><a href="#references-references">References [references]</a></li>
     </ul>
@@ -287,12 +288,9 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.30472480917458217
+<pre><code>1000 iteration, loss=0.3384777887417437
 Error: UndefVarError: loc not defined
 </code></pre>
-<pre><code class="julia">#plot(figs..., legend=false)
-</code></pre>
-
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
 is typical of any minimization algorithm — the number of iterations
@@ -319,7 +317,7 @@ for r in eachindex(rs)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 3000
   for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Tracker.data(Flux.mse(m(xt), yt))
@@ -337,43 +335,40 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.35436347
-2 units, 600 iterations, loss=0.28920898
-2 units, 1200 iterations, loss=0.270453
-2 units, 1800 iterations, loss=0.25283998
-2 units, 2400 iterations, loss=0.25148967
-2 units, 3000 iterations, loss=0.25099522
-3 units, 1 iterations, loss=0.7615872
-3 units, 600 iterations, loss=0.26830274
-3 units, 1200 iterations, loss=0.25632748
-3 units, 1800 iterations, loss=0.25287
-3 units, 2400 iterations, loss=0.25158483
-3 units, 3000 iterations, loss=0.25095615
-5 units, 1 iterations, loss=0.530557
-5 units, 600 iterations, loss=0.2753241
-5 units, 1200 iterations, loss=0.2582122
-5 units, 1800 iterations, loss=0.2531055
-5 units, 2400 iterations, loss=0.2514935
-5 units, 3000 iterations, loss=0.25091508
-7 units, 1 iterations, loss=1.0650935
-7 units, 600 iterations, loss=0.28389275
-7 units, 1200 iterations, loss=0.26162043
-7 units, 1800 iterations, loss=0.2564348
-7 units, 2400 iterations, loss=0.2538039
-7 units, 3000 iterations, loss=0.25237575
-9 units, 1 iterations, loss=1.3130563
-9 units, 600 iterations, loss=0.29749793
-9 units, 1200 iterations, loss=0.26947337
-9 units, 1800 iterations, loss=0.25973657
-9 units, 2400 iterations, loss=0.25611424
-9 units, 3000 iterations, loss=0.25409535
+<pre><code>2 units, 1 iterations, loss=1.0369217
+2 units, 600 iterations, loss=0.3163922
+2 units, 1200 iterations, loss=0.2810491
+2 units, 1800 iterations, loss=0.26917544
+2 units, 2400 iterations, loss=0.26473504
+2 units, 3000 iterations, loss=0.26302978
+3 units, 1 iterations, loss=0.7069125
+3 units, 600 iterations, loss=0.32422245
+3 units, 1200 iterations, loss=0.2859918
+3 units, 1800 iterations, loss=0.27349538
+3 units, 2400 iterations, loss=0.2671763
+3 units, 3000 iterations, loss=0.26457357
+5 units, 1 iterations, loss=3.5714097
+5 units, 600 iterations, loss=0.31072095
+5 units, 1200 iterations, loss=0.28445798
+5 units, 1800 iterations, loss=0.27327633
+5 units, 2400 iterations, loss=0.26768163
+5 units, 3000 iterations, loss=0.26503065
+7 units, 1 iterations, loss=1.6327342
+7 units, 600 iterations, loss=0.306045
+7 units, 1200 iterations, loss=0.28370106
+7 units, 1800 iterations, loss=0.27319804
+7 units, 2400 iterations, loss=0.26775336
+7 units, 3000 iterations, loss=0.2653656
+9 units, 1 iterations, loss=2.3672042
+9 units, 600 iterations, loss=0.316754
+9 units, 1200 iterations, loss=0.2887455
+9 units, 1800 iterations, loss=0.27853328
+9 units, 2400 iterations, loss=0.2717537
+9 units, 3000 iterations, loss=0.2678932
 </code></pre>
 <p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
 <img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
 <img alt="" src="../figures/slp_4_5.png" /></p>
-<pre><code class="julia">#plot(figs...)
-</code></pre>
-
 <p>The figures do not appear identical to the first example since the
 initial values differ, and the above code first normalises the $x$s.</p>
 <h2 id="initial-values">Initial values<a class="headerlink" href="#initial-values" title="Permanent link">&para;</a></h2>
@@ -399,8 +394,8 @@ activations functions are plotted below.</p>
 <pre><code class="julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
-xt = reshape(x, 1, length(x))
-yt = reshape(y, 1, length(y))
+xt = reshape(Float32.(x), 1, length(x))
+yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
@@ -418,8 +413,8 @@ for r in eachindex(rs)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 3000
   for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
-                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Tracker.data(Flux.mse(m(xt), yt))
       println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
@@ -435,41 +430,41 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.3088273000317558
-2 units, 600 iterations, loss=0.2575219502156656
-2 units, 1200 iterations, loss=0.25736631190095843
-2 units, 1800 iterations, loss=0.2572223717098106
-2 units, 2400 iterations, loss=0.2570867113327823
-2 units, 3000 iterations, loss=0.2569557095372713
-3 units, 1 iterations, loss=0.259812387468395
-3 units, 600 iterations, loss=0.24904424795045094
-3 units, 1200 iterations, loss=0.24811639685358053
-3 units, 1800 iterations, loss=0.2475980553775825
-3 units, 2400 iterations, loss=0.24721801168295424
-3 units, 3000 iterations, loss=0.24690262460020013
-5 units, 1 iterations, loss=0.25726167807321076
-5 units, 600 iterations, loss=0.25028345530860585
-5 units, 1200 iterations, loss=0.24891019836636952
-5 units, 1800 iterations, loss=0.2480179613898816
-5 units, 2400 iterations, loss=0.24731310904434178
-5 units, 3000 iterations, loss=0.2467257257285448
-7 units, 1 iterations, loss=0.25195873908297456
-7 units, 600 iterations, loss=0.24553419939027676
-7 units, 1200 iterations, loss=0.2450750789124235
-7 units, 1800 iterations, loss=0.24475459242003503
-7 units, 2400 iterations, loss=0.2444655227667202
-7 units, 3000 iterations, loss=0.24419882498097087
-9 units, 1 iterations, loss=0.24088785186244327
-9 units, 600 iterations, loss=0.24085648607322233
-9 units, 1200 iterations, loss=0.24081099023317673
-9 units, 1800 iterations, loss=0.24079224885865802
-9 units, 2400 iterations, loss=0.2407810822471446
-9 units, 3000 iterations, loss=0.2407722102243151
+<pre><code>2 units, 1 iterations, loss=0.3366038
+2 units, 600 iterations, loss=0.27992913
+2 units, 1200 iterations, loss=0.27875888
+2 units, 1800 iterations, loss=0.27578646
+2 units, 2400 iterations, loss=0.2642159
+2 units, 3000 iterations, loss=0.26335862
+3 units, 1 iterations, loss=0.28392342
+3 units, 600 iterations, loss=0.26435375
+3 units, 1200 iterations, loss=0.26197103
+3 units, 1800 iterations, loss=0.26100686
+3 units, 2400 iterations, loss=0.26044744
+3 units, 3000 iterations, loss=0.26004958
+5 units, 1 iterations, loss=0.27672693
+5 units, 600 iterations, loss=0.26504174
+5 units, 1200 iterations, loss=0.26310754
+5 units, 1800 iterations, loss=0.2621695
+5 units, 2400 iterations, loss=0.26154354
+5 units, 3000 iterations, loss=0.26107207
+7 units, 1 iterations, loss=0.26915398
+7 units, 600 iterations, loss=0.25981954
+7 units, 1200 iterations, loss=0.2588425
+7 units, 1800 iterations, loss=0.25818548
+7 units, 2400 iterations, loss=0.257687
+7 units, 3000 iterations, loss=0.25729224
+9 units, 1 iterations, loss=0.25631088
+9 units, 600 iterations, loss=0.25555292
+9 units, 1200 iterations, loss=0.2554833
+9 units, 1800 iterations, loss=0.2554464
+9 units, 2400 iterations, loss=0.25541702
+9 units, 3000 iterations, loss=0.2553905
 </code></pre>
 <pre><code class="julia">nothing
 </code></pre>
 
-<pre><code class="julia">plot(initmfigs..., legend=false)
+<pre><code class="julia">display(plot(initmfigs..., legend=false))
 </code></pre>
 
 <p><img alt="" src="../figures/slp_7_1.png" /></p>
@@ -493,9 +488,9 @@ for r in eachindex(rs)
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
   Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
-  # # adjust initial intercepts to be in the support of w*x  
+  # adjust initial intercepts to be in the support of w*x  
   Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
-  # # make initial output weights optimal given first layer
+  # make initial output weights optimal given first layer
   X = vcat(1, Tracker.data(m[1](xt)))
   bols = (X*X') \ (X*Float32.(y))
   Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
@@ -505,7 +500,7 @@ for r in eachindex(rs)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 3000
   for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(xt),yt), Flux.params(m), [(x, y)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Tracker.data(Flux.mse(m(xt), yt))
@@ -522,47 +517,140 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.37421495604130545
-2 units, 600 iterations, loss=0.30441563382558
-2 units, 1200 iterations, loss=0.2986053686940071
-2 units, 1800 iterations, loss=0.29842387819319055
-2 units, 2400 iterations, loss=0.2983685970853709
-2 units, 3000 iterations, loss=0.2983318699047731
-3 units, 1 iterations, loss=0.28519629487232157
-3 units, 600 iterations, loss=0.26513749792413366
-3 units, 1200 iterations, loss=0.26321679864668024
-3 units, 1800 iterations, loss=0.26216353880698284
-3 units, 2400 iterations, loss=0.2616056134716333
-3 units, 3000 iterations, loss=0.2612757011062495
-5 units, 1 iterations, loss=0.26220736857619403
-5 units, 600 iterations, loss=0.258385289255493
-5 units, 1200 iterations, loss=0.2551627618685285
-5 units, 1800 iterations, loss=0.2526917349075987
-5 units, 2400 iterations, loss=0.25170188947673616
-5 units, 3000 iterations, loss=0.2509223838036709
-7 units, 1 iterations, loss=0.2517272398802207
-7 units, 600 iterations, loss=0.25230692546018874
-7 units, 1200 iterations, loss=0.2522133005387618
-7 units, 1800 iterations, loss=0.25217825633235713
-7 units, 2400 iterations, loss=0.25210858074998693
-7 units, 3000 iterations, loss=0.25201329405290396
-9 units, 1 iterations, loss=0.2503249711664288
-9 units, 600 iterations, loss=0.24805364175606823
-9 units, 1200 iterations, loss=0.24647723865759508
-9 units, 1800 iterations, loss=0.24582358964536896
-9 units, 2400 iterations, loss=0.24535359394405776
-9 units, 3000 iterations, loss=0.24502292206356208
+<pre><code>2 units, 1 iterations, loss=0.29702237
+2 units, 600 iterations, loss=0.28908145
+2 units, 1200 iterations, loss=0.2883219
+2 units, 1800 iterations, loss=0.28762406
+2 units, 2400 iterations, loss=0.28705677
+2 units, 3000 iterations, loss=0.28651312
+3 units, 1 iterations, loss=0.30765957
+3 units, 600 iterations, loss=0.286267
+3 units, 1200 iterations, loss=0.283767
+3 units, 1800 iterations, loss=0.282318
+3 units, 2400 iterations, loss=0.2816515
+3 units, 3000 iterations, loss=0.28122678
+5 units, 1 iterations, loss=0.28393695
+5 units, 600 iterations, loss=0.2731749
+5 units, 1200 iterations, loss=0.27230558
+5 units, 1800 iterations, loss=0.2719356
+5 units, 2400 iterations, loss=0.27168837
+5 units, 3000 iterations, loss=0.27141717
+7 units, 1 iterations, loss=0.2570676
+7 units, 600 iterations, loss=0.25794896
+7 units, 1200 iterations, loss=0.25785723
+7 units, 1800 iterations, loss=0.25780305
+7 units, 2400 iterations, loss=0.25776556
+7 units, 3000 iterations, loss=0.25772992
+9 units, 1 iterations, loss=0.26243994
+9 units, 600 iterations, loss=0.26901057
+9 units, 1200 iterations, loss=0.26791033
+9 units, 1800 iterations, loss=0.2674495
+9 units, 2400 iterations, loss=0.26714712
+9 units, 3000 iterations, loss=0.2668494
 </code></pre>
-<pre><code class="julia">plot(initmfigs..., legend=false) 
+<pre><code class="julia">display(plot(initmfigs..., legend=false) )
+</code></pre>
 
+<p><img alt="" src="../figures/slp_9_1.png" /></p>
+<pre><code class="julia">
 for f in figs
   display(f)
 end
 </code></pre>
 
-<p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
-<img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
-<img alt="" src="../figures/slp_9_5.png" /></p>
+<p><img alt="" src="../figures/slp_9_2.png" /> <img alt="" src="../figures/slp_9_3.png" />
+<img alt="" src="../figures/slp_9_4.png" /> <img alt="" src="../figures/slp_9_5.png" />
+<img alt="" src="../figures/slp_9_6.png" /></p>
+<h2 id="stochastic-gradient-descent">Stochastic Gradient descent<a class="headerlink" href="#stochastic-gradient-descent" title="Permanent link">&para;</a></h2>
+<p>The above examples all used the full data in each iteration of gradient
+descent. Computation can be reduced and the parameter space can possibly
+be explored more by using stochastic gradient descent. In stochastic
+gradient descent, a subset (possibly even of size 1) of the data is used
+to compute the gradient for each iteration. To accomplish this in Flux,
+we should give the <code>Flux.train!</code> function an array of tuples of data
+consisting of the subsets to be used in iteration. Each call to
+<code>Flux.train!</code> loops over all tuples of data, doing one gradient descent
+iteration for each. This whole process is referred to as a training
+epoch. You could use (the below does not) Flux’s <code>@epochs</code> macro for
+running multiple training epochs without writing a loop.</p>
+<pre><code class="julia">dimx = 1
+figs = Array{typeof(plot(0)),1}(undef,length(rs))
+for r in eachindex(rs)
+  l = rs[r]
+  m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
+  # adjust initial weights to make sure each node is nonlinear in support of X
+  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  # adjust initial intercepts to be in the support of w*x  
+  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  # make initial output weights optimal given first layer
+  X = vcat(1, Tracker.data(m[1](xt)))
+  bols = (X*X') \ (X*Float32.(y))
+  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
+  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
+  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+  maxiter = 3000
+  for i = 1:maxiter
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), 
+                # partition data into 100 batches
+                [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)], 
+                Flux.AMSGrad() ) #,
+    if i==1 || (i % (maxiter ÷ 5))==0
+      l=Tracker.data(Flux.mse(m(xt), yt))
+      println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
+      yg = Tracker.data(m(xg'))'
+      loc=Int64.(ceil(length(xg)*i/maxiter))
+      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                    annotations=(xg[loc], yg[loc],
+                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                            color=get(cscheme, i/maxiter)) )
+                    )
+    end
+  end
+end
+</code></pre>
+
+<pre><code>2 units, 1 iterations, loss=0.29751676
+2 units, 600 iterations, loss=0.27500233
+2 units, 1200 iterations, loss=0.27498618
+2 units, 1800 iterations, loss=0.2749766
+2 units, 2400 iterations, loss=0.27497485
+2 units, 3000 iterations, loss=0.27501076
+3 units, 1 iterations, loss=0.3140766
+3 units, 600 iterations, loss=0.27320027
+3 units, 1200 iterations, loss=0.27320513
+3 units, 1800 iterations, loss=0.27321768
+3 units, 2400 iterations, loss=0.273258
+3 units, 3000 iterations, loss=0.27322558
+5 units, 1 iterations, loss=0.26850498
+5 units, 600 iterations, loss=0.27048385
+5 units, 1200 iterations, loss=0.26997226
+5 units, 1800 iterations, loss=0.27007732
+5 units, 2400 iterations, loss=0.2693555
+5 units, 3000 iterations, loss=0.26938492
+7 units, 1 iterations, loss=0.262361
+7 units, 600 iterations, loss=0.26100615
+7 units, 1200 iterations, loss=0.26014635
+7 units, 1800 iterations, loss=0.25989655
+7 units, 2400 iterations, loss=0.25976866
+7 units, 3000 iterations, loss=0.25972375
+9 units, 1 iterations, loss=0.26405096
+9 units, 600 iterations, loss=0.25855294
+9 units, 1200 iterations, loss=0.2617295
+9 units, 1800 iterations, loss=0.26226482
+9 units, 2400 iterations, loss=0.26251462
+9 units, 3000 iterations, loss=0.26008978
+</code></pre>
+<pre><code class="julia">
+for f in figs
+  display(f)
+end
+</code></pre>
+
+<p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
+<img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
+<img alt="" src="../figures/slp_10_5.png" /></p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
@@ -592,6 +680,8 @@ types of functions. Barron (<a href="#ref-barron1993">1993</a>) first showed tha
 neural networks approximate this class of functions well, and compares
 the approximation rate of neural networks to other function
 approximation results.</p>
+<p>TODO: - clean up this section - add simulations demonstrating
+convergence rate?</p>
 <h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
 <div class="references" id="refs">
 <div id="ref-barron1993">
