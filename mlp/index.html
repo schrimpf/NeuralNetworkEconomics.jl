@@ -189,7 +189,7 @@ For regression problems, $\psi_L$ is typically the identity function.</p>
 <p>In a generalized linear model, $x_L$ would be data. In a multilayer
 network, $x_L \in \R^{H_{L}}$ is the output of a previous layer.
 Specificaly, for $k \in { 1, ...., H_L}$, <script type="math/tex; mode=display">
-x_{k,L} = \psi_{k, L-1}(x_{L-1}'w_{k,L-1} b_{k,L-1})
+x_{k,L} = \psi_{k, L-1}(x_{L-1}'w_{k,L-1} + b_{k,L-1})
 </script> where $x_{L-1}, w_{L-1} \in \R^{H_{L-1}}$, $b_{L-1} \in \R$, and
 $\psi_{k,L-1}: \R \to \R$. This continues recursively until
 $x_0 = x \in \R^d$ is the data.</p>
@@ -235,7 +235,7 @@ yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 
 <pre><code>1×1000 Array{Float32,2}:
- -0.731269  -0.200386  0.505361  0.678175  …  0.968472  0.330049  0.482956
+ -0.209011  -1.27664  -0.899482  1.14082  …  1.50402  -0.582519  0.719565
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -289,33 +289,33 @@ end
 
 <pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=0.4968291
-Model 1, 500 iterations, loss=0.2501032
-Model 1, 1000 iterations, loss=0.24915048
-Model 1, 1500 iterations, loss=0.24880765
-Model 1, 2000 iterations, loss=0.24865745
-Model 1, 2500 iterations, loss=0.24858604
-Model 1, 3000 iterations, loss=0.24854839
-Model 1, 3500 iterations, loss=0.24852465
-Model 1, 4000 iterations, loss=0.24850875
-Model 1, 4500 iterations, loss=0.24849957
-Model 1, 5000 iterations, loss=0.24849331
- 10.645939 seconds (24.46 M allocations: 2.843 GiB, 10.20% gc time)
+Model 1, 1 iterations, loss=0.5129408
+Model 1, 500 iterations, loss=0.26298028
+Model 1, 1000 iterations, loss=0.2619613
+Model 1, 1500 iterations, loss=0.2616309
+Model 1, 2000 iterations, loss=0.26148126
+Model 1, 2500 iterations, loss=0.26135322
+Model 1, 3000 iterations, loss=0.2612699
+Model 1, 3500 iterations, loss=0.26122248
+Model 1, 4000 iterations, loss=0.26118335
+Model 1, 4500 iterations, loss=0.2611564
+Model 1, 5000 iterations, loss=0.261137
+ 10.673440 seconds (24.46 M allocations: 2.843 GiB, 10.09% gc time)
 Model 2 = Chain(#4, Dense(1, 3, leakyrelu), Dense(3, 3, leakyrelu), Dense(3
 , 3, leakyrelu), Dense(3, 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.62905914
-Model 2, 500 iterations, loss=0.25052556
-Model 2, 1000 iterations, loss=0.24890833
-Model 2, 1500 iterations, loss=0.24714722
-Model 2, 2000 iterations, loss=0.24225335
-Model 2, 2500 iterations, loss=0.24045812
-Model 2, 3000 iterations, loss=0.23981401
-Model 2, 3500 iterations, loss=0.23939581
-Model 2, 4000 iterations, loss=0.23905079
-Model 2, 4500 iterations, loss=0.23891099
-Model 2, 5000 iterations, loss=0.23881508
-  3.056830 seconds (4.65 M allocations: 1.253 GiB, 9.08% gc time)
+Model 2, 1 iterations, loss=1.6646585
+Model 2, 500 iterations, loss=0.26957533
+Model 2, 1000 iterations, loss=0.25888503
+Model 2, 1500 iterations, loss=0.25591922
+Model 2, 2000 iterations, loss=0.2551626
+Model 2, 2500 iterations, loss=0.25482458
+Model 2, 3000 iterations, loss=0.25458035
+Model 2, 3500 iterations, loss=0.25446838
+Model 2, 4000 iterations, loss=0.25440004
+Model 2, 4500 iterations, loss=0.2543562
+Model 2, 5000 iterations, loss=0.25430045
+  3.100482 seconds (4.65 M allocations: 1.253 GiB, 8.68% gc time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network
@@ -424,7 +424,12 @@ with the highest probability in the case of <code>m(x)</code>).</p>
 # gradient descent steps using the full X and Y to compute gradients
 Xsmall=X[:,1:1000]
 Ysmall=Y[:,1:1000] # accuracy is slower, so only compute on subset of data
-evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall)) 
+
+# Test set 
+tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |&gt; gpu
+tY = onehotbatch(MNIST.labels(:test), 0:9) |&gt; gpu
+
+evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
 opt = ADAM()
 </code></pre>
 
@@ -456,16 +461,15 @@ end
 
 <pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
 </code></pre>
-<pre><code class="julia">accuracy(X, Y)
-
-# Test set accuracy
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |&gt; gpu
-tY = onehotbatch(MNIST.labels(:test), 0:9) |&gt; gpu
-
-accuracy(tX, tY)
+<pre><code class="julia">@show accuracy(X, Y)
 </code></pre>
 
-<pre><code>0.9267
+<pre><code>accuracy(X, Y) = 0.9257166666666666
+</code></pre>
+<pre><code class="julia">@show accuracy(tX, tY);
+</code></pre>
+
+<pre><code>accuracy(tX, tY) = 0.9267
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
 pretty good.</p>
@@ -541,7 +545,7 @@ activation. They used tanh activation functions.</p>
   softmax) |&gt; gpu
 loss(x, y) = crossentropy(cmgsnet(x), y)
 accuracy(x, y) = mean(onecold(cmgsnet(x)) .== onecold(y))
-evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall)) 
+evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
 
 println(&quot;cmgsnet has $(nparam(cmgsnet)) parameters!!!&quot;)
 </code></pre>
@@ -585,25 +589,11 @@ end
 </code></pre>
 
 <pre><code>Finished 1 epochs
-Finished 2 epochs
-Finished 3 epochs
-Finished 4 epochs
-Finished 5 epochs
-Finished 6 epochs
-Finished 7 epochs
-Finished 8 epochs
-Finished 9 epochs
-Finished 10 epochs
-Finished 11 epochs
-Finished 12 epochs
-Finished 13 epochs
-Finished 14 epochs
-Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
+Effective GPU memory usage: 96.18% (5.706 GiB/5.933 GiB)
+CuArrays GPU memory usage: 3.497 GiB
+BinnedPool usage: 425.524 MiB (425.524 MiB allocated, 0 bytes cached)
+BinnedPool efficiency: 96.63% (3.379 GiB requested, 3.497 GiB allocated)
+Error: OutOfMemoryError()
 </code></pre>
 <p>This model achieved a testing accuracy of 98.37% after 13 training
 epochs. Each training epoch consisting of 10 passes through the data
@@ -656,12 +646,12 @@ mlabels = cpu(onecold(cmgsnet(tX))).-1
 @show mean(mlabels.==tlabels) # = accuracy
 </code></pre>
 
-<pre><code>mean(mlabels .== tlabels) = 0.9836
+<pre><code>mean(mlabels .== tlabels) = 0.9229
 </code></pre>
 <pre><code class="julia">@show sum(mlabels .!= tlabels)
 </code></pre>
 
-<pre><code>sum(mlabels .!= tlabels) = 164
+<pre><code>sum(mlabels .!= tlabels) = 771
 </code></pre>
 <pre><code class="julia">miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;) for i in miss[1:16]]...)
