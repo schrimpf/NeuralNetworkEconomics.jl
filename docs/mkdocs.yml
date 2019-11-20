@@ -1,13 +1,17 @@
-site_name:        GMMInference.jl
-repo_url:         https://github.com/schrimpf/GMMInference.jl
-site_description: GMM estimation and inference.
+site_name:        " "
+repo_url:         https://github.com/schrimpf/NeuralNetworkEconomics.jl
+site_description: Neural networks in economics
 site_author:      Paul Schrimpf
 copyright:        Paul Schrimpf
 
-theme: journal
+theme:
+    name: journal
+    highlightjs: true
+       - julia
 
 extra_css:
   - assets/Documenter.css
+  - assets/extra.css
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML
@@ -25,17 +29,21 @@ markdown_extensions:
   - admonition
   - footnotes
   - mdx_math
-  - attr_list  
+  - attr_list
 
 docs_dir: 'build'
 
 nav:
-  - Package Documentation: index.md
-  - Machine Learning in Economics:
+  - Package Docs: index.md
+  - ML in Economics:
     - Introduction: ml-intro.md
     - Methods: ml-methods.md
     - Inference: ml-doubledebiased.md
     - Detecting heterogeneity: mlExamplePKH.md
+    - With Julia : ml-julia.md
+  - Neural Networks:    
+    - Introduction: slp.md
+    - Multi-Layer: mlp.md
   - About:
     - License: license.md
     

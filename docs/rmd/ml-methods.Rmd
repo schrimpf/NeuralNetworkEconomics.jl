@@ -151,16 +151,10 @@ print(fig2)
      city gate gas price, heating degree days, state(s) that each
      pipeline operates in
 
-<div class="notes">
-This is a dataset that I put together for a current research
-project. I'm happy to share it upon request, but it is not ready to
-be posted publicly yet.
-</div>
-
 ---
 
 ```{r, loadpipeline, results='show', warning=FALSE, cache=TRUE}
-load("~/natural-gas-pipelines/dataAndCode/pipelines.Rdata")
+load("pipelines.Rdata")
 # data has problems before 1996 due to format change
 data <- subset(data,report_yr>=1996)
 # replace NA state weights with 0's

@@ -2,24 +2,59 @@ BIB = ml.bib
 RKNIT = Rscript make.R
 PANDOC = pandoc --bibliography $(BIB) -f markdown -t markdown_mmd-citations --metadata link-citations=true 
 
+WEAVE = julia makeweave.jl 
 vpath %.Rmd rmd
+vpath %.jmd jmd
+
 
 rmdin := $(filter-out %_slides.Rmd,$(wildcard rmd/*.Rmd))
-rmdout := $(patsubst rmd/%.Rmd,build/%.md,$(rmdin))
+rmdmd := $(patsubst rmd/%.Rmd, md/%.md,$(rmdin))
+rmdout := $(patsubst rmd/%.Rmd, build/%.md,$(rmdin))
+
+jmdin := $(wildcard jmd/*.jmd)
+jmdmd := $(patsubst jmd/%.jmd, md/%.md,$(jmdin))
+jmdout := $(patsubst jmd/%.jmd, build/%.md,$(jmdin))
+
+docin := $(wildcard src/*.md)
+docout := $(patsubst src/%.md, build/%.md,$(docin))
+
+
+mdout := $(jmdout) $(rmdout)
+
+nbout := $(patsubst jmd/%.jmd, build/%.ipynb,$(jmdin))
+
 
 build/figure : figure
 	ln -s figure build/figure
 
+build/figures : md/figures
+	ln -s md/figres jmd/figures
+
 rmd : $(rmdout) build/figure
+jmd : $(jmdout) 
+nb : $(nbout)
+doc: $(docout)
 
-$(rmdout) : build/%.md : %.Rmd
-	$(RKNIT) $< $@  && \
-	$(PANDOC) $@ -o $@
+$(rmdmd) : md/%.md : %.Rmd
+	$(RKNIT) $< $@
 
-site/index.html: $(rmdout) mkdocs.yml
+$(jmdmd) : md/%.md : %.jmd makeweave.jl 
+	$(WEAVE) $< $@  weave
+
+$(mdout) : build/%.md : md/%.md
+	$(PANDOC) $< -o $@
+
+$(nbout) : build/%.ipynb : %.jmd 
+	$(WEAVE) $< $@  notebook
+
+$(docout) : build/%.md :  src/%.md
+	julia -e "using Documenter, NeuralNetworkEconomics, DocumenterMarkdown; makedocs( modules=[NeuralNetworkEconomics],  format=Markdown(), clean=false,  pages=[  \"Home\" => \"index.md\" ], repo=\"https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/{commit}{path}#L{line}\",  sitename=\"NeuralNetworkEconomics.jl\",  authors=\"Paul Schrimpf <paul.schrimpf@gmail.com>\")"
+
+
+site/index.html: $(rmdout) $(jmdout) $(nbout) $(docout) mkdocs.yml
 	mkdocs build
 
-all: site/index.html
+all: site/index.html 
 
-deploy: site/index.html
+deploy: site/index.html 
 	mkdocs gh-deploy

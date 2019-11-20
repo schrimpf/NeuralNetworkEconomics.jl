@@ -12,9 +12,13 @@ you want to use some existing methods based on the research of
 Chernozhukov and coauthors or Athey and coauthors, then it makes a lot
 of sense to use the R packages they developed (`hdm` and `grf`
 respectively). However, if you want to write code to do something new,
-it likely makes more sense to use Julia.
+it likely makes more sense to use Julia. 
 
+A brief review of Julia packages for machine learning (with examples
+focused on lasso) is in [ml-julia](ml-julia.md).
 
+The notes on neural networks ([1](slp.md), [2], ... ) feature
+examples in Julia using `Flux.jl`. 
 
 <!-- ```@index -->
 <!-- ``` -->
