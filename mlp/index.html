@@ -194,9 +194,10 @@ x_{k,L} = \psi_{k, L-1}(x_{L-1}'w_{k,L-1} b_{k,L-1})
 $\psi_{k,L-1}: \R \to \R$. This continues recursively until
 $x_0 = x \in \R^d$ is the data.</p>
 <p>$L$ is the <strong>depth</strong> of the network.</p>
-<p>!!! tip When $L$ is sufficiently large, you have a deep neural network,
-and can attract grant money by calling your research deep learning
-and/or AI.</p>
+<div class="alert alert-danger">
+<p>When $L$ is sufficiently large, you have a deep neural network, and can
+attract grant money by calling your research deep learning and/or AI.</p>
+</div>
 <p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following Farrell, Liang, and
 Misra (<a href="#ref-farrel2018">2018</a>), we will let <script type="math/tex; mode=display">
 U = \sum_{\ell=1}^L H_\ell
@@ -234,7 +235,7 @@ yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 
 <pre><code>1×1000 Array{Float32,2}:
- 0.418702  1.1421  0.792275  1.01061  …  1.50338  -0.606027  0.463217
+ 0.000796742  -0.391904  0.798445  …  -0.112262  0.614903  -0.276274
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -288,33 +289,33 @@ end
 
 <pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=1.8896295
-Model 1, 500 iterations, loss=0.26211017
-Model 1, 1000 iterations, loss=0.26032072
-Model 1, 1500 iterations, loss=0.25959045
-Model 1, 2000 iterations, loss=0.2592214
-Model 1, 2500 iterations, loss=0.25898126
-Model 1, 3000 iterations, loss=0.25879303
-Model 1, 3500 iterations, loss=0.25863612
-Model 1, 4000 iterations, loss=0.2585238
-Model 1, 4500 iterations, loss=0.2584269
-Model 1, 5000 iterations, loss=0.25834337
- 11.735380 seconds (24.46 M allocations: 2.843 GiB, 10.84% gc time)
+Model 1, 1 iterations, loss=1.2656858
+Model 1, 500 iterations, loss=0.26601633
+Model 1, 1000 iterations, loss=0.26483482
+Model 1, 1500 iterations, loss=0.26448396
+Model 1, 2000 iterations, loss=0.2643296
+Model 1, 2500 iterations, loss=0.26426682
+Model 1, 3000 iterations, loss=0.26422057
+Model 1, 3500 iterations, loss=0.2641596
+Model 1, 4000 iterations, loss=0.2640778
+Model 1, 4500 iterations, loss=0.26401943
+Model 1, 5000 iterations, loss=0.26399273
+ 11.762220 seconds (24.46 M allocations: 2.843 GiB, 10.86% gc time)
 Model 2 = Chain(#4, Dense(1, 3, leakyrelu), Dense(3, 3, leakyrelu), Dense(3
 , 3, leakyrelu), Dense(3, 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.68593466
-Model 2, 500 iterations, loss=0.2589888
-Model 2, 1000 iterations, loss=0.2556774
-Model 2, 1500 iterations, loss=0.25427544
-Model 2, 2000 iterations, loss=0.2534452
-Model 2, 2500 iterations, loss=0.25282356
-Model 2, 3000 iterations, loss=0.25241438
-Model 2, 3500 iterations, loss=0.25206992
-Model 2, 4000 iterations, loss=0.25180158
-Model 2, 4500 iterations, loss=0.25158826
-Model 2, 5000 iterations, loss=0.2513802
-  3.368429 seconds (4.65 M allocations: 1.253 GiB, 9.13% gc time)
+Model 2, 1 iterations, loss=0.6908821
+Model 2, 500 iterations, loss=0.27070796
+Model 2, 1000 iterations, loss=0.26232523
+Model 2, 1500 iterations, loss=0.2562527
+Model 2, 2000 iterations, loss=0.25465924
+Model 2, 2500 iterations, loss=0.25379455
+Model 2, 3000 iterations, loss=0.25312164
+Model 2, 3500 iterations, loss=0.25261378
+Model 2, 4000 iterations, loss=0.25218636
+Model 2, 4500 iterations, loss=0.25163543
+Model 2, 5000 iterations, loss=0.25130674
+  3.317300 seconds (4.65 M allocations: 1.253 GiB, 8.60% gc time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network
@@ -331,8 +332,10 @@ Flux <a href="https://fluxml.ai/experiments/mnist/">here</a>.</p>
 <p>Multilayer feed forward networks generally have good, but not quite
 state-of-the-art performance in image classification. Nonetheless, this
 will hopefully serve as a good example.</p>
-<p>!!! note The code in this section was adapted from the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl">Flux model
+<div class="alert alert-danger">
+<p>The code in this section was adapted from the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl">Flux model
 zoo.</a></p>
+</div>
 <p>First we load some packages and download the data.</p>
 <pre><code class="julia">using Flux, Flux.Data.MNIST, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
@@ -357,33 +360,11 @@ plot([plot(imgs[i], title=&quot;$(labels[i])&quot;) for i in idx]...)
 on white paper, but the colors are being inverted somewhere.</p>
 <p>Continue processing the data</p>
 <pre><code class="julia"># Stack images into one large batch 
-X = hcat(float.(reshape.(imgs, :))...) |&gt; gpu
+X = hcat(float.(reshape.(imgs, :))...) |&gt; gpu;
 # One-hot-encode the labels
-Y = onehotbatch(labels, 0:9) |&gt; gpu
+Y = onehotbatch(labels, 0:9) |&gt; gpu;
 </code></pre>
 
-<pre><code>10×60000 Flux.OneHotMatrix{CuArray{Flux.OneHotVector,1}}:
- 0  1  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0 
- 0
- 0  0  0  1  0  0  1  0  1  0  0  0  0     0  0  0  0  0  0  1  0  0  0  0 
- 0
- 0  0  0  0  0  1  0  0  0  0  0  0  0     0  0  0  1  0  0  0  0  0  0  0 
- 0
- 0  0  0  0  0  0  0  1  0  0  1  0  1     0  0  0  0  0  0  0  0  1  0  0 
- 0
- 0  0  1  0  0  0  0  0  0  1  0  0  0     0  0  0  0  0  0  0  0  0  0  0 
- 0
- 1  0  0  0  0  0  0  0  0  0  0  1  0  …  0  0  0  0  0  1  0  0  0  1  0 
- 0
- 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1 
- 0
- 0  0  0  0  0  0  0  0  0  0  0  0  0     1  0  0  0  0  0  0  0  0  0  0 
- 0
- 0  0  0  0  0  0  0  0  0  0  0  0  0     0  1  0  0  0  0  0  1  0  0  0 
- 1
- 0  0  0  0  1  0  0  0  0  0  0  0  0     0  0  1  0  1  0  0  0  0  0  0 
- 0
-</code></pre>
 <p>One hot encoding is what the machine learning world calls creating dummy
 variables from a categorical variable.</p>
 <h2 id="single-layer-classification">Single Layer Classification<a class="headerlink" href="#single-layer-classification" title="Permanent link">&para;</a></h2>
@@ -404,12 +385,12 @@ e^{x_i}} \right)
 
 <pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
 </code></pre>
-<p>In this example, we are working on a classification problem; we trying
-to predict a discrete outcome instead of a continuous one. The output of
-the network above are probabilities that an image represents each of the
-ten digits. That is, we forming conditional probability, or the
-likelihood, of $y$ given $x$. In this situation, maximum likelihood is a
-natural estimator. For discrete $y$ (like we have here), the log
+<p>In this example, we are working on a classification problem; we are
+trying to predict a discrete outcome instead of a continuous one. The
+output of the network above are probabilities that an image represents
+each of the ten digits. That is, we forming conditional probability, or
+the likelihood, of $y$ given $x$. In this situation, maximum likelihood
+is a natural estimator. For discrete $y$ (like we have here), the log
 likelihood is equal to minus the cross-entropy, so this is what we use
 as our loss function.</p>
 <pre><code class="julia">loss(x, y) = crossentropy(m(x), y)
@@ -421,13 +402,16 @@ as our loss function.</p>
 might want a more intuitive measure of our model’s performance. For
 classification <strong>accuracy</strong> is the portion of predictions that are
 correct.</p>
-<p>!!! note “Other measures of classification performance” For this
-application accuracy is likely sufficient, but in some situations
-(including rare outcomes or when we weight differently type I and type
-II errors) accuracy is not a sufficient measure of a classifier’s
-performance. There are variety of other measures, such as precision,
-recall, and AUC. See Batista et al. (<a href="#ref-qeclassify">2019</a>) for <a href="https://datascience.quantecon.org/applications/classification.html">more
+<div class="alert alert-danger">
+<p><strong>Other measures of classification performance</strong></p>
+<p>For this application accuracy is likely sufficient, but in some
+situations (including rare outcomes or when we weight differently type I
+and type II errors) accuracy is not a sufficient measure of a
+classifier’s performance. There are variety of other measures, such as
+precision, recall, and AUC. See Batista et al. (<a href="#ref-qeclassify">2019</a>)
+for <a href="https://datascience.quantecon.org/applications/classification.html">more
 information</a>.</p>
+</div>
 <pre><code class="julia">accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
 </code></pre>
 
@@ -527,12 +511,13 @@ nparam(m)
 
 <pre><code>25450
 </code></pre>
-<p>and there 60000 images. There are too many parameters for the number of
-observations. One solution to this situation is to reduce the number of
-parameters. Another solution is to do what lasso does and
-<strong>regularize</strong>. Lasso regularizes by adding a penalty to the loss
-function. Limiting the number of gradient descent iterations can also
-act as a form of regularization. This is often called <a href="https://en.wikipedia.org/wiki/Landweber_iteration">Landweber
+<p>and there 60000 images. For a typical econometric or statistic problem,
+there are too many parameters for the number of observations. One
+solution to this situation is to reduce the number of parameters.
+Another solution is to do what lasso does and <strong>regularize</strong>. Lasso
+regularizes by adding a penalty to the loss function. Limiting the
+number of gradient descent iterations can also act as a form of
+regularization. This is often called <a href="https://en.wikipedia.org/wiki/Landweber_iteration">Landweber
 regularization</a>. It
 underlies the common procedure of training a neural network until the
 training loss starts to be much less than loss on a held out portion of
@@ -600,11 +585,25 @@ end
 </code></pre>
 
 <pre><code>Finished 1 epochs
-Effective GPU memory usage: 96.89% (5.749 GiB/5.933 GiB)
-CuArrays GPU memory usage: 2.938 GiB
-BinnedPool usage: 425.524 MiB (425.524 MiB allocated, 0 bytes cached)
-BinnedPool efficiency: 95.99% (2.820 GiB requested, 2.938 GiB allocated)
-Error: OutOfMemoryError()
+Finished 2 epochs
+Finished 3 epochs
+Finished 4 epochs
+Finished 5 epochs
+Finished 6 epochs
+Finished 7 epochs
+Finished 8 epochs
+Finished 9 epochs
+Finished 10 epochs
+Finished 11 epochs
+Finished 12 epochs
+Finished 13 epochs
+Finished 14 epochs
+Finished 15 epochs
+Finished 16 epochs
+Finished 17 epochs
+Finished 18 epochs
+Finished 19 epochs
+Finished 20 epochs
 </code></pre>
 <p>This model achieved a testing accuracy of 98.37% after 13 training
 epochs. Each training epoch consisting of 10 passes through the data
@@ -637,7 +636,16 @@ the loss and accuracy vs epoch.</p>
 <p>There is really something remarkable going on in this example. A model
 that appears extremely overparameterized manages to predict very well on
 a test set.</p>
-<p>!!! note TODO: Add an aside about adversarial examples and failures to
+<p>One very important thing to keep in mind is that image classification is
+very different from the typical estimation problems in applied
+economics. In regressions and other models of economic variables, we
+never expect to be able to predict perfectly. An $R^2$ of 0.4 in a
+cross-sectional earnings regression is typical, or even high. Image
+classification is very different. We know there is a model (our eyes)
+that can classify nearly perfectly. In the language of econometrics, the
+error term is zero, or there is no uncertainty, in the “true” image
+classification models.</p>
+<p>TODO: Add an aside about adversarial examples and failures to
 generalize.</p>
 <p>Let’s look at some of the images that our model failed to classify
 correctly.</p>
@@ -648,12 +656,12 @@ mlabels = cpu(onecold(cmgsnet(tX))).-1
 @show mean(mlabels.==tlabels) # = accuracy
 </code></pre>
 
-<pre><code>mean(mlabels .== tlabels) = 0.9229
+<pre><code>mean(mlabels .== tlabels) = 0.9836
 </code></pre>
 <pre><code class="julia">@show sum(mlabels .!= tlabels)
 </code></pre>
 
-<pre><code>sum(mlabels .!= tlabels) = 771
+<pre><code>sum(mlabels .!= tlabels) = 164
 </code></pre>
 <pre><code class="julia">miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;) for i in miss[1:16]]...)
