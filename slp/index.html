@@ -279,6 +279,7 @@ for r in eachindex(rs)
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(m.loss(x,y))
       println(&quot;$i iteration, loss=$l&quot;)
+      loc=Int64.(ceil(length(xg)*i/maxiter))
       yg = Tracker.data(m.predict(xg))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -291,9 +292,40 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>1000 iteration, loss=0.3080386750155713
-Error: UndefVarError: loc not defined
+<pre><code>1000 iteration, loss=0.31287991801131293
+2000 iteration, loss=0.27919155814182034
+3000 iteration, loss=0.2664744507386843
+4000 iteration, loss=0.2591087144969681
+5000 iteration, loss=0.25554768594103433
+ 11.095482 seconds (26.86 M allocations: 2.326 GiB, 10.62% gc time)
+1000 iteration, loss=0.29291415192156256
+2000 iteration, loss=0.27347375110635963
+3000 iteration, loss=0.2662186901730016
+4000 iteration, loss=0.2620060980850178
+5000 iteration, loss=0.2588918831520079
+  1.919737 seconds (2.37 M allocations: 1.422 GiB, 13.19% gc time)
+1000 iteration, loss=0.310489528030217
+2000 iteration, loss=0.27693567372683353
+3000 iteration, loss=0.26807096969551036
+4000 iteration, loss=0.2643358828827099
+5000 iteration, loss=0.26195455598373163
+  2.699893 seconds (2.37 M allocations: 2.094 GiB, 13.17% gc time)
+1000 iteration, loss=0.2918806449645754
+2000 iteration, loss=0.2762274337725736
+3000 iteration, loss=0.2680434574226006
+4000 iteration, loss=0.26297845594471586
+5000 iteration, loss=0.2597747862202985
+  3.465996 seconds (2.37 M allocations: 2.767 GiB, 12.57% gc time)
+1000 iteration, loss=0.3077135211105479
+2000 iteration, loss=0.29601847497562433
+3000 iteration, loss=0.2840659467916058
+4000 iteration, loss=0.27586835422190475
+5000 iteration, loss=0.27057958564677087
+  4.163962 seconds (2.37 M allocations: 3.439 GiB, 12.89% gc time)
 </code></pre>
+<p><img alt="" src="../figures/slp_3_1.png" /> <img alt="" src="../figures/slp_3_2.png" />
+<img alt="" src="../figures/slp_3_3.png" /> <img alt="" src="../figures/slp_3_4.png" />
+<img alt="" src="../figures/slp_3_5.png" /></p>
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
 is typical of any minimization algorithm — the number of iterations
@@ -338,41 +370,41 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=1.7481109
-2 units, 600 iterations, loss=0.3023957
-2 units, 1200 iterations, loss=0.25517914
-2 units, 1800 iterations, loss=0.2430217
-2 units, 2400 iterations, loss=0.24014732
-2 units, 3000 iterations, loss=0.23939697
-  7.347344 seconds (17.92 M allocations: 1.132 GiB, 7.84% gc time)
-3 units, 1 iterations, loss=0.41902515
-3 units, 600 iterations, loss=0.29406166
-3 units, 1200 iterations, loss=0.254095
-3 units, 1800 iterations, loss=0.24403854
-3 units, 2400 iterations, loss=0.2409419
-3 units, 3000 iterations, loss=0.239914
-  1.335577 seconds (1.62 M allocations: 382.236 MiB, 6.49% gc time)
-5 units, 1 iterations, loss=1.371099
-5 units, 600 iterations, loss=0.2756509
-5 units, 1200 iterations, loss=0.2520792
-5 units, 1800 iterations, loss=0.2444712
-5 units, 2400 iterations, loss=0.2415554
-5 units, 3000 iterations, loss=0.24026343
-  1.644116 seconds (1.63 M allocations: 496.933 MiB, 7.13% gc time)
-7 units, 1 iterations, loss=1.2109156
-7 units, 600 iterations, loss=0.2816238
-7 units, 1200 iterations, loss=0.25627938
-7 units, 1800 iterations, loss=0.24684691
-7 units, 2400 iterations, loss=0.24248548
-7 units, 3000 iterations, loss=0.24066368
-  1.937273 seconds (1.63 M allocations: 611.907 MiB, 6.35% gc time)
-9 units, 1 iterations, loss=1.0841709
-9 units, 600 iterations, loss=0.30351612
-9 units, 1200 iterations, loss=0.26110348
-9 units, 1800 iterations, loss=0.24864581
-9 units, 2400 iterations, loss=0.24338274
-9 units, 3000 iterations, loss=0.24119538
-  2.154209 seconds (1.63 M allocations: 727.291 MiB, 6.68% gc time)
+<pre><code>2 units, 1 iterations, loss=0.9574206
+2 units, 600 iterations, loss=0.30447912
+2 units, 1200 iterations, loss=0.2659822
+2 units, 1800 iterations, loss=0.25434485
+2 units, 2400 iterations, loss=0.25087446
+2 units, 3000 iterations, loss=0.24971141
+  6.771462 seconds (17.30 M allocations: 1.101 GiB, 10.32% gc time)
+3 units, 1 iterations, loss=0.825582
+3 units, 600 iterations, loss=0.28322142
+3 units, 1200 iterations, loss=0.2600006
+3 units, 1800 iterations, loss=0.25268567
+3 units, 2400 iterations, loss=0.25033832
+3 units, 3000 iterations, loss=0.24962674
+  1.279441 seconds (1.62 M allocations: 382.235 MiB, 6.08% gc time)
+5 units, 1 iterations, loss=0.9207832
+5 units, 600 iterations, loss=0.293824
+5 units, 1200 iterations, loss=0.264771
+5 units, 1800 iterations, loss=0.25713927
+5 units, 2400 iterations, loss=0.25334862
+5 units, 3000 iterations, loss=0.25147322
+  1.590898 seconds (1.63 M allocations: 496.933 MiB, 6.20% gc time)
+7 units, 1 iterations, loss=1.5818428
+7 units, 600 iterations, loss=0.30069882
+7 units, 1200 iterations, loss=0.26719385
+7 units, 1800 iterations, loss=0.25823155
+7 units, 2400 iterations, loss=0.2537658
+7 units, 3000 iterations, loss=0.2517068
+  1.867614 seconds (1.63 M allocations: 611.906 MiB, 6.23% gc time)
+9 units, 1 iterations, loss=0.5171113
+9 units, 600 iterations, loss=0.28988507
+9 units, 1200 iterations, loss=0.2667996
+9 units, 1800 iterations, loss=0.26013446
+9 units, 2400 iterations, loss=0.25565305
+9 units, 3000 iterations, loss=0.25305483
+  2.025408 seconds (1.63 M allocations: 727.292 MiB, 5.97% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
 <img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
@@ -438,41 +470,41 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.3267357
-2 units, 600 iterations, loss=0.25414395
-2 units, 1200 iterations, loss=0.25340623
-2 units, 1800 iterations, loss=0.2518609
-2 units, 2400 iterations, loss=0.24056584
-2 units, 3000 iterations, loss=0.23956816
-  1.213090 seconds (1.63 M allocations: 314.262 MiB, 7.97% gc time)
-3 units, 1 iterations, loss=0.25049213
-3 units, 600 iterations, loss=0.2384974
-3 units, 1200 iterations, loss=0.23720056
-3 units, 1800 iterations, loss=0.23649934
-3 units, 2400 iterations, loss=0.23603739
-3 units, 3000 iterations, loss=0.23569593
-  1.327109 seconds (1.55 M allocations: 367.629 MiB, 6.83% gc time)
-5 units, 1 iterations, loss=0.2464381
-5 units, 600 iterations, loss=0.23621634
-5 units, 1200 iterations, loss=0.23462234
-5 units, 1800 iterations, loss=0.2338103
-5 units, 2400 iterations, loss=0.23328143
-5 units, 3000 iterations, loss=0.23289254
-  1.672229 seconds (1.56 M allocations: 482.327 MiB, 7.32% gc time)
-7 units, 1 iterations, loss=0.24242993
-7 units, 600 iterations, loss=0.2360138
-7 units, 1200 iterations, loss=0.23528855
-7 units, 1800 iterations, loss=0.23460576
-7 units, 2400 iterations, loss=0.23394212
-7 units, 3000 iterations, loss=0.23331705
-  1.951377 seconds (1.56 M allocations: 597.300 MiB, 7.01% gc time)
-9 units, 1 iterations, loss=0.2287943
-9 units, 600 iterations, loss=0.22829698
-9 units, 1200 iterations, loss=0.22826637
-9 units, 1800 iterations, loss=0.22824581
-9 units, 2400 iterations, loss=0.22822629
-9 units, 3000 iterations, loss=0.22820702
-  2.175006 seconds (1.56 M allocations: 712.685 MiB, 7.15% gc time)
+<pre><code>2 units, 1 iterations, loss=0.32728884
+2 units, 600 iterations, loss=0.26378527
+2 units, 1200 iterations, loss=0.26310408
+2 units, 1800 iterations, loss=0.26202366
+2 units, 2400 iterations, loss=0.25056323
+2 units, 3000 iterations, loss=0.24954805
+  1.160733 seconds (1.63 M allocations: 314.262 MiB, 8.18% gc time)
+3 units, 1 iterations, loss=0.26246357
+3 units, 600 iterations, loss=0.24973491
+3 units, 1200 iterations, loss=0.24814619
+3 units, 1800 iterations, loss=0.24734117
+3 units, 2400 iterations, loss=0.24683838
+3 units, 3000 iterations, loss=0.24648328
+  1.260519 seconds (1.55 M allocations: 367.629 MiB, 7.17% gc time)
+5 units, 1 iterations, loss=0.25790077
+5 units, 600 iterations, loss=0.24976541
+5 units, 1200 iterations, loss=0.24819629
+5 units, 1800 iterations, loss=0.2473083
+5 units, 2400 iterations, loss=0.24671915
+5 units, 3000 iterations, loss=0.24627346
+  1.556834 seconds (1.56 M allocations: 482.326 MiB, 7.14% gc time)
+7 units, 1 iterations, loss=0.2515118
+7 units, 600 iterations, loss=0.24660046
+7 units, 1200 iterations, loss=0.24575815
+7 units, 1800 iterations, loss=0.24524012
+7 units, 2400 iterations, loss=0.24487147
+7 units, 3000 iterations, loss=0.24458885
+  1.885652 seconds (1.56 M allocations: 597.300 MiB, 7.07% gc time)
+9 units, 1 iterations, loss=0.24346104
+9 units, 600 iterations, loss=0.24281342
+9 units, 1200 iterations, loss=0.24277252
+9 units, 1800 iterations, loss=0.24274462
+9 units, 2400 iterations, loss=0.24272026
+9 units, 3000 iterations, loss=0.24269772
+  2.165591 seconds (1.56 M allocations: 712.686 MiB, 7.15% gc time)
 </code></pre>
 <pre><code class="julia">nothing
 </code></pre>
@@ -530,41 +562,41 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.39896807
-2 units, 600 iterations, loss=0.31586376
-2 units, 1200 iterations, loss=0.3110594
-2 units, 1800 iterations, loss=0.3109723
-2 units, 2400 iterations, loss=0.3109425
-2 units, 3000 iterations, loss=0.3109157
-  1.687175 seconds (3.06 M allocations: 386.482 MiB, 17.95% gc time)
-3 units, 1 iterations, loss=0.32815287
-3 units, 600 iterations, loss=0.2568955
-3 units, 1200 iterations, loss=0.25497556
-3 units, 1800 iterations, loss=0.25389612
-3 units, 2400 iterations, loss=0.25309283
-3 units, 3000 iterations, loss=0.25244543
-  1.010401 seconds (1.54 M allocations: 367.491 MiB, 7.57% gc time)
-5 units, 1 iterations, loss=0.24541396
-5 units, 600 iterations, loss=0.24619925
-5 units, 1200 iterations, loss=0.24534349
-5 units, 1800 iterations, loss=0.2447082
-5 units, 2400 iterations, loss=0.24428113
-5 units, 3000 iterations, loss=0.24391954
-  1.110684 seconds (1.55 M allocations: 482.189 MiB, 8.51% gc time)
-7 units, 1 iterations, loss=0.24402337
-7 units, 600 iterations, loss=0.24349475
-7 units, 1200 iterations, loss=0.24330744
-7 units, 1800 iterations, loss=0.24313472
-7 units, 2400 iterations, loss=0.24276091
-7 units, 3000 iterations, loss=0.24218847
-  1.237702 seconds (1.55 M allocations: 597.162 MiB, 9.19% gc time)
-9 units, 1 iterations, loss=0.24014084
-9 units, 600 iterations, loss=0.23713335
-9 units, 1200 iterations, loss=0.23643644
-9 units, 1800 iterations, loss=0.23596667
-9 units, 2400 iterations, loss=0.23553164
-9 units, 3000 iterations, loss=0.23498897
-  1.156171 seconds (1.55 M allocations: 712.548 MiB, 11.53% gc time)
+<pre><code>2 units, 1 iterations, loss=0.39443994
+2 units, 600 iterations, loss=0.31757522
+2 units, 1200 iterations, loss=0.31293875
+2 units, 1800 iterations, loss=0.3128002
+2 units, 2400 iterations, loss=0.31272814
+2 units, 3000 iterations, loss=0.31268603
+  1.505653 seconds (3.06 M allocations: 386.479 MiB, 9.57% gc time)
+3 units, 1 iterations, loss=0.31972623
+3 units, 600 iterations, loss=0.29133326
+3 units, 1200 iterations, loss=0.27709955
+3 units, 1800 iterations, loss=0.27327424
+3 units, 2400 iterations, loss=0.27085584
+3 units, 3000 iterations, loss=0.2697004
+  1.014758 seconds (1.54 M allocations: 367.492 MiB, 9.31% gc time)
+5 units, 1 iterations, loss=0.2658342
+5 units, 600 iterations, loss=0.26712254
+5 units, 1200 iterations, loss=0.26643205
+5 units, 1800 iterations, loss=0.26587254
+5 units, 2400 iterations, loss=0.26543647
+5 units, 3000 iterations, loss=0.26504025
+  1.130329 seconds (1.55 M allocations: 482.189 MiB, 10.40% gc time)
+7 units, 1 iterations, loss=0.24869746
+7 units, 600 iterations, loss=0.24956109
+7 units, 1200 iterations, loss=0.24936324
+7 units, 1800 iterations, loss=0.24914628
+7 units, 2400 iterations, loss=0.24899112
+7 units, 3000 iterations, loss=0.24890159
+  1.453316 seconds (1.55 M allocations: 597.162 MiB, 22.52% gc time)
+9 units, 1 iterations, loss=0.26039335
+9 units, 600 iterations, loss=0.24953708
+9 units, 1200 iterations, loss=0.24872662
+9 units, 1800 iterations, loss=0.24806042
+9 units, 2400 iterations, loss=0.24774258
+9 units, 3000 iterations, loss=0.24747035
+  1.147302 seconds (1.55 M allocations: 712.548 MiB, 11.40% gc time)
 </code></pre>
 <pre><code class="julia">display(plot(initmfigs..., legend=false) )
 </code></pre>
@@ -629,41 +661,41 @@ for r in eachindex(rs)
 end
 </code></pre>
 
-<pre><code>2 units, 1 iterations, loss=0.26925248
-2 units, 600 iterations, loss=0.25065142
-2 units, 1200 iterations, loss=0.2506665
-2 units, 1800 iterations, loss=0.25067633
-2 units, 2400 iterations, loss=0.2506874
-2 units, 3000 iterations, loss=0.25069836
-  4.349129 seconds (14.94 M allocations: 803.055 MiB, 5.42% gc time)
-3 units, 1 iterations, loss=0.3069743
-3 units, 600 iterations, loss=0.25565955
-3 units, 1200 iterations, loss=0.2639507
-3 units, 1800 iterations, loss=0.26604816
-3 units, 2400 iterations, loss=0.26739037
-3 units, 3000 iterations, loss=0.2683451
-  4.235247 seconds (14.66 M allocations: 859.633 MiB, 5.64% gc time)
-5 units, 1 iterations, loss=0.24674891
-5 units, 600 iterations, loss=0.23725948
-5 units, 1200 iterations, loss=0.23681773
-5 units, 1800 iterations, loss=0.23665617
-5 units, 2400 iterations, loss=0.23623183
-5 units, 3000 iterations, loss=0.23603243
-  4.388926 seconds (14.66 M allocations: 984.722 MiB, 6.25% gc time)
-7 units, 1 iterations, loss=0.2558362
-7 units, 600 iterations, loss=0.24480432
-7 units, 1200 iterations, loss=0.23771243
-7 units, 1800 iterations, loss=0.23804122
-7 units, 2400 iterations, loss=0.23874488
-7 units, 3000 iterations, loss=0.24020398
-  4.539563 seconds (14.66 M allocations: 1.073 GiB, 6.56% gc time)
-9 units, 1 iterations, loss=0.2409357
-9 units, 600 iterations, loss=0.23717366
-9 units, 1200 iterations, loss=0.23547843
-9 units, 1800 iterations, loss=0.23276792
-9 units, 2400 iterations, loss=0.23158242
-9 units, 3000 iterations, loss=0.23119208
-  4.517969 seconds (14.66 M allocations: 1.197 GiB, 7.06% gc time)
+<pre><code>2 units, 1 iterations, loss=0.28042743
+2 units, 600 iterations, loss=0.2561532
+2 units, 1200 iterations, loss=0.25613663
+2 units, 1800 iterations, loss=0.25611833
+2 units, 2400 iterations, loss=0.25609887
+2 units, 3000 iterations, loss=0.25608727
+  4.317296 seconds (14.94 M allocations: 803.055 MiB, 5.41% gc time)
+3 units, 1 iterations, loss=0.29548076
+3 units, 600 iterations, loss=0.2640844
+3 units, 1200 iterations, loss=0.2613922
+3 units, 1800 iterations, loss=0.26100206
+3 units, 2400 iterations, loss=0.2607383
+3 units, 3000 iterations, loss=0.2605288
+  4.342378 seconds (14.66 M allocations: 859.633 MiB, 5.58% gc time)
+5 units, 1 iterations, loss=0.25648135
+5 units, 600 iterations, loss=0.24122679
+5 units, 1200 iterations, loss=0.2427018
+5 units, 1800 iterations, loss=0.24278502
+5 units, 2400 iterations, loss=0.245291
+5 units, 3000 iterations, loss=0.24250484
+  4.537362 seconds (14.66 M allocations: 984.721 MiB, 6.43% gc time)
+7 units, 1 iterations, loss=0.25698918
+7 units, 600 iterations, loss=0.24852635
+7 units, 1200 iterations, loss=0.2531924
+7 units, 1800 iterations, loss=0.25390106
+7 units, 2400 iterations, loss=0.24680556
+7 units, 3000 iterations, loss=0.25356048
+  4.591942 seconds (14.66 M allocations: 1.073 GiB, 6.37% gc time)
+9 units, 1 iterations, loss=0.26235273
+9 units, 600 iterations, loss=0.249976
+9 units, 1200 iterations, loss=0.24925886
+9 units, 1800 iterations, loss=0.24445722
+9 units, 2400 iterations, loss=0.24422652
+9 units, 3000 iterations, loss=0.24371915
+  4.611709 seconds (14.66 M allocations: 1.197 GiB, 6.95% gc time)
 </code></pre>
 <pre><code class="julia">
 for f in figs
