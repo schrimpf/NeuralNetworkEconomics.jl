@@ -235,7 +235,7 @@ yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 
 <pre><code>1×1000 Array{Float32,2}:
- 0.265756  1.32701  1.12369  0.573473  …  0.636505  -0.0313753  0.818981
+ -0.731269  -0.200386  0.505361  0.678175  …  0.968472  0.330049  0.482956
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -289,33 +289,33 @@ end
 
 <pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=1.545578
-Model 1, 500 iterations, loss=0.26424798
-Model 1, 1000 iterations, loss=0.26235458
-Model 1, 1500 iterations, loss=0.2616792
-Model 1, 2000 iterations, loss=0.26133657
-Model 1, 2500 iterations, loss=0.261151
-Model 1, 3000 iterations, loss=0.26104793
-Model 1, 3500 iterations, loss=0.26098347
-Model 1, 4000 iterations, loss=0.26093537
-Model 1, 4500 iterations, loss=0.26090232
-Model 1, 5000 iterations, loss=0.26087773
- 10.914623 seconds (24.46 M allocations: 2.843 GiB, 10.57% gc time)
+Model 1, 1 iterations, loss=0.4968291
+Model 1, 500 iterations, loss=0.2501032
+Model 1, 1000 iterations, loss=0.24915048
+Model 1, 1500 iterations, loss=0.24880765
+Model 1, 2000 iterations, loss=0.24865745
+Model 1, 2500 iterations, loss=0.24858604
+Model 1, 3000 iterations, loss=0.24854839
+Model 1, 3500 iterations, loss=0.24852465
+Model 1, 4000 iterations, loss=0.24850875
+Model 1, 4500 iterations, loss=0.24849957
+Model 1, 5000 iterations, loss=0.24849331
+ 10.645939 seconds (24.46 M allocations: 2.843 GiB, 10.20% gc time)
 Model 2 = Chain(#4, Dense(1, 3, leakyrelu), Dense(3, 3, leakyrelu), Dense(3
 , 3, leakyrelu), Dense(3, 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.7121455
-Model 2, 500 iterations, loss=0.25765535
-Model 2, 1000 iterations, loss=0.25375652
-Model 2, 1500 iterations, loss=0.25189862
-Model 2, 2000 iterations, loss=0.25096467
-Model 2, 2500 iterations, loss=0.25028598
-Model 2, 3000 iterations, loss=0.24980772
-Model 2, 3500 iterations, loss=0.24950641
-Model 2, 4000 iterations, loss=0.24926807
-Model 2, 4500 iterations, loss=0.24906133
-Model 2, 5000 iterations, loss=0.24889494
-  3.154529 seconds (4.65 M allocations: 1.253 GiB, 8.49% gc time)
+Model 2, 1 iterations, loss=0.62905914
+Model 2, 500 iterations, loss=0.25052556
+Model 2, 1000 iterations, loss=0.24890833
+Model 2, 1500 iterations, loss=0.24714722
+Model 2, 2000 iterations, loss=0.24225335
+Model 2, 2500 iterations, loss=0.24045812
+Model 2, 3000 iterations, loss=0.23981401
+Model 2, 3500 iterations, loss=0.23939581
+Model 2, 4000 iterations, loss=0.23905079
+Model 2, 4500 iterations, loss=0.23891099
+Model 2, 5000 iterations, loss=0.23881508
+  3.056830 seconds (4.65 M allocations: 1.253 GiB, 9.08% gc time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network
@@ -355,9 +355,7 @@ length(labels)
 plot([plot(imgs[i], title=&quot;$(labels[i])&quot;) for i in idx]...)
 </code></pre>
 
-<pre><code>Error: SystemError: opening file "/tmp/jl_DTZHkP.png": No such file or dire
-ctory
-</code></pre>
+<p><img alt="" src="../figures/mlp_5_1.png" /></p>
 <p>The images are 28 by 28 pixels. I believe they were originally black ink
 on white paper, but the colors are being inverted somewhere.</p>
 <p>Continue processing the data</p>
@@ -634,9 +632,7 @@ the loss and accuracy vs epoch.</p>
 )
 </code></pre>
 
-<pre><code>Error: SystemError: opening file "/tmp/jl_BqL8HP.png": No such file or dire
-ctory
-</code></pre>
+<p><img alt="" src="../figures/mlp_17_1.png" /></p>
 <p>There is really something remarkable going on in this example. A model
 that appears extremely overparameterized manages to predict very well on
 a test set.</p>
