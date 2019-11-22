@@ -393,12 +393,11 @@ for the training loop.</p>
   e = 0
   docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)),
                     &quot;..&quot;,&quot;docs&quot;)
-
+  progress = Progress(maxepochs, 1, &quot;Training model&quot;, 50)
   while e&lt;maxepochs
     e += 1
     modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;$modelname-$e-epochs.bson&quot;)
     if rerun || !isfile(modelfile)
-      println(&quot;Beginning epoch $e&quot;)
       @time Flux.train!(loss, params(model), data, opt, cb = throttle(evalcb, 20))      
       # save model
       cpum = cpu(model)
@@ -410,8 +409,8 @@ for the training loop.</p>
     else 
       @load modelfile cpum losstrain acctrain losstest acctest
       model = gpu(cpum)
-    end    
-    println(&quot;Finished $e epochs&quot;)  
+    end
+    next!(progress)
     if (acctest[e]&gt;best_acc)
       best_acc = acctest[e]
       last_improvement=e
@@ -445,101 +444,7 @@ batches, and a low number of passes through the data pre-epoch.</p>
                    maxepochs=200,
                    rerun=false
                    )
-</code></pre>
-
-<pre><code>Finished 1 epochs
-Finished 2 epochs
-Finished 3 epochs
-Finished 4 epochs
-Finished 5 epochs
-Finished 6 epochs
-Finished 7 epochs
-Finished 8 epochs
-Finished 9 epochs
-Finished 10 epochs
-Finished 11 epochs
-Finished 12 epochs
-Finished 13 epochs
-Finished 14 epochs
-Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
-Finished 21 epochs
-Finished 22 epochs
-Finished 23 epochs
-Finished 24 epochs
-Finished 25 epochs
-Finished 26 epochs
-Finished 27 epochs
-Finished 28 epochs
-Finished 29 epochs
-Finished 30 epochs
-Finished 31 epochs
-Finished 32 epochs
-Finished 33 epochs
-Finished 34 epochs
-Finished 35 epochs
-Finished 36 epochs
-Finished 37 epochs
-Finished 38 epochs
-Finished 39 epochs
-Finished 40 epochs
-Finished 41 epochs
-Finished 42 epochs
-Finished 43 epochs
-Finished 44 epochs
-Finished 45 epochs
-Finished 46 epochs
-Finished 47 epochs
-Finished 48 epochs
-Finished 49 epochs
-Finished 50 epochs
-Finished 51 epochs
-Finished 52 epochs
-Finished 53 epochs
-Finished 54 epochs
-Finished 55 epochs
-Finished 56 epochs
-Finished 57 epochs
-Finished 58 epochs
-Finished 59 epochs
-Finished 60 epochs
-Finished 61 epochs
-Finished 62 epochs
-Finished 63 epochs
-Finished 64 epochs
-Finished 65 epochs
-Finished 66 epochs
-Finished 67 epochs
-Finished 68 epochs
-Finished 69 epochs
-Finished 70 epochs
-Finished 71 epochs
-Finished 72 epochs
-Finished 73 epochs
-Finished 74 epochs
-Finished 75 epochs
-Finished 76 epochs
-Finished 77 epochs
-Finished 78 epochs
-Finished 79 epochs
-Finished 80 epochs
-Finished 81 epochs
-Finished 82 epochs
-Finished 83 epochs
-Finished 84 epochs
-Finished 85 epochs
-Finished 86 epochs
-Finished 87 epochs
-Finished 88 epochs
-Finished 89 epochs
-Finished 90 epochs
-Finished 91 epochs
-</code></pre>
-<pre><code class="julia">@show maximum(out.acctest)
+@show maximum(out.acctest)
 </code></pre>
 
 <pre><code>maximum(out.acctest) = 0.9883
@@ -588,113 +493,7 @@ out2 = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn&quot;;
                     maxepochs=200,
                     rerun=false
                     )
-</code></pre>
-
-<pre><code>Finished 1 epochs
-Finished 2 epochs
-Finished 3 epochs
-Finished 4 epochs
-Finished 5 epochs
-Finished 6 epochs
-Finished 7 epochs
-Finished 8 epochs
-Finished 9 epochs
-Finished 10 epochs
-Finished 11 epochs
-Finished 12 epochs
-Finished 13 epochs
-Finished 14 epochs
-Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
-Finished 21 epochs
-Finished 22 epochs
-Finished 23 epochs
-Finished 24 epochs
-Finished 25 epochs
-Finished 26 epochs
-Finished 27 epochs
-Finished 28 epochs
-Finished 29 epochs
-Finished 30 epochs
-Finished 31 epochs
-Finished 32 epochs
-Finished 33 epochs
-Finished 34 epochs
-Finished 35 epochs
-Finished 36 epochs
-Finished 37 epochs
-Finished 38 epochs
-Finished 39 epochs
-Finished 40 epochs
-Finished 41 epochs
-Finished 42 epochs
-Finished 43 epochs
-Finished 44 epochs
-Finished 45 epochs
-Finished 46 epochs
-Finished 47 epochs
-Finished 48 epochs
-Finished 49 epochs
-Finished 50 epochs
-Finished 51 epochs
-Finished 52 epochs
-Finished 53 epochs
-Finished 54 epochs
-Finished 55 epochs
-Finished 56 epochs
-Finished 57 epochs
-Finished 58 epochs
-Finished 59 epochs
-Finished 60 epochs
-Finished 61 epochs
-Finished 62 epochs
-Finished 63 epochs
-Finished 64 epochs
-Finished 65 epochs
-Finished 66 epochs
-Finished 67 epochs
-Finished 68 epochs
-Finished 69 epochs
-Finished 70 epochs
-Finished 71 epochs
-Finished 72 epochs
-Finished 73 epochs
-Finished 74 epochs
-Finished 75 epochs
-Finished 76 epochs
-Finished 77 epochs
-Finished 78 epochs
-Finished 79 epochs
-Finished 80 epochs
-Finished 81 epochs
-Finished 82 epochs
-Finished 83 epochs
-Finished 84 epochs
-Finished 85 epochs
-Finished 86 epochs
-Finished 87 epochs
-Finished 88 epochs
-Finished 89 epochs
-Finished 90 epochs
-Finished 91 epochs
-Finished 92 epochs
-Finished 93 epochs
-Finished 94 epochs
-Finished 95 epochs
-Finished 96 epochs
-Finished 97 epochs
-Finished 98 epochs
-Finished 99 epochs
-Finished 100 epochs
-Finished 101 epochs
-Finished 102 epochs
-Finished 103 epochs
-</code></pre>
-<pre><code class="julia">@show maximum(out2.acctest)
+@show maximum(out2.acctest)
 </code></pre>
 
 <pre><code>maximum(out2.acctest) = 0.9888
@@ -723,65 +522,7 @@ out3 = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn-smallbatch&quot;;
                     maxepochs=200,
                     rerun=false
                     )
-</code></pre>
-
-<pre><code>Finished 1 epochs
-Finished 2 epochs
-Finished 3 epochs
-Finished 4 epochs
-Finished 5 epochs
-Finished 6 epochs
-Finished 7 epochs
-Finished 8 epochs
-Finished 9 epochs
-Finished 10 epochs
-Finished 11 epochs
-Finished 12 epochs
-Finished 13 epochs
-Finished 14 epochs
-Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
-Finished 21 epochs
-Finished 22 epochs
-Finished 23 epochs
-Finished 24 epochs
-Finished 25 epochs
-Finished 26 epochs
-Finished 27 epochs
-Finished 28 epochs
-Finished 29 epochs
-Finished 30 epochs
-Finished 31 epochs
-Finished 32 epochs
-Finished 33 epochs
-Finished 34 epochs
-Finished 35 epochs
-Finished 36 epochs
-Finished 37 epochs
-Finished 38 epochs
-Finished 39 epochs
-Finished 40 epochs
-Finished 41 epochs
-Finished 42 epochs
-Finished 43 epochs
-Finished 44 epochs
-Finished 45 epochs
-Finished 46 epochs
-Finished 47 epochs
-Finished 48 epochs
-Finished 49 epochs
-Finished 50 epochs
-Finished 51 epochs
-Finished 52 epochs
-Finished 53 epochs
-Finished 54 epochs
-Finished 55 epochs
-</code></pre>
-<pre><code class="julia">@show maximum(out3.acctest)
+@show maximum(out3.acctest)
 </code></pre>
 
 <pre><code>maximum(out3.acctest) = 0.9924
@@ -809,69 +550,7 @@ out4 = train_mnist!(model, X, Y, tX, tY, &quot;conv-smallbatch&quot;;
                     maxepochs=200,
                     rerun=false
                     )
-</code></pre>
-
-<pre><code>Finished 1 epochs
-Finished 2 epochs
-Finished 3 epochs
-Finished 4 epochs
-Finished 5 epochs
-Finished 6 epochs
-Finished 7 epochs
-Finished 8 epochs
-Finished 9 epochs
-Finished 10 epochs
-Finished 11 epochs
-Finished 12 epochs
-Finished 13 epochs
-Finished 14 epochs
-Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
-Finished 21 epochs
-Finished 22 epochs
-Finished 23 epochs
-Finished 24 epochs
-Finished 25 epochs
-Finished 26 epochs
-Finished 27 epochs
-Finished 28 epochs
-Finished 29 epochs
-Finished 30 epochs
-Finished 31 epochs
-Finished 32 epochs
-Finished 33 epochs
-Finished 34 epochs
-Finished 35 epochs
-Finished 36 epochs
-Finished 37 epochs
-Finished 38 epochs
-Finished 39 epochs
-Finished 40 epochs
-Finished 41 epochs
-Finished 42 epochs
-Finished 43 epochs
-Finished 44 epochs
-Finished 45 epochs
-Finished 46 epochs
-Finished 47 epochs
-Finished 48 epochs
-Finished 49 epochs
-Finished 50 epochs
-Finished 51 epochs
-Finished 52 epochs
-Finished 53 epochs
-Finished 54 epochs
-Finished 55 epochs
-Finished 56 epochs
-Finished 57 epochs
-Finished 58 epochs
-Finished 59 epochs
-</code></pre>
-<pre><code class="julia">@show maximum(out4.acctest)
+@show maximum(out4.acctest)
 </code></pre>
 
 <pre><code>maximum(out4.acctest) = 0.9908
