@@ -136,6 +136,10 @@
             <li><a href="#additional-reading">Additional Reading</a></li>
         <li class="main "><a href="#convolutions">Convolutions</a></li>
         <li class="main "><a href="#example-mnist">Example : MNIST</a></li>
+            <li><a href="#small-batches">Small Batches</a></li>
+            <li><a href="#data-augmentation">Data Augmentation</a></li>
+            <li><a href="#small-batches-and-data-augmentation">Small Batches and Data Augmentation</a></li>
+            <li><a href="#looking-inside-the-black-box">Looking inside the Black Box</a></li>
         <li class="main "><a href="#references-references">References [references]</a></li>
     </ul>
 </div></div>
@@ -222,11 +226,11 @@ using Plots
 imgs = MNIST.images()
 labels = MNIST.labels()
 i = 1
-plot(plot(Gray.(1) .- imgs[i], title=&quot;Original&quot;),
+plot(plot(Gray.(1) .- imgs[i], title=&quot;Original&quot;, aspect_ratio=:equal),
      plot(RGB.(1 .- imfilter(imgs[i], centered([-1 1])),
                1 .- imgs[i],
                1 .- imfilter(imgs[i], centered([1 -1]))),
-          title=&quot;Vertical edge filters&quot;),
+          title=&quot;Vertical edge filters&quot;, aspect_ratio=:equal),
      layout=(1, 2)
      )
 </code></pre>
@@ -274,7 +278,7 @@ the number of channels. Since we have grayscale images, we have one
 channel. Color images would have three channels. Radar and satellite
 imagery can have more channels (satellites often collect non-visible
 frequencies of light).</p>
-<p>Chanels are also a useful abstraction throughout the neural network. We
+<p>Channels are also a useful abstraction throughout the neural network. We
 usually want to apply multiple convolution filters to extract different
 features of the images. The output of each convolution is stored in a
 channel.</p>
@@ -450,12 +454,21 @@ batches, and a low number of passes through the data pre-epoch.</p>
 <pre><code>maximum(out.acctest) = 0.9883
 0.9883
 </code></pre>
-<p>Since I save the model to disk to avoid waiting for the</p>
+<p>Since I save the model to disk to avoid waiting for it to rerun
+everytime I change this document, the above output does not include the
+training time. It takes roughly 10 seconds per epoch.</p>
+<p>In terms of testing accuracy, this model does quite well. The deep
+feedforward network with nearly 12 million parameters from the <a href="../mlp/">previous
+notes</a>, had an accuracy of 98.36%. The convolutional network
+used here with 16 thousand parameters has a higher accuracy of 98.83%.
+The training time of these two models was roughly the same.</p>
 <pre><code class="julia">function training_plot(out) 
   ll = Int(round(length(out.losstrain)*0.75))
   lt = Int(round(length(out.losstrain)*0.5))
   plot(
-    plot([out.losstrain, out.losstest], xscale=:log10, xlab=&quot;Epochs&quot;, title=&quot;Cross-Entropy Loss&quot;,
+    plot([out.losstrain, out.losstest], xscale=:log10, xlab=&quot;Epochs&quot;,
+         title=&quot;Cross-Entropy Loss&quot;,
+         ylims=(0.0, 0.125),
          annotations=[(ll, out.losstrain[ll],
                        Plots.text(&quot;training&quot;, pointsize=12, valign=:bottom,
                                   color=get(cscheme,1))),
@@ -464,7 +477,9 @@ batches, and a low number of passes through the data pre-epoch.</p>
                                   color=get(cscheme,0)))], leg=false,
          color_palette=get(cscheme,[1,0])
          ),
-    plot([out.acctrain, out.acctest], xscale=:log10, xlab=&quot;Epochs&quot;, title=&quot;Accuracy&quot;,
+    plot([out.acctrain, out.acctest], xscale=:log10, xlab=&quot;Epochs&quot;,
+         title=&quot;Accuracy&quot;,
+         ylims=(0.95, 1.0),
          color_palette=get(cscheme,[1,0]), leg=false
          ),
     layout=(2,1)
@@ -474,6 +489,16 @@ training_plot(out)
 </code></pre>
 
 <p><img alt="" src="../figures/conv_8_1.png" /></p>
+<h2 id="small-batches">Small Batches<a class="headerlink" href="#small-batches" title="Permanent link">&para;</a></h2>
+<p>If you look at the code in the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/conv.jl">Flux model
+zoo</a>
+for this model, it claims to achieve over 99% testing accuracy. The code
+above is mostly identical to the model zoo, but it differs in two ways.
+One is that the model zoo uses much smaller batches of 128 observations.
+The second is that the model zoo add some gaussian noise to the images
+during training. We will look at how each of these changes affect the
+results.</p>
+<p>First, let’s just reduce the batch size to 128.</p>
 <pre><code class="julia">model = Chain(  # same as before, but resetting initial values
   Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
   MaxPool((2,2)),
@@ -486,81 +511,192 @@ training_plot(out)
   softmax
 ) |&gt; gpu
 
-out2 = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn&quot;;
-                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
-                    batchsize=10000,
-                    reps_per_epoch=2,
-                    maxepochs=200,
-                    rerun=false
-                    )
-@show maximum(out2.acctest)
-</code></pre>
-
-<pre><code>maximum(out2.acctest) = 0.9888
-0.9888
-</code></pre>
-<pre><code class="julia">training_plot(out2)
-</code></pre>
-
-<p><img alt="" src="../figures/conv_10_1.png" /></p>
-<pre><code class="julia">model = Chain(  # same as before, but resetting initial values
-  Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
-  MaxPool((2,2)),
-  Conv((3, 3), 16=&gt;32, pad=(1,1), relu),
-  MaxPool((2,2)),
-  Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
-  MaxPool((2,2)),
-  x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
-  softmax
-) |&gt; gpu
-
-out3 = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn-smallbatch&quot;;
-                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
-                    batchsize=128,
-                    reps_per_epoch=1,
-                    maxepochs=200,
-                    rerun=false
-                    )
-@show maximum(out3.acctest)
-</code></pre>
-
-<pre><code>maximum(out3.acctest) = 0.9924
-</code></pre>
-<pre><code class="julia">training_plot(out3)
-</code></pre>
-
-<p><img alt="" src="../figures/conv_11_1.png" /></p>
-<pre><code class="julia">model = Chain(  # same as before, but resetting initial values
-  Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
-  MaxPool((2,2)),
-  Conv((3, 3), 16=&gt;32, pad=(1,1), relu),
-  MaxPool((2,2)),
-  Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
-  MaxPool((2,2)),
-  x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
-  softmax
-) |&gt; gpu
-
-out4 = train_mnist!(model, X, Y, tX, tY, &quot;conv-smallbatch&quot;;
+smallbatch = train_mnist!(model, X, Y, tX, tY, &quot;conv-smallbatch&quot;;
                     loss=(x,y)-&gt;crossentropy(model(x),y),
                     batchsize=128,
                     reps_per_epoch=1,
                     maxepochs=200,
                     rerun=false
                     )
-@show maximum(out4.acctest)
+@show maximum(smallbatch.acctest)
 </code></pre>
 
-<pre><code>maximum(out4.acctest) = 0.9908
+<pre><code>maximum(smallbatch.acctest) = 0.9908
 </code></pre>
-<pre><code class="julia">training_plot(out4)
+<pre><code class="julia">training_plot(smallbatch)
 </code></pre>
 
-<p><img alt="" src="../figures/conv_12_1.png" /></p>
+<p><img alt="" src="../figures/conv_9_1.png" /></p>
+<p>Smaller batches have improved the accuracy from 98.83% to just over 99%.
+Note that although the number of epochs are roughly the same as above,
+the number of gradient descent iterations is much higher. The total
+run-time is roughly the same.</p>
+<h2 id="data-augmentation">Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permanent link">&para;</a></h2>
+<p>The example in the model zoo also augments the training data by adding a
+small amount of Gaussian noise to the training images. Data augmentation
+is used by the best models among the <a href="http://yann.lecun.com/exdb/mnist/">MNIST benchmarks on LeCun’s
+website</a>. For example Ciresan et al.
+(<a href="#ref-ciresan2010">2010</a>) randomly distorts images with small rotations
+and stretching. Adding Gaussian noise is not as well geometrically
+motivated, but it has the advantage of being very easy to implement.</p>
+<p>We will add a $\epsilon \sim N(0, 0.1)$ to each pixel in the images.
+Here is what this looks like for a few images</p>
+<pre><code class="julia">plot([plot(Gray.(1 .- 0.1*randn(size(imgs[i]))) .- imgs[i]) for i in
+      1:9]..., xlab=&quot;&quot;, ylab=&quot;&quot;, aspect_ratio=:equal)
+</code></pre>
+
+<p><img alt="" src="../figures/conv_10_1.png" /></p>
+<p>With this added noise, the digits are still easily recognizable, so we
+would hope that our model can classify them.</p>
+<pre><code class="julia">addnoise(x, σ) = x .+ σ*gpu(randn(eltype(x), size(x)))
+@show mean(onecold(out.model(addnoise(tX,0.1f0))).==onecold(tY))
+</code></pre>
+
+<pre><code>mean(onecold(out.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.9746
+</code></pre>
+<pre><code class="julia">@show mean(onecold(smallbatch.model(addnoise(tX,0.1f0))).==onecold(tY))
+</code></pre>
+
+<pre><code>mean(onecold(smallbatch.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.98
+64
+0.9864
+</code></pre>
+<p>The models trained above do a pretty good job of classify noisy images,
+but not quite as well as the original. What if we train the models with
+noise?</p>
+<p>Here, we will train with the original large batches and added noise.</p>
+<pre><code class="julia">model = Chain(  # same as before, but resetting initial values
+  Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
+  MaxPool((2,2)),
+  Conv((3, 3), 16=&gt;32, pad=(1,1), relu),
+  MaxPool((2,2)),
+  Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
+  MaxPool((2,2)),
+  x -&gt; reshape(x, :, size(x, 4)),
+  Dense(288, 10),
+  softmax
+) |&gt; gpu
+
+outn = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn&quot;;
+                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    batchsize=10000,
+                    reps_per_epoch=2,
+                    maxepochs=200,
+                    rerun=false
+                    )
+@show maximum(outn.acctest)
+</code></pre>
+
+<pre><code>maximum(outn.acctest) = 0.9888
+0.9888
+</code></pre>
+<pre><code class="julia">training_plot(outn)
+</code></pre>
+
+<p><img alt="" src="../figures/conv_13_1.png" /></p>
+<p>With large batches, adding noise has improved the accuracy very little</p>
+<h2 id="small-batches-and-data-augmentation">Small Batches and Data Augmentation<a class="headerlink" href="#small-batches-and-data-augmentation" title="Permanent link">&para;</a></h2>
+<p>Let’s try combining small batches and data augmentation.</p>
+<pre><code class="julia">model = Chain(  # same as before, but resetting initial values
+  Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
+  MaxPool((2,2)),
+  Conv((3, 3), 16=&gt;32, pad=(1,1), relu),
+  MaxPool((2,2)),
+  Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
+  MaxPool((2,2)),
+  x -&gt; reshape(x, :, size(x, 4)),
+  Dense(288, 10),
+  softmax
+) |&gt; gpu
+
+smallnoisy = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn-smallbatch&quot;;
+                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    batchsize=128,
+                    reps_per_epoch=1,
+                    maxepochs=200,
+                    rerun=false
+                    )
+@show maximum(smallnoisy.acctest)
+</code></pre>
+
+<pre><code>maximum(smallnoisy.acctest) = 0.9924
+</code></pre>
+<pre><code class="julia">training_plot(smallnoisy)
+</code></pre>
+
+<p><img alt="" src="../figures/conv_14_1.png" /></p>
+<p>This gives the highest test accuracy we have achieved so far. Let’s look
+at some of the missclassified digits.</p>
+<pre><code class="julia">tlabels = MNIST.labels(:test)
+timgs = MNIST.images(:test)
+# predicted labels
+mlabels = cpu(onecold(smallnoisy.model(tX))).-1
+@show mean(mlabels.==tlabels) # = accuracy
+</code></pre>
+
+<pre><code>mean(mlabels .== tlabels) = 0.9923
+</code></pre>
+<pre><code class="julia">@show sum(mlabels .!= tlabels)
+</code></pre>
+
+<pre><code>sum(mlabels .!= tlabels) = 77
+</code></pre>
+<pre><code class="julia">miss=findall(mlabels .!= tlabels)
+plot( [plot(timgs[i], axis=false,
+            title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;,
+            axis=false, ticks=false,
+            aspect_ratio=:equal) for i in miss[1:16]]...)
+</code></pre>
+
+<pre><code>Error: syntax: keyword argument "axis" repeated in call to "plot"
+</code></pre>
+<h2 id="looking-inside-the-black-box">Looking inside the Black Box<a class="headerlink" href="#looking-inside-the-black-box" title="Permanent link">&para;</a></h2>
+<p>Neural networks are somewhat of a black box, but when we are working
+with images and convolution, we can somewhat look inside it. We can
+display the images that are generated by each convolutional and/or max
+pool layer. Let’s do this for one image.</p>
+<pre><code class="julia">i = 1
+m = smallnoisy.model
+figs = Array{typeof(plot()), 1}(undef, 3)
+j = 1
+for l in 1:length(m)
+  global j, figs
+  if (typeof(m[l]) &lt;: MaxPool)
+    layer = m[1:l](reshape(X[:,:,:,i], 28,28,1,1))
+    figs[j] = plot( [plot(Gray.(cpu(1 .- layer[:,:,c,1])), aspect_ratio=:equal,
+                          axis=false, ticks=false) for c in
+                     1:size(layer,3)]...)
+    j += 1
+  end
+end
+plot(Gray.(cpu(1 .- X[:,:,1,i])), aspect_ratio=:equal, axis=false,
+     ticks=false)
+</code></pre>
+
+<p><img alt="" src="../figures/conv_16_1.png" /></p>
+<p>The original is above. Below is are the output of the first convolution
++ max pool layer.</p>
+<pre><code class="julia">figs[1]
+</code></pre>
+
+<p><img alt="" src="../figures/conv_17_1.png" /></p>
+<p>Now the second</p>
+<pre><code class="julia">figs[2]
+</code></pre>
+
+<p><img alt="" src="../figures/conv_18_1.png" /></p>
+<p>And the last</p>
+<pre><code class="julia">figs[3]
+</code></pre>
+
+<p><img alt="" src="../figures/conv_19_1.png" /></p>
 <h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
 <div class="references" id="refs">
+<div id="ref-ciresan2010">
+<p>Ciresan, Dan Claudiu, Ueli Meier, Luca Maria Gambardella, and Juergen
+Schmidhuber. 2010. “Deep Big Simple Neural Nets Excel on Handwritten
+Digit Recognition.” <a href="https://doi.org/10.1162/NECO_a_00052">https://doi.org/10.1162/NECO_a_00052</a>.</p>
+</div>
 <div id="ref-goodfellow2016">
 <p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
 Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
