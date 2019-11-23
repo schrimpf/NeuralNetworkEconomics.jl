@@ -239,7 +239,7 @@ yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 
 <pre><code>1×1000 Array{Float32,2}:
- 0.644325  0.712439  0.295584  0.969063  …  1.58411  -0.762818  0.11144
+ 1.00376  1.14095  -0.871646  2.00249  …  0.536074  -0.0341673  0.639334
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -356,7 +356,7 @@ length(labels)
 </code></pre>
 <p>Let’s look at some of the images.</p>
 <pre><code class="julia">idx = rand(1:length(imgs), 16)
-plot([plot(imgs[i], title=&quot;$(labels[i])&quot;) for i in idx]...)
+plot([plot(imgs[i], title=&quot;$(labels[i])&quot;, aspect_ratio=:equal, axis=false, ticks=false) for i in idx]...)
 </code></pre>
 
 <p><img alt="" src="../figures/mlp_5_1.png" /></p>
@@ -639,15 +639,15 @@ the loss and accuracy vs epoch.</p>
 <p>There is really something remarkable going on in this example. A model
 that appears extremely overparameterized manages to predict very well on
 a test set.</p>
-<p>One very important thing to keep in mind is that image classification is
-very different from the typical estimation problems in applied
-economics. In regressions and other models of economic variables, we
-never expect to be able to predict perfectly. An $R^2$ of 0.4 in a
-cross-sectional earnings regression is typical, or even high. Image
-classification is very different. We know there is a model (our eyes)
-that can classify nearly perfectly. In the language of econometrics, the
-error term is zero, or there is no uncertainty, in the “true” image
-classification models.</p>
+<p>One important thing to keep in mind is that image classification is very
+different from the typical estimation problems in applied economics. In
+regressions and other models of economic variables, we never expect to
+be able to predict perfectly. An $R^2$ of 0.4 in a cross-sectional
+earnings regression is typical, or even high. Image classification is
+very different. We know there is a model (our eyes) that can classify
+nearly perfectly. In the language of econometrics, the error term is
+zero, or there is no uncertainty, in the “true” image classification
+models.</p>
 <p>TODO: Add an aside about adversarial examples and failures to
 generalize.</p>
 <p>Let’s look at some of the images that our model failed to classify

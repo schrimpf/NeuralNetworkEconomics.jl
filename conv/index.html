@@ -201,7 +201,9 @@ For example, for $f, g: \Z \to \R$, <script type="math/tex; mode=display">
 the kernel density estimator can be written as <script type="math/tex; mode=display">
 \begin{align*}
 \hat{f}(x) = & \frac{1}{nh} \sum_{i=1}^n k((x-x_i)/h) \\
-= & \int \left(\frac{1}{n} \sum_{i=1}^n \delta_{x_i}(t) k((x-t)/h)/h dt
+= & \int \left(\frac{1}{n} \sum_{i=1}^n \delta_{x_i}(t) k((x-t)/h)/h
+dt
+\end{align*}
 </script> where $\delta_{x_i}(t)$ is the Dirac measure at $x_i$.</p>
 <p>Convolutions appear in image processing as blurring and smoothing
 filters. Taking a local average of pixels is a convolution.</p>
@@ -446,7 +448,7 @@ end
 </code></pre>
 <p>Now we train the model. We will begin by following a similar training
 strategy as in the <a href="../mlp/">previous notes.</a> That is, we will use large
-batches, and a low number of passes through the data pre-epoch.</p>
+batches and a low number of passes through the data per-epoch.</p>
 <pre><code class="julia">out = train_mnist!(model, X, Y, tX, tY, &quot;conv&quot;;
                    batchsize=10000,
                    reps_per_epoch=2,
@@ -553,56 +555,22 @@ Here is what this looks like for a few images</p>
 <p><img alt="" src="../figures/conv_10_1.png" /></p>
 <p>With this added noise, the digits are still easily recognizable, so we
 would hope that our model can classify them.</p>
-<pre><code class="julia">addnoise(x, σ) = x .+ σ*gpu(randn(eltype(x), size(x)))
+<pre><code class="julia">addnoise(x, σ) = x .+ σ.*gpu(randn(eltype(x), size(x)))
 @show mean(onecold(out.model(addnoise(tX,0.1f0))).==onecold(tY))
 </code></pre>
 
-<pre><code>Error: GPU compilation of #25(CuArrays.CuKernelState, CUDAnative.CuDeviceAr
-ray{Bool,1,CUDAnative.AS.Global}, Base.Broadcast.Broadcasted{Nothing,Tuple{
-Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUDAnative.CuDe
-viceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}},Base.Broa
-dcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}) failed
-KernelError: passing and using non-bitstype argument
-
-Argument 4 to your kernel function is of type Base.Broadcast.Broadcasted{No
-thing,Tuple{Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUD
-Anative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64
-}},Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}.
-That type is not isbits, and such arguments are only allowed when they are 
-unused by the kernel.  .args is of type Tuple{Base.Broadcast.Extruded{CUDAn
-ative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}}
-,Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}} which is
- not isbits.
-    .2 is of type Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{
-Int64}} which is not isbits.
-      .x is of type Array{Int64,1} which is not isbits.
+<pre><code>mean(onecold(out.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.9735
 </code></pre>
 <pre><code class="julia">@show mean(onecold(smallbatch.model(addnoise(tX,0.1f0))).==onecold(tY))
 </code></pre>
 
-<pre><code>Error: GPU compilation of #25(CuArrays.CuKernelState, CUDAnative.CuDeviceAr
-ray{Bool,1,CUDAnative.AS.Global}, Base.Broadcast.Broadcasted{Nothing,Tuple{
-Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUDAnative.CuDe
-viceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}},Base.Broa
-dcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}) failed
-KernelError: passing and using non-bitstype argument
-
-Argument 4 to your kernel function is of type Base.Broadcast.Broadcasted{No
-thing,Tuple{Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUD
-Anative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64
-}},Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}.
-That type is not isbits, and such arguments are only allowed when they are 
-unused by the kernel.  .args is of type Tuple{Base.Broadcast.Extruded{CUDAn
-ative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}}
-,Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}} which is
- not isbits.
-    .2 is of type Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{
-Int64}} which is not isbits.
-      .x is of type Array{Int64,1} which is not isbits.
+<pre><code>mean(onecold(smallbatch.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.98
+63
+0.9863
 </code></pre>
-<p>The models trained above do a pretty good job of classify noisy images,
-but not quite as well as the original. What if we train the models with
-noise?</p>
+<p>The models trained above do a pretty good job of classifying noisy
+images, but not quite as well as the original. What if we train the
+models with noise?</p>
 <p>Here, we will train with the original large batches and added noise.</p>
 <pre><code class="julia">model = Chain(  # same as before, but resetting initial values
   Conv((3, 3), 1=&gt;16,  pad=(1,1), relu),
