@@ -205,9 +205,9 @@ the kernel density estimator can be written as <script type="math/tex; mode=disp
 </script> where $\delta_{x_i}(t)$ is the Dirac measure at $x_i$.</p>
 <p>Convolutions appear in image processing as blurring and smoothing
 filters. Taking a local average of pixels is a convolution.</p>
-<p><img alt="convolution" src="https://hackernoon.com/hn-images/1*ZCjPUFrB6eHPRi4eyP6aaA.gif" />
-Image source:
-https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59</p>
+<p><img alt="convolution" src="https://hackernoon.com/hn-images/1*ZCjPUFrB6eHPRi4eyP6aaA.gif" /></p>
+<p><a href="https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59">Image
+source</a></p>
 <p>The similarity to kernel regression should be obvious. The 3x3 matrix</p>
 <pre><code>1 0 1 
 0 1 0 
@@ -226,16 +226,21 @@ using Plots
 imgs = MNIST.images()
 labels = MNIST.labels()
 i = 1
-plot(plot(Gray.(1) .- imgs[i], title=&quot;Original&quot;, aspect_ratio=:equal),
-     plot(RGB.(1 .- imfilter(imgs[i], centered([-1 1])),
-               1 .- imgs[i],
-               1 .- imfilter(imgs[i], centered([1 -1]))),
-          title=&quot;Vertical edge filters&quot;, aspect_ratio=:equal),
-     layout=(1, 2)
+plot(plot(imgs[i]), plot(Gray.(imfilter(imgs[i], centered([-1 1])) )))
+plot(plot(Gray.(1) .- imgs[i], title=&quot;Original&quot;, aspect_ratio=:equal,
+          axis=false, ticks=false),
+     plot(RGB.(1 .- imgs[i] .+ imfilter(imgs[i], centered([-1 1])),
+               1 .- imgs[i],  
+               1 .- imgs[i] .+ imfilter(imgs[i], centered([1 -1]))),
+               title=&quot;Vertical edge filters&quot;, aspect_ratio=:equal,
+          axis=false, ticks=false),
+     layout=(1, 2)          
      )
 </code></pre>
 
 <p><img alt="" src="../figures/conv_2_1.png" /></p>
+<p>In this image, the output of one edge filter is yellow, the other is
+blue, and the original image is black.</p>
 <p>From this example, we see that small hand-crafted convolution kernels
 can pick out patterns, like edges. One idea would be to use the output
 of these kernels as features in a machine learning model. Another idea
@@ -542,7 +547,7 @@ motivated, but it has the advantage of being very easy to implement.</p>
 <p>We will add a $\epsilon \sim N(0, 0.1)$ to each pixel in the images.
 Here is what this looks like for a few images</p>
 <pre><code class="julia">plot([plot(Gray.(1 .- 0.1*randn(size(imgs[i]))) .- imgs[i]) for i in
-      1:9]..., xlab=&quot;&quot;, ylab=&quot;&quot;, aspect_ratio=:equal)
+      1:9]..., xlab=&quot;&quot;, ylab=&quot;&quot;, aspect_ratio=:equal, axis=false, ticks=false)
 </code></pre>
 
 <p><img alt="" src="../figures/conv_10_1.png" /></p>
@@ -552,14 +557,48 @@ would hope that our model can classify them.</p>
 @show mean(onecold(out.model(addnoise(tX,0.1f0))).==onecold(tY))
 </code></pre>
 
-<pre><code>mean(onecold(out.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.9746
+<pre><code>Error: GPU compilation of #25(CuArrays.CuKernelState, CUDAnative.CuDeviceAr
+ray{Bool,1,CUDAnative.AS.Global}, Base.Broadcast.Broadcasted{Nothing,Tuple{
+Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUDAnative.CuDe
+viceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}},Base.Broa
+dcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}) failed
+KernelError: passing and using non-bitstype argument
+
+Argument 4 to your kernel function is of type Base.Broadcast.Broadcasted{No
+thing,Tuple{Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUD
+Anative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64
+}},Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}.
+That type is not isbits, and such arguments are only allowed when they are 
+unused by the kernel.  .args is of type Tuple{Base.Broadcast.Extruded{CUDAn
+ative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}}
+,Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}} which is
+ not isbits.
+    .2 is of type Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{
+Int64}} which is not isbits.
+      .x is of type Array{Int64,1} which is not isbits.
 </code></pre>
 <pre><code class="julia">@show mean(onecold(smallbatch.model(addnoise(tX,0.1f0))).==onecold(tY))
 </code></pre>
 
-<pre><code>mean(onecold(smallbatch.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.98
-64
-0.9864
+<pre><code>Error: GPU compilation of #25(CuArrays.CuKernelState, CUDAnative.CuDeviceAr
+ray{Bool,1,CUDAnative.AS.Global}, Base.Broadcast.Broadcasted{Nothing,Tuple{
+Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUDAnative.CuDe
+viceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}},Base.Broa
+dcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}) failed
+KernelError: passing and using non-bitstype argument
+
+Argument 4 to your kernel function is of type Base.Broadcast.Broadcasted{No
+thing,Tuple{Base.OneTo{Int64}},typeof(==),Tuple{Base.Broadcast.Extruded{CUD
+Anative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64
+}},Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}}}.
+That type is not isbits, and such arguments are only allowed when they are 
+unused by the kernel.  .args is of type Tuple{Base.Broadcast.Extruded{CUDAn
+ative.CuDeviceArray{Int64,1,CUDAnative.AS.Global},Tuple{Bool},Tuple{Int64}}
+,Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{Int64}}} which is
+ not isbits.
+    .2 is of type Base.Broadcast.Extruded{Array{Int64,1},Tuple{Bool},Tuple{
+Int64}} which is not isbits.
+      .x is of type Array{Int64,1} which is not isbits.
 </code></pre>
 <p>The models trained above do a pretty good job of classify noisy images,
 but not quite as well as the original. What if we train the models with
@@ -642,16 +681,15 @@ mlabels = cpu(onecold(smallnoisy.model(tX))).-1
 <pre><code>sum(mlabels .!= tlabels) = 77
 </code></pre>
 <pre><code class="julia">miss=findall(mlabels .!= tlabels)
-plot( [plot(timgs[i], axis=false,
+plot( [plot(timgs[i], 
             title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;,
             axis=false, ticks=false,
             aspect_ratio=:equal) for i in miss[1:16]]...)
 </code></pre>
 
-<pre><code>Error: syntax: keyword argument "axis" repeated in call to "plot"
-</code></pre>
+<p><img alt="" src="../figures/conv_15_1.png" /></p>
 <h2 id="looking-inside-the-black-box">Looking inside the Black Box<a class="headerlink" href="#looking-inside-the-black-box" title="Permanent link">&para;</a></h2>
-<p>Neural networks are somewhat of a black box, but when we are working
+<p>Our fitted model is somewhat of a black box, but when we are working
 with images and convolution, we can somewhat look inside it. We can
 display the images that are generated by each convolutional and/or max
 pool layer. Let’s do this for one image.</p>
@@ -690,6 +728,10 @@ plot(Gray.(cpu(1 .- X[:,:,1,i])), aspect_ratio=:equal, axis=false,
 </code></pre>
 
 <p><img alt="" src="../figures/conv_19_1.png" /></p>
+<p>These 32 three by three images then get stacked into a vector and passed
+into the final dense layer.</p>
+<p>I’m not sure that there’s much to learn from looking at these images.
+Maybe it’s best to keep the box closed.</p>
 <h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
 <div class="references" id="refs">
 <div id="ref-ciresan2010">
