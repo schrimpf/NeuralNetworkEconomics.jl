@@ -95,6 +95,10 @@
 <li >
     <a href="../rnn/">Recurrent</a>
 </li>
+                                    
+<li >
+    <a href="../nn-semiparametric/">In semiparametric models</a>
+</li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -155,7 +159,7 @@ License</a></p>
 <h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
 github</a>. The same
-document generates both static webpages and associated <a href="../slp.ipynb">jupyter
+document generates both static webpages and associated <a href="../mlp.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -243,7 +247,7 @@ yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 
 <pre><code>1×1000 Array{Float32,2}:
- 1.00376  1.14095  -0.871646  2.00249  …  0.536074  -0.0341673  0.639334
+ -0.797703  0.548108  0.240685  1.16682  …  1.05815  0.466921  0.783778
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -297,33 +301,33 @@ end
 
 <pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=0.46834388
-Model 1, 500 iterations, loss=0.25365597
-Model 1, 1000 iterations, loss=0.25240046
-Model 1, 1500 iterations, loss=0.25192815
-Model 1, 2000 iterations, loss=0.25165528
-Model 1, 2500 iterations, loss=0.25152528
-Model 1, 3000 iterations, loss=0.2514451
-Model 1, 3500 iterations, loss=0.2513409
-Model 1, 4000 iterations, loss=0.25122148
-Model 1, 4500 iterations, loss=0.2511448
-Model 1, 5000 iterations, loss=0.25110424
- 11.203147 seconds (24.46 M allocations: 2.843 GiB, 10.98% gc time)
+Model 1, 1 iterations, loss=0.82055414
+Model 1, 500 iterations, loss=0.26346454
+Model 1, 1000 iterations, loss=0.2625347
+Model 1, 1500 iterations, loss=0.2623096
+Model 1, 2000 iterations, loss=0.26217508
+Model 1, 2500 iterations, loss=0.26206267
+Model 1, 3000 iterations, loss=0.26199454
+Model 1, 3500 iterations, loss=0.2619396
+Model 1, 4000 iterations, loss=0.26190692
+Model 1, 4500 iterations, loss=0.26188213
+Model 1, 5000 iterations, loss=0.2618579
+ 10.970610 seconds (24.46 M allocations: 2.843 GiB, 10.49% gc time)
 Model 2 = Chain(#4, Dense(1, 3, leakyrelu), Dense(3, 3, leakyrelu), Dense(3
 , 3, leakyrelu), Dense(3, 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.5515785
-Model 2, 500 iterations, loss=0.26085496
-Model 2, 1000 iterations, loss=0.2601837
-Model 2, 1500 iterations, loss=0.25995496
-Model 2, 2000 iterations, loss=0.25978845
-Model 2, 2500 iterations, loss=0.25965387
-Model 2, 3000 iterations, loss=0.2595453
-Model 2, 3500 iterations, loss=0.25943935
-Model 2, 4000 iterations, loss=0.25933948
-Model 2, 4500 iterations, loss=0.25925326
-Model 2, 5000 iterations, loss=0.2591811
-  3.209965 seconds (4.65 M allocations: 1.253 GiB, 8.96% gc time)
+Model 2, 1 iterations, loss=0.5179933
+Model 2, 500 iterations, loss=0.26679733
+Model 2, 1000 iterations, loss=0.2666847
+Model 2, 1500 iterations, loss=0.2666628
+Model 2, 2000 iterations, loss=0.2666493
+Model 2, 2500 iterations, loss=0.26664367
+Model 2, 3000 iterations, loss=0.26663992
+Model 2, 3500 iterations, loss=0.26663697
+Model 2, 4000 iterations, loss=0.26663497
+Model 2, 4500 iterations, loss=0.2666332
+Model 2, 5000 iterations, loss=0.2666317
+  3.132750 seconds (4.65 M allocations: 1.253 GiB, 9.18% gc time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network

@@ -95,6 +95,10 @@
 <li >
     <a href="../rnn/">Recurrent</a>
 </li>
+                                    
+<li >
+    <a href="../nn-semiparametric/">In semiparametric models</a>
+</li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -241,7 +245,7 @@ al. (<a href="#ref-chernozhukov2018">2018</a>) cover nonlinear scores as well.</
 are stated this way because they’re exactly what is needed for the
 result to work. $\Delta_n$ and $\delta_n$ are sequences converging to
 $0$. $\mathcal{T}_n$ is a shrinking neighborhood of $\eta_0$. A good
-exercise would be show that if $\psi$ a smooth function of $\eta$ and
+exercise would be show that if $\psi$ is a smooth function of $\eta$ and
 $\theta$, and
 $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2} = O(\epsilon_n) = o(n^{-1/4})$,
 then we can meet the above conditions with $r_n = r_n&rsquo; = \epsilon_n$ and
@@ -251,9 +255,15 @@ $\lambda_n&rsquo; = \epsilon_n^2$.</p>
 <h3 id="proof-outline">Proof outline:<a class="headerlink" href="#proof-outline" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Let
-    $\hat{J} = \frac{1}{K} \sum_{k=1}^K \En_k [\psi^a(w_i;\hat{\eta}<em n_1="n,1">k)]$,
-    $J_0 = \Er[\psi^a(w_i;\eta_0)]$, $R</em> = \hat{J}-J_0$</p>
+<p>Let <script type="math/tex; mode=display">
+    \begin{align*}
+    \hat{J} = & \frac{1}{K} \sum_{k=1}^K \En_k
+        [\psi^a(w_i;\hat{\eta}_k)], \\
+    J_0 = & \Er[\psi^a(w_i;\eta_0)], \\
+    R_{n,1} = & \hat{J}-J_0
+    \end{align*}
+    </script>
+</p>
 </li>
 <li>
 <p>Show: <script type="math/tex; mode=display">
@@ -314,8 +324,11 @@ R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
 </script>
 </p>
 <ul>
-<li>$\norm{\En_k[\psi^a(w_i;\hat{\eta}<em 1_k="1,k">k)] - \Er[\psi^a(W;\eta_0)]} \leq U</em> + U_{2,k}$
-    where <script type="math/tex; mode=display">
+<li>
+<script type="math/tex; mode=display">
+    \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
+    U_{1,k} + U_{2,k}
+    </script> where <script type="math/tex; mode=display">
     \begin{align*}
     U_{1,k} = & \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] -
      \Er[\psi^a(W;\hat{\eta}_k)| I^c_k]} \\
@@ -329,8 +342,11 @@ R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
 <h3 id="proof-outline-r_n2">Proof outline: $R_{n,2}$<a class="headerlink" href="#proof-outline-r_n2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>$R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$</li>
-<li>$\sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}<em 3_k="3,k">k) - \psi(w_i;\theta_0,\eta_0) \right]} \leq U</em> + U_{4,k}$
-    where</li>
+<li>
+<script type="math/tex; mode=display">
+    \sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
+      psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}
+    </script> where</li>
 </ul>
 <p>
 <script type="math/tex; mode=display">
@@ -367,10 +383,11 @@ I^c_k] - \Er[\psi(W;\theta_0,\eta_0)]
 <li>
 <p>Influence function
     <script type="math/tex; mode=display">\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)</script>
+    with <script type="math/tex; mode=display">
+    \sigma^2 = J_0^{-1} \Er\left[ \psi(w;\theta_0,\eta_0)
+     \psi(w;\theta_0,\eta_0)'\right] (J_0^{-1})'
+    </script>
 </p>
-</li>
-<li>
-<p>$\sigma^2 := J_0^{-1} \Er<a href="J_0^{-1}">\psi(w;\theta_0,\eta_0) \psi(w;\theta_0,\eta_0)&rsquo;</a>&rsquo;$</p>
 </li>
 </ul>
 <div class="notes">
@@ -472,9 +489,9 @@ scores.</p>
 <div class="notes">
 <p>We’ll go over this derivation in lecture, but I don’t think I’ll have
 time to type it here.</p>
-<p>See Chernozhukov, Newey, and Robins (<a href="#ref-cnr2018">2018</a>) for an
-approach to estimating average derivatives (and other linear in $\theta$
-models) that doesn’t require explicitly calculating an orthogonal moment
+<p>See Chernozhukov, Newey, et al. (<a href="#ref-cnr2018">2018</a>) for an approach
+to estimating average derivatives (and other linear in $\theta$ models)
+that doesn’t require explicitly calculating an orthogonal moment
 condition.</p>
 </div>
 <hr />
@@ -793,9 +810,10 @@ General Approach.” <em>Annual Review of Economics</em> 7 (1): 649–88.
 <a href="https://doi.org/10.1146/annurev-economics-012315-015826">https://doi.org/10.1146/annurev-economics-012315-015826</a>.</p>
 </div>
 <div id="ref-cnr2018">
-<p>Chernozhukov, Victor, Whitney Newey, and James Robins. 2018.
-“Double/de-Biased Machine Learning Using Regularized Riesz
-Representers.” <a href="https://arxiv.org/abs/1802.08667">https://arxiv.org/abs/1802.08667</a>.</p>
+<p>Chernozhukov, Victor, Whitney Newey, James Robins, and Rahul Singh.
+2018. “Double/de-Biased Machine Learning of Global and Local Parameters
+Using Regularized Riesz Representers.”
+<a href="https://arxiv.org/abs/1802.08667">https://arxiv.org/abs/1802.08667</a>.</p>
 </div>
 <div id="ref-wager2018">
 <p>Wager, Stefan, and Susan Athey. 2018. “Estimation and Inference of

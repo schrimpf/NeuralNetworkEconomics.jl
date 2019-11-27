@@ -95,6 +95,10 @@
 <li class="active">
     <a href="./">Recurrent</a>
 </li>
+                                    
+<li >
+    <a href="../nn-semiparametric/">In semiparametric models</a>
+</li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -120,7 +124,7 @@
                                 </a>
                             </li>
                             <li >
-                                <a rel="prev" href="../license/">
+                                <a rel="prev" href="../nn-semiparametric/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -240,7 +244,8 @@ h_t = f_h h_{t-1} + f_x x_t
 of $f$ are then: <script type="math/tex; mode=display">
 \begin{align*}
 \frac{\partial}{\partial f_h} & = \frac{2}{T} \sum (\hat{y}(h_t)-
-y_t)\hat{y}'(h_t) \left(t f_h^{t-1} h_0 + \sum_{s=1}^{t-1} (t-s)f_h^{t-s-1} f_x x_{t-s} \right)
+y_t)\hat{y}'(h_t) \left(t f_h^{t-1} h_0 + \sum_{s=1}^{t-1}
+(t-s)f_h^{t-s-1} f_x x_{t-s} \right) \\
 \frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t) 
     \hat{y}'(h_t) 
     \left(\sum_{s=1}^{t} x_s f_h^{t-s} \right)
@@ -509,37 +514,51 @@ end
 <pre><code class="julia">println(String(sample_markov(dm)))
 </code></pre>
 
-<pre><code>tle&gt;Tell in El Sally plain gone.
+<pre><code>tle&gt;
+&lt;link rel="stylesheet" type="text/css" /&gt;
+Three,
+We'll away friend admit to leave you nearer hangin'.
+But to that underneat was and the end sackson that down open with
+a verse"&gt;
+F . Got to be gone, Jane&lt;/h1&gt;
 
-[Harmonium ninety masks my docks
-without the the in Sons and swam
-untino-type="text/css" /&gt;
-Tabbed by Bob Dylan's bow, like a we'll fifth day&amp;rdquo; line&lt;/title"&gt;Preci
-ous you, baby's country too much about you can during the warm
-pity face&lt;br /&gt;
-Tabbed by the cryin' all my break?&amp;quot; sherin', I ask of way to the pines
-s
-In the ain't crities verses.&lt;/p&gt;
 
-&lt;h2 class="bridge"&gt;
-&lt;h2 class="recordlink release and peace unexperin' arounds the
-Philharmonize whole to crutchen
-G     :   .   .       D                      C        /b Am      C/g F C G/
-b and go on they said it can't answer toes in the more
-
-All I will your interludes:&lt;/p&gt;
-
-&lt;pre class="version="1.0" encoding from pom pom
-            Am    Cadd9/f#)
+&lt;pre class="verse]
 &lt;/pre&gt;
 
-&lt;h1 class="songverse"&gt;
-Hurricane&lt;br /&gt;
+&lt;hr /&gt;
+&lt;/body&gt;&lt;/html&gt;
 
-&lt;h1 class="recordlink" href="index.htm" class="chords are voice that it
-G C/g  C7   G    :   .   .   .                    Riff     C
-If you
-                      F               :   .   .   .          :   .
+&lt;h1 class="tab"&gt;
+**)     F
+I didn't got about a
+                                       C
+How'd ya little shotgun
+I'm a-grieve?
+Who's bound on the &lt;a class="verse he want again, he'd just to despecial as
+ time her me.
+I don't sand Band was a different out, with young.
+&lt;/pre&gt;
+&lt;link"
+href="index.htm"&gt;The fly
+       D
+ You&lt;/title"&gt;Together I misdemeant to grieves a man always he doubt it ain'
+s driv' pass been heard swap me and
+&amp;ldquo;&lt;br /&gt;
+Lyrics tream, in my love.&lt;br /&gt;
+
+&lt;table slave
+   |-0---------------------|-0------------|------|-1---13-13-13-|--------|
+&lt;/pre&gt;
+&lt;pre class="version="1.0" encoding of Heavy to man's sends thes all.
+&lt;/pre&gt;
+&lt;/body&gt;
+
+&lt;pre class="tab"&gt;
+|: B                   three chords:&lt;/p&gt;
+
+&lt;pre class="tab"&gt;
+All
 </code></pre>
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
 lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
@@ -560,41 +579,41 @@ end
 </code></pre>
 
 <pre><code>d&gt;
-&lt;title&gt;Spanish is the loving tongue
-C            C       G               Fm
-The judge had the papers in his eye,
-&amp;quot;You're welcome table, I'm proposin' a toast to the ladies down into h
-er hand!
+&lt;title&gt;North Country Blues&lt;/h1&gt;
+
+&lt;p&gt;Written by E. Dodd&lt;br /&gt;
+Recorded for &lt;a href="im_not_there_lyrics.htm"&gt;different you see.
+I dreamt that the other early tapes, to my ears.&lt;/pre&gt;
+&lt;pre class="verse"&gt;
+To begin the moral of the street
+With my hands have got your brand new leopard-skin pill-box hat
+
+Well, I see you got your thigh.&amp;quot;
 &lt;/pre&gt;
 
-&lt;pre class="tab"&gt;
-   C/g      G          Bm
-Like the meadows where I'd like to go
-and spend the night
-I came [dev] be back
-I hear-a my-a surprise
-  Am                          Baby please
-        F
-When they asked him with rifle-bullets three
+&lt;p&gt;Robbie: &amp;ldquo;Wait a minute before you call me any name you like to go
+   C                                       holler
+&lt;/pre&gt;
+&lt;pre class="verse"&gt;
+He died on the &amp;ldquo;A&amp;rdquo;
+character somewhere
+(which again has taken some &amp;ldquo;it's a gold mining fever baby, which is 
+a little humility and splendor on the 4th string (I've indicated with &amp;ldqu
+o;x&amp;rdquo;) or open
+strings.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Dylan's guitar part" ("Very
+funky. Ah, it's not said by the way things something there of thirst
+     C       G
+Before I go.
 &lt;/pre&gt;
 
-&lt;h2 class="songtitle"&gt;On A Rainy Afternoon/Does She Need Me?/I Can't Leave 
-Her Behind&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songversion"&gt;
-&lt;h2 class="songversion"&gt;Live versions ever since I seen your love in vain?
-&lt;/pre&gt;
-&lt;pre class="chords"&gt;
-Cm6/eb   xx1213 (the Bagdad Caf&amp;eacute;&amp;rdquo; chords he used in the first 
-finger from the middle of the sun cut flat
-    Am     /g F
-I gave her my heart is breaking
-Near broken chains, mountain and each tree
-         |---------------
+&lt;pre class="verse"&gt;
+The cat's in the third fret (sounding key
+Bb major). During the sessions (summer 1967&lt;br /&gt;
+Lyrics f
 </code></pre>
 <h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
 <pre><code class="julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
@@ -613,87 +632,61 @@ end
 </code></pre>
 
 <pre><code>d&gt;
-&lt;title&gt;Rocks and Gravel&lt;/h1&gt;
+&lt;title&gt;Long Ago, Far Away&lt;/h1&gt;
 
 
-&lt;p&gt;Words and music Bob Dylan&lt;br /&gt;
-Released on &lt;a class="refrain"&gt;
-Oh the water,                  G          D   A
-Well, I had to split, but I didn't think I'm . . .&amp;rdquo;, but they are als
-o on the whole song.&lt;/p&gt;
-
-&lt;p&gt;In the verses, but since
-that clashes with the chord. Where I've written as if played by the seaside
-,
-Mark now what followed the wise men bring.
-The wind howls like a hammer,
-The night had gone.
-The morning
-Turning from toy guns that spark
-To flesh-colored Christs that glow in the door he felt jealousy of others a
-round heaven all day.
-
-. . .
+&lt;p&gt;Written by Bob Dylan and the moon above.&lt;br /&gt;
+    Nothing you need, you might even cry, you never mentioned that Dylan ha
+s left this whole town afraid
+From now on you'd best get on board
+I'm sitting on my watch
+         Dm/a                  D                       C
+ I just can't keep track of it no more.
+Well, I wake up in the sky,
+It's been so strong
+And there's not many men that've done the opposite loft
+   C                                                        D/a    A
+   You can always lose a little too simple, but he's daily growin'
 &lt;/pre&gt;
+&lt;pre class="tab"&gt;
+|-------------------------|----
+|/4-----4---|-2---
+|-3------------------------------|
+|--------------------------|------------|-2-------------------|------------
+----------2--0---0---0--------------|
+|------------------------|
+|(2)----------------|----------------|
+|---------------|----------------|-----------------||
+|---------------------|------------||
+|-------------|----------------|----0-----0---0----------|
+|-5-3-5--------------------||--1---1-1-|-1-1-1-1-0---
+|-----------|------------------|----------------|
+|-------------------------||
+|----------||
+|-3---------------------------1-|---3---------|--------------|
+|----8-----8---------|-----------------0-------|-------------7-6-----6-|
+|-4---6-----------
+|------------------------5-------|-4-----2---0-------|-1-------------------
+---------------------|
+&lt;/pre&gt;
+&lt;pre class="bridge"&gt;
+[Joanie, who remember that movie just a little upside down, as a matter of 
+fact the wheel's still in spin
+And then i took over the Rockies,&lt;br /&gt;
+    He's got a hold of my sweethearts and the room,
+Doomed and it can perfectly playable.&lt;/p&gt;
 
 &lt;pre class="verse"&gt;
-    E                /f# /f E
-I'm looking at me&lt;br /&gt;
-Exstasy.&lt;/p&gt;
+  G             G       [lick 1]
+I'm seeing this simple phrase, 
+To kids from one to ninety-two, 
+Although it all that should the wedding of his son.
+Long ago, far away at sea
 
-&lt;p&gt;The easiest way to play satisfactorily on one frosty morning
-She'll know that I
-        D7/f# . . .        .     .     .   | Fm6 . .
-C . . | G7 . . . | C . . . |
-G . . . |C . . . |G . /f# /f |E . . .|
-A7. . . |. . . . |
-
-Harp verse:
-
-| C  . F .G| G  /a-b C  . |
-
-Steel guitar version (1974)&lt;/h2&gt;
-
-&lt;p&gt;Capo 2nd fret, and with both a bass and several guitars (here even an ac
-cordion
-C            G
-They never did plan to walk the boulevard
-Admitting life is hard
-Gm  C7       F
-I pity the heart-attack machine
-Is strapped him to ask
-If he wanted to go home.
-                                      holler
-&lt;/pre&gt;
-&lt;pre class="tab"&gt;
-  G           G
-When they are gone with the ending.&amp;rdquo;&lt;/p&gt;
-
-&lt;p&gt;***) &lt;em&gt;I tripped on a log and I flumped on a stump down in New Orleans
-,
-You know, you don't think it to major at the end        (no, no)
-       E                   F
-    I threw it all away.
-&lt;/pre&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 class="songtitle"&gt;Born in Time&lt;/h1&gt;
-
-
-&lt;p&gt;Written by Woody Guthrie to the tune of the Supper Club shows, November 
-12, 1980&lt;/h2&gt;
-
-&lt;p&gt;Chords:&lt;/p&gt;
-&lt;pre class="tab"&gt;
-  G              A
-I'm doomed to love,&lt;br /&gt;
-    If you were home, feeling proud.
-You wasn't standing in the mouth of a graveyard fence?
-Don't my gal look good, mama,
-Shinin' like some diamonds in your mill-pond she swam.
-
-O miller, O mil
+&amp;quot;I think I've had the best
+Baby, won't you meet me
+Cm7-5        Eb  F  Eb
+Something There Is About Y
 </code></pre>
 <p>With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -801,239 +794,213 @@ end
 <pre><code>Model 32 has 28933 parameters
 Sample from model 32
 --------------------
-Way the coldy of youlb to my figuh the juy,
-that sinky, it lon't
-For the didn, garnicf
-
-You wallard's up and us brinkin';
-D                             C
-fary hand, &amp;quot;Octreud on the led for a chay Ir a strepped me dead
-E shining 'pore the liveme day quine he can they couldng own
-               53---
+Kge. of the man becwy name. is lumbe
+But and walkin' Minvin', my one pllacs inside
+You'ulf. I called.&lt;br /&gt;
+   2x4444
+      |-------------3---|-5---|
+|---------0---------|-----0-|-2-----3-1-1-1---3-|
+|-1---6---------------|-8
+----3-|-----------------|-3-----------|-3----3---3---|
+|---------3----|-0-------2--|-------------|
+||Iuf *) Cancomaquin' body
+Alling medolin', not be just so a as too to fliss,
+Savey let or cloby
+  G         F      /d         Em9  C              C
+Jinve that the hillin', throng wegan worn in her and the corre with so char
+itel
+I have barus gate to blook.
+Can't get caughts back, layd eyes
+C                  C                             G
+But mamas, world worned arlied In or cannay dark Suder bring.
+Wight paft
+|-t9-----9-------|-------------------------|-------------------------|-----
+----/3-------4-----|
+|-3-----------3-----3-|---------------|
+|-----------------|-0-----------------------
+|-7----------------|-----------------|-3---------------|----------------|
+|F-----------------|-0---------------|-0---0-----3-3-3-|-1-1-1-1-1-1-
 &lt;/pre&gt;
-&lt;pre class="verse"&gt;
-                  E
-Of the man a pringsas and bary old anding, in the door.
-Co through my olds,
-&lt;/pre&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;Chords and &lt;a class="recordlink" href="../01_bobdicoo down&lt;/h1&gt;
-
-
-&lt;p&gt;Writk"18, dy chanderat)&lt;/p&gt;
-
-&lt;pre class="verse"&gt;
-I 'C and barben
-Evig Yot nemmert A, Oren x20403
-((hardlantrearman, Obe, but the aves half lines&lt;/p&gt;&lt;/ttlikng-kkgee"pr. Stre
-mg0in 1979&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.cs and mug/zigg
-oukin' falley to Nov Sallin'&lt;/a&gt; sessink condin' Whither&lt;/a&gt; (19603&lt;/title&gt;
-*nwher..., To the hand Se tallin' only talkin' I just not hard, ary wtee
-E, Lockly for a money you figute
-poors Bood three's love.
-Cirlered on my onling or playin' all layer, relet goin                     
-      A            C/g#         
-May hear, 1 .
-D7           F
-When only groest like)
-      C
-I'll come with on?
-   F      G
-here here living.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;I'll the mass one of love &amp;ndashheuraip
-In there the sayin' is feel the mornin'
-C
-Was you anybody
-Well, I've just all thes mistained of   sky,
-be his same of a faith him bed a lon't take
-and only me worroot.
-
-.  . 1m0&lt;/p&gt;
-
-&lt;pre class="tab"&gt;
-&lt;/div&gt;
 
 &lt;pre class="refrain"&gt;
-Can't just alleant true abreash Pridter and from the pressinges.
-&lt;/pre&gt;
+And this my octic''ll what where your hills
+At the doboning on,
+Night with you are chore,
+Yonded kind 
+I cover alleandie on theinz's deppuning whole,
+        C
+why lifk the d&amp;nshat/eseercsss""&gt;
 
 &lt;hr /&gt;
-&lt;h2 class="songversion"&gt;Junce What it's Morn Frieky Baysaly&lt;/title&gt;
-&lt;link rel="css"l"klea"-en="eredas"&gt;laakanesono to (and we blo ryl/f&lt;/titing
-tkikook"&gt;Beace Down&lt;/em&gt; &lt;br /&gt;
-Released relay there in Me (shon, the what version, it's feel Me in the &lt;/p
-&gt;
 
-&lt;p&gt;Campskey cruilin' my way me
-Naling it kind, they treat
-the        majas allerigl in the under
+&lt;h2 class="songversion"&gt;Tapo:&lt;lin&gt;
+  &lt;/p&gt;
+
+&lt;p&gt;There you any hand one bringed Bllown only loogarbys my standin' (B7)
+play Lide was on,sh by is mople life,
+                G  A
+And sky late whosow, ducklit cord,
+To water my sve's with is for say.
+
+Iller you so fisshin' that tell do?
+Well,
+To the long of coonf saul rollows of miste and free,
+But wither only splay:           F
+And croad of my phrand, mothing?&amp;rdquo;&lt;br /&gt;
+        A Em
+I'll would how he mad, his belic, 4t, and this by soly C with old a rille? 
+E7sus4         3) 313 handin' on how two.&lt;/p&gt;
+
+&lt;p&gt;Autro parpeling you ever man
+Every rath, you're all your churle you'll get you.
+
+Well.&lt;br /&gt;
+  Men blown&lt;br /&gt;
+Tabbed by Eyolf &amp;Oslash;strem a
 
 Model 64 has 82341 parameters
 Sample from model 64
 --------------------
-live your Momp; baby, living my shicting, different corn to the line.&lt;br /&gt;
- Bands, one needs,
-Kainror on that Green, eve they over me,
-Lord, I've got no some time with glory
+”            :
+&lt;/pre&gt;
+
+&lt;pre class="bridge"&gt;
+   C       F       C
+Hard on Cannampersus no
+Sin
+                    A                         D    E
+This next then we varior,
+My sounds a-loves that dlong
+&lt;/pre&gt;
+&lt;pre class="verse"&gt;
+A                                                   #&amp;quoqu;
+Just a next fal of a take mighty forms fire.
+
+The blooming hislive or Lord??
+&lt;/pre&gt;
+
+&lt;pre class="sonnoincon"&gt;ried but only into the love, off
+       |-0---0-----0----       |-------------|-1-----------|--------------|
+         | verses, song
+     :   .   .   .
+  .        .     .
+Won'lict grown through the line, the baltor, was well
+
+I ain't go on Blueny
 &lt;/pre&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;*) 31-8705
-
-&lt;/pre&gt;
-&lt;/body&gt;&lt;/html&gt;
-
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
-&lt;html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-
-&lt;head&gt;
-&lt;title&gt;In Coorgo&lt;br cass"&gt;
-&lt;strong&gt;Gorned (The Favina&amp;rdquo;&lt;/p&gt;
-
-&lt;p&gt;Played on &lt;a class="recordlink" href="indepou.casal"/esct/plonineul.ut f
-irst Hall Groone, Goss Ac/&amp;rd&lt;br /&gt;
-Released on &lt;a class="recordlink" href="index.htm"&gt;Bob Dylan played onlie&lt;/
-a&gt; (1970), &amp;ldquo;liss.
-&lt;/pre&gt;
-
-&lt;pre class="verse"&gt;
-Yes, living through sin?
-&lt;/pre&gt;
-
-&lt;pre class="verse"&gt;
-Storbs in Luther Lord
-&lt;/pre&gt;
-
-&lt;pre class="refrain"&gt;
-It leave one world confends this heavy on.
-Well I got tells me and they finger,
-Let's gay down on her Sin
-D-                  You allow to Willin',
-Lord, you take loves will otnes
-Will con only told you a ladize.
-All your hair to jummie the while a-long.
-&lt;/pre&gt;
-&lt;pre class="refrain"&gt;
-The streets is as the sun he's gonna thinks,
-He are a nie's girl
-There and high of the face, my consons gar
-tiles, woman into your hand you,
-Everywhat I can sport fine.
-And was played the lad
-Who go your quenty the money life for Geh Nostleant . .
-  You see her mad son and inpirt
-                                                       E#
-Oh the haspear player - cledding my birded&lt;br /&gt;
- her ir
-Crakes the world.&lt;br /&gt;
- Tomblo and with Oh, yes, You all around the mirin the free
-Lord [wor more to the lo far
-Kill, only they've wait-your and good midd
-You repeat you as to eat same Gom.
-&lt;/pre&gt;
-
-&lt;pre class="verse"&gt;
-Well, you to guitan find in the street east
-Grie riff the intignt we nutps ting with the morn.
-&lt;/pre&gt;
-
-
-
-&lt;pre class="refrefqoonerd"&gt;wiggent these rhythm something from  Creudictly 
-comph way.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;The covers o xx0500
-Acrinian, a
+&lt;p&gt;-------------|------------------------|-3------3-------------------|
+|-------------------|---------------------|
+|-------------0p0--0---0---|------------|
+|-333-------------|-----------------|---3-------0-------|
+---0-|--2-2-2---2-|-0-------2p0--0---0---0---|-2/5-------5-----1-|
+|--------------------|------2---2--|
+|-1-----9-----9---|-7----------------|-----------------|---5-------------|-
+----------------||
+||---------------p-|
+|-----------------|---------|----------------|------------------|
+|-------------3---|-----------------|-----------------|-----------------   
+  |-----------0--0--|
+|------4--22-|-------------|------|---------
+-3-----|-7---5-----4--------|-4------------------|
+-5---|-------2---2-----------|---------------------------|
+|------------------------------|
+|-----------------|------7------|-8-----------------|-----------------|----
+--------|----------3------|
+|-------------7---|------------------|------------|-----------7-|-7---7----
+0---0-|---------
+||------------------|
+|------0----------|-----------------|
+||-------------|-----------------|-----------------|---4-------------|x3-0-
+------|
+|-6-------------|-------------3---|-5-----5.|---------------|--------------
+---|
+|-----7---7---5---|-----------------|-----------------|
+          .     :   .   .   .     :   .   .   .     :   .   .
+|-6---3----------
 
 Model 128 has 262885 parameters
 Sample from model 128
 --------------------
-+7
-Father of a job down, then the barled glize. 
-She'lined to bewar wrong that are not for myself if you got a long time
-and it can't hide
-Rever don't relive them miney, he did very you mighty
-                   133311 for they coptriftes)
-&lt;/pre&gt;
+\peppet Danim.&lt;/p&gt;
+
+&lt;pre&gt;Rolling through 4stricf strings (or an Em7-cli=1)&lt;/a&gt;:/ub E7 on the Fs
+. Twurl, it electres, in the note,
+Uce on the fulf have played with various content here
+would for home
+in some resliff.&lt;/p&gt;
+
+&lt;p&gt;Cadd by Dylan from Lave Darkanal Rancional.&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;The C alternations from the versions from the capo-&amp;ddquo;The fiftorn. S
-t Arikesnish, hosp. The blues; boo,
-firsted F6 (3) is an open williou,
-at may be apart key C chord, Dec 10h311, and more plays note to the playing
-. &lt;/p&gt;
+&lt;pre class="verse"&gt;
+                   G         A           C/g G
+When too too hord pousiled
+C#m     D#m                    C#7
+Al I'm looking into
+                        repeat
+             -                                diffe?
+                          baby Dylan and weary the
+someone my dog there. 
+&lt;/pre&gt;
+&lt;/bodyyal let reblie (1002)&lt;/h2&gt;
 
 &lt;pre class="verse"&gt;
-You know her name, but hit you's hardings
-her bamb, we will call my home
-She called brokeatelares
+C
+    Condiah surdin
+            G     D   Csus4   C
+Visin' in the years of Fame of Hann.
+       F    C
+We knew in A man and small was no sleakes
+    Gm/d         C     D
+  Yon her name is fallowain
+        C                 G [wind]
+I'll still buy it hard to crash
+Your official pulled, drivin' it tryin'
+And aimplin' so lot and mighty
+Slow empre who are mody,
+Where may your fightfue the water
+All your Grays set and ane froat
+Jesus glowly loud eyes
+These grow me to answer anyther
 
-Sayin' my hands are leavin'
-And light ya traveled from the sea
-O'lory [are]                                              you
-And every/lifting: the corn.
-&lt;/pre&gt;
-
-&lt;pre class="refrain"&gt;
-C . C . C . . Em C . Dm7 - 3 wixed
-  ) stealy dressed...
-   &lt;/pre&gt;
-
-&lt;hr /&gt;
-&lt;pre class="verse"&gt;
-A
-
-
-Driftin' the line.
-In the hands and gray and leve els
-Stop creen, they stole, sile-break of Love,
-St you may fanglaid?
+Honeys flow it,
+Walkin', says her whill offeat for
+I.gre better say, I can't lead you ready by your heart.
 &lt;/pre&gt;
 &lt;pre class="verse"&gt;
-Well, 'til your pensage decouls fast
-But to greet yours apron one more can't have to Ya
-woman, it makes a gotta do behollin' 'm I reall
-sinsis him
-I will be just my fille,
-And you never gone to be best to tell the best.
-
-Where repoured bird your lord &lt;em&gt;bots skin
+Well, she's that softle, show and me not only very mama, you been wondin' b
+efore.
+But this too far away.
 &lt;/pre&gt;
-
-&lt;pre class="verse"&gt;
-Well, you can mes, forget the fooling you for long
-
-Six buxzed, boot no odder mother her, we would be through
-And it was gone late, not be so all
-I was born to say your leavin' by
-They'll never know your fathers took my head ******)
-Percheld that play for the inty helpper sun
-He saile aleh in Hezeyon
-The die on the lip of the rog, the land 'lover hanger from the border down
-You can sto drowner blue, dressed by the farmers
-Well, then scared ladder hands and you need the key, or whole little
-The key Am office for the tokes
-&lt;/pre&gt;
-&lt;/bodyoae   spend For Dark&lt;/em&gt; (Maverny&lt;br /&gt;
+&lt;/bodyyal lef be about Roser&lt;br /&gt;
 Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;Add &amp;ldquo;Thusker is the angeles, if her later
+&lt;pre class="verse"&gt;
+(Dmaj7     2 fellow) light to sings
+May, but for g. and game
+I swear on your dram and percesteds
+All about what the lighttin' one queens sun
+Broweds my oet are take us,
+I wanna tune.
+If so filled, my love
+Well, the lonesome grind an' show,
+Take all trapped breaks, a-alonotin' blow
+From Many cloud the Lord, fast one, just gonna wrate
+He askin' oper me
+She's breaks off
+Ev'ry lonery's sailor for every walk is
+To quit my real
+City we must be thiney
+
+Now, Mary Lan's go deep it be croon.
+   G
+wor contend only and drivesary
 </code></pre>
 <h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
 <div class="references" id="refs">
