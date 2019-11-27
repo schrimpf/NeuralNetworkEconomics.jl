@@ -346,7 +346,7 @@ can write a moment condition for $\theta_0$ as: <script type="math/tex; mode=dis
 0 = \Er[ \theta_0 -  \left(h(x_t + \Delta) - h(x_t) \right)].
 </script> However, this moment condition is not orthogonal. Its Frechet
 derivative with respect to $h$ in direction $v$ is <script type="math/tex; mode=display">
-\partial_h(\Er[ \theta -  \left(h_0(x_t + \Delta) - h(x_t)
+\partial_h\left(\Er[ \theta -  \left(h_0(x_t + \Delta) - h(x_t)
 \right)] \right) [v] = \Er[-v(x_t + \Delta) + v(x_t)] \neq 0.
 </script>
 </p>
@@ -364,11 +364,11 @@ h(x))\frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)}
 <p>Although somewhat difficult to derive, it is easy to verify that
 $\Er \psi$ is orthogonal. <script type="math/tex; mode=display">
 \begin{align*}
-\partial_h \Er[ \psi(y_t,x_t;\theta_0, \eta_0) ] \right) [v] = &
-\Er[-v(x_t + \Delta) + v(x_t) + v(x_t +\Delta)  - v(x_t)] = 0 \\
-\partial_{f_x} \Er[ \psi(y_t,x_t;\theta_0, \eta_0) ] \right) [v] = &
-\Er[(E[y|x] - h_0(x)) \frac{(-v(x+\Delta) + v(x))f_x(x) -
-v(x)}{f_x(x)^2} ] = 0
+\partial_h \left(\Er[ \psi(y_t,x_t;\theta_0, \eta_0) ] \right) [v] = &
+\Er\left[-v(x_t + \Delta) + v(x_t) + v(x_t +\Delta)  - v(x_t)\right] = 0 \\
+\partial_{f_x} \left(\Er[ \psi(y_t,x_t;\theta_0, \eta_0) ] \right) [v] = &
+\Er\left[(E[y|x] - h_0(x)) \frac{(-v(x+\Delta) + v(x))f_x(x) -
+v(x)}{f_x(x)^2} \right] = 0
 \end{align*}
 </script> Notice that to achieve orthogonality, we had to introduce an
 additional functional nuisance parameter, $f_x$. This is typical in
@@ -586,9 +586,11 @@ f_{x_1}(x_1) = \frac{\partial}{\partial x_1} F_x((x_1, \overline{x}_2, \overline
 <pre><code class="julia">pdf12=make_pdf(cdfx,2)
 pdf1=make_pdf(cdfx,1)
 px1=pdf1(vcat(x[1,:]', maximum(y)*ones(2, 998)))
-histogram(x[1,:], bins=100, normalize=:pdf); scatter!(x[1,:], px1[:], leg=false)
+histogram(x[1,:], bins=100, normalize=:pdf)
+scatter!(x[1,:], px1[:], leg=false)
 </code></pre>
 
+<p><img alt="" src="../figures/nn-semiparametric_8_1.png" /></p>
 <p>The marginal pdf implied by the joint cdf looks pretty good.</p>
 <p>Note, however, that to get this result, I had to specify a fairly
 complex network, which took around 20 minutes to fit. There are many
