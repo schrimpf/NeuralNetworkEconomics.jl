@@ -38,7 +38,7 @@ doc: $(docout)
 $(rmdmd) : md/%.md : %.Rmd
 	$(RKNIT) $< $@
 
-$(jmdmd) : md/%.md : %.jmd makeweave.jl 
+$(jmdmd) : md/%.md : %.jmd #makeweave.jl 
 	$(WEAVE) $< $@  weave
 
 $(mdout) : build/%.md : md/%.md
@@ -50,11 +50,12 @@ $(nbout) : build/%.ipynb : %.jmd
 $(docout) : build/%.md :  src/%.md
 	julia -e "using Documenter, NeuralNetworkEconomics, DocumenterMarkdown; makedocs( modules=[NeuralNetworkEconomics],  format=Markdown(), clean=false,  pages=[  \"Home\" => \"index.md\" ], repo=\"https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/{commit}{path}#L{line}\",  sitename=\"NeuralNetworkEconomics.jl\",  authors=\"Paul Schrimpf <paul.schrimpf@gmail.com>\")"
 
+site: site/index.html
 
-site/index.html: $(rmdout) $(jmdout) $(nbout) $(docout) mkdocs.yml
+site/index.html: $(rmdout) $(jmdout) $(docout) mkdocs.yml
 	mkdocs build
 
-all: site/index.html 
+all: site/index.html $(nbout)
 
 deploy: site/index.html 
 	mkdocs gh-deploy

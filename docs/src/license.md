@@ -8,5 +8,5 @@ License](http://creativecommons.org/licenses/by-sa/4.0/) and were written by Pau
 [BibTeX citation.](https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/master/CITATION.bib)
 
 
-The license for the [package source code is here.](https://github.com/schrimpf/GMMInference.jl/blob/master/LICENSE)
+The license for the [package source code is here.](https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/master/LICENSE)
 

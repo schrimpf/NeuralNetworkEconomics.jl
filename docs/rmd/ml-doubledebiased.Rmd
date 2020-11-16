@@ -138,7 +138,7 @@ this way because they're exactly what is needed for the result to
 work.
 $\Delta_n$ and $\delta_n$ are sequences converging to $0$. $\mathcal{T}_n$ is a
 shrinking neighborhood of $\eta_0$.
-A good exercise would be show that if $\psi$ a smooth function
+A good exercise would be show that if $\psi$ is a smooth function
 of $\eta$ and $\theta$, and $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2}
 = O(\epsilon_n) = o(n^{-1/4})$, then we can meet the above conditions
 with $r_n = r_n' = \epsilon_n$ and $\lambda_n' = \epsilon_n^2$.
@@ -148,9 +148,15 @@ with $r_n = r_n' = \epsilon_n$ and $\lambda_n' = \epsilon_n^2$.
 
 ### Proof outline:
 
-- Let $\hat{J} = \frac{1}{K} \sum_{k=1}^K \En_k
-  [\psi^a(w_i;\hat{\eta}_k)]$, $J_0 = \Er[\psi^a(w_i;\eta_0)]$,
-  $R_{n,1} = \hat{J}-J_0$
+- Let 
+  $$
+  \begin{align*}
+  \hat{J} = & \frac{1}{K} \sum_{k=1}^K \En_k
+      [\psi^a(w_i;\hat{\eta}_k)], \\
+  J_0 = & \Er[\psi^a(w_i;\eta_0)], \\
+  R_{n,1} = & \hat{J}-J_0
+  \end{align*}
+  $$
   
 - Show:
 $$
@@ -204,8 +210,11 @@ R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
    \En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)] \right)
 $$
 
-- $\norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
-  U_{1,k} + U_{2,k}$
+- 
+$$
+\norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
+  U_{1,k} + U_{2,k}
+$$
   where
   $$
   \begin{align*}
@@ -222,8 +231,11 @@ $$
 
 - $R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[
   \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$
-- $\sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
-  \psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}$
+- 
+$$
+\sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
+    psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}
+$$
   where
 
 $$
@@ -257,8 +269,11 @@ $$ \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
 
 - Influence function
 $$\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)$$
-
-- $\sigma^2 := J_0^{-1} \Er[\psi(w;\theta_0,\eta_0) \psi(w;\theta_0,\eta_0)'](J_0^{-1})'$
+with
+$$
+\sigma^2 = J_0^{-1} \Er\left[ \psi(w;\theta_0,\eta_0)
+   \psi(w;\theta_0,\eta_0)'\right] (J_0^{-1})'
+$$
 
 <div class="notes">
 This is the DML2 case of theorem 3.1 of @chernozhukov2018.
@@ -331,9 +346,10 @@ discusses creating orthogonal scores.
 $$
 \min_{\theta,f} \Er\left[ (y - f(x))^2 + (\theta - f'(x)^2) \right] 
 $$
-
-- $f_\theta(x) = \Er[y|x] + \theta \partial_x \log p(x) - f''(x) -
-  f'(x) \partial_x \log p(x)$
+- Solve for minimizing $f$ given $\theta$
+$$
+ f_\theta(x) = \Er[y|x] - \theta \partial_x \log p(x) + f''(x) + f'(x) \partial_x \log p(x)
+$$
 
 - Concentrated objective: 
 $$ 
@@ -367,16 +383,20 @@ $$
 \min_{\theta,f} \Er\left[ \Er[y - f(x)|z]^2 + (\theta - f'(x))^2 \right] 
 $$
 
-- $f_\theta(x) = (T^* T)^{-1}\left((T^*\Er[y|z])(x) - \theta \partial_x \log p(x)\right)$
+- then
+  $$
+  f_\theta(x) = (T^\ast T)^{-1}\left((T^\ast \Er[y|z])(x) - \theta \partial_x
+  \log p(x)\right)
+  $$
     - where $T:\mathcal{L}^2_{p} \to \mathcal{L}^2_{\mu_z}$ with 
     $(T f)(z) = \Er[f(x) |z]$
-    - and $T^*:\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with 
-    $(T^* g)(z) = \Er[g(z) |x]$
+    - and $T^\ast :\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with 
+    $(T^\ast g)(z) = \Er[g(z) |x]$
 
 - Orthogonal moment condition :
 $$
 0 = \Er\left[ 
-\Er[y - f(x) | z] (T (T^* T)^{-1} \partial_x \log p)(z) +
+\Er[y - f(x) | z] (T (T^\ast T)^{-1} \partial_x \log p)(z) +
 (\theta - f'(x)) 
 \right]
 $$
@@ -410,17 +430,17 @@ $$
 0 = \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
 \theta \partial_x \log p(x) 
 $$
-or equivalently using $T$ and $T^*$,
+or equivalently using $T$ and $T^\ast$,
 $$
-0 = \left(T^*(E[y|z] - T f)\right)(x)  -
+0 = \left(T^\ast(E[y|z] - T f)\right)(x)  -
 \theta \partial_x \log p(x) 
 $$
-Note that $T$ and $T^*$ are linear, and $T^*$ is the adjoint of
+Note that $T$ and $T^\ast$ are linear, and $T^\ast$ is the adjoint of
 $T$. Also, identification of $f$ requires $T$ is one to one. Hence, if
-$f$ is identified, $T^* T$ is invertible. Therefore, we can solve for
+$f$ is identified, $T^\ast T$ is invertible. Therefore, we can solve for
 $f$ as:
 $$
-f_\theta(x) = (T^* T)^{-1} \left( (T^* \Er[y |z])(x) - \theta \partial \log p(x) \right)
+f_\theta(x) = (T^\ast T)^{-1} \left( (T^\ast \Er[y |z])(x) - \theta \partial \log p(x) \right)
 $$
 Plugging $f_\theta(x)$ back into the objective function and then
 differentiating with respect to $\theta$ gives the orthogonal moment
@@ -429,7 +449,7 @@ orthogonal is slightly tedious. Writing out some of the expectations as
 integrals, changing order of integrations, and judiciously factoring
 out terms, will eventually lead to the desired conclusion. 
 
-@cfr2007 is an excellent review about estimating $(T^* T)^{-1}$ and 
+@cfr2007 is an excellent review about estimating $(T^\ast T)^{-1}$ and 
 the inverses of other linear transformations.
 </div>
 

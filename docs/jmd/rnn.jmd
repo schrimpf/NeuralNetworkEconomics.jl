@@ -1,0 +1,566 @@
+---
+title       : "Recurrent Neural Networks" 
+subtitle    : ""
+author      : Paul Schrimpf
+date        : `j using Dates; print(Dates.today())`
+bibliography: "../ml.bib"
+options:
+      out_width : 100%
+      wrap : true
+      fig_width : 800
+      fig_height : 800
+      dpi : 192
+---
+
+[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike
+4.0 International
+License](http://creativecommons.org/licenses/by-sa/4.0/) 
+
+
+### About this document 
+
+This document was created using Weave.jl. The code is available in
+[on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
+document generates both static webpages and associated [jupyter
+notebook](rnn.ipynb). 
+
+$$
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+$$
+
+```julia; echo=false; results="hidden"
+markdown = try
+  "md" in keys(WEAVE_ARGS) && WEAVE_ARGS["md"]
+catch
+  false
+end
+
+if !("DISPLAY" ∈ keys(ENV))
+  # Make gr and pyplot backends for Plots work without a DISPLAY
+  ENV["GKSwstype"]="nul"
+  ENV["MPLBACKEND"]="Agg"
+end
+# Make gr backend work with λ and other unicode
+ENV["GKS_ENCODING"] = "utf-8"
+
+using NeuralNetworkEconomics
+docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), "..","docs")
+
+using Pkg
+Pkg.activate(docdir)
+Pkg.instantiate()
+```
+
+# Introduction
+
+Previous notes have covered [single layer](slp.md), [multi
+layer](mlp.md), and [convolutional](conv.md) feed forward networks. 
+In feed forward networks, the outputs of one layer are fed into the
+next layer, always moving toward the output. Recurrent networks break
+this pattern. In recurrent networks, outputs of one layer are feed
+back into the same. This always the network to maintain a hidden
+state. Recurrent networks are typically used to model sequential
+data. There are many applications to time series. Recurrent networks
+are also useful for processing text and audio data. 
+
+## Additional Reading
+
+- @goodfellow2016 [*Deep Learning*](http://www.deeplearningbook.org)
+  especially chapter 10
+- [`Knet.jl`
+  documentation](https://denizyuret.github.io/Knet.jl/latest/)
+  especially the textbook
+- @klok2019 *Statistics with Julia:Fundamentals for Data Science,
+  MachineLearning and Artificial Intelligence*
+   
+# Recurrent Networks
+
+Recurrent Networks are designed to predict a sequence of outputs,
+$y_t$, given a sequence of inputs, $x_t$, where $t=1, ...,T$, The
+relationship between $x$ and $y$ is assumed to be stationary, but we
+will allow there to be possibly many values from the history of $x$ to
+affect $y$. We do this by introducing a hidden state, $h_t$. The
+prediction for $y_t$ is only a function of $h_t$, say
+$\hat{y}(h_t)$. The hidden state is Markovian with 
+$$
+h_t = f(h_{t-1}, x_t).
+$$
+Both $\hat{y}()$ and $f()$ are constructed from neural
+networks. They could simply be single layer perceptrons, or any of the
+more complicated network architectures we previously discussed.
+
+## Approximation Ability
+
+Recurrent networks can approximate (in fact can equal) any computable
+function. @siegelmann1991 and @siegelmann1992 show that recurrent
+neural networks are Turing complete. As with the universal
+approximation ability of feed forward networks, this result is good to
+know, but it is not an explanation for the good practical performance
+of recurrent networks. 
+
+When $h_t$ is large enough, it is easy to see how the recurrent model
+above can equal familiar time series econometric models. For example,
+for an AR(P) model, 
+$$
+y_t = \rho_1 y_{t-1} + \cdots + \rho_p y_{t-p} + \epsilon_t 
+$$
+To express this model in recurrent state-space form, 
+let $x_t = y_{t-1}$, and $h_t = (y_{t-1, \cdots, y_{t-p}) \in \R^p$. 
+Then we can set 
+$$
+f(h_{t-1}, x_t) = (x_t, h_{t-1,1}, \cdots , h_{t-1, p-1})
+$$
+and
+$$
+\hat{y}(h_t) = \rho' h_t,
+$$
+
+## Stability and Gradients
+
+Recursive neural networks can be difficult to train. The difficulty
+stems from how the gradient of the network behaves very differently
+depending on whether the dynamics are stable. To illustrute, suppose
+$f()$ is linear,
+$$
+h_t = f_h h_{t-1} + f_x x_t
+$$
+and the loss function is MSE
+$$
+\mathcal{L}(f_h,f_x) = \frac{1}{T} \sum_{t=1}^T (\hat{y}(h_t)- y_t)^2
+$$
+The derivatives of the loss function with respect to the parameters of
+$f$ are then:
+$$
+\begin{align*}
+\frac{\partial}{\partial f_h} & = \frac{2}{T} \sum (\hat{y}(h_t)-
+y_t)\hat{y}'(h_t) \left(t f_h^{t-1} h_0 + \sum_{s=1}^{t-1}
+(t-s)f_h^{t-s-1} f_x x_{t-s} \right) \\
+\frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t) 
+    \hat{y}'(h_t) 
+    \left(\sum_{s=1}^{t} x_s f_h^{t-s} \right)
+\end{align*}
+$$
+Both of these involve increasing powers of $f_h^t$. If $h_t$ has
+stable dynamics, i.e. $|f_h|<1$, then these derivatives will be
+dominated by the terms involving more recent values of $x_t$. If $h_t$
+has explosive dynamics, $|f_h|>1$, then these derivatives will be
+dominated by the terms involving the earlist $x_t$. Depending on the
+stability of $f$, gradients will be dominated by either short term
+dependence between $x$ and $y$ or long term. This behavior makes it
+difficult to train a network where both short and long term
+dependencies are important. 
+
+The previous analysis also apply to nonlinear $f()$, with $f_h$
+replaced by $(\partial f)/(\partial h)$, and stable replaced with
+locally stable. 
+
+The previous analysis also applies to multivariate $h_t$ with $|f_h|$
+replace by $\max |eigenvalue(f_h)|$.
+
+## Truncating Gradients
+
+A practical problem with gradients of recurrent networks is that 
+$\hat{y}(h_t)$ depends on the entire history of 
+$x_1, \cdots, x_t$. When computing the gradient by backward
+differentiation, this entire history will accumulate, using up memory
+and taking time. A common solution is to truncate the gradient
+calculation after some fixed number of periods. 
+
+
+## LSTM
+
+Long Short-Term Memory networks were designed to avoid the problem of
+vanishing and exploding gradients. LSTMs have an additional hiddent
+state, $s_t$. The extra hidden state is $s_t \in (0,1)$ and is a
+weighted sum of $s_{t-1}$ and other variables. In particular,
+$$
+ s_t = \sigma(b_f + U_f' x_t + W_f' h_{t-1}) s_{t-1} + \sigma(b_g + U_g'
+ x_t + W_g' h_{t-1}) \tilde{x}_t 
+$$
+The first $\sigma(b_f + U_f' x_t + W_f' h_{t-1})$ is a "forget"
+gate. It determines how much of $s_{t-1}$ is forgotten. 
+The second $\sigma(b_g + U_g' x_t + W_g' h_{t-1})$ is call the
+external input gate. It determines how much current $x_t$ affects
+$s_t$. The $\tilde{x}$ is a rescaled input given by
+$$
+\tilde{x}_t = \sigma(\tilde{b} + \tilde{U}'x_t + \tilde{W}' h_{t-1}).
+$$
+Finally, $h_t$ is a gated and transformed version of $s_t$.
+$$ 
+h_t = tanh(s_t) \sigma(b_o + U_o' x_t + W_o'h_t)
+$$
+where $\sigma(b_o + U_o' x_t + W_o'h_t)$ is the output gate. 
+
+# Example : Generating Dylan Songs
+
+Recurrent neural networks are pretty good at randomly generating
+text. The 
+[Flux model zoo](https://github.com/FluxML/model-zoo/blob/master/text/char-rnn/char-rnn.jl)
+includes one such example. The example is based on this [blog post by
+Andrej
+Karpathy](http://karpathy.github.io/2015/05/21/rnn-effectiveness/). It 
+predicts each individual character given past characters. This works
+suprisingly well. We are going to repeat this exercise, but use Bob
+Dylan songs as input.
+
+
+## Downloading Songs
+
+We download all Bob Dylan lyrics and chords from
+[dylanchords.info](http://dylanchords.info). 
+
+```julia
+using ProgressMeter, JLD2
+import HTTP, Gumbo, Cascadia
+
+infile = joinpath(docdir,"jmd","dylanchords.txt")
+
+if !isfile(infile)
+  r=HTTP.get("http://dylanchords.info/alphabetical_list_of_songs.htm")
+  songlist=Gumbo.parsehtml(String(r.body));
+  songlinks = eachmatch(Selector(".songlink"), songlist.root)
+  songhtml = Array{String, 1}(undef, length(songlinks))
+  p = Progress(length(songlinks),1,"Downloading songs", 50)
+  for s ∈ eachindex(songlinks)
+    url = songlinks[s].attributes["href"]
+    if url == "index.htm"
+      songhtml[s] = ""
+      continue
+    end
+    r = HTTP.get("http://dylanchords.info/"*url)
+    songhtml[s]=String(r.body)
+    next!(p)
+  end
+  
+  open(infile, "w") do io
+    for s ∈ songhtml
+      write(io, s)
+      write(io,"\n")
+    end
+  end  
+end
+
+text = collect(String(read(infile)))
+```
+
+Note that the input text here are html files. Here is the start of one
+song.
+```
+<head>
+<title>My Back Pages</title>
+<link rel="stylesheet" type="text/css" href="../css/general.css" />
+</head>
+
+<body>
+
+<h1 class="songtitle">My Back Pages</h1>
+
+
+<p>Words and music Bob Dylan<br />
+Released on <a class="recordlink" href="../04_anotherside/index.htm">Another Side Of Bob Dylan</a> (1964) and <a class="recordlink" href="../99_greatesthits2/index.htm">Greatest Hits II</a> (1971)<br />
+Tabbed by Eyolf &Oslash;strem</p>
+
+<p>Most G's are played with a small figure (G - G6 - G7) going up to G7:</p>
+<pre class="chords">
+G  320003
+G6 322003
+G7 323003
+</pre>
+
+<p>This is noted with a *).</p>
+
+<p>He didn't seem to spend too much time rehearsing this song before he
+went into the studio (the whole album was recorded in one
+evening/night session) &ndash; he gets the first verse all wrong in the
+chords, and he struggles a lot with the final lines of each
+verse. I've written out the chords for the first two verses and in the
+following verses deviations from the <em>second</em> verse.</p>
+
+<p>Capo 3rd fret (original key Eb major)</p>
+
+<hr />
+
+<pre class="verse">
+C       Am          Em
+Crimson flames tied through my ears
+        F        G *)   C
+Rollin' high and mighty traps
+C            Am      Em      C
+Pounced with fire on flaming roads
+      F     Em    G   *)
+Using ideas as my maps
+       F       Am     G *)        C
+&quot;We'll meet on edges, soon,&quot; said I
+Am                  F G
+Proud 'neath heated brow
+        C             Am    C
+Ah, but I was so much older then
+    F       G *)      C       G *)
+I'm younger than that now.
+```
+
+Some songs include snippets of tablature (simple notation for guitar).
+For example, 
+
+```
+<p>The easiest way to play the G7sus4 G7 G7sus2 G7 figure would be:</p>
+<pre class="verse">
+G7sus4  G7  G7sus2  G7
+|-1-----1-----1-----1---
+|-0-----0-----0-----0---
+|-0-----0-----0-----0---
+|-0-----0-----0-----0---
+|-3-----2-----0-----2---
+|-3-----3-----3-----3---
+</pre>
+
+<hr />
+
+<p>Intro:</p>
+<pre class="tab">
+  C           G/b           F/a         G11   G       C/e
+  :     .       :     .       :     .       :     .        :     .
+|-------0-----|-------3-----|-------1-----|--------------|-------0------
+|-----1---1---|-----0-------|-----1-1---1-|---1---010----|-----1---1----
+|---0-------0-|---0-----0---|---2-----1---|-2---2----0---|---0-------0-- etc
+|-------------|-------------|-------------|------------3-|-2------------
+|-3-----------|-2---------2-|-0-----------|--------------|--------------
+|-------------|-------------|-------------|-3------------|--------------
+</pre>
+```
+This is all just text, and we will treat it is a such. However, it has
+additional structure that makes it more interesting to predict than
+the text of just lyrics. 
+
+## Markovian Baseline
+
+As [Yoav Goldberg point
+out](https://nbviewer.jupyter.org/gist/yoavg/d76121dfde2618422139), you
+can generate pretty good text with a simple Markovian model of
+characters. That is, estimate the probability of a character $c$ given
+a history of $L$ characters $h$, $P(c_t|c_{t-1}, ..., c_{t-L})$, by
+simple sample averages. Let's try this out.
+
+```julia
+using StaticArrays
+
+function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
+  dm = Dict{SVector{L, Char}, Dict{Char, Float64}}()
+  p = Progress(length(data), 1, "count_markov($L)", 30)
+  for t in (1+L):length(data)
+    key = @view data[(t-L):(t-1)]
+    entry=get!(dm, key, Dict(data[t] => 0))
+    v = get!(entry, data[t], 0)
+    entry[data[t]] += 1
+    next!(p)
+  end
+  for k in keys(dm)
+    total = sum(values(dm[k]))
+    for e in keys(dm[k])
+      dm[k][e] /= total
+    end
+  end
+  dm
+end
+
+modelfile=joinpath(docdir,"jmd","dylan-markov4.jld2")
+if isfile(modelfile)
+  @load modelfile dm
+else 
+  @time dm = p_markov(Val(4), text);
+  @save modelfile dm    
+end
+```
+
+The above code stores $P(c_t|c_{t-1},...,c_{t-L})$ in a
+dictionary. When $L$ is large, there are huge number of possible
+histories, $c_{t-1},...,c_{t-L}$, and we will not observe many of
+them. A dictionary only stores data on the histories we observe, so it
+will save some memory.
+
+Let's now sample from our model. 
+
+```julia
+defaultinit=collect("\n\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n\n<head>\n<title>")
+
+function sample_markov(dm::Dict{SVector{L, Char}, Dict{Char, Float64}}, len=1000,
+                       init=defaultinit) where L
+  out = Array{Char,1}(undef,len)
+  state = MVector{L, Char}(init[(end-L+1):end])
+  out[1:L] .= state
+  for s=L+1:len
+    u = rand()
+    cp = 0.0
+    for k in keys(dm[state])
+      cp += dm[state][k]
+      if (u<= cp)
+        out[s]=k
+        break
+      end
+    end
+    state[1:(end-1)] .= state[2:end]
+    state[end] = out[s]    
+  end
+  out
+end
+
+@show length(dm), length(text)
+println(String(sample_markov(dm)))
+```
+
+Conditioning on histories of length 4, we get some hints of
+Dylan-esque lyrics, but we also get a lot of gibberish. Let's try
+longer histories.
+
+### Length 10
+
+```julia
+modelfile=joinpath(docdir,"jmd","dylan-markov10.jld2")
+if isfile(modelfile)
+  @load modelfile dm
+else 
+  @time dm = p_markov(Val(10), text);
+  @save modelfile dm    
+end
+@show length(dm), length(text)
+println(String(sample_markov(dm)))
+```
+
+### Length 20
+```julia
+modelfile=joinpath(docdir,"jmd","dylan-markov10.jld2")
+if isfile(modelfile)
+  @load modelfile dm
+else 
+  @time dm = p_markov(Val(20), text);
+  @save modelfile dm  
+end
+@show length(dm), length(text)
+println(String(sample_markov(dm, 2000)))
+``` 
+
+With histories of length 20 the text looks pretty. Some of the lyrics
+are recognizably Dylan-like. However, the model still gets html tags
+mostly wrong. More importantly, the model is effectively just
+combining phrases of Dylan lyrics randomly. The data here consists of
+nearly 2.9 million characters. Among these, there are 1.5 million
+unique sequences of 20 characters. Many of the estimated
+$P(c_t|c_{t-1}, ...)$ are equal to one. 
+
+## RNN 
+
+Now let's fit a recurrent neural network to the Dylan lyrics and chords data.
+
+```julia
+using Flux
+using Flux: onehot, chunk, batchseq, throttle, crossentropy
+using StatsBase: wsample
+using Base.Iterators: partition
+using ProgressMeter
+
+text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
+endchar = 'Ω' # any character not in original text
+alphabet = [unique(text)..., endchar]
+hottext = map(ch -> onehot(ch, alphabet), text)
+stop = onehot(endchar, alphabet)
+
+N = length(alphabet)
+seqlen = 50
+batchsize = 50
+
+## FIXME: DOUBLE CHECK THAT THIS IS CORRECT!!!
+Xseq = gpu.(batchseq(chunk(hottext,seqlen),stop));
+Yseq = gpu.(batchseq(chunk(hottext[2:end], seqlen),stop));
+data = [(Xseq[p], Yseq[p]) for p in partition(1:length(Xseq), batchsize)];
+```
+
+To reduce computation while training the model, we are going to use
+gradient truncation. `seqlen` is the length of history through which gradients are
+accumulated. 
+
+We also divide the data into batches for gradient descent. `batchsize`
+is the number of `seqlen` sequences per batch used for gradient
+descent. Each batch will have `seqlen * batchsize` observations. 
+
+```julia
+# Sampling
+
+function sample(m, alphabet, len)
+  m = cpu(m)
+  Flux.reset!(m)
+  buf = IOBuffer()
+  c = rand(alphabet)
+  for i = 1:len
+    write(buf, c)
+    c = wsample(alphabet, m(onehot(c, alphabet)).data)
+  end
+  return String(take!(buf))
+end
+
+opt = RMSProp(0.005)
+# this will take awhile, so a fancier call back with a progress meter is nice to have 
+function cbgenerator(N, loss, printiter=Int(round(N/10)))
+  p = Progress(N, 1, "Training", 25)
+  i=0
+  function cb()
+    next!(p)
+    if (i % printiter==0)
+      @show loss()
+    end
+    i+=1
+  end
+  return(cb)
+end
+
+function train_model(L; N=N, data=data,
+                     modelfile=joinpath(docdir,"jmd","dylan-$L.jld2"),
+                     opt=opt )
+  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N),  softmax) |> gpu
+  function loss(xb::V, yb::V) where V<:AbstractVector
+    l = sum(crossentropy.(m.(xb),yb))/length(xb)
+    Flux.truncate!(m)
+    return(l)
+  end
+  cb=cbgenerator(length(data),()->loss(data[5]...))
+
+  if isfile(modelfile)
+    @load modelfile cpum
+    m = gpu(cpum)
+  else 
+    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    println("Sampling after 1 epoch:")
+    sample(m, alphabet, 1000) |> println
+    
+    Flux.@epochs 10 Flux.train!(loss, Flux.params(m), data, opt,
+                                cb = cbgenerator(length(data),()->loss(tx,ty)))
+    cpum = cpu(m)
+    @save modelfile cpum
+  end
+  return(m)
+end
+
+for L in [32, 64, 128] #, 256, 512]
+  m = train_model(L)
+  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")  
+  println("Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters")
+  println("Sample from model $L")
+  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+  println(sample(m, alphabet, 2000))
+  println()
+end  
+```
+
+
+# References

@@ -44,6 +44,9 @@ nav:
   - Neural Networks:    
     - Introduction: slp.md
     - Multi-Layer: mlp.md
+    - Convolutional: conv.md
+    - Recurrent: rnn.md
+    - In semiparametric models: nn-semiparametric.md
   - About:
     - License: license.md
     

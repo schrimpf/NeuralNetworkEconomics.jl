@@ -96,8 +96,7 @@ expectation, $f(x) = \Er[y|x]$.
 
 A single layer neural network approximates $f$ as follows
 $$
-\hat{f}(x) = \sum_{j=1}^r \beta_j 
-\psi(w_j'x + b_j)
+\hat{f}(x) = \sum_{j=1}^r \beta_j \psi(w_j'x + b_j)
 $$
 Here $r$ is the width of the layer. $\beta_j$ are scalars. 
 $\psi:\R \to \R$ is a nonlinear activation function. Common activation
@@ -186,6 +185,7 @@ for r in eachindex(rs)
     if (i % (maxiter ÷ 5))==0
       l=Tracker.data(m.loss(x,y))
       println("$i iteration, loss=$l")
+      loc=Int64.(ceil(length(xg)*i/maxiter))
       yg = Tracker.data(m.predict(xg))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -435,10 +435,10 @@ for f in figs
 end
 ```
 
-Here we see the lowest in sample MSE so far. Note however the slightly
-longer training time. Also, each "iteration" above is an epoch, which
-consists of 10 gradient descent steps using the 10 different
-subsets (or batches) of data of size 100. 
+Here we see an in sample MSE about as low as the best previous
+result. Note, however, the longer training time. Each "iteration"
+above is an epoch, which consists of 10 gradient descent steps using
+the 10 different subsets (or batches) of data of size 100.
 
 
 # Rate of convergence
