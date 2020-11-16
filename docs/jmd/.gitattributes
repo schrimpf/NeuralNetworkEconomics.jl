@@ -1,0 +1,16 @@
+dylanlyrics-50.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-100.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-16.jld2 filter=lfs diff=lfs merge=lfs -text
+ce.jld2 filter=lfs diff=lfs merge=lfs -text
+dylan-128.jld2 filter=lfs diff=lfs merge=lfs -text
+dylan-32.jld2 filter=lfs diff=lfs merge=lfs -text
+dylan-markov10.jld2 filter=lfs diff=lfs merge=lfs -text
+cdfx.jld2 filter=lfs diff=lfs merge=lfs -text
+cdfy.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-32.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-8.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-64.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-75.jld2 filter=lfs diff=lfs merge=lfs -text
+dylan-markov4.jld2 filter=lfs diff=lfs merge=lfs -text
+dylan-64.jld2 filter=lfs diff=lfs merge=lfs -text
+dylanlyrics-4.jld2 filter=lfs diff=lfs merge=lfs -text
