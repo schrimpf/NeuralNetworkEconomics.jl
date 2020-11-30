@@ -7,8 +7,8 @@ bibliography: "../ml.bib"
 options:
       out_width : 100%
       wrap : true
-      fig_width : 800
-      fig_height : 800
+      fig_width : 8
+      fig_height : 8
       dpi : 192
 ---
 
@@ -228,7 +228,7 @@ infile = joinpath(docdir,"jmd","dylanchords.txt")
 if !isfile(infile)
   r=HTTP.get("http://dylanchords.info/alphabetical_list_of_songs.htm")
   songlist=Gumbo.parsehtml(String(r.body));
-  songlinks = eachmatch(Selector(".songlink"), songlist.root)
+  songlinks = eachmatch(Cascadia.Selector(".songlink"), songlist.root)
   songhtml = Array{String, 1}(undef, length(songlinks))
   p = Progress(length(songlinks),1,"Downloading songs", 50)
   for s ∈ eachindex(songlinks)
@@ -373,7 +373,7 @@ function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
   dm
 end
 
-modelfile=joinpath(docdir,"jmd","dylan-markov4.jld2")
+modelfile=joinpath(docdir,"jmd","models","dylan-markov4.jld2")
 if isfile(modelfile)
   @load modelfile dm
 else 
@@ -425,7 +425,7 @@ longer histories.
 ### Length 10
 
 ```julia
-modelfile=joinpath(docdir,"jmd","dylan-markov10.jld2")
+modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
 if isfile(modelfile)
   @load modelfile dm
 else 
@@ -438,7 +438,7 @@ println(String(sample_markov(dm)))
 
 ### Length 20
 ```julia
-modelfile=joinpath(docdir,"jmd","dylan-markov10.jld2")
+modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
 if isfile(modelfile)
   @load modelfile dm
 else 
@@ -463,34 +463,97 @@ Now let's fit a recurrent neural network to the Dylan lyrics and chords data.
 
 ```julia
 using Flux
-using Flux: onehot, chunk, batchseq, throttle, crossentropy
+using Flux: onehot, chunk, batchseq, throttle, logitcrossentropy
 using StatsBase: wsample
 using Base.Iterators: partition
 using ProgressMeter
+```
 
+### Recurrence and State
+
+Recurrent neural networks have an internal state. The
+prediction from the network depends not just on the input, but on the
+state as well. The higher level interface to `Flux` hides the internal
+state. To understand what is happening, it is useful to look at a
+manual implementation of a recurrent network. 
+```julia
+# RNN with dense output layer
+nstate = 3
+nx = 2
+Wxs = randn(nstate,nx)
+Wss = randn(nstate,nstate)
+Wsy = randn(1,nstate)
+b = randn(nstate)
+bo = randn(1)
+# equivalent to m = Chain(RNN(nx, nstate, tanh), Dense(nstate,1))
+function rnndense(state, x)
+  state = tanh.(Wxs*x .+ Wss*state .+ b)
+  out = Wsy*state .+ bo
+  return(state, out)
+end
+state = zeros(nstate)
+m = Flux.Recur(rnndense, state)
+
+# usage
+x = randn(10,nx)
+pred = zeros(size(x,1))
+Flux.reset!(m)
+for i in 1:size(x,1)
+  pred[i] = m(x[i,:])[1]
+  println(m.state)
+end
+Flux.reset!(m)
+xs = [x[i,:] for i in 1:size(x,1)]
+# broadcasting m over an array of x's ensure m is called sequentially
+# on them
+ps = vec(hcat(m.(xs)...))
+ps ≈ pred
+```
+
+
+```julia
+Flux.reset!(m)
+# a batching example
+batchseqlen = 10
+seqperbatch = 5
+n = 100
+hin = [[2*i-1, 2*i] for i in 1:n]
+stop = [0, 0]
+xseq = collect(partition((batchseq((chunk(hin,seqperbatch)),stop)), batchseqlen));
+yseq = collect(partition((batchseq((chunk(hin[2:end],seqperbatch)),stop)),
+                         batchseqlen));
+```
+
+### Data Preparation
+
+
+```julia
 text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
 endchar = 'Ω' # any character not in original text
 alphabet = [unique(text)..., endchar]
-hottext = map(ch -> onehot(ch, alphabet), text)
+hottext = map(ch -> onehot(ch, alphabet), text) 
 stop = onehot(endchar, alphabet)
 
 N = length(alphabet)
-seqlen = 50
-batchsize = 50
+batchseqlen = 50
+seqperbatch = 50
+Xseq = collect(partition((batchseq((chunk(hottext,seqperbatch)),stop)), batchseqlen));
+Yseq = collect(partition((batchseq((chunk(hottext[2:end], seqperbatch)),stop)),
+                         batchseqlen));
+println("$length(Xseq) batches")
+data = zip(Xseq, Yseq);
 
-## FIXME: DOUBLE CHECK THAT THIS IS CORRECT!!!
-Xseq = gpu.(batchseq(chunk(hottext,seqlen),stop));
-Yseq = gpu.(batchseq(chunk(hottext[2:end], seqlen),stop));
-data = [(Xseq[p], Yseq[p]) for p in partition(1:length(Xseq), batchsize)];
 ```
 
 To reduce computation while training the model, we are going to use
-gradient truncation. `seqlen` is the length of history through which gradients are
+gradient truncation. `batchseqlen` is the length of history through which gradients are 
 accumulated. 
 
-We also divide the data into batches for gradient descent. `batchsize`
-is the number of `seqlen` sequences per batch used for gradient
-descent. Each batch will have `seqlen * batchsize` observations. 
+We also divide the data into batches for gradient descent. `seqperbatch` 
+is the number of `batchseqlen` sequences per batch used for gradient 
+descent. Each batch will have `seqlen * seqperbatch` observations. 
+
+### Training and Results
 
 ```julia
 # Sampling
@@ -502,7 +565,7 @@ function sample(m, alphabet, len)
   c = rand(alphabet)
   for i = 1:len
     write(buf, c)
-    c = wsample(alphabet, m(onehot(c, alphabet)).data)
+    c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
   end
   return String(take!(buf))
 end
@@ -523,26 +586,25 @@ function cbgenerator(N, loss, printiter=Int(round(N/10)))
 end
 
 function train_model(L; N=N, data=data,
-                     modelfile=joinpath(docdir,"jmd","dylan-$L.jld2"),
+                     modelfile=joinpath(docdir,"jmd","models","dylan-$L.jld2"),
                      opt=opt )
-  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N),  softmax) |> gpu
+  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N)) #|> gpu
   function loss(xb::V, yb::V) where V<:AbstractVector
-    l = sum(crossentropy.(m.(xb),yb))/length(xb)
-    Flux.truncate!(m)
+    l = sum(logitcrossentropy.(m.(xb),yb))/length(xb)
     return(l)
   end
-  cb=cbgenerator(length(data),()->loss(data[5]...))
+  cb=cbgenerator(length(data),()->loss(first(data)...))
 
   if isfile(modelfile)
     @load modelfile cpum
-    m = gpu(cpum)
+    #m = gpu(cpum)
+    m = cpum
   else 
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)   
     println("Sampling after 1 epoch:")
     sample(m, alphabet, 1000) |> println
     
-    Flux.@epochs 10 Flux.train!(loss, Flux.params(m), data, opt,
-                                cb = cbgenerator(length(data),()->loss(tx,ty)))
+    Flux.@epochs 20 Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
     cpum = cpu(m)
     @save modelfile cpum
   end

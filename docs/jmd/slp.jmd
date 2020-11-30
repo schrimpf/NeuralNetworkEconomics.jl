@@ -1,4 +1,3 @@
----
 title       : "Introduction to Neural Networks" 
 subtitle    : "Single Layer Perceptrons"
 author      : Paul Schrimpf
@@ -7,7 +6,7 @@ bibliography: "../ml.bib"
 options:
       out_width : 100%
       wrap : true
-      fig_width : 800
+      fig_width : 8
       dpi : 192
 ---
 
@@ -143,6 +142,7 @@ typical Julia function, as in the following code block.
 
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
+Plots.pyplot()
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
@@ -159,10 +159,10 @@ Construct a single layer perception with width `r`.
 function slp(r, activation=(t)-> 1 ./ (1 .+ exp.(.-t)), dimx=1)
   # Parameters to be minimized wrt have to be declared for tracking
   # for reverse mode autodiff.
-  w = param(randn(dimx,r))
-  b = param(randn(1,r))
-  β = param(randn(r))
-  θ = Tracker.Params([β, w, b])
+  w = randn(dimx,r)
+  b = randn(1,r)
+  β = randn(r)
+  θ = Flux.params([β, w, b])
   pred(x) = activation(x*w.+b)*β
   loss(x,y) = mean((y.-pred(x)).^2)
   return(θ=θ, predict=pred,loss=loss)
@@ -179,14 +179,14 @@ for r in eachindex(rs)
   m = slp(rs[r])
   figs[r]=plot(xg, f.(xg), lab="True f", title="$(rs[r]) units")
   figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 5000
+  maxiter =10000
   @time for i = 1:maxiter
     Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
     if (i % (maxiter ÷ 5))==0
-      l=Tracker.data(m.loss(x,y))
+      l=m.loss(x,y)
       println("$i iteration, loss=$l")
       loc=Int64.(ceil(length(xg)*i/maxiter))
-      yg = Tracker.data(m.predict(xg))
+      yg = m.predict(xg)
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
                                  Plots.text("i=$i", i<maxiter/2 ? :left : :right, pointsize=10,
@@ -198,16 +198,22 @@ for r in eachindex(rs)
 end
 ```
 
-Notice how even though a wider network can approximate $f$ better,
-wider networks also take more training iterations to minimize the
-loss. This is typical of any minimization algorithm --- the number of
-iterations increases with the problem size. 
-
 Each invocation of `Flux.train!` completes one iteration of gradient
 descent. As you might guess from this API, it is common to train
 neural networks for a fixed number of iterations instead of until
 convergence to a local minimum. The number of training iterations can
 act as a regularization parameter. 
+
+Notice how even though a wider network can approximate $f$ better,
+wider networks also take more training iterations to minimize the
+loss. This is typical of any minimization algorithm --- the number of
+iterations increases with the problem size. 
+
+You may notice that the MSE does not (weakly) decrease with network
+size. (Or not---both the data and initial values are drawn randomly, 
+and results may vary.) This reflects minimization problem. Care must 
+be used when choosing a minimization algorithm and initial values. We 
+will see more of this below.
 
 ## Chain interface
 
@@ -223,8 +229,9 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
   l = rs[r]
-  m = Chain(x->Flux.normalise(x, dims=2), Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab="", legend=false)
+  m = Chain(x->Flux.normalise(x, dims=2), 
+            Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 3000
@@ -232,9 +239,9 @@ for r in eachindex(rs)
     Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println("$(rs[r]) units, $i iterations, loss=$l")
-      yg = Tracker.data(m(xg'))'
+      yg = (m(xg'))'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -285,25 +292,25 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
   # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1](xg'))', lab="", legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].W .= -m[2].W .+ bols[2:end]'
+  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 3000
+  maxiter = 5000
   @time for i = 1:maxiter
     Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
     #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println("$(rs[r]) units, $i iterations, loss=$l")
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -320,13 +327,16 @@ nothing
 display(plot(initmfigs..., legend=false))
 ```
 
-And the fit figures.
+And the fit figures. 
 
 ```julia; cache=true
 for f in figs
   display(f)
 end
 ```
+
+We can see that the training is now much more successful.
+Choosing initial values carefully was very  helpful.
 
 
 ## Rectified linear
@@ -342,25 +352,25 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
   # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab="", legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].W .= -m[2].W .+ bols[2:end]'
+  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 3000
+  maxiter = 5000
   @time for i = 1:maxiter
     Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println("$(rs[r]) units, $i iterations, loss=$l")
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -399,15 +409,15 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
+  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
   # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab="", legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].W .= -m[2].W .+ bols[2:end]'
+  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 3000
@@ -417,9 +427,9 @@ for r in eachindex(rs)
                 [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)], 
                 Flux.AMSGrad() ) #,
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println("$(rs[r]) units, $i iterations, loss=$l")
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -434,7 +444,6 @@ for f in figs
   display(f)
 end
 ```
-
 Here we see an in sample MSE about as low as the best previous
 result. Note, however, the longer training time. Each "iteration"
 above is an epoch, which consists of 10 gradient descent steps using
@@ -471,10 +480,6 @@ some familiar types of functions. @barron1993 first showed that neural
 networks approximate this class of functions well, and compares the
 approximation rate of neural networks to other function approximation
 results.
-
-TODO: 
-- clean up this section
-- add simulations demonstrating convergence rate? 
 
 
 # References

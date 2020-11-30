@@ -7,7 +7,7 @@ bibliography: "../ml.bib"
 options:
       out_width : 100%
       wrap : true
-      fig_width : 800
+      fig_width : 8
       dpi : 192
 ---
 
@@ -167,27 +167,27 @@ common, so `MLJ.jl` has functions to standardize variables. It is
 likely that the `hdm` package in R does something similar internally. 
 
 ```julia; cache=true
-lasso_stdx = @pipeline PipeLasso(std=Standardizer(),
-                  lasso=LassoRegressor(lambda=1.0*std(y),
-                                       solver=MLJLinearModels.ISTA(max_iter=10000)
-                                       )
-                                 )
+lasso_stdx = @pipeline(Standardizer,
+                       LassoRegressor(lambda=1.0*std(y),
+                                            solver=MLJLinearModels.ISTA(max_iter=10000)
+                                            )
+                       )
 m = machine(lasso_stdx, X, y)
 fit!(m, rows=train)
 yhat = predict(m , rows=test)
 println("MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))")
 
 # Get the fitted coefficients
-coef = fitted_params(m).fitted_params[1].coefs
-intercept = fitted_params(m).fitted_params[1].intercept
-sum(abs.(coef).>1e-8) # number non-zero
+coef = fitted_params(m).lasso_regressor.coefs
+intercept = fitted_params(m).lasso_regressor.intercept
+sum(abs.([x[2] for x in coef]).>1e-8) # number non-zero
 ```
 
 If we want to tune `lambda` using cross-validation, we can use the
 `range` and `TunedModel` functions. 
 
 ```julia; cache=true
-r = range(lasso_stdx, :(lasso.lambda), lower=1e1, upper=1e10, scale=:log)
+r = range(lasso_stdx, :(lasso_regressor.lambda), lower=1e1, upper=1e10, scale=:log)
 t=TunedModel(model=lasso_stdx,
              resampling=CV(nfolds=5),
              tuning=Grid(resolution=10), 
@@ -201,9 +201,9 @@ println("MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))")
 
 ```julia; cache=true
 using Plots
-cvmse = m.report.measurements
-λ = Float64.(m.report.parameter_values[:])
-plot(λ, cvmse, xlab="λ", ylab="CV(MSE)")
+cvmse = m.report.plotting.measurements
+λ = Float64.(m.report.plotting.parameter_values[:])
+scatter(λ, cvmse, xlab="λ", ylab="CV(RMSE)", xaxis=:log)
 ```
 
 # Flux.jl 
@@ -218,7 +218,7 @@ Let's create a lasso model in `Flux.jl`.
 ```julia
 using Flux, LinearAlgebra
 # Scale the variables
-Xstd = Flux.normalise(Matrix(X))
+Xstd = Flux.normalise(Matrix(X), dims=1)
 X_train = Xstd[train,:]
 X_test = Xstd[test,:]
 yscale = std(y)
@@ -229,9 +229,9 @@ y_test = ystd[test]
 
 # Set up the model parameters and initial values
 βols = (X_train'*X_train) \ (X_train'*(y_train .- mean(y_train)))
-β = param(zeros(ncol(X))) #βols) #zeros(ncol(X)))
-b = param([mean(y_train)])
-θ = Tracker.Params([β,b])
+β = zeros(ncol(X)) #βols) #zeros(ncol(X)))
+b = [mean(y_train)]
+θ = Flux.params(β,b)
 
 # Define the loss function
 ψ = ones(length(β))
@@ -249,9 +249,9 @@ mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
 for i in 1:maxiter
   Flux.train!(loss, θ, [(X_train, y_train)], Flux.AMSGrad())
-  mse_train[i] = Tracker.data(mse(X_train,y_train))
-  mse_test[i] = Tracker.data(mse(X_test, y_test))
-  obj[i] = Tracker.data(loss(X_train,y_train))
+  mse_train[i] = mse(X_train,y_train)
+  mse_test[i] = mse(X_test, y_test)
+  obj[i] = loss(X_train,y_train)
 end
 lo = 1
 hi = 250

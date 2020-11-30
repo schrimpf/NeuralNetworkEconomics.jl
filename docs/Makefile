@@ -24,11 +24,11 @@ mdout := $(jmdout) $(rmdout)
 nbout := $(patsubst jmd/%.jmd, build/%.ipynb,$(jmdin))
 
 
-build/figure : figure
-	ln -s figure build/figure
+build/figure : md/figure
+	ln -s md/figure build/figure
 
 build/figures : md/figures
-	ln -s md/figres jmd/figures
+	ln -s md/figures build/figures
 
 rmd : $(rmdout) build/figure
 jmd : $(jmdout) 

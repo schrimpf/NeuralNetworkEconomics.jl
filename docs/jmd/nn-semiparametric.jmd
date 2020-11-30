@@ -7,8 +7,8 @@ bibliography: "../ml.bib"
 options:
       out_width : 100%
       wrap : true
-      fig_width : 800
-      fig_height : 800
+      fig_width : 8
+      fig_height : 8
       dpi : 192
 ---
 
@@ -304,7 +304,7 @@ r = 0.99
 # unit circle lead to non-vanishing cycles in y. 
 roots = [r*exp(im*θ),   r*exp(-im*θ), 0.5]
 
-p = prod([Poly([1, -r]) for r in roots])
+p = prod([Polynomial([1, -r]) for r in roots])
 α = -real(coeffs(p))[2:end]
 function mean_y_fn(α, transform=(x)->x)
   ylag->transform(dot(ylag, α))
@@ -390,7 +390,7 @@ function fit_cdf!(model, x;
   for i in 1:maxiter
     Flux.train!(loss, Flux.params(model),
                 data, opt)
-    obj = Tracker.data(loss(X, ecdf))
+    obj = loss(X, ecdf)
     next!(p)
     (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
     if (obj < bestloss)
@@ -442,7 +442,7 @@ To check that the code produces reasonable results, we will begin by
 just fitting the marginal distribution of $y_t$. This isn't quite what
 we need for our impulse responses, but it is easier to visualize.
 ```julia
-modelfile=joinpath(docdir,"jmd","cdfy.jld2")
+modelfile=joinpath(docdir,"jmd","models","cdfy.jld2")
 rerun=false
 if isfile(modelfile) && !rerun  
   @load modelfile cdfy
@@ -457,7 +457,7 @@ else
            maxiter=10000, batchsize=1000)
   # The next line converts the parameters of the model to Floats instead
   # of Tracked.
-  cdfy = cpu(Flux.mapleaves(Flux.data, cdf_model))
+  cdfy = cpu(cdf_model)
   @save modelfile cdfy
 end
 pdfy = make_pdf(cdfy, 1)
@@ -470,7 +470,7 @@ The estimated pdf looks pretty good.
 We will estimate the joint cdf and pdf similarly.
 ```julia
 rerun=false
-modelfile=joinpath(docdir,"jmd","cdfx.jld2")
+modelfile=joinpath(docdir,"jmd","models","cdfx.jld2")
 if isfile(modelfile) && !rerun  
   @load modelfile cdfx
 else
@@ -535,7 +535,7 @@ function fit_ce!(model, x, y;
   for i in 1:maxiter
     Flux.train!(loss, Flux.params(model),
                 data, opt)
-    obj = Tracker.data(loss(x,y))
+    obj = loss(x,y)
     next!(p)
     (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
     if (obj < bestloss)
@@ -554,7 +554,7 @@ R = 12 # how many periods ahead to fit
 Y = copy(reduce(hcat,[y[(L+r):(end-R+r)] for r in 1:R])')
 X = x[:,1:(end-R)]
 
-modelfile=joinpath(docdir,"jmd","ce.jld2")
+modelfile=joinpath(docdir,"jmd","models","ce.jld2")
 rerun=false
 if !isfile(modelfile) || rerun
   ce_model = Chain(Dense(size(X,1), 8, relu),
@@ -568,7 +568,7 @@ end
 @load modelfile cpum
 ce_model = gpu(cpum)
 
-μhat(x) = let m=cpu(Flux.mapleaves(Flux.data, ce_model))
+μhat(x) = let m=cpu(ce_model)
   m(x)
 end
 μhat(x::AbstractVector) = let m=cpu(Flux.mapleaves(Flux.data, ce_model))
@@ -627,7 +627,7 @@ estimator for the variance.
 
 ```julia
 using Distributions
-using CovarianceMatrices # I think need dev version for now
+using CovarianceMatrices # need dev version
 k = BartlettKernel{NeweyWest}()
 Σ = lrvar(k, θi', prewhite=true)
 

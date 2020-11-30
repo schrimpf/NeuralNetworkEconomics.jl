@@ -7,8 +7,8 @@ bibliography: "../ml.bib"
 options:
       out_width : 100%
       wrap : true
-      fig_width : 800
-      fig_height : 800
+      fig_width : 8
+      fig_height : 8
       dpi : 192
 ---
 
@@ -54,7 +54,7 @@ end
 ENV["GKS_ENCODING"] = "utf-8"
 
 using NeuralNetworkEconomics
-docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), "..","docs")
+docdir = normpath(joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), "..","docs"))
 
 using Pkg
 Pkg.activate(docdir)
@@ -137,6 +137,7 @@ networks](slp.md).
 Simulating data and setting up.
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
+Plots.pyplot()
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
@@ -162,7 +163,7 @@ $x$ and then use Flux's default initial values (these set $b=0$ and
 $w$ random).
 
 ```julia; cache=true
-models = [ Chain(x->Flux.normalise(x, dims=2),
+mlps = [ Chain(x->Flux.normalise(x, dims=2),
                  Dense(dimx, 15, Flux.leakyrelu),
                  Dense(15, 1)),
            Chain(x->Flux.normalise(x, dims=2),
@@ -173,15 +174,15 @@ models = [ Chain(x->Flux.normalise(x, dims=2),
            ]
 
 
-figs = Array{typeof(plot(0)),1}(undef,length(models))
-initmfigs = Array{typeof(plot(0)),1}(undef,length(models))
+figs = Array{typeof(plot(0)),1}(undef,length(mlps))
+initmfigs = Array{typeof(plot(0)),1}(undef,length(mlps))
 
-for r in eachindex(models)
-  m = models[r]
+for r in eachindex(mlps)
+  m = mlps[r]
   println("Model $r = $m")
   nparm = sum([length(m[i].W) + length(m[i].b) for i in 2:length(m)])
   println(" $nparm parameters in $(length(m)-1) layers")
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab="", legend=false)  
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)  
   figs[r]=plot(xg, f.(xg), lab="", title="Model $r", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 5000
@@ -192,9 +193,9 @@ for r in eachindex(models)
                 Flux.AMSGrad() ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 10)==0)
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println("Model $r, $i iterations, loss=$l")
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -235,8 +236,13 @@ First we load some packages and download the data.
 using Flux, Flux.Data.MNIST, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
 using Base.Iterators: repeated
-using CuArrays
-using BSON: @save, @load
+using CUDA
+using JLD2
+
+modeldir = normpath(joinpath(docdir,"jmd","models"))
+if !isdir(modeldir)
+  mkdir(modeldir)
+end
 
 imgs = MNIST.images()
 labels = MNIST.labels()
@@ -274,10 +280,9 @@ softmax(x_1, ..., x_k) = \left( \frac{e^{x_1}}{\sum_{j=1}^k e^{x_i}},
 e^{x_i}} \right)
 $$
 ```julia
-m = Chain(
+mstart = Chain(
   Dense(28^2, 32, relu),
-  Dense(32, 10),
-  softmax) |> gpu
+  Dense(32, 10)) 
 ```
 
 In this example, we are working on a classification problem; we are
@@ -290,7 +295,7 @@ here), the log likelihood is equal to minus the cross-entropy, so this
 is what we use as our loss function.
 
 ```julia
-loss(x, y) = crossentropy(m(x), y)
+loss(m, x, y) = Flux.logitcrossentropy(m(x), y)
 ```
 
 Since cross-entropy or log likelihood are difficult to interpret, we
@@ -310,26 +315,59 @@ information](https://datascience.quantecon.org/applications/classification.html)
 </div>
 
 ```julia
-accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
+function accuracy(m, x, y)
+  # onecold(m(x)) results in very slow code for large x, so we avoid it
+  coldx = vec(map(x->x[1], argmax(m(x), dims=1)))  
+  coldy = onecold(y)
+  return(mean(coldx.==coldy))
+end;
 ```
+
 
 `onecold` is the inverse of one-hot-encoding; `onecold` transforms a
 matrix of dummy varibles (or probabilities) into an integer (the one
 with the highest probability in the case of `m(x)`).
 
 ```julia
-dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
 # gradient descent steps using the full X and Y to compute gradients
-Xsmall=X[:,1:1000]
-Ysmall=Y[:,1:1000] # accuracy is slower, so only compute on subset of data
+Xsmall=X[:,1:250]
+Ysmall=Y[:,1:250] # accuracy is slower, so only compute on subset of data
 
 # Test set 
 tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |> gpu
 tY = onehotbatch(MNIST.labels(:test), 0:9) |> gpu
-
-evalcb = () -> @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
-opt = ADAM()
+function evalcb(m) 
+  l = loss(m, X, Y)
+  if isnan(l)
+    @show (l)
+  else
+    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY)) 
+  end
+end;
 ```
+
+<div class="alert alert-danger">
+**Optimizers**
+
+Neural networks are usually trained using a variant of gradient
+descent for optimization. Recall that gradient descent searches for
+the minimum by taking steps of the form: 
+$$ 
+\theta_{new} = \theta - \eta Df_{\theta}
+$$
+where $\eta$ is a step size or learning rate parameter that gets adjusted depending
+on algorithm progress. There are many variants of gradient descent
+available in `Flux.jl` and they differ in how they adjust the learning
+rate, $\eta$, and other details. Some algorithms add "momentum" to
+avoid the long narrow valley problem we saw in the banana function
+example in [the optimization
+notes](https://schrimpf.github.io/AnimatedOptimization.jl/optimization/#gradient-descent). 
+[Ruder
+(2016)](https://ruder.io/optimizing-gradient-descent/index.html#gradientdescentoptimizationalgorithms)
+gives a nice overview of various forms of gradient descent.
+</div>
+
+
 Since `Flux.train!` might run for a long time, it allows us to pass a
 "callback" function that gets evaluated every iteration. Here, this function
 is just used to monitor progress. In some situations, we might also
@@ -339,17 +377,34 @@ in case the computation gets interrupted before completion. The
 from being evaluated too often. The code below makes `evalcb` get
 evaluated at most once every 10 seconds. 
 
+`Flux.train` does not automatically check that the optimizer is
+making progress. With too large of a step size, gradient descent may
+lead in the wrong direction, increasing the loss function. This can
+even lead the parameters to drift toward numeric under or overflow and
+become `NaN`. If this happens, we should descrease the learning rate. 
+
 ```julia; cache=true
 rerun = false
-modelfile = joinpath(docdir,"jmd","bson","mnist-slp.bson")
+modelfile = joinpath(modeldir,"mnist-slp.jld2")
+opt = ADAM()  
 if rerun || !isfile(modelfile)
-  evalcb()
-  @time Flux.train!(loss, params(m), dataset, opt, cb = throttle(evalcb, 10))
-  evalcb()
-
+  dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
+  m = gpu(mstart)
+  evalcb(m)
+  iterations = 200
+  losses = zeros(typeof(loss(m,X,Y)), iterations)
+  testloss=similar(losses)
+  @time for i = 1:iterations
+    Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
+                cb = throttle(()->evalcb(m), 10))
+    losses[i] = loss(m,X,Y)
+    testloss[i] = loss(m,tX,tY)
+  end
+  plot([losses testloss], xlab="Iterations", ylab="Loss", labels=["Train" "Test"])
+  
   # save model
   cpum = cpu(m)
-  @save modelfile cpum
+  @save modelfile cpum  
 else
   @load modelfile cpum
   m = gpu(cpum)
@@ -357,8 +412,8 @@ end
 ```
 
 ```julia; cache=true
-@show accuracy(X, Y)
-@show accuracy(tX, tY);
+@show accuracy(m,Xsmall, Ysmall)
+@show accuracy(m,tX, tY);
 ```
 
 After 200 iterations, the accuracy is already greater than 90%. This
@@ -371,11 +426,14 @@ gradient descent iterations.
 
 ```julia; cache=true
 rerun = false
-modelfile = joinpath(docdir,"jmd","bson","mnist-slp-2200.bson")
+modelfile = joinpath(modeldir,"mnist-slp-2200.jld2")
+dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
+# gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
-  evalcb()
-  @time @epochs 10 Flux.train!(loss, params(m), dataset, opt, cb = throttle(evalcb, 10))
-  evalcb()
+  evalcb(m)
+  @time @epochs 500 Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
+              cb = throttle(()->evalcb(m), 10))
+  evalcb(m)
 
   # save model
   cpum = cpu(m)
@@ -384,8 +442,8 @@ else
   @load modelfile cpum
   m = gpu(cpum)
 end
-@show accuracy(X, Y)
-@show accuracy(tX,tY);
+@show accuracy(m,Xsmall, Ysmall)
+@show accuracy(m,tX,tY);
 ```
 
 Remember that each "epoch" does one gradient descent step for each
@@ -426,76 +484,81 @@ numbers of layers and hidden units, but with rectified linear
 activation. They used tanh activation functions.
 
 ```julia 
-cmgsnet = Chain(
+cmgsnet_cpu = Chain(
   Dense(28^2, 2500 , relu),
   Dense(2500, 2000 , relu),
   Dense(2000, 1500 , relu),
   Dense(1500, 1000 , relu),
   Dense(1000, 500 , relu),
-  Dense(500, 10),
-  softmax) |> gpu
-loss(x, y) = crossentropy(cmgsnet(x), y)
-accuracy(x, y) = mean(onecold(cmgsnet(x)) .== onecold(y))
-evalcb = () -> @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
-
-println("cmgsnet has $(nparam(cmgsnet)) parameters!!!")
+  Dense(500, 10)
+  #softmax
+  ) 
+println("cmgsnet has $(nparam(cmgsnet_cpu)) parameters!!!")
 ```
 
 That's a deep network. 
 
 ```julia; cache=true
 rerun = false
-batchsize=30000 
+batchsize=10000 
 parts=Base.Iterators.partition(1:size(X,2), batchsize) 
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
-# The full data + network doesn't fit in my GPU memory, so do 2 batches
-epochs = 20
+# The full data + network doesn't fit in my GPU memory, so do batches
+epochs = 10
 acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
+opt=ADAM()
+cmgsnet = gpu(cmgsnet_cpu)
 for e in 1:epochs
-  modelfile = joinpath(docdir,"jmd","bson","cmgsnet-$e-epochs.bson")
-  global cmgsnet 
+  modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
   if rerun || !isfile(modelfile)
     println("Beginning epoch $e")
-    evalcb()
-    @show cmgsnet
-    @time Flux.train!(loss, params(cmgsnet), data, opt, cb = throttle(evalcb, 10))
-    evalcb()
+    evalcb(cmgsnet)
+    @time Flux.train!((x,y)->loss(cmgsnet,x,y),
+                      params(cmgsnet), data, opt, 
+                      cb = throttle(()->evalcb(cmgsnet), 10))
+    evalcb(cmgsnet)
     
     # save model
-    cpum = cpu(cmgsnet)
+    local cpum = cpu(cmgsnet)
     @save modelfile cpum
   else
     @load modelfile cpum
-    cmgsnet = gpu(cpum)
+    global cmgsnet = gpu(cpum)
   end
   println("Finished $e epochs")
-  losstrain[e]=Tracker.data(loss(X,Y))
-  acctrain[e]=accuracy(X, Y)
-  losstest[e]=Tracker.data(loss(tX,tY))
-  acctest[e]=accuracy(tX,tY)
+  losstrain[e]=loss(cmgsnet,X,Y)
+  acctrain[e]=accuracy(cmgsnet,Xsmall, Ysmall)
+  losstest[e]=loss(cmgsnet,tX,tY)
+  acctest[e]=accuracy(cmgsnet,tX,tY)
 end
+e = epochs
+modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
+@load modelfile cpum
+cmgsnet = gpu(cpum)
 ```
 
-This model achieved a testing accuracy of 98.37% after 13 training
+This model achieved a testing accuracy of `j 100*maximum(acctest)`% after
+`j argmax(acctest)` training
 epochs. Each training epoch consisting of 10 passes through the data
 split into two batches, so 20 gradient descent iterations. Let's plot
 the loss and accuracy vs epoch.
 
-```julia; cache=true; 
+```julia; cache=true;
+al = Int(round(3*length(losstrain)/4))
 plot(
-  plot([losstrain, losstest], xscale=:log10, xlab="Epochs", title="Cross-Entropy Loss",
-       annotations=[(15, losstrain[15],
+  plot([losstrain, losstest], xlab="Epochs", title="Cross-Entropy Loss",
+       annotations=[(al, losstrain[al],
                      Plots.text("training", pointsize=12, valign=:bottom,
                                  color=get(cscheme,1))),
-                    (15, losstest[15],
+                    (al, losstest[al],
                      Plots.text("test", pointsize=12, valign=:bottom,
                                 color=get(cscheme,0)))], leg=false,
        color_palette=get(cscheme,[1,0])
        ),
-  plot([acctrain, acctest], xscale=:log10, xlab="Epochs", title="Accuracy",
+  plot([acctrain, acctest], xlab="Epochs", title="Accuracy",
        leg=false,
        color_palette=get(cscheme,[1,0])
        ),
@@ -517,8 +580,8 @@ that can classify nearly perfectly. In the language of econometrics,
 the error term is zero, or there is no uncertainty, in the "true"
 image classification models. 
 
-TODO: Add an aside about adversarial examples and failures to
-generalize. 
+<!-- TODO: Add an aside about adversarial examples and failures to -->
+<!-- generalize.  -->
     
 Let's look at some of the images that our model failed to classify
 correctly.
@@ -527,7 +590,7 @@ correctly.
 tlabels = MNIST.labels(:test)
 timgs = MNIST.images(:test)
 # predicted labels
-mlabels = cpu(onecold(cmgsnet(tX))).-1
+mlabels = cpu(vec(map(x->x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 @show mean(mlabels.==tlabels) # = accuracy
 @show sum(mlabels .!= tlabels)
 miss=findall(mlabels .!= tlabels)
