@@ -15,15 +15,15 @@ options:
 
 This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
+License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 
-### About this document 
+### About this document
 
 This document was created using Weave.jl. The code is available in
 [on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
 document generates both static webpages and associated [jupyter
-notebook](ml-julia.ipynb). 
+notebook](ml-julia.ipynb).
 
 $$
 \def\indep{\perp\!\!\!\perp}
@@ -47,7 +47,7 @@ end
 if !("DISPLAY" ∈ keys(ENV))
   # Make gr and pyplot backends for Plots work without a DISPLAY
   ENV["GKSwstype"]="nul"
-  ENV["MPLBACKEND"]="Agg"  
+  ENV["MPLBACKEND"]="Agg"
 end
 # Make gr backend work with λ and other unicode
 ENV["GKS_ENCODING"] = "utf-8"
@@ -76,7 +76,7 @@ implements in the R packaga @hdm or the methods of Athey and coauthors
 implemented in the R package @grf , then it makes sense to use the R
 pacakge. You could simply write all your code in R. However, if you
 prefer using Julia, you can just call the necessary R functions with
-[`RCall.jl`](https://github.com/JuliaInterop/RCall.jl). 
+[`RCall.jl`](https://github.com/JuliaInterop/RCall.jl).
 
 
 Here, we load the pipeline data used in the [machine
@@ -101,11 +101,11 @@ outcome. This can be done with the R function `hdm::rlassoEffects`.
 ```julia; cache=false; wrap=false
 R"library(hdm)"
 completedata = dropmissing(data,[1:10..., 59:122...], disallowmissing=true)
-y = completedata[:transProfit]
+y = completedata[!,:transProfit]
 inc = .!isnan.(y)
 y = y[inc]
 X = completedata[inc,[6:7..., 59:121...]]
-cols = [std(X[c])>0 for c in 1:ncol(X)]
+cols = [std(X[!,c])>0 for c in 1:ncol(X)]
 X = X[:,cols]
 est = R"rlassoEffects($(X), $(y), index=c(1:2))"
 R"summary($est)"
@@ -117,9 +117,9 @@ R"summary($est)"
 learning framework for Julia. It gives a unified interface for many
 machine learning algorithms and tasks. Similar R packages include
 `caret` and `MLR`. [`scikit-learn`](https://scikit-learn.org/stable/)
-is a similar Python package. 
+is a similar Python package.
 
-For more information on MLJ see 
+For more information on MLJ see
 
 - [`MLJ.jl docs`](https://alan-turing-institute.github.io/MLJ.jl/stable/)
 
@@ -139,15 +139,14 @@ To use these models, you need the corresponding package to be
 installed and loaded. The `@load` macro will load the needed package(s)
 for any model.
 
-```julia 
-lasso_model = @load LassoRegressor pkg=MLJLinearModels
+```julia
+Lasso = @load LassoRegressor pkg=MLJLinearModels
 ```
 
 Let's fit lasso to the same pipeline data as above.
 
 ```julia
-lasso_model.lambda = 1.0
-lasso = machine(lasso_model, X, y)
+lasso = machine(Lasso(lambda=1.0), X, y)
 train,test = partition(eachindex(y), 0.6, shuffle=true)
 fit!(lasso, rows=train)
 yhat = predict(lasso, rows=test)
@@ -164,33 +163,32 @@ algorithm used to compute the lasso estimates works best when the
 coefficients are all roughly the same scale. The existing `X`'s have
 wildly different scales, which causes problems. This situation is
 common, so `MLJ.jl` has functions to standardize variables. It is
-likely that the `hdm` package in R does something similar internally. 
+likely that the `hdm` package in R does something similar internally.
 
 ```julia; cache=true
-lasso_stdx = @pipeline(Standardizer,
-                       LassoRegressor(lambda=1.0*std(y),
-                                            solver=MLJLinearModels.ISTA(max_iter=10000)
-                                            )
-                       )
+lasso_stdx = Pipeline(Standardizer(),
+                      Lasso(lambda=1.0*std(y[train]),
+                            solver=MLJLinearModels.ISTA(max_iter=10000))
+                      )
 m = machine(lasso_stdx, X, y)
-fit!(m, rows=train)
+fit!(m, rows=train, force=true)
 yhat = predict(m , rows=test)
 println("MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))")
 
 # Get the fitted coefficients
 coef = fitted_params(m).lasso_regressor.coefs
 intercept = fitted_params(m).lasso_regressor.intercept
-sum(abs.([x[2] for x in coef]).>1e-8) # number non-zero
+sum(abs(c[2])>1e-8 for c in coef) # number non-zero
 ```
 
 If we want to tune `lambda` using cross-validation, we can use the
-`range` and `TunedModel` functions. 
+`range` and `TunedModel` functions.
 
 ```julia; cache=true
 r = range(lasso_stdx, :(lasso_regressor.lambda), lower=1e1, upper=1e10, scale=:log)
 t=TunedModel(model=lasso_stdx,
              resampling=CV(nfolds=5),
-             tuning=Grid(resolution=10), 
+             tuning=Grid(resolution=10),
              ranges=r,
              measure=rms)
 m = machine(t, X, y)
@@ -203,17 +201,18 @@ println("MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))")
 using Plots
 cvmse = m.report.plotting.measurements
 λ = Float64.(m.report.plotting.parameter_values[:])
-scatter(λ, cvmse, xlab="λ", ylab="CV(RMSE)", xaxis=:log)
+s = sortperm(λ)
+plot(λ[s], cvmse[s], xlab="λ", ylab="CV(MSE)")
 ```
 
-# Flux.jl 
+# Flux.jl
 
 [`Flux.jl`](https://fluxml.ai/Flux.jl/stable/) is another Julia
 package for machine learning. It seems to be emerging as the leading
 Julia package for neural networks and deep learning, but other machine
-learning models can also be implemented using `Flux.jl`. 
+learning models can also be implemented using `Flux.jl`.
 
-Let's create a lasso model in `Flux.jl`. 
+Let's create a lasso model in `Flux.jl`.
 
 ```julia
 using Flux, LinearAlgebra
@@ -221,17 +220,16 @@ using Flux, LinearAlgebra
 Xstd = Flux.normalise(Matrix(X), dims=1)
 X_train = Xstd[train,:]
 X_test = Xstd[test,:]
-yscale = std(y)
-ymean = mean(y)
+yscale = std(y[train])
+ymean = mean(y[train])
 ystd = (y .- ymean)./yscale
 y_train = ystd[train]
 y_test = ystd[test]
 
 # Set up the model parameters and initial values
 βols = (X_train'*X_train) \ (X_train'*(y_train .- mean(y_train)))
-β = zeros(ncol(X)) #βols) #zeros(ncol(X)))
+β = zeros(ncol(X))
 b = [mean(y_train)]
-θ = Flux.params(β,b)
 
 # Define the loss function
 ψ = ones(length(β))
@@ -248,7 +246,7 @@ obj = zeros(maxiter)
 mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
 for i in 1:maxiter
-  Flux.train!(loss, θ, [(X_train, y_train)], Flux.AMSGrad())
+  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], Flux.AMSGrad())
   mse_train[i] = mse(X_train,y_train)
   mse_test[i] = mse(X_test, y_test)
   obj[i] = loss(X_train,y_train)
@@ -259,27 +257,26 @@ plot(obj[lo:hi], ylab="Loss=MSE + λ/n*||β||₁", xlab="Iteration")
 ```
 
 ```julia
-plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab="MSE", xaxis=("Iteration")
-     , lab=["Train" "Test"])
+plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab="MSE", xaxis=("Iteration"), lab=["Train" "Test"])
 ```
 
 The minimization methods in `Flux.train!` are all variants of gradient
 descent. Each call to `Flux.train!` runs one iteration of the
 specified solver. To find a locaol minimum, `Flux.train!` can be
 called repeatedly until progress stops. The above loop is a simple way
-to do this. The `@epoch` macro can also be useful. 
+to do this. The `@epoch` macro can also be useful.
 
 Gradient descent works well for neural networks, but is not ideal for
 Lasso. Without further adjustment, gradient descent gets stuck in a
 cycle as jumps from one side of the other of the absolute value in the
 lasso penalty. Nonetheless, the results are near the true minimum,
-even though it never exactly gets there. 
+even though it never exactly gets there.
 
 
 # Additional Resources
 
 - @klok2019 *Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence*
-  
+
 
 # References
