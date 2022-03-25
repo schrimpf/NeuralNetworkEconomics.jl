@@ -41,12 +41,12 @@ nav:
     - Inference: ml-doubledebiased.md
     - Detecting heterogeneity: mlExamplePKH.md
     - With Julia : ml-julia.md
-  - Neural Networks:    
+  - Neural Networks:
     - Introduction: slp.md
     - Multi-Layer: mlp.md
     - Convolutional: conv.md
     - Recurrent: rnn.md
+    - Transformers: transformers.md
     - In semiparametric models: nn-semiparametric.md
   - About:
     - License: license.md
-    

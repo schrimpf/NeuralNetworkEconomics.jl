@@ -1,4 +1,4 @@
-title       : "Introduction to Neural Networks" 
+title       : "Introduction to Neural Networks"
 subtitle    : "Single Layer Perceptrons"
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
@@ -14,15 +14,15 @@ options:
 
 This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
+License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 
-### About this document 
+### About this document
 
 This document was created using Weave.jl. The code is available in
 [on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
 document generates both static webpages and associated [jupyter
-notebook](slp.ipynb). 
+notebook](slp.ipynb).
 
 $$
 \def\indep{\perp\!\!\!\perp}
@@ -65,14 +65,14 @@ Neural networks, especially deep neural networks, have come to
 dominate some areas of machine learning. Neural networks are
 especially prominent in natural language processing, image
 classification, and reinforcement learning. This documents gives a
-brief introduction to neural networks. 
+brief introduction to neural networks.
 
 Examples in this document will use
-[`Flux.jl`](https://fluxml.ai/Flux.jl/stable/). 
+[`Flux.jl`](https://fluxml.ai/Flux.jl/stable/).
 An alternative Julia package for deep learning is
 [`Knet.jl`](https://denizyuret.github.io/Knet.jl/latest/). There is a
 good discussion comparing Flux and Knet [on
-discourse.](https://discourse.julialang.org/t/state-of-deep-learning-in-julia/28049). 
+discourse.](https://discourse.julialang.org/t/state-of-deep-learning-in-julia/28049).
 We will not have Knet examples here, but the documentation for Knet is
 excellent and worth reading even if you plan to use Flux.
 
@@ -84,20 +84,20 @@ excellent and worth reading even if you plan to use Flux.
   especially the textbook
 - @klok2019 *Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence*
-    
-  
+
+
 # Single Layer Neural Networks
 
 We will describe neural networks from a perspective of nonparametric
 estimation. Suppose we have a target function, $f: \R^p \to \R$. In
 many applications the target function will be a conditional
-expectation, $f(x) = \Er[y|x]$. 
+expectation, $f(x) = \Er[y|x]$.
 
 A single layer neural network approximates $f$ as follows
 $$
 \hat{f}(x) = \sum_{j=1}^r \beta_j \psi(w_j'x + b_j)
 $$
-Here $r$ is the width of the layer. $\beta_j$ are scalars. 
+Here $r$ is the width of the layer. $\beta_j$ are scalars.
 $\psi:\R \to \R$ is a nonlinear activation function. Common activation
 functions include:
 
@@ -107,12 +107,12 @@ functions include:
 
 - Rectified linear $\psi(t) = t 1(t\geq 0)$
 
-The $w_j \in \R^p$ are called weights and $b_j \in \R$ are biases. 
+The $w_j \in \R^p$ are called weights and $b_j \in \R$ are biases.
 
 You may have heard about the universal approximation theorem. This
 refers to the fact that as $r$ increases, a neural network can
-approximate any function. Mathematically, for some large 
-class of functions $\mathcal{F}$, 
+approximate any function. Mathematically, for some large
+class of functions $\mathcal{F}$,
 
 $$
 \sup_{f \in \mathcal{F}} \lim_{r \to \infty} \inf_{\beta, w, b} \Vert
@@ -125,17 +125,17 @@ theorem as though it is something special for neural networks. This is
 incorrect. In particular, the universal approximation theorem does not
 explain why neural networks seem to be unusually good at
 prediction. Most nonparametric estimation methods (kernel, series,
-forests, etc) satisfy a similar conditions. 
+forests, etc) satisfy a similar conditions.
 
-# Training 
+# Training
 
 Models in `Flux.jl` all involve a differentiable loss function. The
 loss function is minimized by a variant of gradient descent. Gradients
 are usually calculated using reverse automatic differentiation
 (backpropagation is a variant of reverse automatic differentiation
-specialized for the structue of neural networks). 
+specialized for the structue of neural networks).
 
-## Low level 
+## Low level
 
 A low level way to use `Flux.jl` is to write your loss function as a
 typical Julia function, as in the following code block.
@@ -154,15 +154,13 @@ end
 """
    slp(r, activation=(t)-> 1 ./ (1 .+ exp.(.-t)), dimx=1 )
 
-Construct a single layer perception with width `r`. 
+Construct a single layer perceptron with width `r`.
 """
 function slp(r, activation=(t)-> 1 ./ (1 .+ exp.(.-t)), dimx=1)
-  # Parameters to be minimized wrt have to be declared for tracking
-  # for reverse mode autodiff.
   w = randn(dimx,r)
   b = randn(1,r)
   β = randn(r)
-  θ = Flux.params([β, w, b])
+  θ = (β, w, b)
   pred(x) = activation(x*w.+b)*β
   loss(x,y) = mean((y.-pred(x)).^2)
   return(θ=θ, predict=pred,loss=loss)
@@ -202,26 +200,27 @@ Each invocation of `Flux.train!` completes one iteration of gradient
 descent. As you might guess from this API, it is common to train
 neural networks for a fixed number of iterations instead of until
 convergence to a local minimum. The number of training iterations can
-act as a regularization parameter. 
+act as a regularization parameter.
 
 Notice how even though a wider network can approximate $f$ better,
 wider networks also take more training iterations to minimize the
 loss. This is typical of any minimization algorithm --- the number of
-iterations increases with the problem size. 
+iterations increases with the problem size.
 
 You may notice that the MSE does not (weakly) decrease with network
-size. (Or not---both the data and initial values are drawn randomly, 
-and results may vary.) This reflects minimization problem. Care must 
-be used when choosing a minimization algorithm and initial values. We 
+size. (Or not---both the data and initial values are drawn randomly,
+and results may vary.) This reflects minimization problem. Care must
+be used when choosing a minimization algorithm and initial values. We
 will see more of this below.
 
 ## Chain interface
 
 `Flux.jl` also contains some higher level functions for creating loss
 functions for neural networks. Here is the same network as in the
-previous code block, but using the higher level API. 
+previous code block, but using the higher level API.
 
 ```julia; cache=true
+
 dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -229,8 +228,8 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
   l = rs[r]
-  m = Chain(x->Flux.normalise(x, dims=2), 
-            Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
+  m = Chain(x->Flux.normalise(x, dims=2),
+            Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
@@ -256,10 +255,10 @@ end
 
 The figures do not appear identical to the first example since the
 initial values differ, and the above code first normalises the
-$x$s. 
+$x$s.
 
 ## Initial values
- 
+
 Initial values are especially important with neural networks because
 activation functions tend to be flat at the extremes. This causes the
 gradient of the loss function to vanish in some regions of the
@@ -275,14 +274,15 @@ plot(initmfigs..., legend=false)
 At these initial values, $w'x + b$, does change sign for each
 activation, but $w'x$ is small enough that $\psi(w'x + b)$ is
 approximately linear. This will make it initially difficult to
-distinguish $\beta \psi'$ from $w$, 
+distinguish $\beta \psi'$ from $w$,
 
 We can improve the fit by choosing initial values even more
 carefully.  The following code choses initial $w$ and $b$ to make sure
-the activation functions vary nonlinearly in the support of $x$. 
+the activation functions vary nonlinearly in the support of $x$.
 The initial activations functions are plotted below.
 
 ```julia; cache=true
+
 dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -293,7 +293,7 @@ for r in eachindex(rs)
   m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
   # adjust initial weights to make sure each node is nonlinear in support of X
   m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
-  # adjust initial intercepts to be in the support of w*x  
+  # adjust initial intercepts to be in the support of w*x
   m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
@@ -327,7 +327,7 @@ nothing
 display(plot(initmfigs..., legend=false))
 ```
 
-And the fit figures. 
+And the fit figures.
 
 ```julia; cache=true
 for f in figs
@@ -343,7 +343,7 @@ Choosing initial values carefully was very  helpful.
 
 Large applications of neural networks often use rectified linear
 activation for efficiency. Let's see how the same example behaves with
-(leaky) rectified linear activation. 
+(leaky) rectified linear activation.
 
 ```julia; cache=true
 dimx = 1
@@ -353,7 +353,7 @@ for r in eachindex(rs)
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
   m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
-  # adjust initial intercepts to be in the support of w*x  
+  # adjust initial intercepts to be in the support of w*x
   m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
@@ -410,7 +410,7 @@ for r in eachindex(rs)
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
   m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
-  # adjust initial intercepts to be in the support of w*x  
+  # adjust initial intercepts to be in the support of w*x
   m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
@@ -422,9 +422,9 @@ for r in eachindex(rs)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 3000
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), 
+    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
                 # partition data into 100 batches
-                [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)], 
+                [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)],
                 Flux.AMSGrad() ) #,
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)

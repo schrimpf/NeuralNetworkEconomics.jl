@@ -1,5 +1,5 @@
 ---
-title       : "Recurrent Neural Networks" 
+title       : "Recurrent Neural Networks"
 subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
@@ -16,15 +16,15 @@ options:
 
 This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
+License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 
-### About this document 
+### About this document
 
 This document was created using Weave.jl. The code is available in
 [on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
 document generates both static webpages and associated [jupyter
-notebook](rnn.ipynb). 
+notebook](rnn.ipynb).
 
 $$
 \def\indep{\perp\!\!\!\perp}
@@ -64,14 +64,14 @@ Pkg.instantiate()
 # Introduction
 
 Previous notes have covered [single layer](slp.md), [multi
-layer](mlp.md), and [convolutional](conv.md) feed forward networks. 
+layer](mlp.md), and [convolutional](conv.md) feed forward networks.
 In feed forward networks, the outputs of one layer are fed into the
 next layer, always moving toward the output. Recurrent networks break
 this pattern. In recurrent networks, outputs of one layer are feed
 back into the same. This always the network to maintain a hidden
 state. Recurrent networks are typically used to model sequential
 data. There are many applications to time series. Recurrent networks
-are also useful for processing text and audio data. 
+are also useful for processing text and audio data.
 
 ## Additional Reading
 
@@ -82,7 +82,7 @@ are also useful for processing text and audio data.
   especially the textbook
 - @klok2019 *Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence*
-   
+
 # Recurrent Networks
 
 Recurrent Networks are designed to predict a sequence of outputs,
@@ -91,7 +91,7 @@ relationship between $x$ and $y$ is assumed to be stationary, but we
 will allow there to be possibly many values from the history of $x$ to
 affect $y$. We do this by introducing a hidden state, $h_t$. The
 prediction for $y_t$ is only a function of $h_t$, say
-$\hat{y}(h_t)$. The hidden state is Markovian with 
+$\hat{y}(h_t)$. The hidden state is Markovian with
 $$
 h_t = f(h_{t-1}, x_t).
 $$
@@ -106,17 +106,17 @@ function. @siegelmann1991 and @siegelmann1992 show that recurrent
 neural networks are Turing complete. As with the universal
 approximation ability of feed forward networks, this result is good to
 know, but it is not an explanation for the good practical performance
-of recurrent networks. 
+of recurrent networks.
 
 When $h_t$ is large enough, it is easy to see how the recurrent model
 above can equal familiar time series econometric models. For example,
-for an AR(P) model, 
+for an AR(P) model,
 $$
-y_t = \rho_1 y_{t-1} + \cdots + \rho_p y_{t-p} + \epsilon_t 
+y_t = \rho_1 y_{t-1} + \cdots + \rho_p y_{t-p} + \epsilon_t
 $$
-To express this model in recurrent state-space form, 
-let $x_t = y_{t-1}$, and $h_t = (y_{t-1, \cdots, y_{t-p}) \in \R^p$. 
-Then we can set 
+To express this model in recurrent state-space form,
+let $x_t = y_{t-1}$, and $h_t = (y_{t-1}, \cdots, y_{t-p}) \in \R^p$.
+Then we can set
 $$
 f(h_{t-1}, x_t) = (x_t, h_{t-1,1}, \cdots , h_{t-1, p-1})
 $$
@@ -145,8 +145,8 @@ $$
 \frac{\partial}{\partial f_h} & = \frac{2}{T} \sum (\hat{y}(h_t)-
 y_t)\hat{y}'(h_t) \left(t f_h^{t-1} h_0 + \sum_{s=1}^{t-1}
 (t-s)f_h^{t-s-1} f_x x_{t-s} \right) \\
-\frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t) 
-    \hat{y}'(h_t) 
+\frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t)
+    \hat{y}'(h_t)
     \left(\sum_{s=1}^{t} x_s f_h^{t-s} \right)
 \end{align*}
 $$
@@ -158,23 +158,23 @@ dominated by the terms involving the earlist $x_t$. Depending on the
 stability of $f$, gradients will be dominated by either short term
 dependence between $x$ and $y$ or long term. This behavior makes it
 difficult to train a network where both short and long term
-dependencies are important. 
+dependencies are important.
 
 The previous analysis also apply to nonlinear $f()$, with $f_h$
 replaced by $(\partial f)/(\partial h)$, and stable replaced with
-locally stable. 
+locally stable.
 
 The previous analysis also applies to multivariate $h_t$ with $|f_h|$
 replace by $\max |eigenvalue(f_h)|$.
 
 ## Truncating Gradients
 
-A practical problem with gradients of recurrent networks is that 
-$\hat{y}(h_t)$ depends on the entire history of 
+A practical problem with gradients of recurrent networks is that
+$\hat{y}(h_t)$ depends on the entire history of
 $x_1, \cdots, x_t$. When computing the gradient by backward
 differentiation, this entire history will accumulate, using up memory
 and taking time. A common solution is to truncate the gradient
-calculation after some fixed number of periods. 
+calculation after some fixed number of periods.
 
 
 ## LSTM
@@ -185,10 +185,10 @@ state, $s_t$. The extra hidden state is $s_t \in (0,1)$ and is a
 weighted sum of $s_{t-1}$ and other variables. In particular,
 $$
  s_t = \sigma(b_f + U_f' x_t + W_f' h_{t-1}) s_{t-1} + \sigma(b_g + U_g'
- x_t + W_g' h_{t-1}) \tilde{x}_t 
+ x_t + W_g' h_{t-1}) \tilde{x}_t
 $$
 The first $\sigma(b_f + U_f' x_t + W_f' h_{t-1})$ is a "forget"
-gate. It determines how much of $s_{t-1}$ is forgotten. 
+gate. It determines how much of $s_{t-1}$ is forgotten.
 The second $\sigma(b_g + U_g' x_t + W_g' h_{t-1})$ is call the
 external input gate. It determines how much current $x_t$ affects
 $s_t$. The $\tilde{x}$ is a rescaled input given by
@@ -196,19 +196,19 @@ $$
 \tilde{x}_t = \sigma(\tilde{b} + \tilde{U}'x_t + \tilde{W}' h_{t-1}).
 $$
 Finally, $h_t$ is a gated and transformed version of $s_t$.
-$$ 
+$$
 h_t = tanh(s_t) \sigma(b_o + U_o' x_t + W_o'h_t)
 $$
-where $\sigma(b_o + U_o' x_t + W_o'h_t)$ is the output gate. 
+where $\sigma(b_o + U_o' x_t + W_o'h_t)$ is the output gate.
 
 # Example : Generating Dylan Songs
 
 Recurrent neural networks are pretty good at randomly generating
-text. The 
+text. The
 [Flux model zoo](https://github.com/FluxML/model-zoo/blob/master/text/char-rnn/char-rnn.jl)
 includes one such example. The example is based on this [blog post by
 Andrej
-Karpathy](http://karpathy.github.io/2015/05/21/rnn-effectiveness/). It 
+Karpathy](http://karpathy.github.io/2015/05/21/rnn-effectiveness/). It
 predicts each individual character given past characters. This works
 suprisingly well. We are going to repeat this exercise, but use Bob
 Dylan songs as input.
@@ -217,7 +217,7 @@ Dylan songs as input.
 ## Downloading Songs
 
 We download all Bob Dylan lyrics and chords from
-[dylanchords.info](http://dylanchords.info). 
+[dylanchords.info](http://dylanchords.info).
 
 ```julia
 using ProgressMeter, JLD2
@@ -241,13 +241,13 @@ if !isfile(infile)
     songhtml[s]=String(r.body)
     next!(p)
   end
-  
+
   open(infile, "w") do io
     for s ∈ songhtml
       write(io, s)
       write(io,"\n")
     end
-  end  
+  end
 end
 
 text = collect(String(read(infile)))
@@ -310,7 +310,7 @@ I'm younger than that now.
 ```
 
 Some songs include snippets of tablature (simple notation for guitar).
-For example, 
+For example,
 
 ```
 <p>The easiest way to play the G7sus4 G7 G7sus2 G7 figure would be:</p>
@@ -340,7 +340,7 @@ G7sus4  G7  G7sus2  G7
 ```
 This is all just text, and we will treat it is a such. However, it has
 additional structure that makes it more interesting to predict than
-the text of just lyrics. 
+the text of just lyrics.
 
 ## Markovian Baseline
 
@@ -376,9 +376,9 @@ end
 modelfile=joinpath(docdir,"jmd","models","dylan-markov4.jld2")
 if isfile(modelfile)
   @load modelfile dm
-else 
+else
   @time dm = p_markov(Val(4), text);
-  @save modelfile dm    
+  @save modelfile dm
 end
 ```
 
@@ -388,7 +388,7 @@ histories, $c_{t-1},...,c_{t-L}$, and we will not observe many of
 them. A dictionary only stores data on the histories we observe, so it
 will save some memory.
 
-Let's now sample from our model. 
+Let's now sample from our model.
 
 ```julia
 defaultinit=collect("\n\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n\n<head>\n<title>")
@@ -409,7 +409,7 @@ function sample_markov(dm::Dict{SVector{L, Char}, Dict{Char, Float64}}, len=1000
       end
     end
     state[1:(end-1)] .= state[2:end]
-    state[end] = out[s]    
+    state[end] = out[s]
   end
   out
 end
@@ -428,9 +428,9 @@ longer histories.
 modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
 if isfile(modelfile)
   @load modelfile dm
-else 
+else
   @time dm = p_markov(Val(10), text);
-  @save modelfile dm    
+  @save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
@@ -438,16 +438,16 @@ println(String(sample_markov(dm)))
 
 ### Length 20
 ```julia
-modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
+modelfile=joinpath(docdir,"jmd","models","dylan-markov20.jld2")
 if isfile(modelfile)
   @load modelfile dm
-else 
+else
   @time dm = p_markov(Val(20), text);
-  @save modelfile dm  
+  @save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
-``` 
+```
 
 With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -455,9 +455,9 @@ mostly wrong. More importantly, the model is effectively just
 combining phrases of Dylan lyrics randomly. The data here consists of
 nearly 2.9 million characters. Among these, there are 1.5 million
 unique sequences of 20 characters. Many of the estimated
-$P(c_t|c_{t-1}, ...)$ are equal to one. 
+$P(c_t|c_{t-1}, ...)$ are equal to one.
 
-## RNN 
+## RNN
 
 Now let's fit a recurrent neural network to the Dylan lyrics and chords data.
 
@@ -475,7 +475,7 @@ Recurrent neural networks have an internal state. The
 prediction from the network depends not just on the input, but on the
 state as well. The higher level interface to `Flux` hides the internal
 state. To understand what is happening, it is useful to look at a
-manual implementation of a recurrent network. 
+manual implementation of a recurrent network.
 ```julia
 # RNN with dense output layer
 nstate = 3
@@ -486,13 +486,26 @@ Wsy = randn(1,nstate)
 b = randn(nstate)
 bo = randn(1)
 # equivalent to m = Chain(RNN(nx, nstate, tanh), Dense(nstate,1))
-function rnndense(state, x)
-  state = tanh.(Wxs*x .+ Wss*state .+ b)
-  out = Wsy*state .+ bo
+module Demo # put in a module so we can redefine struc without restarting Julia
+struct RNNDense{M, V, V0}
+  Wxs::M
+  Wss::M
+  Wsy::M
+  b::V
+  bo::V
+  state0::V0
+end
+
+function (r::RNNDense)(state, x)
+  state = tanh.(r.Wxs*x .+ r.Wss*state .+ r.b)
+  out = r.Wsy*state .+ r.bo
   return(state, out)
 end
+end
+
+rnnd = Demo.RNNDense(Wxs, Wss, Wsy, b, bo, zeros(nstate))
 state = zeros(nstate)
-m = Flux.Recur(rnndense, state)
+m = Flux.Recur(rnnd, state)
 
 # usage
 x = randn(10,nx)
@@ -511,18 +524,7 @@ ps ≈ pred
 ```
 
 
-```julia
-Flux.reset!(m)
-# a batching example
-batchseqlen = 10
-seqperbatch = 5
-n = 100
-hin = [[2*i-1, 2*i] for i in 1:n]
-stop = [0, 0]
-xseq = collect(partition((batchseq((chunk(hin,seqperbatch)),stop)), batchseqlen));
-yseq = collect(partition((batchseq((chunk(hin[2:end],seqperbatch)),stop)),
-                         batchseqlen));
-```
+Now let's fit an RNN to Dylan lyrics.
 
 ### Data Preparation
 
@@ -531,7 +533,7 @@ yseq = collect(partition((batchseq((chunk(hin[2:end],seqperbatch)),stop)),
 text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
 endchar = 'Ω' # any character not in original text
 alphabet = [unique(text)..., endchar]
-hottext = map(ch -> onehot(ch, alphabet), text) 
+hottext = map(ch -> onehot(ch, alphabet), text)
 stop = onehot(endchar, alphabet)
 
 N = length(alphabet)
@@ -546,12 +548,12 @@ data = zip(Xseq, Yseq);
 ```
 
 To reduce computation while training the model, we are going to use
-gradient truncation. `batchseqlen` is the length of history through which gradients are 
-accumulated. 
+gradient truncation. `batchseqlen` is the length of history through which gradients are
+accumulated.
 
-We also divide the data into batches for gradient descent. `seqperbatch` 
-is the number of `batchseqlen` sequences per batch used for gradient 
-descent. Each batch will have `seqlen * seqperbatch` observations. 
+We also divide the data into batches for gradient descent. `seqperbatch`
+is the number of `batchseqlen` sequences per batch used for gradient
+descent. Each batch will have `seqlen * seqperbatch` observations.
 
 ### Training and Results
 
@@ -571,7 +573,7 @@ function sample(m, alphabet, len)
 end
 
 opt = RMSProp(0.005)
-# this will take awhile, so a fancier call back with a progress meter is nice to have 
+# this will take awhile, so a fancier call back with a progress meter is nice to have
 function cbgenerator(N, loss, printiter=Int(round(N/10)))
   p = Progress(N, 1, "Training", 25)
   i=0
@@ -599,11 +601,11 @@ function train_model(L; N=N, data=data,
     @load modelfile cpum
     #m = gpu(cpum)
     m = cpum
-  else 
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)   
+  else
+    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
     println("Sampling after 1 epoch:")
     sample(m, alphabet, 1000) |> println
-    
+
     Flux.@epochs 20 Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
     cpum = cpu(m)
     @save modelfile cpum
@@ -615,13 +617,13 @@ for L in [32, 64, 128] #, 256, 512]
   m = train_model(L)
   println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
   println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
-  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")  
+  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
   println("Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters")
   println("Sample from model $L")
   println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
   println(sample(m, alphabet, 2000))
   println()
-end  
+end
 ```
 
 

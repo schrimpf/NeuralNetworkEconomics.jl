@@ -1,0 +1,239 @@
+---
+title       : "Transformers"
+subtitle    : ""
+author      : Paul Schrimpf
+date        : `j using Dates; print(Dates.today())`
+bibliography: "../ml.bib"
+options:
+      out_width : 100%
+      wrap : true
+      fig_width : 8
+      fig_height : 8
+      dpi : 192
+---
+
+[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike
+4.0 International
+License](http://creativecommons.org/licenses/by-sa/4.0/)
+
+
+### About this document
+
+This document was created using Weave.jl. The code is available in
+[on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
+document generates both static webpages and associated [jupyter
+notebook](transformers.ipynb).
+
+$$
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+$$
+
+```julia; echo=false; results="hidden"
+markdown = try
+  "md" in keys(WEAVE_ARGS) && WEAVE_ARGS["md"]
+catch
+  false
+end
+
+if !("DISPLAY" ∈ keys(ENV))
+  # Make gr and pyplot backends for Plots work without a DISPLAY
+  ENV["GKSwstype"]="nul"
+  ENV["MPLBACKEND"]="Agg"
+end
+# Make gr backend work with λ and other unicode
+ENV["GKS_ENCODING"] = "utf-8"
+
+using NeuralNetworkEconomics
+docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), "..","docs")
+
+using Pkg
+Pkg.activate(docdir)
+Pkg.instantiate()
+```
+
+# Introduction
+
+Transformers have become the leading architecture for language related
+tasks. Transformers are also being applied to other domains, like
+images.
+
+Transformers were developed to overcome some of the downsides of
+recurrent networks. We briefly discussed the vanishing and exploding
+gradients problems. Recurrent networks also have a practical
+computational downside of being difficult to parallelize. Transformers
+were designed to be easy to parallelize while retaining some ability
+to represent short and long run dependencies in sequential data.
+
+Transformers encode sequential text data into numeric features in a
+learned manner. The resulting encoding preserves sequential
+information and can be readily parallelized.
+
+The @vaswani2017 paper that popularized transformers was
+about a translation task, and many introductory references  about
+transformers focus on this setting (such as
+[the illustrated transfomer](https://jalammar.github.io/illustrated-transformer/)).
+
+Translation tackles the following
+setting: given a whole text (usually sentence) in one language,
+$z_0, ..., z_T$, and a partial translation in another language,
+$x_0, ..., x_t$,
+the goal is to predict the next word, $x_{t+1}$. Transformers
+are also used for generative tasks---given $x_0, ..., x_t$, predict
+$x_{t+1}$. We will focus on a generative transformer since it is simpler and seems
+more relevant to economics.
+
+# Transformer
+
+Transformers create a mapping from $(x_0, ..., x_t) \to \tilde{x}_t$
+where $\tilde{x}_t$ is meant to contain all information relevant for
+predicting $x_{t+1}$. Moreover, the same mapping can be applied to all
+$t$ in parallel. This mapping consists of the following layers.
+
+## Embedding
+
+Each $x_t \in X \subseteq \R^K$ is often contained in a high
+dimensional space. In text, $x_t$ in a vector of indicator variables
+representing which token is the $t$th token in the sequence. These
+tokens could be characters, or more commonly now, words. In either
+case, the dimension of $x_t$ is in the hundreds or thousands. Anyway,
+$x_t$ is often embedded into a lower dimensional space by
+$$
+ x_t^e = W_e x_t
+$$
+where $W_e: \R^k \to \R^d$ is linear.
+
+## Positional Encoding
+
+With the exception of this layer, the entire transformer is a
+symmetric function $(x_0, ..., x_t)$ --- it ignores order. Positional
+encoding adds some position information to $x_t^e$. This could be done
+by simply adding a coordinate containining e.g. $t/T$, but is most
+often done (following @vaswani2017) by
+$$
+x_t^{pe} = x_t^e + p(t;d)
+$$
+where
+$$
+p(t;d) = \left( \sin(t/10000^{2/d}) , \cos(t/10000^{2/d})
+    \sin(t/10000^{4/d}) , \cos(t/10000^{4/d}), ...
+    \sin(t/10000^{d/d}) , \cos(t/10000^{d/d}) \right).
+$$
+The motivation was that this positional encoding betters represents
+intervals between words and offsets.
+
+## Encoder
+
+The $x_t^{pe}$ are now further transformed to incorporate information
+from other $x_s^{pe}$. This is done through multiple attention
+layers. To describe attention layers, let $x_t^{A_0} = x_t^{pe}$. An
+attention layer consists of:
+
+### (Masked) Self-Attention
+
+$$
+z_{0,t}^{A_\ell} = \sum_{j=0}^t \frac{e^{x_t^{A_{\ell-1}}' Q_\ell' K_\ell
+x_t^{A_{\ell-1}}}} { \sum_{i=0}^t e^{x_i^{A_{\ell-1}}' Q_\ell' K_\ell
+x_t^{A_{\ell-1}}}} V_\ell x_{j}^{A_{\ell-1}}
+$$
+where $Q_{ell}$, $K_{ell},$ and $V_{\ell}$ are all $m \times d$
+matrices. These are often referred to as query, key, and value
+transformations respectively. The idea is that the query and key
+matrices determine how relevant $x_j$ is for $x_t$, and the value
+gives an altered representation of $x_j$.
+
+This is "masked" because $z_{0,t}^{A_\ell}$ looks at the data from $0$
+to $t$ instead of the whole sequence from $0$ to $T$.
+
+If $d \neq m$, then $d$ must be a multiple of $m$. If $d < m$, then
+there must be $d/m$ such $Q$, $K$, and $V$ matrices, and their outputs
+are concatenated together to ensure that $z_t^{A_\ell}$ has
+the same dimension as $x_t^{A_{\ell-1}}$
+
+### Residual Connection
+
+The output of the attention layer is then added to the input,
+$z_{1,t}^{A_\ell} = x_t^{A_{\ell-1}} + z_{0,t}^{A_\ell}$
+This sort of residual connection is often used in deep
+learning. (E.g. Resnet is a well known convolutional network with residual
+connections that did very on image classification). It
+helps to ensure that gradients even deep in many layers are not zero.
+See @jastrzebski2017 for some theoretical justification for residual
+connections.
+
+### Layer Norm
+
+A layer normalization is then applied as in @ba2016. That is, we
+transform
+$$
+z_{2,t}^{A_\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A_\ell} -
+\mu_\ell) + b_t^\ell
+$$
+where $\mu_\ell$ and $\sigma_\ell$ are the mean and standard deviation
+of $z_{1,t}^{A_\ell}$ across $t$.
+
+### Feed-Forward Layer
+
+A single layer feed forward network is then applied to each
+$z_{2,t}^{A_\ell}$. That is, we take
+
+$$
+z_{3,t}^{A_\ell} = f_\ell(z_{2,t}^{A_\ell})
+$$
+
+where $f_\ell$ is a single layer feed forward network.
+
+### Residual Connection & Layer Norm Again
+
+Finally there is another residual connection and layer norm applied.
+
+$$ z_{4,t}^{A_\ell} = z_{3,t}^{A_\ell} + z_{2,t}^{A_\ell} $$
+
+$$
+x_{t}^{A_\ell} = frac{g^{\ell2}_t}{\sigma_\ell} (z_{4,t}^{A_\ell} -
+\mu_\ell) + b_t^{\ell2}
+$$
+
+
+### Repeat
+
+## Prediction Layer
+
+Finally, the output of the encoder, $x_t^{A_L}$, is used to predict
+$x_{t+1}$. When $x_{t+1}$ is discrete, this is done with a linear and
+then softmax layet. When $x_{t+1}$ is continuous, it can be done with
+just a linear layer.
+
+## Why?
+
+The architecture of transformers developed step-by-step, combining
+ideas that seemed to work. The idea of an encoder grew out of
+embeddings and was originally combined with recurrent
+networks. Positional embedding and move away from recurrence was
+motivated by the difficulty with parallelizing recurrent
+models. Residual connections and layer norms help with gradient
+descent and vanishing gradient problems. Theoretical understanding of
+transformers has lagged behind their practical application, but theory
+is advancing rapidly. E.g. @bhattamishra2020 , etc
+
+# Example Code
+
+# Packages
+
+## Transformers.jl
+
+
+## Pre-trained Models
+
+Huggingface and Transformers.jl interface to it
+
+### Transfer Learning
