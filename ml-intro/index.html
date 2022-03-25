@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Introduction -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li class="active">
-    <a href="./">Introduction</a>
+<li>
+    <a href="./" class="dropdown-item active">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="..">
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../ml-methods/">
+                            <li class="nav-item">
+                                <a rel="next" href="../ml-methods/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-intro.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-intro.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,20 +128,60 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#introduction">Introduction</a></li>
-            <li><a href="#example-partially-linear-model">Example: partially linear model</a></li>
-            <li><a href="#example-matching">Example: Matching</a></li>
-            <li><a href="#example-matching_1">Example: Matching</a></li>
-            <li><a href="#example-iv">Example: IV</a></li>
-            <li><a href="#example-late">Example: LATE</a></li>
-            <li><a href="#general-setup">General setup</a></li>
-        <li class="main "><a href="#references-by-topic">References by topic</a></li>
-        <li class="main "><a href="#references-references">References [references]</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#example-partially-linear-model" class="nav-link">Example: partially linear model</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#example-matching" class="nav-link">Example: Matching</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#example-matching_1" class="nav-link">Example: Matching</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#example-iv" class="nav-link">Example: IV</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#example-late" class="nav-link">Example: LATE</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#general-setup" class="nav-link">General setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-by-topic" class="nav-link">References by topic</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -197,7 +228,6 @@ learning so good at prediction also pose challenges for inference.</p>
 <!-- If you want to print this document, printing works reasonably with -->
 <!-- Chrome, but not Firefox. -->
 <!-- </div> -->
-
 </div>
 <!-- --- -->
 
@@ -673,7 +703,7 @@ Economics</em> 106 (4): pp. 979–1014. <a href="http://www.jstor.org/stable/293
 <div id="ref-athey2015">
 <p>Athey, Susan, and Guido Imbens. 2015. “Lectures on Machine Learning.”
 NBER Summer Institute.
-<a href="http://www.nber.org/econometrics_minicourse_2015/">http://www.nber.org/econometrics_minicourse_2015/</a>.</p>
+<http://www.nber.org/econometrics_minicourse_2015/>.</p>
 </div>
 <div id="ref-athey2016b">
 <p>———. 2016. “Recursive Partitioning for Heterogeneous Causal Effects.”
@@ -779,12 +809,12 @@ Legalized Abortion on Crime*.” <em>The Quarterly Journal of Economics</em> 116
 <div id="ref-efron2016">
 <p>Efron, Bradley, and Trevor Hastie. 2016. <em>Computer Age Statistical
 Inference</em>. Vol. 5. Cambridge University Press.
-<a href="https://web.stanford.edu/~hastie/CASI/">https://web.stanford.edu/~hastie/CASI/</a>.</p>
+<https://web.stanford.edu/~hastie/CASI/>.</p>
 </div>
 <div id="ref-friedman2008">
 <p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2009. <em>The
 Elements of Statistical Learning</em>. Springer series in statistics.
-<a href="https://web.stanford.edu/~hastie/ElemStatLearn/">https://web.stanford.edu/~hastie/ElemStatLearn/</a>.</p>
+<https://web.stanford.edu/~hastie/ElemStatLearn/>.</p>
 </div>
 <div id="ref-hartford2017">
 <p>Hartford, Jason, Greg Lewis, Kevin Leyton-Brown, and Matt Taddy. 2017.
@@ -807,7 +837,7 @@ Human Resources</em> 50 (2): 373–419.
 <div id="ref-james2013">
 <p>James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
 2013. <em>An Introduction to Statistical Learning</em>. Vol. 112. Springer.
-<a href="http://www-bcf.usc.edu/%7Egareth/ISL/">http://www-bcf.usc.edu/%7Egareth/ISL/</a>.</p>
+<http://www-bcf.usc.edu/%7Egareth/ISL/>.</p>
 </div>
 <div id="ref-mullainathan2017">
 <p>Mullainathan, Sendhil, and Jann Spiess. 2017. “Machine Learning: An
@@ -831,6 +861,7 @@ American Statistical Association</em> 0 (0): 1–15.
 <a href="https://doi.org/10.1080/01621459.2017.1319839">https://doi.org/10.1080/01621459.2017.1319839</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -847,35 +878,32 @@ American Statistical Association</em> 0 (0): 1–15.
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

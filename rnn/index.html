@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Recurrent -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li class="active">
-    <a href="./">Recurrent</a>
+<li>
+    <a href="./" class="dropdown-item active">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../conv/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../conv/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../nn-semiparametric/">
+                            <li class="nav-item">
+                                <a rel="next" href="../transformers/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/rnn.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/rnn.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,24 +128,74 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-            <li><a href="#additional-reading">Additional Reading</a></li>
-        <li class="main "><a href="#recurrent-networks">Recurrent Networks</a></li>
-            <li><a href="#approximation-ability">Approximation Ability</a></li>
-            <li><a href="#stability-and-gradients">Stability and Gradients</a></li>
-            <li><a href="#truncating-gradients">Truncating Gradients</a></li>
-            <li><a href="#lstm">LSTM</a></li>
-        <li class="main "><a href="#example-generating-dylan-songs">Example : Generating Dylan Songs</a></li>
-            <li><a href="#downloading-songs">Downloading Songs</a></li>
-            <li><a href="#markovian-baseline">Markovian Baseline</a></li>
-            <li><a href="#rnn">RNN</a></li>
-        <li class="main "><a href="#references-references">References [references]</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#recurrent-networks" class="nav-link">Recurrent Networks</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#approximation-ability" class="nav-link">Approximation Ability</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#stability-and-gradients" class="nav-link">Stability and Gradients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#truncating-gradients" class="nav-link">Truncating Gradients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#lstm" class="nav-link">LSTM</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#example-generating-dylan-songs" class="nav-link">Example : Generating Dylan Songs</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#downloading-songs" class="nav-link">Downloading Songs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#markovian-baseline" class="nav-link">Markovian Baseline</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#rnn" class="nav-link">RNN</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -298,7 +339,7 @@ Dylan songs as input.</p>
 <h2 id="downloading-songs">Downloading Songs<a class="headerlink" href="#downloading-songs" title="Permanent link">&para;</a></h2>
 <p>We download all Bob Dylan lyrics and chords from
 <a href="http://dylanchords.info">dylanchords.info</a>.</p>
-<pre><code class="julia">using ProgressMeter, JLD2
+<pre><code class="language-julia">using ProgressMeter, JLD2
 import HTTP, Gumbo, Cascadia
 
 infile = joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)
@@ -330,7 +371,6 @@ end
 
 text = collect(String(read(infile)))
 </code></pre>
-
 <pre><code>2873103-element Array{Char,1}:
  '\n'
  '&lt;' 
@@ -444,7 +484,7 @@ can generate pretty good text with a simple Markovian model of
 characters. That is, estimate the probability of a character $c$ given a
 history of $L$ characters $h$, $P(c_t|c_{t-1}, &hellip;, c_{t-L})$, by simple
 sample averages. Let’s try this out.</p>
-<pre><code class="julia">using StaticArrays
+<pre><code class="language-julia">using StaticArrays
 
 function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
   dm = Dict{SVector{L, Char}, Dict{Char, Float64}}()
@@ -473,7 +513,6 @@ else
   @save modelfile dm    
 end
 </code></pre>
-
 <pre><code>1-element Array{Symbol,1}:
  :dm
 </code></pre>
@@ -483,7 +522,7 @@ $c_{t-1},&hellip;,c_{t-L}$, and we will not observe many of them. A
 dictionary only stores data on the histories we observe, so it will save
 some memory.</p>
 <p>Let’s now sample from our model.</p>
-<pre><code class="julia">defaultinit=collect(&quot;\n\n&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Strict//EN\&quot;\n\&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\&quot;&gt;\n&lt;html lang=\&quot;en\&quot; xml:lang=\&quot;en\&quot; xmlns=\&quot;http://www.w3.org/1999/xhtml\&quot;&gt;\n\n&lt;head&gt;\n&lt;title&gt;&quot;)
+<pre><code class="language-julia">defaultinit=collect(&quot;\n\n&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Strict//EN\&quot;\n\&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\&quot;&gt;\n&lt;html lang=\&quot;en\&quot; xml:lang=\&quot;en\&quot; xmlns=\&quot;http://www.w3.org/1999/xhtml\&quot;&gt;\n\n&lt;head&gt;\n&lt;title&gt;&quot;)
 
 function sample_markov(dm::Dict{SVector{L, Char}, Dict{Char, Float64}}, len=1000,
                        init=defaultinit) where L
@@ -508,12 +547,10 @@ end
 
 @show length(dm), length(text)
 </code></pre>
-
 <pre><code>(length(dm), length(text)) = (88032, 2873103)
 </code></pre>
-<pre><code class="julia">println(String(sample_markov(dm)))
+<pre><code class="language-julia">println(String(sample_markov(dm)))
 </code></pre>
-
 <pre><code>tle&gt;
 &lt;link rel="stylesheet" type="text/css" /&gt;
 Three,
@@ -563,7 +600,7 @@ All
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
 lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
 <h3 id="length-10">Length 10<a class="headerlink" href="#length-10" title="Permanent link">&para;</a></h3>
-<pre><code class="julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
 if isfile(modelfile)
   @load modelfile dm
 else 
@@ -572,12 +609,10 @@ else
 end
 @show length(dm), length(text)
 </code></pre>
-
 <pre><code>(length(dm), length(text)) = (930264, 2873103)
 </code></pre>
-<pre><code class="julia">println(String(sample_markov(dm)))
+<pre><code class="language-julia">println(String(sample_markov(dm)))
 </code></pre>
-
 <pre><code>d&gt;
 &lt;title&gt;North Country Blues&lt;/h1&gt;
 
@@ -616,7 +651,7 @@ Bb major). During the sessions (summer 1967&lt;br /&gt;
 Lyrics f
 </code></pre>
 <h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
-<pre><code class="julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
 if isfile(modelfile)
   @load modelfile dm
 else 
@@ -625,12 +660,10 @@ else
 end
 @show length(dm), length(text)
 </code></pre>
-
 <pre><code>(length(dm), length(text)) = (930264, 2873103)
 </code></pre>
-<pre><code class="julia">println(String(sample_markov(dm, 2000)))
+<pre><code class="language-julia">println(String(sample_markov(dm, 2000)))
 </code></pre>
-
 <pre><code>d&gt;
 &lt;title&gt;Long Ago, Far Away&lt;/h1&gt;
 
@@ -698,7 +731,7 @@ to one.</p>
 <h2 id="rnn">RNN<a class="headerlink" href="#rnn" title="Permanent link">&para;</a></h2>
 <p>Now let’s fit a recurrent neural network to the Dylan lyrics and chords
 data.</p>
-<pre><code class="julia">using Flux
+<pre><code class="language-julia">using Flux
 using Flux: onehot, chunk, batchseq, throttle, crossentropy
 using StatsBase: wsample
 using Base.Iterators: partition
@@ -718,14 +751,13 @@ Xseq = gpu.(batchseq(chunk(hottext,seqlen),stop));
 Yseq = gpu.(batchseq(chunk(hottext[2:end], seqlen),stop));
 data = [(Xseq[p], Yseq[p]) for p in partition(1:length(Xseq), batchsize)];
 </code></pre>
-
 <p>To reduce computation while training the model, we are going to use
 gradient truncation. <code>seqlen</code> is the length of history through which
 gradients are accumulated.</p>
 <p>We also divide the data into batches for gradient descent. <code>batchsize</code>
 is the number of <code>seqlen</code> sequences per batch used for gradient descent.
 Each batch will have <code>seqlen * batchsize</code> observations.</p>
-<pre><code class="julia"># Sampling
+<pre><code class="language-julia"># Sampling
 
 function sample(m, alphabet, len)
   m = cpu(m)
@@ -790,7 +822,6 @@ for L in [32, 64, 128] #, 256, 512]
   println()
 end
 </code></pre>
-
 <pre><code>Model 32 has 28933 parameters
 Sample from model 32
 --------------------
@@ -1026,6 +1057,7 @@ COLT ’92. New York, NY, USA: ACM.
 <a href="https://doi.org/10.1145/130385.130432">https://doi.org/10.1145/130385.130432</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -1042,35 +1074,32 @@ COLT ’92. New York, NY, USA: ACM.
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

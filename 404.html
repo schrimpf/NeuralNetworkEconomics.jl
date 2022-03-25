@@ -9,117 +9,108 @@
         
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title> </title>
-        <link href="/css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
         <link href="/css/font-awesome.min.css" rel="stylesheet">
         <link href="/css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="/assets/Documenter.css" rel="stylesheet">
         <link href="/assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="/js/jquery-1.10.2.min.js" defer></script>
-        <script src="/js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="/js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="/."> </a>
-                </div>
+                <a class="navbar-brand" href="/."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="/.">Package Docs</a>
+                            <li class="navitem">
+                                <a href="/." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="/ml-intro/">Introduction</a>
+<li>
+    <a href="/ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="/ml-methods/">Methods</a>
+<li>
+    <a href="/ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="/ml-doubledebiased/">Inference</a>
+<li>
+    <a href="/ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="/mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="/mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="/ml-julia/">With Julia</a>
+<li>
+    <a href="/ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="/slp/">Introduction</a>
+<li>
+    <a href="/slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="/mlp/">Multi-Layer</a>
+<li>
+    <a href="/mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="/conv/">Convolutional</a>
+<li>
+    <a href="/conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="/rnn/">Recurrent</a>
+<li>
+    <a href="/rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="/nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="/transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="/nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="/license/">License</a>
+<li>
+    <a href="/license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/"><i class="fa fa-github"></i> GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/" class="nav-link"><i class="fa fa-github"></i> GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -127,6 +118,7 @@
         </div>
 
         <div class="container">
+            <div class="row">
 
     <div class="row-fluid">
       <div id="main-content" class="span12">
@@ -136,6 +128,7 @@
     </div>
 
 
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -152,35 +145,32 @@
         <script src="/assets/mathjaxhelper.js" defer></script>
         <script src="/search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>In semiparametric models -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li class="active">
-    <a href="./">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../rnn/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../transformers/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../license/">
+                            <li class="nav-item">
+                                <a rel="next" href="../license/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/nn-semiparametric.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/nn-semiparametric.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,19 +128,54 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-        <li class="main "><a href="#double-debiased-machine-learning">Double Debiased Machine Learning</a></li>
-            <li><a href="#deep-neural-networks-for-estimation-and-inference">Deep Neural Networks for Estimation and Inference</a></li>
-        <li class="main "><a href="#application-average-impulse-responses">Application: Average Impulse Responses</a></li>
-            <li><a href="#simulated-dgp">Simulated DGP</a></li>
-            <li><a href="#estimators">Estimators</a></li>
-        <li class="main "><a href="#automating-orthogonalization">Automating Orthogonalization</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#double-debiased-machine-learning" class="nav-link">Double Debiased Machine Learning</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#deep-neural-networks-for-estimation-and-inference" class="nav-link">Deep Neural Networks for Estimation and Inference</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#application-average-impulse-responses" class="nav-link">Application: Average Impulse Responses</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#simulated-dgp" class="nav-link">Simulated DGP</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#estimators" class="nav-link">Estimators</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#automating-orthogonalization" class="nav-link">Automating Orthogonalization</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -312,11 +338,8 @@ models. For other models, analytically transforming non-orthogonal
 moments into orthogonal ones is typically possible, but it can be
 tedious.</p>
 <!-- We will try to automate this. As we saw in -->
-
 <!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's -->
-
 <!-- good support for automatic differentiation will make it relatively -->
-
 <!-- easy to translate econometric theory to executable code.  -->
 
 <h2 id="deep-neural-networks-for-estimation-and-inference">Deep Neural Networks for Estimation and Inference<a class="headerlink" href="#deep-neural-networks-for-estimation-and-inference" title="Permanent link">&para;</a></h2>
@@ -380,7 +403,7 @@ y_t = \tanh(\alpha_1 y_{t-1} + \alpha_2 y_{t-2} + \alpha_3 y_{t-3}) +
 \epsilon_t
 </script>
 </p>
-<pre><code class="julia">using Polynomials, Plots, LinearAlgebra, Statistics, Random
+<pre><code class="language-julia">using Polynomials, Plots, LinearAlgebra, Statistics, Random
 Random.seed!(747697)
 T = 1000
 R = 50
@@ -412,9 +435,8 @@ end
 y = dgp(μy, T, 1.0)
 plot(y, title=&quot;Simulated yₜ&quot;, leg=false)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_2_1.png" /></p>
-<pre><code class="julia">R = 12
+<pre><code class="language-julia">R = 12
 L = length(α)
 Δ = 1.0*std(y)
 nsim = 1000
@@ -425,7 +447,6 @@ plot(iry, leg=false, alpha=0.01, color=:black, linewidth=1)
 plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;E[Δy | 1σ change in y]&quot;,
       xlab=&quot;τ&quot;, ylab=&quot;ΔE[y(t+τ)]/std(y)&quot;, alpha=1)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_3_1.png" /></p>
 <p>The conditional average impulse responses at each
 $x_t=(y_{t-1}, &hellip;, y_{t-p})$ in the simulated data are in grey. The
@@ -444,7 +465,7 @@ the density of $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.</p>
 network. We fit the a feed forward network to the empirical cdf. We
 penalize the estimated cdf for not being monotone. Here is code to fit
 the model.</p>
-<pre><code class="julia">using Flux, ProgressMeter, JLD2
+<pre><code class="language-julia">using Flux, ProgressMeter, JLD2
 import Base.Iterators: partition
 L = length(α)
 x = copy(reduce(hcat,[y[l:(end-L+l)] for l in L:-1:1])')
@@ -485,7 +506,6 @@ function fit_cdf!(model, x;
   return(model)
 end
 </code></pre>
-
 <pre><code>fit_cdf! (generic function with 1 method)
 </code></pre>
 <p>We can recover the pdf from the cdf by differentiating. For univariate
@@ -494,7 +514,7 @@ f_x(x) = \frac{\partial^n}{\partial x_1 \partial x_2\cdots \partial
 x_n} F_x(x) 
 </script> so we need to evaluate an $n$th order derivative. Here is some code
 to do so.</p>
-<pre><code class="julia">using ForwardDiff
+<pre><code class="language-julia">using ForwardDiff
 function deriv_i(f, i)
   # derivative wrt to ith argument
   dfi(z)=ForwardDiff.derivative((y)-&gt;f([z[1:(i-1)]..., y, z[(i+1):end]...]), z[i])
@@ -515,13 +535,12 @@ function make_pdf(cdf, dim)
   return(f)
 end
 </code></pre>
-
 <pre><code>make_pdf (generic function with 1 method)
 </code></pre>
 <p>To check that the code produces reasonable results, we will begin by
 just fitting the marginal distribution of $y_t$. This isn’t quite what
 we need for our impulse responses, but it is easier to visualize.</p>
-<pre><code class="julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;cdfy.jld2&quot;)
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;cdfy.jld2&quot;)
 rerun=false
 if isfile(modelfile) &amp;&amp; !rerun  
   @load modelfile cdfy
@@ -544,11 +563,10 @@ pdfy = make_pdf(cdfy, 1)
 fig=histogram(y, bins=100, normalize=:pdf)
 fig=scatter!(y, pdfy(reshape(y,1,T))[:], leg=false)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_6_1.png" /></p>
 <p>The estimated pdf looks pretty good.</p>
 <p>We will estimate the joint cdf and pdf similarly.</p>
-<pre><code class="julia">rerun=false
+<pre><code class="language-julia">rerun=false
 modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;cdfx.jld2&quot;)
 if isfile(modelfile) &amp;&amp; !rerun  
   @load modelfile cdfx
@@ -569,12 +587,10 @@ end
 pdfx = make_pdf(cdfx, size(x,1))
 @show sum(pdfx(x).&lt;0)
 </code></pre>
-
 <pre><code>sum(pdfx(x) .&lt; 0) = 32
 </code></pre>
-<pre><code class="julia">histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(x)&quot;)
+<pre><code class="language-julia">histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(x)&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_7_1.png" /></p>
 <p>Despite the penalty, our estimated pdf is sometimes negative.
 Fortunately, it doesn’t happen to often.</p>
@@ -583,13 +599,12 @@ marginal pdf implied by the joint distribution. We can get marginal pdf
 by integrating or looking at the derivative of the joint cdf. <script type="math/tex; mode=display">
 f_{x_1}(x_1) = \frac{\partial}{\partial x_1} F_x((x_1, \overline{x}_2, \overline{x}_3))
 </script> where $\overline{x}_k$ is the maximum of the support of $x_k$.</p>
-<pre><code class="julia">pdf12=make_pdf(cdfx,2)
+<pre><code class="language-julia">pdf12=make_pdf(cdfx,2)
 pdf1=make_pdf(cdfx,1)
 px1=pdf1(vcat(x[1,:]', maximum(y)*ones(2, 998)))
 histogram(x[1,:], bins=100, normalize=:pdf)
 scatter!(x[1,:], px1[:], leg=false)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_8_1.png" /></p>
 <p>The marginal pdf implied by the joint cdf looks pretty good.</p>
 <p>Note, however, that to get this result, I had to specify a fairly
@@ -600,7 +615,7 @@ approach might have made more sense here.</p>
 <p>We will assume that we that knows that $y$ follows a nonlinear AR(3)
 model. Then, we can simply fit a feed forward network to predict $y_t$
 given $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.</p>
-<pre><code class="julia">function fit_ce!(model, x, y;
+<pre><code class="language-julia">function fit_ce!(model, x, y;
                  opt=Flux.NADAM(), maxiter=1000, batchsize=length(y))
   loss(x,y) = Flux.mse(model(x), y)
   @show bestloss = loss(x,y)+1
@@ -650,7 +665,6 @@ end
   eltype(x)(m(x)[1])
 end
 </code></pre>
-
 <pre><code>μhat (generic function with 2 methods)
 </code></pre>
 <p>Finally, we can calculate the orthogonalized impulse responses. As
@@ -659,7 +673,7 @@ stated above, these are given by <script type="math/tex; mode=display">
 </script>
 </p>
 <p>Let’s compute it</p>
-<pre><code class="julia">L = size(x,1)
+<pre><code class="language-julia">L = size(x,1)
 Δ = 1.0*std(y)
 iryhat=(μhat(X .+ [Δ; 0; 0])  .- μhat(X))
 fx(x) = pdfx(x)  #max.(pdfx(x), 1e-6)
@@ -670,9 +684,8 @@ idx = Int.(findall((c[1] .&lt;= lx) .&amp; (lx .&lt;= c[2])))
 θi = μhat(X .+ [Δ; 0; 0])  .- μhat(X) .+ (Y .- μhat(X)).*ℓ(X)
 #θi = θi[:,idx]
 </code></pre>
-
 <p>and plot it</p>
-<pre><code class="julia">plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
+<pre><code class="language-julia">plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
 plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
 #plot!(θi, leg=false, alpha=0.01, color=:green, linewidth=1, ylim=(-0.5, 0.75))
 plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Reponse to 1σ change in y[t-1]&quot;,      
@@ -680,7 +693,6 @@ plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Rep
 plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green)
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_11_1.png" /></p>
 <p>The true average impulse response is in blue. The uncorrected estimate
 is in orange. The orthogonalized estimate is in green.</p>
@@ -696,7 +708,7 @@ functions. The estimated average impulse response is then just a sample
 average. Computing standard errors for sample averages is
 straightforward. Since this data is dependent, we will use a HAC
 estimator for the variance.</p>
-<pre><code class="julia">using Distributions
+<pre><code class="language-julia">using Distributions
 using CovarianceMatrices # I think need dev version for now
 k = BartlettKernel{NeweyWest}()
 Σ = lrvar(k, θi', prewhite=true)
@@ -710,7 +722,6 @@ plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green,
       ribbon=sqrt.(diag(Σ)/size(θi,2))*quantile.(Normal(), [0.05, 0.95])' )
 </code></pre>
-
 <p><img alt="" src="../figures/nn-semiparametric_12_1.png" /></p>
 <p>The plot now has 90% pointwise confidence bands around the
 orthogonalized estimates.</p>
@@ -814,6 +825,7 @@ that meet the high level assumptions.&#160;<a class="footnote-backref" href="#fn
 </li>
 </ol>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -830,35 +842,32 @@ that meet the high level assumptions.&#160;<a class="footnote-backref" href="#fn
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

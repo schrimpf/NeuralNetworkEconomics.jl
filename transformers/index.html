@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Transformers -  </title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <link href="../assets/extra.css" rel="stylesheet">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
+</li>
+                                    
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
+</li>
+                                    
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
+</li>
+                                    
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
+</li>
+                                    
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
+</li>
+                                    
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
+</li>
+                                    
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
+</li>
+                                    
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../rnn/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../nn-semiparametric/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/transformers.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#transformer" class="nav-link">Transformer</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#embedding" class="nav-link">Embedding</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#positional-encoding" class="nav-link">Positional Encoding</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#encoder" class="nav-link">Encoder</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#prediction-layer" class="nav-link">Prediction Layer</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#why" class="nav-link">Why?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#example-code" class="nav-link">Example Code</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#packages" class="nav-link">Packages</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#transformersjl" class="nav-link">Transformers.jl</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#pre-trained-models" class="nav-link">Pre-trained Models</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
+github</a>. The same
+document generates both static webpages and associated <a href="transformers.ipynb">jupyter
+notebook</a>.</p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
+<p>Transformers have become the leading architecture for language related
+tasks. Transformers are also being applied to other domains, like
+images.</p>
+<p>Transformers were developed to overcome some of the downsides of
+recurrent networks. We briefly discussed the vanishing and exploding
+gradients problems. Recurrent networks also have a practical
+computational downside of being difficult to parallelize. Transformers
+were designed to be easy to parallelize while retaining some ability to
+represent short and long run dependencies in sequential data.</p>
+<p>Transformers encode sequential text data into numeric features in a
+learned manner. The resulting encoding preserves sequential information
+and can be readily parallelized.</p>
+<p>The @vaswani2017 paper that popularized transformers was about a
+translation task, and many introductory references about transformers
+focus on this setting (such as <a href="https://jalammar.github.io/illustrated-transformer/">the illustrated
+transfomer</a>).</p>
+<p>Translation tackles the following setting: given a whole text (usually
+sentence) in one language, $z_0, &hellip;, z_T$, and a partial translation in
+another language, $x_0, &hellip;, x_t$, the goal is to predict the next word,
+$x_{t+1}$. Transformers are also used for generative tasks—given
+$x_0, &hellip;, x_t$, predict $x_{t+1}$. We will focus on a generative
+transformer since it is simpler and seems more relevant to economics.</p>
+<h1 id="transformer">Transformer<a class="headerlink" href="#transformer" title="Permanent link">&para;</a></h1>
+<p>Transformers create a mapping from $(x_0, &hellip;, x_t) \to \tilde{x}<em t_1="t+1">t$
+where $\tilde{x}_t$ is meant to contain all information relevant for
+predicting $x</em>$. Moreover, the same mapping can be applied to all
+$t$ in parallel. This mapping consists of the following layers.</p>
+<h2 id="embedding">Embedding<a class="headerlink" href="#embedding" title="Permanent link">&para;</a></h2>
+<p>Each $x_t \in X \subseteq \R^K$ is often contained in a high dimensional
+space. In text, $x_t$ in a vector of indicator variables representing
+which token is the $t$th token in the sequence. These tokens could be
+characters, or more commonly now, words. In either case, the dimension
+of $x_t$ is in the hundreds or thousands. Anyway, $x_t$ is often
+embedded into a lower dimensional space by <script type="math/tex; mode=display">
+ x_t^e = W_e x_t
+</script> where $W_e: \R^k \to \R^d$ is linear.</p>
+<h2 id="positional-encoding">Positional Encoding<a class="headerlink" href="#positional-encoding" title="Permanent link">&para;</a></h2>
+<p>With the exception of this layer, the entire transformer is a symmetric
+function $(x_0, &hellip;, x_t)$ — it ignores order. Positional encoding adds
+some position information to $x_t^e$. This could be done by simply
+adding a coordinate containining e.g. $t/T$, but is most often done
+(following @vaswani2017) by <script type="math/tex; mode=display">
+x_t^{pe} = x_t^e + p(t;d)
+</script> where <script type="math/tex; mode=display">
+p(t;d) = \left( \sin(t/10000^{2/d}) , \cos(t/10000^{2/d})
+    \sin(t/10000^{4/d}) , \cos(t/10000^{4/d}), ...
+    \sin(t/10000^{d/d}) , \cos(t/10000^{d/d}) \right).
+</script> The motivation was that this positional encoding betters represents
+intervals between words and offsets.</p>
+<h2 id="encoder">Encoder<a class="headerlink" href="#encoder" title="Permanent link">&para;</a></h2>
+<p>The $x_t^{pe}$ are now further transformed to incorporate information
+from other $x_s^{pe}$. This is done through multiple attention layers.
+To describe attention layers, let $x_t^{A_0} = x_t^{pe}$. An attention
+layer consists of:</p>
+<h3 id="masked-self-attention">(Masked) Self-Attention<a class="headerlink" href="#masked-self-attention" title="Permanent link">&para;</a></h3>
+<p>
+<script type="math/tex; mode=display">
+z_{0,t}^{A_\ell} = \sum_{j=0}^t \frac{e^{x_t^{A_{\ell-1}}' Q_\ell' K_\ell
+x_t^{A_{\ell-1}}}} { \sum_{i=0}^t e^{x_i^{A_{\ell-1}}' Q_\ell' K_\ell
+x_t^{A_{\ell-1}}}} V_\ell x_{j}^{A_{\ell-1}}
+</script> where $Q_{ell}$, $K_{ell},$ and $V_{\ell}$ are all $m \times d$
+matrices. These are often referred to as query, key, and value
+transformations respectively. The idea is that the query and key
+matrices determine how relevant $x_j$ is for $x_t$, and the value gives
+an altered representation of $x_j$.</p>
+<p>This is “masked” because $z_{0,t}^{A_\ell}$ looks at the data from $0$
+to $t$ instead of the whole sequence from $0$ to $T$.</p>
+<p>If $d \neq m$, then $d$ must be a multiple of $m$. If $d &lt; m$, then
+there must be $d/m$ such $Q$, $K$, and $V$ matrices, and their outputs
+are concatenated together to ensure that $z_t^{A_\ell}$ has the same
+dimension as $x_t^{A_{\ell-1}}$</p>
+<h3 id="residual-connection">Residual Connection<a class="headerlink" href="#residual-connection" title="Permanent link">&para;</a></h3>
+<p>The output of the attention layer is then added to the input,
+$z_{1,t}^{A_\ell} = x_t^{A_{\ell-1}} + z_{0,t}^{A_\ell}$ This sort of
+residual connection is often used in deep learning. (E.g. Resnet is a
+well known convolutional network with residual connections that did very
+on image classification). It helps to ensure that gradients even deep in
+many layers are not zero. See @jastrzebski2017 for some theoretical
+justification for residual connections.</p>
+<h3 id="layer-norm">Layer Norm<a class="headerlink" href="#layer-norm" title="Permanent link">&para;</a></h3>
+<p>A layer normalization is then applied as in @ba2016. That is, we
+transform <script type="math/tex; mode=display">
+z_{2,t}^{A_\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A_\ell} -
+\mu_\ell) + b_t^\ell
+</script> where $\mu_\ell$ and $\sigma_\ell$ are the mean and standard
+deviation of $z_{1,t}^{A_\ell}$ across $t$.</p>
+<h3 id="feed-forward-layer">Feed-Forward Layer<a class="headerlink" href="#feed-forward-layer" title="Permanent link">&para;</a></h3>
+<p>A single layer feed forward network is then applied to each
+$z_{2,t}^{A_\ell}$. That is, we take</p>
+<p>
+<script type="math/tex; mode=display">
+z_{3,t}^{A_\ell} = f_\ell(z_{2,t}^{A_\ell})
+</script>
+</p>
+<p>where $f_\ell$ is a single layer feed forward network.</p>
+<h3 id="residual-connection-layer-norm-again">Residual Connection &amp; Layer Norm Again<a class="headerlink" href="#residual-connection-layer-norm-again" title="Permanent link">&para;</a></h3>
+<p>Finally there is another residual connection and layer norm applied.</p>
+<p>
+<script type="math/tex; mode=display"> z_{4,t}^{A_\ell} = z_{3,t}^{A_\ell} + z_{2,t}^{A_\ell} </script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+x_{t}^{A_\ell} = frac{g^{\ell2}_t}{\sigma_\ell} (z_{4,t}^{A_\ell} -
+\mu_\ell) + b_t^{\ell2}
+</script>
+</p>
+<h3 id="repeat">Repeat<a class="headerlink" href="#repeat" title="Permanent link">&para;</a></h3>
+<h2 id="prediction-layer">Prediction Layer<a class="headerlink" href="#prediction-layer" title="Permanent link">&para;</a></h2>
+<p>Finally, the output of the encoder, $x_t^{A_L}$, is used to predict
+$x_{t+1}$. When $x_{t+1}$ is discrete, this is done with a linear and
+then softmax layet. When $x_{t+1}$ is continuous, it can be done with
+just a linear layer.</p>
+<h2 id="why">Why?<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
+<p>The architecture of transformers developed step-by-step, combining ideas
+that seemed to work. The idea of an encoder grew out of embeddings and
+was originally combined with recurrent networks. Positional embedding
+and move away from recurrence was motivated by the difficulty with
+parallelizing recurrent models. Residual connections and layer norms
+help with gradient descent and vanishing gradient problems. Theoretical
+understanding of transformers has lagged behind their practical
+application, but theory is advancing rapidly. E.g. @bhattamishra2020 ,
+etc</p>
+<h1 id="example-code">Example Code<a class="headerlink" href="#example-code" title="Permanent link">&para;</a></h1>
+<h1 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h1>
+<h2 id="transformersjl">Transformers.jl<a class="headerlink" href="#transformersjl" title="Permanent link">&para;</a></h2>
+<h2 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h2>
+<p>Huggingface and Transformers.jl interface to it</p>
+<h3 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h3></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

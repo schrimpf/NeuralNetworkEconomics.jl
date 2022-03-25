@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Detecting heterogeneity -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li class="active">
-    <a href="./">Detecting heterogeneity</a>
+<li>
+    <a href="./" class="dropdown-item active">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../ml-doubledebiased/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../ml-doubledebiased/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../ml-julia/">
+                            <li class="nav-item">
+                                <a rel="next" href="../ml-julia/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlExamplePKH.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlExamplePKH.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,18 +128,52 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#introduction">Introduction</a></li>
-            <li><a href="#background">Background</a></li>
-            <li><a href="#baseline-characteristics">Baseline characteristics</a></li>
-            <li><a href="#main-results">Main results</a></li>
-        <li class="main "><a href="#exploring-heterogeneity">Exploring heterogeneity</a></li>
-            <li><a href="#machine-learning-as-proxy">Machine learning as proxy</a></li>
-        <li class="main "><a href="#references">References</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#background" class="nav-link">Background</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#baseline-characteristics" class="nav-link">Baseline characteristics</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#main-results" class="nav-link">Main results</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#exploring-heterogeneity" class="nav-link">Exploring heterogeneity</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#machine-learning-as-proxy" class="nav-link">Machine learning as proxy</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -202,7 +227,7 @@ License</a></p>
 </li>
 </ul>
 <h2 id="baseline-characteristics">Baseline characteristics<a class="headerlink" href="#baseline-characteristics" title="Permanent link">&para;</a></h2>
-<pre><code class="r">if (!file.exists(&quot;Data_AEJPol-2014-0048/data_final/price_women.dta&quot;))
+<pre><code class="language-r">if (!file.exists(&quot;Data_AEJPol-2014-0048/data_final/price_women.dta&quot;))
 {
   stop(&quot;Please download the data from https://www.aeaweb.org/articles?id=10.1257/pol.20140048 and unzip it in the current directory&quot;)
 }
@@ -256,12 +281,10 @@ pw$delivery_fees_trad_top[is.na(pw$delivery_fees_trad_top)
                           &amp;
                           !is.na(pw$delivery_fees_midw_top)] &lt;- 0
 </code></pre>
-
-<pre><code class="r">adf &lt;- aggregate(subset(pw,wave==1), by=list(subset(pw,wave==1)$control_pkh),
+<pre><code class="language-r">adf &lt;- aggregate(subset(pw,wave==1), by=list(subset(pw,wave==1)$control_pkh),
                  FUN=function(x) mean(x,na.rm=TRUE))
 adf
 </code></pre>
-
 <pre><code>##   Group.1 rid_panel prov Location_ID dist wave      edu   agecat
 ## 1       0        NA   NA          NA   NA    1 15.50180 3.405191
 ## 2       1        NA   NA          NA   NA    1 14.59808 3.428927
@@ -340,7 +363,7 @@ adf
 </code></pre>
 <h2 id="main-results">Main results<a class="headerlink" href="#main-results" title="Permanent link">&para;</a></h2>
 <h3 id="delivery-attendant-usage">Delivery attendant usage<a class="headerlink" href="#delivery-attendant-usage" title="Permanent link">&para;</a></h3>
-<pre><code class="r">library(lfe)
+<pre><code class="language-r">library(lfe)
 lhs &lt;- &quot;pkh_kec_ever + doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | 0 | Location_ID&quot;
 itt &lt;- list(felm(as.formula(paste(&quot;doctor_birth ~&quot;,lhs)),data=pw),
             felm(as.formula(paste(&quot;midwife_birth ~&quot;,lhs)),data=pw),
@@ -356,240 +379,238 @@ stargazer(itt, type=&quot;html&quot;,
   c(&quot;Doctor&quot;,&quot;Midwife&quot;,&quot;Traditional&quot;), keep=&quot;pkh&quot;,
   omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
 </code></pre>
-
 <table style="text-align:center">
 <p><caption markdown="1">
 <strong>ITT estimates</strong>
-</caption>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</caption></p>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1" colspan="3">
+<td colspan="3">
 <em>Dependent variable:</em>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1">
+<tr>
+<td>
 </td>
-<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+<td colspan="3" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 Doctor
 </td>
-<td markdown="1">
+<td>
 Midwife
 </td>
-<td markdown="1">
+<td>
 Traditional
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (1)
 </td>
-<td markdown="1">
+<td>
 (2)
 </td>
-<td markdown="1">
+<td>
 (3)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 pkh_kec_ever
 </td>
-<td markdown="1">
+<td>
 0.043<sup>***</sup>
 </td>
-<td markdown="1">
+<td>
 0.094<sup>***</sup>
 </td>
-<td markdown="1">
+<td>
 -0.090<sup>***</sup>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (0.012)
 </td>
-<td markdown="1">
+<td>
 (0.017)
 </td>
-<td markdown="1">
+<td>
 (0.016)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
-</td>
-</tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<td>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
 Observations
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
-</tr></p>
+</tr>
 </table>
 <hr />
 <h3 id="delivery-attendant-usage-delivery-attendant-usage-1">Delivery attendant usage [delivery-attendant-usage-1]<a class="headerlink" href="#delivery-attendant-usage-delivery-attendant-usage-1" title="Permanent link">&para;</a></h3>
-<pre><code class="r">stargazer(iv, type=&quot;html&quot;,
+<pre><code class="language-r">stargazer(iv, type=&quot;html&quot;,
   title=&quot;IV effect of program participation&quot;, dep.var.labels =
   c(&quot;Doctor&quot;,&quot;Midwife&quot;,&quot;Traditional&quot;), keep=&quot;pkh&quot;,
   omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
 </code></pre>
-
 <table style="text-align:center">
 <p><caption markdown="1">
 <strong>IV effect of program participation</strong>
-</caption>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</caption></p>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1" colspan="3">
+<td colspan="3">
 <em>Dependent variable:</em>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1">
+<tr>
+<td>
 </td>
-<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+<td colspan="3" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 Doctor
 </td>
-<td markdown="1">
+<td>
 Midwife
 </td>
-<td markdown="1">
+<td>
 Traditional
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (1)
 </td>
-<td markdown="1">
+<td>
 (2)
 </td>
-<td markdown="1">
+<td>
 (3)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 <code>pkh_ever(fit)</code>
 </td>
-<td markdown="1">
+<td>
 0.091<sup>***</sup>
 </td>
-<td markdown="1">
+<td>
 0.198<sup>***</sup>
 </td>
-<td markdown="1">
+<td>
 -0.189<sup>***</sup>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (0.025)
 </td>
-<td markdown="1">
+<td>
 (0.036)
 </td>
-<td markdown="1">
+<td>
 (0.035)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
-</td>
-</tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<td>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
 Observations
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
-<td markdown="1">
+<td>
 6,629
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
-</tr></p>
+</tr>
 </table>
 <hr />
 <h3 id="health-outcomes">Health outcomes<a class="headerlink" href="#health-outcomes" title="Permanent link">&para;</a></h3>
-<pre><code class="r">library(lfe)
+<pre><code class="language-r">library(lfe)
 lhs &lt;- &quot;pkh_kec_ever + doctor_birth_base + as.factor(edu) + as.factor(agecat) + log_xp_percap + hh_land + hh_home | dist | 0 | Location_ID&quot;
 itt &lt;- list(felm(as.formula(paste(&quot;death_ch ~&quot;,lhs)),data=pw),
             felm(as.formula(paste(&quot;bw ~&quot;,lhs)),data=pw),
@@ -606,236 +627,234 @@ stargazer(itt, type=&quot;html&quot;,
   c(&quot;Infant mortality&quot;,&quot;Birthweight&quot;,&quot;Low birthweight&quot;), keep=&quot;pkh&quot;,
   omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
 </code></pre>
-
 <table style="text-align:center">
 <p><caption markdown="1">
 <strong>ITT estimates</strong>
-</caption>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</caption></p>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1" colspan="3">
+<td colspan="3">
 <em>Dependent variable:</em>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1">
+<tr>
+<td>
 </td>
-<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+<td colspan="3" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 Infant mortality
 </td>
-<td markdown="1">
+<td>
 Birthweight
 </td>
-<td markdown="1">
+<td>
 Low birthweight
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (1)
 </td>
-<td markdown="1">
+<td>
 (2)
 </td>
-<td markdown="1">
+<td>
 (3)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 pkh_kec_ever
 </td>
-<td markdown="1">
+<td>
 0.005
 </td>
-<td markdown="1">
+<td>
 -5.559
 </td>
-<td markdown="1">
+<td>
 0.017
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (0.004)
 </td>
-<td markdown="1">
+<td>
 (23.805)
 </td>
-<td markdown="1">
+<td>
 (0.012)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
-</td>
-</tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<td>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
 Observations
 </td>
-<td markdown="1">
+<td>
 8,303
 </td>
-<td markdown="1">
+<td>
 4,988
 </td>
-<td markdown="1">
+<td>
 4,988
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
-</tr></p>
+</tr>
 </table>
 <hr />
 <h3 id="health-outcomes-health-outcomes-1">Health outcomes [health-outcomes-1]<a class="headerlink" href="#health-outcomes-health-outcomes-1" title="Permanent link">&para;</a></h3>
-<pre><code class="r">stargazer(iv, type=&quot;html&quot;,
+<pre><code class="language-r">stargazer(iv, type=&quot;html&quot;,
   title=&quot;IV effect of program participation&quot;, dep.var.labels =
   c(&quot;Infant mortality&quot;,&quot;Birthweight&quot;,&quot;Lowbirthweigt&quot;), keep=&quot;pkh&quot;,
   omit.table.layout=&quot;n&quot;,omit.stat = c(&quot;rsq&quot;,&quot;adj.rsq&quot;,&quot;ser&quot;))
 </code></pre>
-
 <table style="text-align:center">
 <p><caption markdown="1">
 <strong>IV effect of program participation</strong>
-</caption>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+</caption></p>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1" colspan="3">
+<td colspan="3">
 <em>Dependent variable:</em>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1">
+<tr>
+<td>
 </td>
-<td markdown="1" colspan="3" style="border-bottom: 1px solid black">
+<td colspan="3" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 Infant mortality
 </td>
-<td markdown="1">
+<td>
 Birthweight
 </td>
-<td markdown="1">
+<td>
 Lowbirthweigt
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (1)
 </td>
-<td markdown="1">
+<td>
 (2)
 </td>
-<td markdown="1">
+<td>
 (3)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 <code>pkh_ever(fit)</code>
 </td>
-<td markdown="1">
+<td>
 0.011
 </td>
-<td markdown="1">
+<td>
 -12.674
 </td>
-<td markdown="1">
+<td>
 0.039
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 (0.008)
 </td>
-<td markdown="1">
+<td>
 (54.269)
 </td>
-<td markdown="1">
+<td>
 (0.026)
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td style="text-align:left">
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
+<td>
 </td>
-<td markdown="1">
-</td>
-</tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<td>
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
 Observations
 </td>
-<td markdown="1">
+<td>
 8,303
 </td>
-<td markdown="1">
+<td>
 4,988
 </td>
-<td markdown="1">
+<td>
 4,988
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" colspan="4" style="border-bottom: 1px solid black">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
 </td>
-</tr></p>
+</tr>
 </table>
 <h1 id="exploring-heterogeneity">Exploring heterogeneity<a class="headerlink" href="#exploring-heterogeneity" title="Permanent link">&para;</a></h1>
 <h2 id="machine-learning-as-proxy">Machine learning as proxy<a class="headerlink" href="#machine-learning-as-proxy" title="Permanent link">&para;</a></h2>
@@ -862,7 +881,7 @@ Observations
 </ul>
 <hr />
 <h3 id="heterogeneity-in-cate-for-birthweight">Heterogeneity in CATE for Birthweight<a class="headerlink" href="#heterogeneity-in-cate-for-birthweight" title="Permanent link">&para;</a></h3>
-<pre><code class="r">## Function for Generic machine learning of Chernozhukov, Demirer, Duflo, &amp; Fernandez-Val (2018)
+<pre><code class="language-r">## Function for Generic machine learning of Chernozhukov, Demirer, Duflo, &amp; Fernandez-Val (2018)
 genericML &lt;- function(x,y,treat, fit.function, predict.function,
                       n.split=10, n.group=5, clusterid=NULL) {
   if (!is.null(clusterid)) require(sandwich) 
@@ -918,8 +937,7 @@ genericML.summary &lt;- function(gml)
   return(list(blp=blp, blp.se=blp.se, gate=gate, gate.se=gate.se, Lambda=Lambda))
 }
 </code></pre>
-
-<pre><code class="r">library(glmnet)
+<pre><code class="language-r">library(glmnet)
 
 # create x matrix
 fmla.l &lt;- bw ~ pkh_kec_ever +
@@ -942,34 +960,29 @@ center &lt;- mean(m$y)
 yl &lt;- (m$y-center)/scale
 lid &lt;- as.factor(pw[as.numeric(rownames(m$x)),]$Location_ID)
 </code></pre>
-
-<pre><code class="r">gml.lasso &lt;- genericML(Xl,m$y, treat, 
+<pre><code class="language-r">gml.lasso &lt;- genericML(Xl,m$y, treat, 
                    function(x,y) cv.glmnet(x,(y-center)/scale,alpha=1,parallel=FALSE, intercept=TRUE, nfolds=20),
                    function(model, x) { predict(model, x, s=model$lambda.min, type=&quot;response&quot;)*scale + center },
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(grf)
+<pre><code class="language-r">library(grf)
 gml.rf &lt;- genericML(Xl,m$y, treat, 
                    function(x,y) regression_forest(x, (y-center)/scale, tune.parameters=TRUE),
                    function(model, x) { predict(model,x)$predictions*scale + center},
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(RSNNS)
+<pre><code class="language-r">library(RSNNS)
 gml.nn &lt;- genericML(Xl,m$y, treat, 
                    function(x,y) mlp(x,(y-center)/scale,linOut=TRUE, size=c(10,10), learnFunc=&quot;SCG&quot;),
                    function(model, x) { predict(model,x)*scale + center},
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(GGally)
+<pre><code class="language-r">library(GGally)
 df &lt;- data.frame(Lasso=apply(gml.lasso$cate,1,median),
                  Forest=apply(gml.rf$cate,1,median),
                  Neural=apply(gml.nn$cate,1,median))
 ggpairs(df, lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
 </code></pre>
-
 <p><img alt="plot of chunk cateplot" src="../figure/cateplot-1.png" /></p>
 <hr />
 <h3 id="best-linear-projection-of-cate">Best linear projection of CATE<a class="headerlink" href="#best-linear-projection-of-cate" title="Permanent link">&para;</a></h3>
@@ -998,7 +1011,7 @@ ggpairs(df, lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
 </li>
 </ul>
 <hr />
-<pre><code class="r">library(kableExtra)
+<pre><code class="language-r">library(kableExtra)
 colfn &lt;- function(gml) {
   s &lt;- genericML.summary(gml)
   c(s$blp[1], s$blp.se[1], s$blp[2], s$blp.se[2], s$Lambda[1])
@@ -1013,98 +1026,97 @@ kable_styling(kable(tbl,
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 Machine learning proxies as BLP of CATE on Birthweight
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Regression forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 ATE=b0
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -11.381
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -1.751
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 6.185
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 31.414
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 32.285
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 32.309
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 b1
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.371
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.369
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.044
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.547
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.491
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.115
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Lambda
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 601.155
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 683.726
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 372.192
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <hr />
 <h3 id="group-average-treatment-effects-group-average-treatment-effects">Group average treatment effects [group-average-treatment-effects]<a class="headerlink" href="#group-average-treatment-effects-group-average-treatment-effects" title="Permanent link">&para;</a></h3>
@@ -1128,7 +1140,7 @@ Lambda
 </li>
 </ul>
 <hr />
-<pre><code class="r">library(kableExtra)
+<pre><code class="language-r">library(kableExtra)
 colfn &lt;- function(gml) {
   s &lt;- genericML.summary(gml)
   c(s$gate[1], s$gate.se[1],
@@ -1148,220 +1160,214 @@ kable_styling(kable(tbl,
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 GATE on Birthweight
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Regression forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 GATE 1
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -48.985
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -3.950
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 19.586
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 69.276
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 69.646
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 62.126
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 2
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 21.303
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -21.106
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -30.948
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 74.528
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 60.761
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 67.161
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 3
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -9.369
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -44.090
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -11.807
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 65.917
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 66.654
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 66.981
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 4
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 1.730
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 10.772
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -13.668
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 66.391
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 67.695
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 66.693
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 5
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -22.329
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 5.736
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 52.466
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 66.335
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 77.828
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 77.496
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Lambda
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 5998.909
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 4268.074
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 3912.912
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <hr />
 <h3 id="heterogeneity-in-cate-on-midwife-utilization">Heterogeneity in CATE on Midwife utilization<a class="headerlink" href="#heterogeneity-in-cate-on-midwife-utilization" title="Permanent link">&para;</a></h3>
-<pre><code class="r"># create x matrix
+<pre><code class="language-r"># create x matrix
 mwb &lt;- pw[as.numeric(rownames(m$x)),]$midwife_birth
 </code></pre>
-
-<pre><code class="r">mw.lasso &lt;- genericML(Xl,mwb, treat, 
+<pre><code class="language-r">mw.lasso &lt;- genericML(Xl,mwb, treat, 
                    function(x,y) cv.glmnet(x,y,family=&quot;binomial&quot;,
                                            alpha=1,parallel=FALSE, intercept=TRUE, nfolds=20),
                    function(model, x) { predict(model, x, s=model$lambda.min, type=&quot;response&quot;) },
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(grf)
+<pre><code class="language-r">library(grf)
 mw.rf &lt;- genericML(Xl,mwb, treat, 
                    function(x,y) regression_forest(x, y, tune.parameters=TRUE),
                    function(model, x) { predict(model,x)$predictions },
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(RSNNS)
+<pre><code class="language-r">library(RSNNS)
 mw.nn &lt;- genericML(Xl,mwb, treat, 
                    function(x,y) mlp(x, y, linOut=FALSE, size=c(10,10), learnFunc=&quot;SCG&quot;),
                    function(model, x) { predict(model,x) },
                    n.split=11,n.group=5, clusterid=lid)
 </code></pre>
-
-<pre><code class="r">library(GGally)
+<pre><code class="language-r">library(GGally)
 df &lt;- data.frame(Lasso=apply(mw.lasso$cate,1,median),
                  Forest=apply(mw.rf$cate,1,median),
                  Neural=apply(mw.nn$cate,1,median))
 ggpairs(df, lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
 </code></pre>
-
 <p><img alt="plot of chunk cateplot-mw" src="../figure/cateplot-mw-1.png" /></p>
 <hr />
-<pre><code class="r">library(kableExtra)
+<pre><code class="language-r">library(kableExtra)
 colfn &lt;- function(gml) {
   s &lt;- genericML.summary(gml)
   c(s$blp[1], s$blp.se[1], s$blp[2], s$blp.se[2], s$Lambda[1])
@@ -1376,101 +1382,100 @@ kable_styling(kable(tbl,
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 Machine learning proxies as BLP of CATE on Midwife Use
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Regression forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 ATE=b0
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.048
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.056
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.043
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.023
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.023
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.024
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 b1
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.466
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.625
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.207
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.189
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.240
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.089
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Lambda
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.003
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.003
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.003
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <hr />
-<pre><code class="r">library(kableExtra)
+<pre><code class="language-r">library(kableExtra)
 colfn &lt;- function(gml) {
   s &lt;- genericML.summary(gml)
   c(s$gate[1], s$gate.se[1],
@@ -1490,186 +1495,185 @@ kable_styling(kable(tbl,
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 GATE on Midwife Use
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Regression forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 GATE 1
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -0.002
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.030
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -0.027
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.045
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.054
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.060
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 2
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.017
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 -0.024
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.035
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.050
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.054
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.052
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 3
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.010
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.038
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.003
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.054
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.050
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.050
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 4
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.089
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.080
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.058
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.053
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.046
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.050
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 GATE 5
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.166
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.189
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.136
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 se
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.053
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.052
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.052
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Lambda
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.007
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.011
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.006
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <hr />
 <h3 id="covariate-means-by-group-covariate-means-by-group">Covariate means by group [covariate-means-by-group]<a class="headerlink" href="#covariate-means-by-group-covariate-means-by-group" title="Permanent link">&para;</a></h3>
-<pre><code class="r">df &lt;- pw[as.numeric(rownames(m$x)),]
+<pre><code class="language-r">df &lt;- pw[as.numeric(rownames(m$x)),]
 df$edu99 &lt;- df$edu==99
 df$educ &lt;- df$edu
 df$educ[df$educ==99] &lt;- NA
@@ -1719,7 +1723,6 @@ fig &lt;- ggplot(data=tmp, aes(x=group, y=mean, colour=method)) +
   facet_wrap(~ variable,scales=&quot;free_y&quot;) + theme_minimal()
 print(fig)
 </code></pre>
-
 <p><img alt="plot of chunk clan" src="../figure/clan-1.png" /></p>
 <!--- # Comparing estimation methods --->
 
@@ -1747,6 +1750,7 @@ Journal: Economic Policy</em> 8 (4): 255–88.
 <a href="https://doi.org/10.1257/pol.20140048">https://doi.org/10.1257/pol.20140048</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -1763,35 +1767,32 @@ Journal: Economic Policy</em> 8 (4): 255–88.
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>With Julia -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li class="active">
-    <a href="./">With Julia</a>
+<li>
+    <a href="./" class="dropdown-item active">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../mlExamplePKH/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../mlExamplePKH/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../slp/">
+                            <li class="nav-item">
+                                <a rel="next" href="../slp/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-julia.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-julia.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,18 +128,52 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-        <li class="main "><a href="#rcall">RCall</a></li>
-        <li class="main "><a href="#mljjl">MLJ.jl</a></li>
-        <li class="main "><a href="#fluxjl">Flux.jl</a></li>
-        <li class="main "><a href="#additional-resources">Additional Resources</a></li>
-        <li class="main "><a href="#references-references">References [references]</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#rcall" class="nav-link">RCall</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#mljjl" class="nav-link">MLJ.jl</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#fluxjl" class="nav-link">Flux.jl</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#additional-resources" class="nav-link">Additional Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -188,18 +213,16 @@ prefer using Julia, you can just call the necessary R functions with
 <a href="https://github.com/JuliaInterop/RCall.jl"><code>RCall.jl</code></a>.</p>
 <p>Here, we load the pipeline data used in the <a href="../ml-methods/">machine learning methods
 notes</a>, and do some cleaning in Julia.</p>
-<pre><code class="julia">using RCall, DataFrames, Missings, Statistics
+<pre><code class="language-julia">using RCall, DataFrames, Missings, Statistics
 R&quot;load(paste($(docdir),\&quot;/rmd/pipelines.Rdata\&quot;,sep=\&quot;\&quot;))&quot;
 println(R&quot;ls()&quot;)
 </code></pre>
-
 <pre><code>RObject{StrSxp}
 [1] "#JL"  "data"
 </code></pre>
-<pre><code class="julia">data = @rget data # data on left is new Julia variable, data on right is the one in R
+<pre><code class="language-julia">data = @rget data # data on left is new Julia variable, data on right is the one in R
 println(R&quot;summary(data[,1:5])&quot;)
 </code></pre>
-
 <pre><code>RObject{StrSxp}
  respondent_id     report_yr      report_prd     major        
  Min.   :  1.0   Min.   :1991   Min.   :12     Mode :logical  
@@ -218,9 +241,8 @@ println(R&quot;summary(data[,1:5])&quot;)
  (Other)                             :2938  
  NA's                                :3123
 </code></pre>
-<pre><code class="julia">println(describe(data[:,1:5]))
+<pre><code class="language-julia">println(describe(data[:,1:5]))
 </code></pre>
-
 <pre><code>5×8 DataFrame
 │ Row │ variable        │ mean     │ min                                │ median │ max                                           │ nunique │ nmissing │ eltype                                    │
 │     │ Symbol          │ Union…   │ Any                                │ Union… │ Any                                           │ Union…  │ Union…   │ Type                                      │
@@ -231,12 +253,11 @@ println(R&quot;summary(data[,1:5])&quot;)
 │ 4   │ major           │ 0.701178 │ 0                                  │ 1.0    │ 1                                             │         │ 2180     │ Union{Missing, Bool}                      │
 │ 5   │ respondent_name │          │ Algonquin Gas Transmission Company │        │ Southern Natural Gas Company                  │ 440     │ 3123     │ Union{Missing, CategoricalString{UInt32}} │
 </code></pre>
-<pre><code class="julia">for c in 59:107 # columns of state mileage, want missing-&gt;0
+<pre><code class="language-julia">for c in 59:107 # columns of state mileage, want missing-&gt;0
   replace!(x-&gt;(ismissing(x) || isnan(x)) ? 0.0 : x, data[!,c])
 end
 println(describe(data[:,59:65]))
 </code></pre>
-
 <pre><code>7×8 DataFrame
 │ Row │ variable       │ mean       │ min     │ median  │ max      │ nunique │ nmissing │ eltype                  │
 │     │ Symbol         │ Float64    │ Float64 │ Float64 │ Float64  │ Nothing │ Int64    │ Union                   │
@@ -252,7 +273,7 @@ println(describe(data[:,59:65]))
 <p>Suppose we want to estimate the coefficient on <code>transPlant</code> (capital) in
 a partially linear model with <code>transProfit</code> (profit) as the outcome.
 This can be done with the R function <code>hdm::rlassoEffects</code>.</p>
-<pre><code class="julia">R&quot;library(hdm)&quot;
+<pre><code class="language-julia">R&quot;library(hdm)&quot;
 completedata = dropmissing(data,[1:10..., 59:122...], disallowmissing=true)
 y = completedata[:transProfit]
 inc = .!isnan.(y)
@@ -263,7 +284,6 @@ X = X[:,cols]
 est = R&quot;rlassoEffects($(X), $(y), index=c(1:2))&quot;
 R&quot;summary($est)&quot;
 </code></pre>
-
 <pre><code>RObject{VecSxp}
 [1] "Estimates and significance testing of the effect of target variables"
                       Estimate. Std. Error t value Pr(&gt;|t|)    
@@ -291,10 +311,9 @@ a similar Python package.</p>
 <p>You can see a list of models registered to work with <code>MLJ.jl</code> on
 <a href="https://github.com/alan-turing-institute/MLJModels.jl/blob/master/src/registry/Models.toml">github</a>,
 or by calling <code>MLJ::models()</code>.</p>
-<pre><code class="julia">using MLJ
+<pre><code class="language-julia">using MLJ
 models()
 </code></pre>
-
 <pre><code>109-element Array{NamedTuple,1}:
  (name = ARDRegressor, package_name = ScikitLearn, ... )             
  (name = AdaBoostClassifier, package_name = ScikitLearn, ... )       
@@ -320,28 +339,25 @@ models()
 <p>To use these models, you need the corresponding package to be installed
 and loaded. The <code>@load</code> macro will load the needed package(s) for any
 model.</p>
-<pre><code class="julia">lasso_model = @load LassoRegressor pkg=MLJLinearModels
+<pre><code class="language-julia">lasso_model = @load LassoRegressor pkg=MLJLinearModels
 </code></pre>
-
 <pre><code>LassoRegressor(lambda = 1.0,
                fit_intercept = true,
                penalize_intercept = false,
                solver = nothing,) @ 2…60
 </code></pre>
 <p>Let’s fit lasso to the same pipeline data as above.</p>
-<pre><code class="julia">lasso_model.lambda = 1.0
+<pre><code class="language-julia">lasso_model.lambda = 1.0
 lasso = machine(lasso_model, X, y)
 train,test = partition(eachindex(y), 0.6, shuffle=true)
 fit!(lasso, rows=train)
 yhat = predict(lasso, rows=test)
 println(yhat[1:10])
 </code></pre>
-
 <pre><code>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 </code></pre>
-<pre><code class="julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
+<pre><code class="language-julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-
 <pre><code>MSE/var(y) = 1.4734944469534543
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
@@ -354,7 +370,7 @@ roughly the same scale. The existing <code>X</code>’s have wildly different sc
 which causes problems. This situation is common, so <code>MLJ.jl</code> has
 functions to standardize variables. It is likely that the <code>hdm</code> package
 in R does something similar internally.</p>
-<pre><code class="julia">lasso_stdx = @pipeline PipeLasso(std=Standardizer(),
+<pre><code class="language-julia">lasso_stdx = @pipeline PipeLasso(std=Standardizer(),
                   lasso=LassoRegressor(lambda=1.0*std(y),
                                        solver=MLJLinearModels.ISTA(max_iter=10000)
                                        )
@@ -364,21 +380,19 @@ fit!(m, rows=train)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-
 <pre><code>MSE/var(y) = 0.1302218664602367
 </code></pre>
-<pre><code class="julia">
+<pre><code class="language-julia">
 # Get the fitted coefficients
 coef = fitted_params(m).fitted_params[1].coefs
 intercept = fitted_params(m).fitted_params[1].intercept
 sum(abs.(coef).&gt;1e-8) # number non-zero
 </code></pre>
-
 <pre><code>56
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
-<pre><code class="julia">r = range(lasso_stdx, :(lasso.lambda), lower=1e1, upper=1e10, scale=:log)
+<pre><code class="language-julia">r = range(lasso_stdx, :(lasso.lambda), lower=1e1, upper=1e10, scale=:log)
 t=TunedModel(model=lasso_stdx,
              resampling=CV(nfolds=5),
              tuning=Grid(resolution=10), 
@@ -389,15 +403,13 @@ fit!(m, rows=train, verbosity=1)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-
 <pre><code>MSE/var(y) = 0.13170341963283844
 </code></pre>
-<pre><code class="julia">using Plots
+<pre><code class="language-julia">using Plots
 cvmse = m.report.measurements
 λ = Float64.(m.report.parameter_values[:])
 plot(λ, cvmse, xlab=&quot;λ&quot;, ylab=&quot;CV(MSE)&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/ml-julia_9_1.png" /></p>
 <h1 id="fluxjl">Flux.jl<a class="headerlink" href="#fluxjl" title="Permanent link">&para;</a></h1>
 <p><a href="https://fluxml.ai/Flux.jl/stable/"><code>Flux.jl</code></a> is another Julia package
@@ -405,7 +417,7 @@ for machine learning. It seems to be emerging as the leading Julia
 package for neural networks and deep learning, but other machine
 learning models can also be implemented using <code>Flux.jl</code>.</p>
 <p>Let’s create a lasso model in <code>Flux.jl</code>.</p>
-<pre><code class="julia">using Flux, LinearAlgebra
+<pre><code class="language-julia">using Flux, LinearAlgebra
 # Scale the variables
 Xstd = Flux.normalise(Matrix(X))
 X_train = Xstd[train,:]
@@ -431,10 +443,9 @@ penalty(y) = λ/length(y)*norm(ψ.*β,1)
 loss(x,y) =  mse(x,y) + penalty(y)
 @show loss(X_train,y_train)
 </code></pre>
-
 <pre><code>loss(X_train, y_train) = 1.017489917959785 (tracked)
 </code></pre>
-<pre><code class="julia">
+<pre><code class="language-julia">
 # minimize loss
 maxiter=2000
 obj = zeros(maxiter)
@@ -450,12 +461,10 @@ lo = 1
 hi = 250
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/ml-julia_10_1.png" /></p>
-<pre><code class="julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;)
+<pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;)
      , lab=[&quot;Train&quot; &quot;Test&quot;])
 </code></pre>
-
 <p><img alt="" src="../figures/ml-julia_11_1.png" /></p>
 <p>The minimization methods in <code>Flux.train!</code> are all variants of gradient
 descent. Each call to <code>Flux.train!</code> runs one iteration of the specified
@@ -492,6 +501,7 @@ Miner, and Marvin Wright. 2018. <em>Grf: Generalized Random Forests
 (Beta)</em>. <a href="https://CRAN.R-project.org/package=grf">https://CRAN.R-project.org/package=grf</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -508,35 +518,32 @@ Miner, and Marvin Wright. 2018. <em>Grf: Generalized Random Forests
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

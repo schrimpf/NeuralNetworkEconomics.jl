@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Methods -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li class="active">
-    <a href="./">Methods</a>
+<li>
+    <a href="./" class="dropdown-item active">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../ml-intro/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../ml-intro/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../ml-doubledebiased/">
+                            <li class="nav-item">
+                                <a rel="next" href="../ml-doubledebiased/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-methods.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-methods.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,17 +128,47 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#introduction-to-machine-learning">Introduction to machine learning</a></li>
-            <li><a href="#some-prediction-examples">Some prediction examples</a></li>
-            <li><a href="#lasso">Lasso</a></li>
-            <li><a href="#random-forests">Random forests</a></li>
-            <li><a href="#neural-networks">Neural Networks</a></li>
-        <li class="main "><a href="#bibliography">Bibliography</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#introduction-to-machine-learning" class="nav-link">Introduction to machine learning</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#some-prediction-examples" class="nav-link">Some prediction examples</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#lasso" class="nav-link">Lasso</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#random-forests" class="nav-link">Random forests</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#neural-networks" class="nav-link">Neural Networks</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#bibliography" class="nav-link">Bibliography</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -192,10 +213,9 @@ see how well it works</p>
 </ul>
 <hr />
 <h3 id="ahs-variables-ahs-variables">AHS variables [ahs-variables]<a class="headerlink" href="#ahs-variables-ahs-variables" title="Permanent link">&para;</a></h3>
-<pre><code class="r">ahs &lt;- readRDS(&quot;ahs2011forjep.rdata&quot;)$df
+<pre><code class="language-r">ahs &lt;- readRDS(&quot;ahs2011forjep.rdata&quot;)$df
 print(summary(ahs[,1:20]))
 </code></pre>
-
 <pre><code>##     LOGVALUE     REGION    METRO     METRO3    PHONE      KITCHEN  
 ##  Min.   : 0.00   1: 5773   1:10499   1:11928   -7: 1851   1:51513  
 ##  1st Qu.:11.56   2:13503   2: 1124   2:39037   1 :49353   2:  295  
@@ -226,17 +246,16 @@ print(summary(ahs[,1:20]))
 ##
 </code></pre>
 <hr />
-<pre><code class="r">library(GGally)
+<pre><code class="language-r">library(GGally)
 ggpairs(ahs[,c(&quot;LOGVALUE&quot;,&quot;ROOMS&quot;, &quot;LOT&quot;,&quot;UNITSF&quot;,&quot;BUILT&quot;)],
         lower=list(continuous=&quot;points&quot;, combo=&quot;facethist&quot;,
                    discrete=&quot;facetbar&quot;),
         diag=list(continuous=&quot;barDiag&quot;,discrete=&quot;barDiag&quot;)) +
   theme_minimal()
 </code></pre>
-
 <p><img alt="plot of chunk ahsfig" src="../figure/ahsfig-1.png" /></p>
 <hr />
-<pre><code class="r"># use ms-reproduce.R from course git repo to download and run Mullainathon &amp; Spiess data and code to
+<pre><code class="language-r"># use ms-reproduce.R from course git repo to download and run Mullainathon &amp; Spiess data and code to
 # create jepfittedmodels-table1.csv. Be aware that this will take many hours.
 tbl &lt;- read.csv(&quot;jepfittedmodels-table1.csv&quot;)
 tab &lt;- tbl[,3:ncol(tbl)]
@@ -245,136 +264,132 @@ tab &lt;- tab[1:5, c(1,2,3,5)]
 colnames(tab) &lt;- c(&quot;in sample MSE&quot;, &quot;in sample R^2&quot;, &quot;out of sample MSE&quot;, &quot;out of sample R^2&quot;)
 library(kableExtra)
 </code></pre>
-
-<pre><code class="r">kable_styling(kable(tab,
+<pre><code class="language-r">kable_styling(kable(tab,
                     caption=&quot;Performance of different algorithms in predicting housing values&quot;,
                     format=&quot;html&quot;, digits=3),
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 Performance of different algorithms in predicting housing values
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 in sample MSE
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 in sample R\^2
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 out of sample MSE
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 out of sample R\^2
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 OLS
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.589
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.473
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.674
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.417
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Tree
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.675
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.396
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.758
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.345
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Lasso
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.603
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.460
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.656
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.433
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Forest
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.166
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.851
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.632
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.454
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 Ensemble
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.216
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.807
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.625
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.460
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <hr />
-<pre><code class="r">library(ggplot2)
+<pre><code class="language-r">library(ggplot2)
 load(file=&quot;jeperrorfig.RData&quot;)
 print(fig)
 </code></pre>
-
 <p><img alt="plot of chunk jep1" src="../figure/jep1-1.png" /></p>
 <hr />
-<pre><code class="r">load(file=&quot;jeperrorfig.RData&quot;)
+<pre><code class="language-r">load(file=&quot;jeperrorfig.RData&quot;)
 print(fig2)
 </code></pre>
-
 <p><img alt="plot of chunk jep2" src="../figure/jep2-1.png" /></p>
 <hr />
 <h3 id="predicting-pipeline-revenues">Predicting pipeline revenues<a class="headerlink" href="#predicting-pipeline-revenues" title="Permanent link">&para;</a></h3>
@@ -392,7 +407,7 @@ print(fig2)
     pipeline operates in</li>
 </ul>
 <hr />
-<pre><code class="r">load(&quot;pipelines.Rdata&quot;)
+<pre><code class="language-r">load(&quot;pipelines.Rdata&quot;)
 # data has problems before 1996 due to format change
 data &lt;- subset(data,report_yr&gt;=1996)
 # replace NA state weights with 0's
@@ -401,7 +416,6 @@ data[,59:107][is.na(data[,59:107])] &lt;- 0
 names(data) &lt;- gsub(&quot; &quot;,&quot;.&quot;,names(data))
 summary(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;cityPrice&quot;,&quot;wellPrice&quot;)])
 </code></pre>
-
 <pre><code>##   transProfit         transPlant_bal_beg_yr   cityPrice      
 ##  Min.   : -31622547   Min.   :0.000e+00     Min.   : 0.4068  
 ##  1st Qu.:   2586031   1st Qu.:2.404e+07     1st Qu.: 3.8666  
@@ -420,11 +434,10 @@ summary(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;
 ##  NA's   :2637
 </code></pre>
 <hr />
-<pre><code class="r">library(GGally)
+<pre><code class="language-r">library(GGally)
 ggpairs(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;cityPrice&quot;,&quot;wellPrice&quot;)],
         lower=list(continuous=&quot;smooth&quot;))  + theme_minimal()
 </code></pre>
-
 <p><img alt="plot of chunk pipeline-figure" src="../figure/pipeline-figure-1.png" /></p>
 <hr />
 <h3 id="predicting-pipeline-revenues-methods">Predicting pipeline revenues : methods<a class="headerlink" href="#predicting-pipeline-revenues-methods" title="Permanent link">&para;</a></h3>
@@ -442,7 +455,7 @@ as neural nets and support vector machines are also worth exploring. For
 now, you can think of Lasso and random forests these as black boxes that
 generate predictions from data. We will go into more detail soon.</p>
 </div>
-<pre><code class="r">## Create X matrix for OLS and random forests
+<pre><code class="language-r">## Create X matrix for OLS and random forests
 xnames &lt;-c(&quot;transPlant_bal_beg_yr&quot;,   &quot;reserve&quot;,   &quot;wellPrice&quot;,  &quot;cityPrice&quot;,
            &quot;plantArea&quot;,  &quot;heatDegDays&quot;,
            names(data)[59:107] )
@@ -498,25 +511,22 @@ y.hat.nn &lt;- denormalizeData(yn.hat.nn, getNormParameters(yn))
 df &lt;- rbind(df, data.frame(y=y, y.hat=y.hat.nn, train=train,
                            method=&quot;neural network&quot;))
 </code></pre>
-
 <hr />
-<pre><code class="r">ggplot(data=df,aes(x=y,y=y.hat,colour=method,shape=train)) +  geom_point(alpha=0.5) +
+<pre><code class="language-r">ggplot(data=df,aes(x=y,y=y.hat,colour=method,shape=train)) +  geom_point(alpha=0.5) +
   geom_line(aes(y=y)) + theme_minimal()
 </code></pre>
-
 <p><img alt="plot of chunk pipelinePredPlot" src="../figure/pipelinePredPlot-1.png" /></p>
 <hr />
-<pre><code class="r">df$trainf &lt;- factor(df$train, levels=c(&quot;TRUE&quot;, &quot;FALSE&quot;))
+<pre><code class="language-r">df$trainf &lt;- factor(df$train, levels=c(&quot;TRUE&quot;, &quot;FALSE&quot;))
 df$error &lt;- df$y - df$y.hat
 ggplot(data=df,aes(x=error,colour=method)) +
   geom_density() + theme_minimal() +
   xlim(quantile(df$error,c(0.01,0.99))) +
   facet_grid(trainf ~ .,labeller=label_both)
 </code></pre>
-
 <p><img alt="plot of chunk pipelineErrorPlot" src="../figure/pipelineErrorPlot-1.png" /></p>
 <hr />
-<pre><code class="r">library(kableExtra)
+<pre><code class="language-r">library(kableExtra)
 fn &lt;- function(df)  with(df,c(mean((y.hat - y)^2)/var(y),
                               mean(abs(y.hat - y))/mean(abs(y-mean(y)))))
 tab1 &lt;-unlist(by(subset(df,train), df$method[train],  FUN=fn))
@@ -532,129 +542,127 @@ kable_styling(kable(tab1, caption=&quot;Training sample&quot;, format=&quot;html
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
               &quot;responsive&quot;), full_width=F)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 Training sample
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 OLS
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Random forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural Network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 relative MSE
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.110
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.031
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.063
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.012
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 relative MAE
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.265
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.137
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.179
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.111
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
-<pre><code class="r">kable_styling(kable(tab2, caption=&quot;Hold-out sample&quot;, format=&quot;html&quot;, digits=3),
+<pre><code class="language-r">kable_styling(kable(tab2, caption=&quot;Hold-out sample&quot;, format=&quot;html&quot;, digits=3),
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
               &quot;responsive&quot;), full_width=F)
 </code></pre>
-
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <p><caption markdown="1">
 Hold-out sample
-</caption>
-<thead markdown="1">
-<tr markdown="1">
-<th markdown="1" style="text-align:left;">
+</caption></p>
+<thead>
+<tr>
+<th style="text-align:left;">
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 OLS
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Lasso
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Random forest
 </th>
-<th markdown="1" style="text-align:right;">
+<th style="text-align:right;">
 Neural Network
 </th>
 </tr>
 </thead>
-<tbody markdown="1">
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;">
 relative MSE
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.125
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.064
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.093
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.092
 </td>
 </tr>
-<tr markdown="1">
-<td markdown="1" style="text-align:left;">
+<tr>
+<td style="text-align:left;">
 relative MAE
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.288
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.199
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.232
 </td>
-<td markdown="1" style="text-align:right;">
+<td style="text-align:right;">
 0.278
 </td>
 </tr>
-</tbody></p>
+</tbody>
 </table>
 <div class="notes">
 <p>In this table, relative MSE is the mean squared error relative to the
@@ -690,11 +698,10 @@ $\En[y_i] = \frac{1}{n}\sum_{i=1}^n y_i$.</p>
 (<a href="#ref-hdm">2016</a>). Note that this vignette has been updated since it
 was published in the R Journal. To obtain the most recent version,
 install the hdm package in R, load it, and then open the vignette.</p>
-<pre><code class="r">install.packages(&quot;hdm&quot;)
+<pre><code class="language-r">install.packages(&quot;hdm&quot;)
 library(hdm)
 vignette(&quot;hdm_introduction&quot;)
 </code></pre>
-
 <p>The choice of penalty (or regularization) parameter, $\lambda$, is
 important. When $\lambda = 0$, Lasso is the same as OLS. As $\lambda$
 increases, the Lasso estimates will shrink toward 0. For large enough
@@ -733,7 +740,7 @@ about Lasso or using code from other authors, be careful some do not
 include $\hat{\Psi}$ and use $\lambda$ instead of $\frac{\lambda}{n}$.</p>
 </div>
 <hr />
-<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+<pre><code class="language-r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
 data &lt;- subset(data,report_yr&gt;=1996)
 library(glmnet)
 mod &lt;- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
@@ -746,10 +753,9 @@ for(c in 2:ncol(mod$x)) {
 lassoPath &lt;- glmnet(mod$x, mod$y, alpha=1)
 plot(lassoPath, xvar=&quot;lambda&quot;, label=TRUE)
 </code></pre>
-
 <p><img alt="plot of chunk unnamed-chunk-3" src="../figure/unnamed-chunk-3-1.png" /></p>
 <hr />
-<pre><code class="r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
+<pre><code class="language-r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
 data &lt;- subset(data,report_yr&gt;=1996)
 library(glmnet)
 mod &lt;- lm(transProfit ~ transPlant_bal_beg_yr + reserve  + wellPrice +
@@ -762,7 +768,6 @@ for(c in 2:ncol(mod$x)) {
 cv &lt;- cv.glmnet(mod$x, mod$y, alpha=1)
 plot(cv)
 </code></pre>
-
 <p><img alt="plot of chunk unnamed-chunk-4" src="../figure/unnamed-chunk-4-1.png" /></p>
 <hr />
 <h3 id="statistical-properties-of-lasso">Statistical properties of Lasso<a class="headerlink" href="#statistical-properties-of-lasso" title="Permanent link">&para;</a></h3>
@@ -830,7 +835,6 @@ is $\sqrt{n}$ asymptotically normal, the bias term would vanish.</p>
 <!-- differentiable, we know from @stone1982 that the fastest possible -->
 <!-- $\mathcal{L}^2$ rate of convergence for any estimate of $f$ is -->
 <!-- $n^{\frac{-\ell}{2\ell + d_z}}$.  -->
-
 </div>
 <hr />
 <h3 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h3>
@@ -992,7 +996,6 @@ slightly faster (by a factor $\log(p)$). See Belloni et al.
 (<a href="#ref-belloni2012">2012</a>) for details.</p>
 </div>
 <!-- --- -->
-
 <!-- ------------------------------------------------------------------------------------------->
 
 <h2 id="random-forests">Random forests<a class="headerlink" href="#random-forests" title="Permanent link">&para;</a></h2>
@@ -1009,7 +1012,7 @@ slightly faster (by a factor $\log(p)$). See Belloni et al.
 </ul>
 <hr />
 <h3 id="simulated-data">Simulated data<a class="headerlink" href="#simulated-data" title="Permanent link">&para;</a></h3>
-<pre><code class="r">n &lt;- 1000
+<pre><code class="language-r">n &lt;- 1000
 x &lt;- runif(n)
 y &lt;- runif(n)
 f &lt;- function(x,z) {
@@ -1029,11 +1032,10 @@ fig &lt;- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
 fig &lt;- add_surface(fig, x=x.g, y=y.g, z=f0.g, opacity=1)
 fig
 </code></pre>
-
 <p><img alt="plot of chunk tree" src="../figure/tree-1.png" /></p>
 <hr />
 <h3 id="estimated-tree">Estimated tree<a class="headerlink" href="#estimated-tree" title="Permanent link">&para;</a></h3>
-<pre><code class="r"># fit regression tree
+<pre><code class="language-r"># fit regression tree
 library(party)
 tree &lt;- ctree(z ~ x + y, data=tree.df)
 
@@ -1049,13 +1051,11 @@ fig &lt;- add_markers(fig,x=x,y=y,z=z, size=0.3, opacity=0.2)
 fig &lt;- add_surface(fig, x=x.g, y=y.g, z=fhat.g, opacity=1)
 fig
 </code></pre>
-
 <p><img alt="plot of chunk treefit" src="../figure/treefit-1.png" /></p>
 <hr />
 <h3 id="estimated-tree_1">Estimated tree<a class="headerlink" href="#estimated-tree_1" title="Permanent link">&para;</a></h3>
-<pre><code class="r">plot(tree)
+<pre><code class="language-r">plot(tree)
 </code></pre>
-
 <p><img alt="plot of chunk treeplot" src="../figure/treeplot-1.png" /></p>
 <hr />
 <h3 id="tree-algorithm">Tree algorithm<a class="headerlink" href="#tree-algorithm" title="Permanent link">&para;</a></h3>
@@ -1235,7 +1235,7 @@ simulation $p$ is much less than $n$, so Lasso and OLS will generally
 give very similar results.</p>
 </div>
 <hr />
-<pre><code class="r">rm(list=ls())
+<pre><code class="language-r">rm(list=ls())
 p &lt;- 4 # number of x's
 mu.linear &lt;- function(x) x%*%rep(1,p)
 m.linear &lt;- function(x) x%*%rep(2,p)
@@ -1412,8 +1412,7 @@ for (d in design) {
 stopCluster(cl)
 save(sim.df, file=&quot;partialLinearSim.Rdata&quot;)
 </code></pre>
-
-<pre><code class="r">library(ggplot2)
+<pre><code class="language-r">library(ggplot2)
 library(reshape2)
 library(latex2exp)
 TeX &lt;- latex2exp::TeX
@@ -1425,31 +1424,27 @@ ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
   xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
   ggtitle(&quot;p=2&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsim" src="../figure/plsim-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=4&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsim3" src="../figure/plsim3-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=6&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsim4" src="../figure/plsim4-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=8&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsim8" src="../figure/plsim8-1.png" /></p>
 <div class="notes">
 <p>Random forests do not seem to work very well in this context. Even when
@@ -1472,7 +1467,6 @@ adaptive forest.</p>
 </div>
 <hr />
 <!-- ### Generalized random forests -->
-
 <!-- --------------------------------------------------------------->
 
 <h2 id="neural-networks">Neural Networks<a class="headerlink" href="#neural-networks" title="Permanent link">&para;</a></h2>
@@ -1500,7 +1494,7 @@ adaptive forest.</p>
     (<a href="#ref-hornik1989">1989</a>)</li>
 </ul>
 <hr />
-<pre><code class="r">library(RSNNS)
+<pre><code class="language-r">library(RSNNS)
 library(devtools)
 # download plot.nnet function from github
 source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
@@ -1515,7 +1509,6 @@ yn &lt;- normalizeData(mod$y)
 nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(10))
 plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk nnpic" src="../figure/nnpic-1.png" /></p>
 <hr />
 <h3 id="deep-neural-networks">Deep Neural Networks<a class="headerlink" href="#deep-neural-networks" title="Permanent link">&para;</a></h3>
@@ -1527,10 +1520,9 @@ plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot
 </li>
 </ul>
 <hr />
-<pre><code class="r">nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(5,10,3,5, 6))
+<pre><code class="language-r">nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(5,10,3,5, 6))
 plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk deepnnpic" src="../figure/deepnnpic-1.png" /></p>
 <hr />
 <h3 id="rate-of-convergence_1">Rate of convergence<a class="headerlink" href="#rate-of-convergence_1" title="Permanent link">&para;</a></h3>
@@ -1617,7 +1609,7 @@ FIXME: ADD CITATIONS.</p>
 </li>
 </ul>
 <hr />
-<pre><code class="r">rm(list=ls())
+<pre><code class="language-r">rm(list=ls())
 p &lt;- 4 # number of x's
 mu.linear &lt;- function(x) x%*%rep(1,p)
 m.linear &lt;- function(x) x%*%rep(2,p)
@@ -1794,8 +1786,7 @@ for (d in design) {
 stopCluster(cl)
 save(sim.df, file=&quot;partialLinearSim.Rdata&quot;)
 </code></pre>
-
-<pre><code class="r">library(ggplot2)
+<pre><code class="language-r">library(ggplot2)
 library(reshape2)
 library(latex2exp)
 TeX &lt;- latex2exp::TeX
@@ -1807,31 +1798,27 @@ ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
   xlab(TeX('$\\sqrt{n}(\\hat{\\theta}-\\theta_0)$')) +
   ggtitle(&quot;p=2&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsimnet" src="../figure/plsimnet-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==4), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=4&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsimnet3" src="../figure/plsimnet3-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==6), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=6&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsimnet4" src="../figure/plsimnet4-1.png" /></p>
 <hr />
-<pre><code class="r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
+<pre><code class="language-r">ggplot(subset(df,p==8), aes(x=value, colour=variable)) +
   facet_grid(n ~ design) + geom_density() + theme_minimal() +
   xlab(unname(TeX(&quot;$\\sqrt{n}(\\hat{\\theta} - \\theta_0)$&quot;))) +
   ggtitle(&quot;p=8&quot;)
 </code></pre>
-
 <p><img alt="plot of chunk plsimnet8" src="../figure/plsimnet8-1.png" /></p>
 <div class="notes">
 <p>The performance of the neural network estimator appears okay, but not
@@ -1913,7 +1900,7 @@ Association</em> 90 (432): 1200–1224. <a href="http://www.jstor.org/stable/229
 <div id="ref-efron2016">
 <p>Efron, Bradley, and Trevor Hastie. 2016. <em>Computer Age Statistical
 Inference</em>. Vol. 5. Cambridge University Press.
-<a href="https://web.stanford.edu/~hastie/CASI/">https://web.stanford.edu/~hastie/CASI/</a>.</p>
+<https://web.stanford.edu/~hastie/CASI/>.</p>
 </div>
 <div id="ref-friedberg2018">
 <p>Friedberg, Rina, Julie Tibshirani, Susan Athey, and Stefan Wager. 2018.
@@ -1922,7 +1909,7 @@ Inference</em>. Vol. 5. Cambridge University Press.
 <div id="ref-friedman2008">
 <p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2009. <em>The
 Elements of Statistical Learning</em>. Springer series in statistics.
-<a href="https://web.stanford.edu/~hastie/ElemStatLearn/">https://web.stanford.edu/~hastie/ElemStatLearn/</a>.</p>
+<https://web.stanford.edu/~hastie/ElemStatLearn/>.</p>
 </div>
 <div id="ref-hornik1989">
 <p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White. 1989. “Multilayer
@@ -1933,7 +1920,7 @@ Feedforward Networks Are Universal Approximators.” <em>Neural Networks</em> 2
 <div id="ref-james2013">
 <p>James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
 2013. <em>An Introduction to Statistical Learning</em>. Vol. 112. Springer.
-<a href="http://www-bcf.usc.edu/%7Egareth/ISL/">http://www-bcf.usc.edu/%7Egareth/ISL/</a>.</p>
+<http://www-bcf.usc.edu/%7Egareth/ISL/>.</p>
 </div>
 <div id="ref-lee2016">
 <p>Lee, Jason D., Dennis L. Sun, Yuekai Sun, and Jonathan E. Taylor. 2016.
@@ -1982,6 +1969,7 @@ Regression Trees, with Application to Random Forests.”
 <a href="https://arxiv.org/abs/1503.06388">https://arxiv.org/abs/1503.06388</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -1998,35 +1986,32 @@ Regression Trees, with Application to Random Forests.”
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

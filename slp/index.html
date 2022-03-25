@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Introduction -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li class="active">
-    <a href="./">Introduction</a>
+<li>
+    <a href="./" class="dropdown-item active">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../mlp/">Multi-Layer</a>
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../ml-julia/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../ml-julia/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../mlp/">
+                            <li class="nav-item">
+                                <a rel="next" href="../mlp/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/slp.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/slp.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,23 +128,71 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-            <li><a href="#additional-reading">Additional Reading</a></li>
-        <li class="main "><a href="#single-layer-neural-networks">Single Layer Neural Networks</a></li>
-        <li class="main "><a href="#training">Training</a></li>
-            <li><a href="#low-level">Low level</a></li>
-            <li><a href="#chain-interface">Chain interface</a></li>
-            <li><a href="#initial-values">Initial values</a></li>
-            <li><a href="#rectified-linear">Rectified linear</a></li>
-            <li><a href="#stochastic-gradient-descent">Stochastic Gradient descent</a></li>
-        <li class="main "><a href="#rate-of-convergence">Rate of convergence</a></li>
-        <li class="main "><a href="#references-references">References [references]</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#single-layer-neural-networks" class="nav-link">Single Layer Neural Networks</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#training" class="nav-link">Training</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#low-level" class="nav-link">Low level</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#chain-interface" class="nav-link">Chain interface</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#initial-values" class="nav-link">Initial values</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#rectified-linear" class="nav-link">Rectified linear</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#stochastic-gradient-descent" class="nav-link">Stochastic Gradient descent</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#rate-of-convergence" class="nav-link">Rate of convergence</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -249,7 +288,7 @@ specialized for the structue of neural networks).</p>
 <h2 id="low-level">Low level<a class="headerlink" href="#low-level" title="Permanent link">&para;</a></h2>
 <p>A low level way to use <code>Flux.jl</code> is to write your loss function as a
 typical Julia function, as in the following code block.</p>
-<pre><code class="julia">using Plots, Flux, Statistics, ColorSchemes
+<pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
@@ -279,8 +318,7 @@ xg = 0:0.01:π
 rs = [2, 3, 5, 7, 9]
 cscheme = colorschemes[:BrBG_4];
 </code></pre>
-
-<pre><code class="julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
+<pre><code class="language-julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = slp(rs[r])
   figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
@@ -303,7 +341,6 @@ for r in eachindex(rs)
   display(figs[r])
 end
 </code></pre>
-
 <pre><code>1000 iteration, loss=0.31287991801131293
 2000 iteration, loss=0.27919155814182034
 3000 iteration, loss=0.2664744507386843
@@ -351,7 +388,7 @@ regularization parameter.</p>
 <p><code>Flux.jl</code> also contains some higher level functions for creating loss
 functions for neural networks. Here is the same network as in the
 previous code block, but using the higher level API.</p>
-<pre><code class="julia">dimx = 1
+<pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
 xt = reshape(Float32.(x), 1, length(x))
@@ -381,7 +418,6 @@ for r in eachindex(rs)
   display(figs[r])
 end
 </code></pre>
-
 <pre><code>2 units, 1 iterations, loss=0.9574206
 2 units, 600 iterations, loss=0.30447912
 2 units, 1200 iterations, loss=0.2659822
@@ -431,9 +467,8 @@ space. For gradient descent to be successful, it is important to avoid
 regions with vanishing gradients. The default initial values of $w$ and
 $b$ used by Flux tend to work better with normalised $x$. The initial
 activation are shown below.</p>
-<pre><code class="julia">plot(initmfigs..., legend=false)
+<pre><code class="language-julia">plot(initmfigs..., legend=false)
 </code></pre>
-
 <p><img alt="" src="../figures/slp_5_1.png" /></p>
 <p>At these initial values, $w&rsquo;x + b$, does change sign for each
 activation, but $w&rsquo;x$ is small enough that $\psi(w&rsquo;x + b)$ is
@@ -443,7 +478,7 @@ distinguish $\beta \psi&rsquo;$ from $w$,</p>
 The following code choses initial $w$ and $b$ to make sure the
 activation functions vary nonlinearly in the support of $x$. The initial
 activations functions are plotted below.</p>
-<pre><code class="julia">dimx = 1
+<pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
 xt = reshape(Float32.(x), 1, length(x))
@@ -481,7 +516,6 @@ for r in eachindex(rs)
   end
 end
 </code></pre>
-
 <pre><code>2 units, 1 iterations, loss=0.32728884
 2 units, 600 iterations, loss=0.26378527
 2 units, 1200 iterations, loss=0.26310408
@@ -518,19 +552,16 @@ end
 9 units, 3000 iterations, loss=0.24269772
   2.165591 seconds (1.56 M allocations: 712.686 MiB, 7.15% gc time)
 </code></pre>
-<pre><code class="julia">nothing
+<pre><code class="language-julia">nothing
 </code></pre>
-
-<pre><code class="julia">display(plot(initmfigs..., legend=false))
+<pre><code class="language-julia">display(plot(initmfigs..., legend=false))
 </code></pre>
-
 <p><img alt="" src="../figures/slp_7_1.png" /></p>
 <p>And the fit figures.</p>
-<pre><code class="julia">for f in figs
+<pre><code class="language-julia">for f in figs
   display(f)
 end
 </code></pre>
-
 <p><img alt="" src="../figures/slp_8_1.png" /> <img alt="" src="../figures/slp_8_2.png" />
 <img alt="" src="../figures/slp_8_3.png" /> <img alt="" src="../figures/slp_8_4.png" />
 <img alt="" src="../figures/slp_8_5.png" /></p>
@@ -538,7 +569,7 @@ end
 <p>Large applications of neural networks often use rectified linear
 activation for efficiency. Let’s see how the same example behaves with
 (leaky) rectified linear activation.</p>
-<pre><code class="julia">dimx = 1
+<pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   l = rs[r]
@@ -573,7 +604,6 @@ for r in eachindex(rs)
   end
 end
 </code></pre>
-
 <pre><code>2 units, 1 iterations, loss=0.39443994
 2 units, 600 iterations, loss=0.31757522
 2 units, 1200 iterations, loss=0.31293875
@@ -610,16 +640,14 @@ end
 9 units, 3000 iterations, loss=0.24747035
   1.147302 seconds (1.55 M allocations: 712.548 MiB, 11.40% gc time)
 </code></pre>
-<pre><code class="julia">display(plot(initmfigs..., legend=false) )
+<pre><code class="language-julia">display(plot(initmfigs..., legend=false) )
 </code></pre>
-
 <p><img alt="" src="../figures/slp_9_1.png" /></p>
-<pre><code class="julia">
+<pre><code class="language-julia">
 for f in figs
   display(f)
 end
 </code></pre>
-
 <p><img alt="" src="../figures/slp_9_2.png" /> <img alt="" src="../figures/slp_9_3.png" />
 <img alt="" src="../figures/slp_9_4.png" /> <img alt="" src="../figures/slp_9_5.png" />
 <img alt="" src="../figures/slp_9_6.png" /></p>
@@ -635,7 +663,7 @@ consisting of the subsets to be used in iteration. Each call to
 iteration for each. This whole process is referred to as a training
 epoch. You could use (the below does not) Flux’s <code>@epochs</code> macro for
 running multiple training epochs without writing a loop.</p>
-<pre><code class="julia">dimx = 1
+<pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   l = rs[r]
@@ -672,7 +700,6 @@ for r in eachindex(rs)
   end
 end
 </code></pre>
-
 <pre><code>2 units, 1 iterations, loss=0.28042743
 2 units, 600 iterations, loss=0.2561532
 2 units, 1200 iterations, loss=0.25613663
@@ -709,12 +736,11 @@ end
 9 units, 3000 iterations, loss=0.24371915
   4.611709 seconds (14.66 M allocations: 1.197 GiB, 6.95% gc time)
 </code></pre>
-<pre><code class="julia">
+<pre><code class="language-julia">
 for f in figs
   display(f)
 end
 </code></pre>
-
 <p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
 <img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
 <img alt="" src="../figures/slp_10_5.png" /></p>
@@ -783,6 +809,7 @@ Intelligence</em>. DRAFT.
 <a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -799,35 +826,32 @@ Intelligence</em>. DRAFT.
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

@@ -9,127 +9,118 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Multi-Layer -  </title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".."> </a>
-                </div>
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Docs</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Docs</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../ml-intro/">Introduction</a>
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li >
-    <a href="../ml-methods/">Methods</a>
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
 </li>
                                     
-<li >
-    <a href="../ml-doubledebiased/">Inference</a>
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../mlExamplePKH/">Detecting heterogeneity</a>
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
 </li>
                                     
-<li >
-    <a href="../ml-julia/">With Julia</a>
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../slp/">Introduction</a>
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
 </li>
                                     
-<li class="active">
-    <a href="./">Multi-Layer</a>
+<li>
+    <a href="./" class="dropdown-item active">Multi-Layer</a>
 </li>
                                     
-<li >
-    <a href="../conv/">Convolutional</a>
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
 </li>
                                     
-<li >
-    <a href="../rnn/">Recurrent</a>
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
 </li>
                                     
-<li >
-    <a href="../nn-semiparametric/">In semiparametric models</a>
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../slp/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../slp/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../conv/">
+                            <li class="nav-item">
+                                <a rel="next" href="../conv/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlp.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlp.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -137,20 +128,58 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-            <li><a href="#additional-reading">Additional Reading</a></li>
-        <li class="main "><a href="#multiple-layer-neural-networks">Multiple Layer Neural Networks</a></li>
-            <li><a href="#first-example">First Example</a></li>
-        <li class="main "><a href="#image-classification-mnist">Image Classification: MNIST</a></li>
-            <li><a href="#single-layer-classification">Single Layer Classification</a></li>
-            <li><a href="#deep-classification">Deep Classification</a></li>
-        <li class="main "><a href="#references-references">References [references]</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#multiple-layer-neural-networks" class="nav-link">Multiple Layer Neural Networks</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#first-example" class="nav-link">First Example</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#image-classification-mnist" class="nav-link">Image Classification: MNIST</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#single-layer-classification" class="nav-link">Single Layer Classification</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#deep-classification" class="nav-link">Deep Classification</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -228,7 +257,7 @@ architecture.</p>
 to the same simulated data as in <a href="../slp/">the notes on single layer
 networks</a>.</p>
 <p>Simulating data and setting up.</p>
-<pre><code class="julia">using Plots, Flux, Statistics, ColorSchemes
+<pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
@@ -245,7 +274,6 @@ dimx = 1
 xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
-
 <pre><code>1×1000 Array{Float32,2}:
  -0.797703  0.548108  0.240685  1.16682  …  1.05815  0.466921  0.783778
 </code></pre>
@@ -254,7 +282,7 @@ yt = reshape(Float32.(y), 1, length(y))
 width 15. This makes the total number of parameters in the two networks
 equal. For both networks we normalise $x$ and then use Flux’s default
 initial values (these set $b=0$ and $w$ random).</p>
-<pre><code class="julia">models = [ Chain(x-&gt;Flux.normalise(x, dims=2),
+<pre><code class="language-julia">models = [ Chain(x-&gt;Flux.normalise(x, dims=2),
                  Dense(dimx, 15, Flux.leakyrelu),
                  Dense(15, 1)),
            Chain(x-&gt;Flux.normalise(x, dims=2),
@@ -298,7 +326,6 @@ for r in eachindex(models)
   display(figs[r])
 end
 </code></pre>
-
 <pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
  46 parameters in 2 layers
 Model 1, 1 iterations, loss=0.82055414
@@ -349,7 +376,7 @@ will hopefully serve as a good example.</p>
 zoo.</a></p>
 </div>
 <p>First we load some packages and download the data.</p>
-<pre><code class="julia">using Flux, Flux.Data.MNIST, Statistics
+<pre><code class="language-julia">using Flux, Flux.Data.MNIST, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
 using Base.Iterators: repeated
 using CuArrays
@@ -359,24 +386,21 @@ imgs = MNIST.images()
 labels = MNIST.labels()
 length(labels)
 </code></pre>
-
 <pre><code>60000
 </code></pre>
 <p>Let’s look at some of the images.</p>
-<pre><code class="julia">idx = rand(1:length(imgs), 16)
+<pre><code class="language-julia">idx = rand(1:length(imgs), 16)
 plot([plot(imgs[i], title=&quot;$(labels[i])&quot;, aspect_ratio=:equal, axis=false, ticks=false) for i in idx]...)
 </code></pre>
-
 <p><img alt="" src="../figures/mlp_5_1.png" /></p>
 <p>The images are 28 by 28 pixels. I believe they were originally black ink
 on white paper, but the colors are being inverted somewhere.</p>
 <p>Continue processing the data</p>
-<pre><code class="julia"># Stack images into one large batch 
+<pre><code class="language-julia"># Stack images into one large batch 
 X = hcat(float.(reshape.(imgs, :))...) |&gt; gpu;
 # One-hot-encode the labels
 Y = onehotbatch(labels, 0:9) |&gt; gpu;
 </code></pre>
-
 <p>One hot encoding is what the machine learning world calls creating dummy
 variables from a categorical variable.</p>
 <h2 id="single-layer-classification">Single Layer Classification<a class="headerlink" href="#single-layer-classification" title="Permanent link">&para;</a></h2>
@@ -389,12 +413,11 @@ softmax(x_1, ..., x_k) = \left( \frac{e^{x_1}}{\sum_{j=1}^k e^{x_i}},
 e^{x_i}} \right)
 </script>
 </p>
-<pre><code class="julia">m = Chain(
+<pre><code class="language-julia">m = Chain(
   Dense(28^2, 32, relu),
   Dense(32, 10),
   softmax) |&gt; gpu
 </code></pre>
-
 <pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
 </code></pre>
 <p>In this example, we are working on a classification problem; we are
@@ -405,9 +428,8 @@ the likelihood, of $y$ given $x$. In this situation, maximum likelihood
 is a natural estimator. For discrete $y$ (like we have here), the log
 likelihood is equal to minus the cross-entropy, so this is what we use
 as our loss function.</p>
-<pre><code class="julia">loss(x, y) = crossentropy(m(x), y)
+<pre><code class="language-julia">loss(x, y) = crossentropy(m(x), y)
 </code></pre>
-
 <pre><code>loss (generic function with 1 method)
 </code></pre>
 <p>Since cross-entropy or log likelihood are difficult to interpret, we
@@ -424,15 +446,14 @@ precision, recall, and AUC. See Batista et al. (<a href="#ref-qeclassify">2019</
 for <a href="https://datascience.quantecon.org/applications/classification.html">more
 information</a>.</p>
 </div>
-<pre><code class="julia">accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
+<pre><code class="language-julia">accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
 </code></pre>
-
 <pre><code>accuracy (generic function with 1 method)
 </code></pre>
 <p><code>onecold</code> is the inverse of one-hot-encoding; <code>onecold</code> transforms a
 matrix of dummy varibles (or probabilities) into an integer (the one
 with the highest probability in the case of <code>m(x)</code>).</p>
-<pre><code class="julia">dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
+<pre><code class="language-julia">dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
 # gradient descent steps using the full X and Y to compute gradients
 Xsmall=X[:,1:1000]
 Ysmall=Y[:,1:1000] # accuracy is slower, so only compute on subset of data
@@ -444,7 +465,6 @@ tY = onehotbatch(MNIST.labels(:test), 0:9) |&gt; gpu
 evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
 opt = ADAM()
 </code></pre>
-
 <pre><code>ADAM(0.001, (0.9, 0.999), IdDict{Any,Any}())
 </code></pre>
 <p>Since <code>Flux.train!</code> might run for a long time, it allows us to pass a
@@ -455,7 +475,7 @@ disk in case the computation gets interrupted before completion. The
 <code>Flux.throttle</code> function can be used to prevent the call-back function
 from being evaluated too often. The code below makes <code>evalcb</code> get
 evaluated at most once every 10 seconds.</p>
-<pre><code class="julia">rerun = false
+<pre><code class="language-julia">rerun = false
 modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;mnist-slp.bson&quot;)
 if rerun || !isfile(modelfile)
   evalcb()
@@ -470,17 +490,14 @@ else
   m = gpu(cpum)
 end
 </code></pre>
-
 <pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
 </code></pre>
-<pre><code class="julia">@show accuracy(X, Y)
+<pre><code class="language-julia">@show accuracy(X, Y)
 </code></pre>
-
 <pre><code>accuracy(X, Y) = 0.9257166666666666
 </code></pre>
-<pre><code class="julia">@show accuracy(tX, tY);
+<pre><code class="language-julia">@show accuracy(tX, tY);
 </code></pre>
-
 <pre><code>accuracy(tX, tY) = 0.9267
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
@@ -489,7 +506,7 @@ pretty good.</p>
 be good luck, but it is also possible that the model is underfitting.
 Let’s try training the network longer (doing more gradient descent
 iterations.</p>
-<pre><code class="julia">rerun = false
+<pre><code class="language-julia">rerun = false
 modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;mnist-slp-2200.bson&quot;)
 if rerun || !isfile(modelfile)
   evalcb()
@@ -505,12 +522,10 @@ else
 end
 @show accuracy(X, Y)
 </code></pre>
-
 <pre><code>accuracy(X, Y) = 0.9909166666666667
 </code></pre>
-<pre><code class="julia">@show accuracy(tX,tY);
+<pre><code class="language-julia">@show accuracy(tX,tY);
 </code></pre>
-
 <pre><code>accuracy(tX, tY) = 0.9639
 </code></pre>
 <p>Remember that each “epoch” does one gradient descent step for each tuple
@@ -521,10 +536,9 @@ improved to above 99%, but our test accuracy has failed to improve much
 above 96%.</p>
 <p>My initial interpretation of this result would be that we are now
 overfitting. The number of parameters in the network is</p>
-<pre><code class="julia">nparam(m) = sum([length(m[i].W) + length(m[i].b) for i in 1:length(m) if typeof(m[i]) &lt;: Dense])
+<pre><code class="language-julia">nparam(m) = sum([length(m[i].W) + length(m[i].b) for i in 1:length(m) if typeof(m[i]) &lt;: Dense])
 nparam(m)
 </code></pre>
-
 <pre><code>25450
 </code></pre>
 <p>and there 60000 images. For a typical econometric or statistic problem,
@@ -547,7 +561,7 @@ Ciresan et al. (<a href="#ref-ciresan2010">2010</a>) achieve a much higher test
 accuracy with a 6 layer network. Let’s try their network architecture.
 We will use their numbers of layers and hidden units, but with rectified
 linear activation. They used tanh activation functions.</p>
-<pre><code class="julia">cmgsnet = Chain(
+<pre><code class="language-julia">cmgsnet = Chain(
   Dense(28^2, 2500 , relu),
   Dense(2500, 2000 , relu),
   Dense(2000, 1500 , relu),
@@ -561,11 +575,10 @@ evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY))
 
 println(&quot;cmgsnet has $(nparam(cmgsnet)) parameters!!!&quot;)
 </code></pre>
-
 <pre><code>cmgsnet has 11972510 parameters!!!
 </code></pre>
 <p>That’s a deep network.</p>
-<pre><code class="julia">rerun = false
+<pre><code class="language-julia">rerun = false
 batchsize=30000 
 parts=Base.Iterators.partition(1:size(X,2), batchsize) 
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
@@ -599,7 +612,6 @@ for e in 1:epochs
   acctest[e]=accuracy(tX,tY)
 end
 </code></pre>
-
 <pre><code>Finished 1 epochs
 Finished 2 epochs
 Finished 3 epochs
@@ -625,7 +637,7 @@ Finished 20 epochs
 epochs. Each training epoch consisting of 10 passes through the data
 split into two batches, so 20 gradient descent iterations. Let’s plot
 the loss and accuracy vs epoch.</p>
-<pre><code class="julia">plot(
+<pre><code class="language-julia">plot(
   plot([losstrain, losstest], xscale=:log10, xlab=&quot;Epochs&quot;, title=&quot;Cross-Entropy Loss&quot;,
        annotations=[(15, losstrain[15],
                      Plots.text(&quot;training&quot;, pointsize=12, valign=:bottom,
@@ -642,7 +654,6 @@ the loss and accuracy vs epoch.</p>
   layout=(2,1)
 )
 </code></pre>
-
 <p><img alt="" src="../figures/mlp_17_1.png" /></p>
 <p>There is really something remarkable going on in this example. A model
 that appears extremely overparameterized manages to predict very well on
@@ -660,24 +671,21 @@ models.</p>
 generalize.</p>
 <p>Let’s look at some of the images that our model failed to classify
 correctly.</p>
-<pre><code class="julia">tlabels = MNIST.labels(:test)
+<pre><code class="language-julia">tlabels = MNIST.labels(:test)
 timgs = MNIST.images(:test)
 # predicted labels
 mlabels = cpu(onecold(cmgsnet(tX))).-1
 @show mean(mlabels.==tlabels) # = accuracy
 </code></pre>
-
 <pre><code>mean(mlabels .== tlabels) = 0.9836
 </code></pre>
-<pre><code class="julia">@show sum(mlabels .!= tlabels)
+<pre><code class="language-julia">@show sum(mlabels .!= tlabels)
 </code></pre>
-
 <pre><code>sum(mlabels .!= tlabels) = 164
 </code></pre>
-<pre><code class="julia">miss=findall(mlabels .!= tlabels)
+<pre><code class="language-julia">miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;, aspect_ratio=:equal) for i in miss[1:16]]...)
 </code></pre>
-
 <p><img alt="" src="../figures/mlp_18_1.png" /></p>
 <p>Our model still does not have state-of-the-art accuracy. Ciresan et al.
 (<a href="#ref-ciresan2010">2010</a>) achieves 99.65% accuracy. There are
@@ -717,6 +725,7 @@ Intelligence</em>. DRAFT.
 <a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
 </div>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -733,35 +742,32 @@ Intelligence</em>. DRAFT.
         <script src="../assets/mathjaxhelper.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
-                <div id="mkdocs-search-results"></div>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
             <div class="modal-footer">
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">
