@@ -173,16 +173,24 @@
             
             <li class="nav-item" data-level="1"><a href="#example-code" class="nav-link">Example Code</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#data" class="nav-link">Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#model-creation" class="nav-link">Model Creation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#training" class="nav-link">Training</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#packages" class="nav-link">Packages</a>
+            <li class="nav-item" data-level="1"><a href="#pre-trained-models" class="nav-link">Pre-trained Models</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#transformersjl" class="nav-link">Transformers.jl</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#pre-trained-models" class="nav-link">Pre-trained Models</a>
+            <li class="nav-item" data-level="2"><a href="#transfer-learning" class="nav-link">Transfer Learning</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -340,11 +348,700 @@ understanding of transformers has lagged behind their practical
 application, but theory is advancing rapidly. E.g. @bhattamishra2020 ,
 etc</p>
 <h1 id="example-code">Example Code<a class="headerlink" href="#example-code" title="Permanent link">&para;</a></h1>
-<h1 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h1>
-<h2 id="transformersjl">Transformers.jl<a class="headerlink" href="#transformersjl" title="Permanent link">&para;</a></h2>
-<h2 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h2>
-<p>Huggingface and Transformers.jl interface to it</p>
-<h3 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h3></div>
+<h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
+<p>For comparison, we will start by using the same Dylan example as in the
+recurrent neural network notes.</p>
+<pre><code class="language-julia">using ProgressMeter, JLD2
+import HTTP, Gumbo, Cascadia
+using StatsBase: wsample
+using Base.Iterators: partition
+using Transformers, Flux, CUDA
+
+text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
+#startchar = 'α'
+#endchar = 'Ω' # any character not in original text
+unkchar = 'Ξ'
+#alphabet = [startchar, unique(text)..., endchar]
+alphabet = unique(text)
+N = length(alphabet)
+vocab = Transformers.Vocabulary(alphabet, unkchar)
+</code></pre>
+<pre><code>Vocabulary{Char}(101, unk=Ξ)
+</code></pre>
+<h2 id="model-creation">Model Creation<a class="headerlink" href="#model-creation" title="Permanent link">&para;</a></h2>
+<pre><code class="language-julia">enable_gpu(true)
+
+function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
+  embed = Transformers.Basic.Embed(modeldim,length(vocab))
+  pe = Transformers.Basic.PositionEmbedding(modeldim)
+  topo = @nntopo_str &quot;x → e → pe:(e,pe) → t → $L:t → logitp&quot;
+  m = Stack(topo,
+            embed,
+            pe,
+            (e,pe) -&gt; e .+ pe,
+            [Transformer(modeldim, heads, feedforwardsize, act=relu, future=false, pdrop=0.1) for l ∈ 1:L]...,
+            Transformers.Basic.Positionwise(Dense(modeldim,length(vocab))))
+  return(m)
+end
+</code></pre>
+<pre><code>create_transformer (generic function with 1 method)
+</code></pre>
+<h2 id="training">Training<a class="headerlink" href="#training" title="Permanent link">&para;</a></h2>
+<pre><code class="language-julia">function cbgenerator(N, loss, printiter=Int(round(N/10)))
+  p = Progress(N, 1, &quot;Training&quot;, 25)
+  i=0
+  function cb()
+    next!(p)
+    if (i % printiter==0)
+      @show loss()
+    end
+    i+=1
+  end
+  return(cb)
+end
+
+function sample(m, alphabet, len, seqlen)
+  m = cpu(m)
+  buf = IOBuffer()
+  c = 'w' #rand(alphabet)
+  cseq = vocab(collect(&quot;so much younger than that no&quot;)) #Vector{Int}(undef,0)
+  ind2alpha = Dict(vocab(a) =&gt; a for a ∈ alphabet)
+  for i = 1:len
+    write(buf, c)
+    if (i &lt; seqlen)
+      push!(cseq, vocab(c))
+    else
+      cseq[1:(end-1)] .= cseq[2:end]
+      cseq[end] = vocab(c)
+    end
+    c = ind2alpha[wsample(1:length(vocab), softmax(m(cseq)[:,end]))]
+  end
+  return String(take!(buf))
+end
+
+function createdata(vocab, text, seqlength, seqperbatch)
+  sequences = [vocab.(x) for x ∈ partition(text, seqlength)]
+  xy = [(s[1:(end-1)],Flux.onehot(vocab,s[2:end])) for s ∈ sequences]
+  if length(xy[end][1]) &lt; length(xy[1][1])
+    pop!(xy)
+  end
+  xybatches = [ (hcat([z[1] for z ∈ p]...), cat([z[2] for z ∈ p]..., dims=3)) for p ∈ partition(xy, seqperbatch) ]
+  return(xybatches)
+end
+
+function train_model(m; data=data,
+                     modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-t.jld2&quot;),
+                     opt=opt, epochs=20 )
+  loss(xb, yb) = Flux.Losses.logitcrossentropy(m(xb),yb)
+  cb=cbgenerator(length(data),()-&gt;loss(first(data)...))
+
+  if isfile(modelfile)
+    @load modelfile cpum
+    #m = gpu(cpum)
+    m = cpum
+  else
+    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    println(&quot;Sampling after 1 epoch:&quot;)
+    sample(m, alphabet, 1000, size(first(data)[1],1)) |&gt; println
+
+    Flux.@epochs epochs Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    cpum = cpu(m)
+    @save modelfile cpum
+  end
+  return(m)
+end
+
+m = create_transformer(64,4,heads=1, vocab=vocab) |&gt; gpu
+data = createdata(vocab, text, 500, 50) |&gt; gpu
+opt = RMSProp(0.001)
+m = train_model(m, data=data, modelfile=&quot;64d_4level_50e.jld2&quot;, opt=opt, epochs=50)
+
+sample(m, alphabet, 1000, size(first(data)[1],1)) |&gt; println
+</code></pre>
+<pre><code>loss() = 4.1773725f0
+loss() = 3.2731075f0
+loss() = 3.0498703f0
+loss() = 2.8588133f0
+loss() = 2.7257981f0
+loss() = 2.7233229f0
+loss() = 2.5953264f0
+loss() = 2.6089067f0
+loss() = 2.451772f0
+loss() = 2.4076262f0
+156.336898 seconds (223.80 M allocations: 11.646 GiB, 5.38% gc time, 62.63%
+ compilation time)
+Sampling after 1 epoch:
+where   ave    hosemle"    yn
+A
+&lt;Tilf="D/1-5.
+&lt;/xht    tp&gt;   odofland
+
+
+I         .
+I           a~irewalerer  :Re"erds  ceres          .    |----------------5-
+------||---|---3----------------------|--------------on=------------8------
+--2--------      :-----32-91~
+&lt;3---------|-----------------0-----5-------2--A-----0|-----|------3--------
+-|-K|-|-|--------3--|--------------1--re|----p---5-2---|-----------|----
+
+--|---0)-----|---|--X---------------------------------------|------------0-
+------0------------------|--3--------|---------------|--------             
+       xC
+-|
+|---|
+0---|----------|---B4---1----------|--|-9----|---------ha---D . e|{--------
+------|-----|--0----|-------om|-3C----
+&lt;W
+ C     .  as---3|---3----2-3---|h?e        ,ite.  :
+
+|
+ .G--5|--|--------|----------3------|--|--2-----|  CYaf   6-----------2----
+---------|--7
+|--)|  hf D7‘
+&lt;      D
+||---Y&lt;/xhtmicp”,
+&lt;”ma--7------------0---
+&lt;hc---2-|
+@
+&lt;/h  C-----|---|-------iw
+|---4sy.
+---
+
+|   orey.
+|=.o/83-1-3----0-x3-|Rinp0|qn"
+loss() = 2.3574665f0
+loss() = 2.3679345f0
+loss() = 2.2928479f0
+loss() = 2.3301542f0
+loss() = 2.2978072f0
+loss() = 2.3390322f0
+loss() = 2.2430599f0
+loss() = 2.193809f0
+loss() = 2.1870463f0
+loss() = 2.1790516f0
+loss() = 2.1612236f0
+loss() = 2.158729f0
+loss() = 2.1453269f0
+loss() = 2.1062758f0
+loss() = 2.09641f0
+loss() = 2.0732276f0
+loss() = 2.0729778f0
+loss() = 2.0627928f0
+loss() = 2.0385041f0
+loss() = 2.0426373f0
+loss() = 2.075115f0
+loss() = 2.015764f0
+loss() = 2.0398f0
+loss() = 2.0192683f0
+loss() = 2.0041645f0
+loss() = 1.9592556f0
+loss() = 1.947185f0
+loss() = 1.9555519f0
+loss() = 1.9380115f0
+loss() = 1.9151676f0
+loss() = 1.9098798f0
+loss() = 1.9046458f0
+loss() = 1.8894838f0
+loss() = 1.8880283f0
+loss() = 1.9019517f0
+loss() = 1.8690107f0
+loss() = 1.8515506f0
+loss() = 1.8640459f0
+loss() = 1.8291427f0
+loss() = 1.8313144f0
+loss() = 1.8272877f0
+loss() = 1.8461692f0
+loss() = 1.7998413f0
+loss() = 1.8149347f0
+loss() = 1.7812561f0
+loss() = 1.7771633f0
+loss() = 1.8830674f0
+loss() = 1.7661587f0
+loss() = 1.7493006f0
+loss() = 1.7784904f0
+loss() = 1.7528694f0
+loss() = 1.737044f0
+loss() = 1.7313987f0
+loss() = 1.714694f0
+loss() = 1.6964208f0
+loss() = 1.7003509f0
+loss() = 1.7090962f0
+loss() = 1.6899056f0
+loss() = 1.6692929f0
+loss() = 1.6726328f0
+loss() = 1.6591356f0
+loss() = 1.652309f0
+loss() = 1.6409549f0
+loss() = 1.6585668f0
+loss() = 1.6606078f0
+loss() = 1.6499355f0
+loss() = 1.634204f0
+loss() = 1.6569474f0
+loss() = 1.6538583f0
+loss() = 1.647032f0
+loss() = 1.6151569f0
+loss() = 1.6211121f0
+loss() = 1.6026484f0
+loss() = 1.6027602f0
+loss() = 1.5870613f0
+loss() = 1.6086965f0
+loss() = 1.6182449f0
+loss() = 1.5821135f0
+loss() = 1.5551051f0
+loss() = 1.5819037f0
+loss() = 1.5835407f0
+loss() = 1.5707332f0
+loss() = 1.5574048f0
+loss() = 1.5423472f0
+loss() = 1.5711719f0
+loss() = 1.5401763f0
+loss() = 1.5698669f0
+loss() = 1.5858097f0
+loss() = 1.519806f0
+loss() = 1.5203657f0
+loss() = 1.506389f0
+loss() = 1.5194733f0
+loss() = 1.5090103f0
+loss() = 1.5144019f0
+loss() = 1.5269299f0
+loss() = 1.5073804f0
+loss() = 1.4930724f0
+loss() = 1.490537f0
+loss() = 1.4989419f0
+loss() = 1.4983647f0
+loss() = 1.4868137f0
+loss() = 1.5167704f0
+loss() = 1.4656912f0
+loss() = 1.4775661f0
+loss() = 1.4601735f0
+loss() = 1.4455569f0
+loss() = 1.4573935f0
+loss() = 1.4676062f0
+loss() = 1.4723649f0
+loss() = 1.453747f0
+loss() = 1.4618363f0
+loss() = 1.4369833f0
+loss() = 1.4829831f0
+loss() = 1.4441833f0
+loss() = 1.4298682f0
+loss() = 1.4321198f0
+loss() = 1.4271777f0
+loss() = 1.4408946f0
+loss() = 1.428882f0
+loss() = 1.4299647f0
+loss() = 1.4098281f0
+loss() = 1.4323866f0
+loss() = 1.4024558f0
+loss() = 1.4334798f0
+loss() = 1.4125886f0
+loss() = 1.4010342f0
+loss() = 1.3915914f0
+loss() = 1.426993f0
+loss() = 1.398223f0
+loss() = 1.3950564f0
+loss() = 1.3985368f0
+loss() = 1.4051374f0
+loss() = 1.3934156f0
+loss() = 1.3978064f0
+loss() = 1.373694f0
+loss() = 1.3785151f0
+loss() = 1.3740277f0
+loss() = 1.374231f0
+loss() = 1.386064f0
+loss() = 1.361319f0
+loss() = 1.3619066f0
+loss() = 1.3603711f0
+loss() = 1.3688473f0
+loss() = 1.3493671f0
+loss() = 1.3408301f0
+loss() = 1.3395526f0
+loss() = 1.3519398f0
+loss() = 1.3480264f0
+loss() = 1.3436835f0
+loss() = 1.3499068f0
+loss() = 1.3369517f0
+loss() = 1.3647671f0
+loss() = 1.3262949f0
+loss() = 1.3140663f0
+loss() = 1.3310792f0
+loss() = 1.3306947f0
+loss() = 1.3259217f0
+loss() = 1.3277136f0
+loss() = 1.3285036f0
+loss() = 1.3131249f0
+loss() = 1.3179938f0
+loss() = 1.3453832f0
+loss() = 1.3130879f0
+loss() = 1.2989807f0
+loss() = 1.3260343f0
+loss() = 1.3105323f0
+loss() = 1.3111575f0
+loss() = 1.3113881f0
+loss() = 1.3007592f0
+loss() = 1.3013169f0
+loss() = 1.3040789f0
+loss() = 1.2959512f0
+loss() = 1.2930162f0
+loss() = 1.2898616f0
+loss() = 1.2949286f0
+loss() = 1.314444f0
+loss() = 1.2794011f0
+loss() = 1.2839382f0
+loss() = 1.275762f0
+loss() = 1.2831208f0
+loss() = 1.2892071f0
+loss() = 1.2846017f0
+loss() = 1.2818645f0
+loss() = 1.2964896f0
+loss() = 1.2674139f0
+loss() = 1.2801292f0
+loss() = 1.2753825f0
+loss() = 1.2674011f0
+loss() = 1.2670566f0
+loss() = 1.265725f0
+loss() = 1.2800963f0
+loss() = 1.2720953f0
+loss() = 1.2568405f0
+loss() = 1.2473449f0
+loss() = 1.2780665f0
+loss() = 1.2530348f0
+loss() = 1.2620909f0
+loss() = 1.265594f0
+loss() = 1.2621669f0
+loss() = 1.2708664f0
+loss() = 1.2605703f0
+loss() = 1.2429696f0
+loss() = 1.2705429f0
+loss() = 1.2435826f0
+loss() = 1.2399971f0
+loss() = 1.226399f0
+loss() = 1.2429115f0
+loss() = 1.2395973f0
+loss() = 1.246907f0
+loss() = 1.2520362f0
+loss() = 1.2515811f0
+loss() = 1.2302349f0
+loss() = 1.2285483f0
+loss() = 1.2420005f0
+loss() = 1.2403812f0
+loss() = 1.2287176f0
+loss() = 1.2649384f0
+loss() = 1.227378f0
+loss() = 1.2399341f0
+loss() = 1.2282088f0
+loss() = 1.186039f0
+loss() = 1.2126598f0
+loss() = 1.2295296f0
+loss() = 1.2296811f0
+loss() = 1.230444f0
+loss() = 1.2475003f0
+loss() = 1.2157828f0
+loss() = 1.2149384f0
+loss() = 1.2208753f0
+loss() = 1.2146901f0
+loss() = 1.2019864f0
+loss() = 1.2052606f0
+loss() = 1.2187853f0
+loss() = 1.2146952f0
+loss() = 1.2040497f0
+loss() = 1.2071768f0
+loss() = 1.2146962f0
+loss() = 1.2004157f0
+loss() = 1.2221714f0
+loss() = 1.208898f0
+loss() = 1.1989504f0
+loss() = 1.1897216f0
+loss() = 1.195247f0
+loss() = 1.1976827f0
+loss() = 1.19587f0
+loss() = 1.1982186f0
+loss() = 1.2059522f0
+loss() = 1.1955113f0
+loss() = 1.1893511f0
+loss() = 1.196158f0
+loss() = 1.1922283f0
+loss() = 1.1901857f0
+loss() = 1.1913084f0
+loss() = 1.2087325f0
+loss() = 1.1842747f0
+loss() = 1.188784f0
+loss() = 1.1865311f0
+loss() = 1.1951766f0
+loss() = 1.1840698f0
+loss() = 1.1743981f0
+loss() = 1.1740264f0
+loss() = 1.1751356f0
+loss() = 1.1888589f0
+loss() = 1.1747961f0
+loss() = 1.1906087f0
+loss() = 1.177324f0
+loss() = 1.1853607f0
+loss() = 1.1759138f0
+loss() = 1.1590347f0
+loss() = 1.1622719f0
+loss() = 1.1760839f0
+loss() = 1.1767594f0
+loss() = 1.1750712f0
+loss() = 1.1755164f0
+loss() = 1.1599065f0
+loss() = 1.1780155f0
+loss() = 1.1899834f0
+loss() = 1.1662073f0
+loss() = 1.1531982f0
+loss() = 1.1702297f0
+loss() = 1.1849155f0
+loss() = 1.1623427f0
+loss() = 1.1658013f0
+loss() = 1.1604383f0
+loss() = 1.1621845f0
+loss() = 1.1694406f0
+loss() = 1.1662012f0
+loss() = 1.1615479f0
+loss() = 1.1506288f0
+loss() = 1.1550697f0
+loss() = 1.1639669f0
+loss() = 1.1532197f0
+loss() = 1.1534326f0
+loss() = 1.1472037f0
+loss() = 1.169673f0
+loss() = 1.1559156f0
+loss() = 1.1625391f0
+loss() = 1.1425991f0
+loss() = 1.178696f0
+loss() = 1.1507442f0
+loss() = 1.1538802f0
+loss() = 1.1530764f0
+loss() = 1.1470946f0
+loss() = 1.1602042f0
+loss() = 1.1475844f0
+loss() = 1.165472f0
+loss() = 1.1560345f0
+loss() = 1.1429353f0
+loss() = 1.1389235f0
+loss() = 1.1531494f0
+loss() = 1.144639f0
+loss() = 1.1576321f0
+loss() = 1.1456279f0
+loss() = 1.1481122f0
+loss() = 1.1518149f0
+loss() = 1.1572323f0
+loss() = 1.1270854f0
+loss() = 1.1500611f0
+loss() = 1.1305791f0
+loss() = 1.1345328f0
+loss() = 1.126526f0
+loss() = 1.1373366f0
+loss() = 1.1331073f0
+loss() = 1.1390232f0
+loss() = 1.1596146f0
+loss() = 1.1563864f0
+loss() = 1.1368356f0
+loss() = 1.1300448f0
+loss() = 1.1391249f0
+loss() = 1.1376895f0
+loss() = 1.1300576f0
+loss() = 1.1490052f0
+loss() = 1.1286942f0
+loss() = 1.1490866f0
+loss() = 1.1313964f0
+loss() = 1.0964491f0
+loss() = 1.1225548f0
+loss() = 1.1260004f0
+loss() = 1.1346282f0
+loss() = 1.1228894f0
+loss() = 1.1431413f0
+loss() = 1.1198446f0
+loss() = 1.1416484f0
+loss() = 1.1359241f0
+loss() = 1.1287792f0
+loss() = 1.1145571f0
+loss() = 1.1186206f0
+loss() = 1.1349978f0
+loss() = 1.1265824f0
+loss() = 1.1272701f0
+loss() = 1.1288309f0
+loss() = 1.1217663f0
+loss() = 1.120463f0
+loss() = 1.1288166f0
+loss() = 1.1227256f0
+loss() = 1.110634f0
+loss() = 1.1103911f0
+loss() = 1.1156101f0
+loss() = 1.1165515f0
+loss() = 1.1106585f0
+loss() = 1.114575f0
+loss() = 1.1238726f0
+loss() = 1.1162251f0
+loss() = 1.1147635f0
+loss() = 1.1125425f0
+loss() = 1.1044651f0
+loss() = 1.1091983f0
+loss() = 1.1128646f0
+loss() = 1.1163607f0
+loss() = 1.1084399f0
+loss() = 1.1055492f0
+loss() = 1.1187431f0
+loss() = 1.1196545f0
+loss() = 1.1086862f0
+loss() = 1.1011353f0
+loss() = 1.0995461f0
+loss() = 1.1118257f0
+loss() = 1.1111575f0
+loss() = 1.1097689f0
+loss() = 1.1129553f0
+loss() = 1.1083668f0
+loss() = 1.1119133f0
+loss() = 1.104539f0
+loss() = 1.0800642f0
+loss() = 1.0924615f0
+loss() = 1.1159911f0
+loss() = 1.1002648f0
+loss() = 1.1031338f0
+loss() = 1.1058483f0
+loss() = 1.1001068f0
+loss() = 1.1113654f0
+loss() = 1.1123804f0
+loss() = 1.0950924f0
+loss() = 1.0993718f0
+loss() = 1.0921403f0
+loss() = 1.0967466f0
+loss() = 1.1028646f0
+loss() = 1.0988892f0
+loss() = 1.0931784f0
+loss() = 1.0963721f0
+loss() = 1.1025159f0
+loss() = 1.102045f0
+loss() = 1.0979527f0
+loss() = 1.0861154f0
+loss() = 1.095815f0
+loss() = 1.1028848f0
+loss() = 1.0908211f0
+loss() = 1.0952182f0
+loss() = 1.0907427f0
+loss() = 1.0938213f0
+loss() = 1.0980289f0
+loss() = 1.0961574f0
+loss() = 1.0895234f0
+loss() = 1.1076262f0
+loss() = 1.0864278f0
+loss() = 1.0884364f0
+loss() = 1.0846148f0
+loss() = 1.0941248f0
+loss() = 1.087674f0
+loss() = 1.0962824f0
+loss() = 1.0994025f0
+loss() = 1.0987914f0
+loss() = 1.0823576f0
+loss() = 1.0807623f0
+loss() = 1.0966513f0
+loss() = 1.0880303f0
+loss() = 1.0900339f0
+loss() = 1.0907615f0
+loss() = 1.0934068f0
+loss() = 1.0963975f0
+loss() = 1.0920146f0
+loss() = 1.0834398f0
+loss() = 1.1037714f0
+loss() = 1.0765765f0
+loss() = 1.0809544f0
+loss() = 1.0784781f0
+loss() = 1.0870063f0
+loss() = 1.0813016f0
+loss() = 1.0875252f0
+loss() = 1.1150926f0
+loss() = 1.0936651f0
+loss() = 1.0863733f0
+loss() = 1.0757678f0
+loss() = 1.0827657f0
+loss() = 1.0832797f0
+loss() = 1.085503f0
+loss() = 1.0948414f0
+loss() = 1.0783647f0
+loss() = 1.0897714f0
+loss() = 1.0807242f0
+loss() = 1.0514143f0
+loss() = 1.0740407f0
+loss() = 1.0817413f0
+loss() = 1.092184f0
+loss() = 1.0746753f0
+loss() = 1.0934124f0
+loss() = 1.0731536f0
+loss() = 1.0798817f0
+loss() = 1.0831326f0
+loss() = 1.0788175f0
+loss() = 1.0684854f0
+loss() = 1.069898f0
+loss() = 1.0772153f0
+loss() = 1.0811877f0
+loss() = 1.076735f0
+loss() = 1.0727684f0
+loss() = 1.0743331f0
+loss() = 1.0729171f0
+loss() = 1.0821953f0
+loss() = 1.082429f0
+loss() = 1.0681754f0
+loss() = 1.0665667f0
+loss() = 1.0727159f0
+loss() = 1.079109f0
+loss() = 1.06937f0
+loss() = 1.0708107f0
+loss() = 1.0759401f0
+loss() = 1.0699874f0
+loss() = 1.0744972f0
+ws
+B      C  C   F     C
+Went zever morrning Just in a by Be Caure,
+G      C   A7       Gsus4 C
+They go, dancould smember in mountane that but wile. Clirlipe orion faste]
+Some that's gonna love whichs dremen ing.
+
+You feeling it's goin' you me all just they, but cal.
+&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;pre class="verse"&gt;
+&lt;pre class="verse"&gt;
+              a take bereak a pay
+We's you kna you leaved.
+&lt;/pre&gt;
+
+&lt;pre class="verse"&gt;
+If lett for to highers don't castand line
+Shart to me somethin
+Lorise e allisa,
+Giche I bley int my owa Itule.
+Yond d s st bulyin linalest ne.
+A.
+I I' a, malesusto I adsttublowaylominde My a Than'
+He ome.
+Wile ucowa,
+Frine he thole ge goone e ale me.
+Mine, ita ckiziplina, tine, boucke alino.
+I an' I..
+So, I roulethale owigle tipplorrete, E.
+Thon.
+I mathton'soimes, whefrare ousa tidake glesthwa ha me me wa aned ie ifu bic
+owa)
+ast.
+I me me at..
+| bllontin
+Yofove I'tive te I I wnite w anile, tht gowne dnshin me onglinisow.
+Nole wime mede rle.
+It ame, bade ininestthtie.
+Brrgoncke te,
+Itr
+</code></pre>
+<p>The output looks okay, but not quite as good as with RNNs. I did some
+ad-hoc exploration with alternate widths and depths. The one above
+seemed to work best.</p>
+<p>Qualitatively, these results are typical. Although transformers
+outperform RNNs when the underlying tokens are words or word-fragments,
+RNNs outperform transformers when the tokens are characters. Various
+modifications of transformers can make them competitive. See e.g.
+@wu2020 , @al2019 ,</p>
+<h1 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h1>
+<p>Huggingface and Transformers.jl interface to it.</p>
+<h2 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h2></div>
             </div>
         </div>
 
