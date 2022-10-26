@@ -134,7 +134,7 @@ Here's an illustration of how this looks using an image from the MNIST
 data.
 
 ```julia
-using Flux.Data.MNIST
+using MLDatasets
 using ImageFiltering
 using Plots
 
@@ -174,7 +174,7 @@ zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/conv.jl)
 </div>
 
 ```julia
-using Flux, Flux.Data.MNIST, Statistics
+using Flux, MLDatasets, Statistics
 using Flux: onehotbatch, onecold, throttle, @epochs
 using Base.Iterators: repeated, partition
 #using CuArrays

@@ -180,17 +180,18 @@ initmfigs = Array{typeof(plot(0)),1}(undef,length(mlps))
 for r in eachindex(mlps)
   m = mlps[r]
   println("Model $r = $m")
-  nparm = sum([length(m[i].W) + length(m[i].b) for i in 2:length(m)])
+  nparm = sum([length(m[i].weight) + length(m[i].bias) for i in 2:length(m)])
   println(" $nparm parameters in $(length(m)-1) layers")
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)  
   figs[r]=plot(xg, f.(xg), lab="", title="Model $r", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 5000
+  maxiter = 8000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
     Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
                 #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
                 [(xt, yt)],
-                Flux.AMSGrad() ) #,
+                opt) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 10)==0)
       l=Flux.mse(m(xt), yt)
@@ -233,37 +234,46 @@ zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl)
 
 First we load some packages and download the data.
 ```julia
-using Flux, Flux.Data.MNIST, Statistics
+using Flux, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
 using Base.Iterators: repeated
 using CUDA
 using JLD2
+using MLDatasets
+
+# load training set
+train_x, train_y = MNIST(split=:train)[:]
+
+# load test set
+test_x,  test_y  = MNIST(split=:test)[:]
 
 modeldir = normpath(joinpath(docdir,"jmd","models"))
 if !isdir(modeldir)
   mkdir(modeldir)
 end
-
-imgs = MNIST.images()
-labels = MNIST.labels()
-length(labels)
 ```
 
 Let's look at some of the images.
 
 ```julia;
+# Previously MNIST was provided in the Flux package in a different format. 
+# To keep code compatible, we convert to the old format
+imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)], 
+            [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)])
+labels = vcat(train_y, test_y)
 idx = rand(1:length(imgs), 16)
 plot([plot(imgs[i], title="$(labels[i])", aspect_ratio=:equal, axis=false, ticks=false) for i in idx]...)
 ```
-The images are 28 by 28 pixels. I believe they were originally black
-ink on white paper, but the colors are being inverted somewhere. 
+The images are 28 by 28 pixels. 
 
 Continue processing the data
 ```julia
 # Stack images into one large batch 
-X = hcat(float.(reshape.(imgs, :))...) |> gpu;
+X = Float32.(reshape(train_x, size(train_x,1)*size(train_x,2), size(train_x,3))) |> gpu;
+tX = Float32.(reshape(test_x, size(train_x,1)*size(train_x,2), size(test_x,3))) |> gpu;
 # One-hot-encode the labels
-Y = onehotbatch(labels, 0:9) |> gpu;
+Y = onehotbatch(train_y, 0:9) |> gpu;
+tY = onehotbatch(test_y, 0:9) |> gpu;
 ```
 One hot encoding is what the machine learning world calls creating
 dummy variables from a categorical variable.
@@ -330,12 +340,8 @@ with the highest probability in the case of `m(x)`).
 
 ```julia
 # gradient descent steps using the full X and Y to compute gradients
-Xsmall=X[:,1:250]
-Ysmall=Y[:,1:250] # accuracy is slower, so only compute on subset of data
-
-# Test set 
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |> gpu
-tY = onehotbatch(MNIST.labels(:test), 0:9) |> gpu
+Xsmall=X[:,1:2000]
+Ysmall=Y[:,1:2000] # accuracy is slower, so only compute on subset of data
 function evalcb(m) 
   l = loss(m, X, Y)
   if isnan(l)
@@ -426,12 +432,12 @@ gradient descent iterations.
 
 ```julia; cache=true
 rerun = false
-modelfile = joinpath(modeldir,"mnist-slp-2200.jld2")
+modelfile = joinpath(modeldir,"mnist-slp-8200.jld2")
 dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
 # gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
   evalcb(m)
-  @time @epochs 500 Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
+  @time @epochs 40 Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
               cb = throttle(()->evalcb(m), 10))
   evalcb(m)
 
@@ -448,15 +454,15 @@ end
 
 Remember that each "epoch" does one gradient descent step for each
 tuple in `dataset`. In the code above `dataset` is just the original
-data repeated 200 times. We ran for 10 epochs, so there were a total
-of 2000 more gradient descent iterations. We see that the training
+data repeated 200 times. We ran for 40 epochs, so there were a total
+of 8000 more gradient descent iterations. We see that the training
 accuracy has improved to above 99%, but our test accuracy has failed to
 improve much above 96%. 
 
 My initial interpretation of this result would be that we are now
 overfitting. The number of parameters in the network is
 ```julia
-nparam(m) = sum([length(m[i].W) + length(m[i].b) for i in 1:length(m) if typeof(m[i]) <: Dense])
+nparam(m) = sum([length(m[i].weight) + length(m[i].bias) for i in 1:length(m) if typeof(m[i]) <: Dense])
 nparam(m)
 ```
 and there 60000 images. For a typical econometric or statistic
@@ -504,7 +510,7 @@ batchsize=10000
 parts=Base.Iterators.partition(1:size(X,2), batchsize) 
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
 # The full data + network doesn't fit in my GPU memory, so do batches
-epochs = 10
+epochs = 15
 acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
@@ -517,7 +523,7 @@ for e in 1:epochs
     println("Beginning epoch $e")
     evalcb(cmgsnet)
     @time Flux.train!((x,y)->loss(cmgsnet,x,y),
-                      params(cmgsnet), data, opt, 
+                      Flux.params(cmgsnet), data, opt, 
                       cb = throttle(()->evalcb(cmgsnet), 10))
     evalcb(cmgsnet)
     
@@ -587,8 +593,9 @@ Let's look at some of the images that our model failed to classify
 correctly.
 
 ```julia; cache=true
-tlabels = MNIST.labels(:test)
-timgs = MNIST.images(:test)
+timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
 # predicted labels
 mlabels = cpu(vec(map(x->x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 @show mean(mlabels.==tlabels) # = accuracy
@@ -603,6 +610,96 @@ code above. However, I suspect that the main reason for their better
 performance is that @ciresan2010 generate additional training
 images. They do this by randomly rotating, stretching, and adding
 oscillations to the existing images. 
+
+
+# Data Augmentation
+
+Generating more data from your existing data is called data augmentation. 
+Let's try augmenting the data by randomly rotating the images.
+
+```julia
+function rotateimage(img, θ)
+  R = similar(img)
+  R .= img[1,1]
+  i0 = (size(img,1)+1)/2
+  j0 = (size(img,2)+1)/2
+  for i ∈ axes(img)[1]
+    for j ∈ axes(img)[2]
+      ri = Int(round((i-i0)*cos(θ) + (j-j0)*sin(θ) +i0))
+      rj = Int(round(-(i-i0)*sin(θ) + (j-j0)*cos(θ) +j0))
+      if (ri ∈ axes(img)[1] && rj ∈ axes(img)[2])
+        R[ri,rj] = img[i,j]
+      end
+    end
+  end
+  return R
+end
+
+plot([plot(timgs[i], axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...,
+    [plot(rotateimage(timgs[i], (-1)^i*π/6), axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...)
+```
+
+Training with rotated images. 
+
+```julia; cache=true
+rerun = false
+batchsize=10000 
+parts=Base.Iterators.partition(1:size(X,2), batchsize) 
+randrotate(x::AbstractVector; maxθ = π/8) = vec(rotateimage(reshape(x, 28, 28), rand()*2maxθ - maxθ))
+data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), cpuY[:,p]) for p in parts for i=1:10];
+
+epochs = 10
+acctest  = zeros(epochs)
+acctrain = zeros(epochs)
+losstest  = zeros(epochs)
+losstrain = zeros(epochs)
+opt=ADAM()
+cmgsnet = gpu(cmgsnet_cpu)
+for e in 1:epochs
+  modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
+  if rerun || !isfile(modelfile)
+    println("Beginning epoch $e")
+    evalcb(cmgsnet)
+    @time Flux.train!((x,y)->loss(cmgsnet,x,y),
+                      Flux.params(cmgsnet), data, opt, 
+                      cb = throttle(()->evalcb(cmgsnet), 10))
+    evalcb(cmgsnet)
+    
+    # save model
+    local cpum = cpu(cmgsnet)
+    @save modelfile cpum
+  else
+    @load modelfile cpum
+    global cmgsnet = gpu(cpum)
+  end
+  println("Finished $e epochs")
+  losstrain[e]=loss(cmgsnet,X,Y)
+  acctrain[e]=accuracy(cmgsnet,Xsmall, Ysmall)
+  losstest[e]=loss(cmgsnet,tX,tY)
+  acctest[e]=accuracy(cmgsnet,tX,tY)
+end
+e = epochs
+modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
+@load modelfile cpum
+cmgsnet = gpu(cpum)
+
+@show maximum(acctest)
+```
+
+
+```julia; cache=true
+timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
+# predicted labels
+mlabels = cpu(vec(map(x->x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
+@show mean(mlabels.==tlabels) # = accuracy
+@show sum(mlabels .!= tlabels)
+miss=findall(mlabels .!= tlabels)
+plot( [plot(timgs[i], axis=false, ticks=false, title="$(tlabels[i]) as $(mlabels[i])", aspect_ratio=:equal) for i in miss[1:16]]...)
+```
+
+
 
 
 

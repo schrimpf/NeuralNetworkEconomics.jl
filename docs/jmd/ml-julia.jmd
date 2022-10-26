@@ -245,14 +245,15 @@ maxiter=2000
 obj = zeros(maxiter)
 mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
+opt = Flux.AMSGrad()
 for i in 1:maxiter
-  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], Flux.AMSGrad())
+  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], opt)
   mse_train[i] = mse(X_train,y_train)
   mse_test[i] = mse(X_test, y_test)
   obj[i] = loss(X_train,y_train)
 end
 lo = 1
-hi = 250
+hi = 2000
 plot(obj[lo:hi], ylab="Loss=MSE + λ/n*||β||₁", xlab="Iteration")
 ```
 
@@ -262,7 +263,7 @@ plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab="MSE", xaxis=("Iteration"),
 
 The minimization methods in `Flux.train!` are all variants of gradient
 descent. Each call to `Flux.train!` runs one iteration of the
-specified solver. To find a locaol minimum, `Flux.train!` can be
+specified solver. To find a local minimum, `Flux.train!` can be
 called repeatedly until progress stops. The above loop is a simple way
 to do this. The `@epoch` macro can also be useful.
 
@@ -271,6 +272,84 @@ Lasso. Without further adjustment, gradient descent gets stuck in a
 cycle as jumps from one side of the other of the absolute value in the
 lasso penalty. Nonetheless, the results are near the true minimum,
 even though it never exactly gets there.
+
+# Lux.jl
+
+A promising alternative to `Flux.jl`  is [`Lux.jl`](http://lux.csail.mit.edu/dev/).^[These notes were originally written before Lux.jl existed. 
+If I were starting over, I would use Lux.jl instead of Flux.jl.]
+`Lux.jl` and `Flux.jl` share many features and backend code. `Lux.jl` has a more function 
+focused interface with explicit parameter passing. This is a more "Julian" style of 
+programming.^[`Flux.jl` drew inspiration for its interface from Tensorflow and PyTorch. 
+Implicit parameters makes some sense in an object oriented language like Python, but it
+ is not the most natural style for Julia.] 
+
+For comparison, let's implement the same Lasso model in Lux.
+```julia
+import Lux # Lux shares many function names with Flux, so import instead of using to avoid confusion
+import Random, Zygote
+using Test
+# Seeding
+rng = Random.default_rng()
+Random.seed!(rng, 0)
+
+# define the model
+
+X_train = Matrix(X)[train,:]
+X_test = Matrix(X)[test,:]
+y_train = y[train]
+y_test = y[test]
+function standardizer(xtrain)
+  m = std(xtrain, dims=1)
+  s = std(xtrain, dims=1)
+  (x->(x .- m)./s , xs->xs.*s .+ m)
+end
+stdizex, _ = standardizer(X_train)
+stdizey, unstdizey = standardizer(y_train)
+@test unstdizey(stdizey(y_test)) ≈ y_test
+
+ys = stdizey(y_train)
+Xs = stdizex(X_train)
+# Set up the model parameters and initial values
+βols = (Xs'*Xs) \ (Xs'*(ys .- mean(ys)))
+b = [mean(ys)]
+
+m = Lux.Chain(X->stdizex(X)', 
+  Lux.Dense(size(X_train,2), 1, init_weight=zeros, init_bias=zeros)
+  )
+
+ps, st = Lux.setup(rng, m)
+ps.layer_2.weight .= βols'
+ps.layer_2.bias .= b
+
+mse(m, ps, st, X, y) = mean(abs2, m(X, ps, st)[1]' .- stdizey(y))
+mseraw(m,ps,st,X,y) = mean(abs2, unstdizey(m(X, ps, st)[1]') .- y)
+ℓ = let λ = 2.0, ψ = ones(size(βols')), st=st
+  penalty(ps,y) = λ/length(y)*norm(ψ.*ps.layer_2.weight,1)
+  loss(ps, X, y, m) = mse(m, ps, st, X, y) + penalty(ps,y)
+end
+
+@show ℓ(ps,X_train,y_train,m)
+
+# minimize loss
+opt = Lux.Optimisers.AMSGrad() #ADAM(0.001)
+optstate = Lux.Optimisers.setup(opt, ps)
+maxiter=2000
+obj = zeros(maxiter)
+mse_train = zeros(maxiter)
+mse_test = zeros(maxiter)
+for i in 1:maxiter
+    # Compute the gradient
+    gs = Zygote.gradient(ps->ℓ(ps, X_train, y_train, m), ps)[1]
+    # Perform parameter update
+    optstate, ps = Lux.Optimisers.update(optstate, ps, gs)
+    mse_train[i] = mse(m, ps, st, X_train,y_train)
+    mse_test[i] = mse(m, ps, st, X_test, y_test)
+    obj[i] = ℓ(ps,X_train,y_train,m)
+end
+lo = 1
+hi = 250
+plot(lo:hi,obj[lo:hi], ylab="Loss=MSE + λ/n*||β||₁", xlab="Iteration")
+```
 
 
 # Additional Resources

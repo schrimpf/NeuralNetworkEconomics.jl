@@ -125,14 +125,14 @@ theorem as though it is something special for neural networks. This is
 incorrect. In particular, the universal approximation theorem does not
 explain why neural networks seem to be unusually good at
 prediction. Most nonparametric estimation methods (kernel, series,
-forests, etc) satisfy a similar conditions.
+forests, etc) are universal approximators.
 
 # Training
 
 Models in `Flux.jl` all involve a differentiable loss function. The
 loss function is minimized by a variant of gradient descent. Gradients
 are usually calculated using reverse automatic differentiation
-(backpropagation is a variant of reverse automatic differentiation
+(backpropagation usually refers to a variant of reverse automatic differentiation
 specialized for the structue of neural networks).
 
 ## Low level
@@ -175,11 +175,12 @@ cscheme = colorschemes[:BrBG_4];
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = slp(rs[r])
-  figs[r]=plot(xg, f.(xg), lab="True f", title="$(rs[r]) units")
+  figs[r]=plot(xg, f.(xg), lab="True f", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter =10000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
+    Flux.train!(m.loss, Flux.params(m.θ), [(x, y)], opt)
     if (i % (maxiter ÷ 5))==0
       l=m.loss(x,y)
       println("$i iteration, loss=$l")
@@ -209,7 +210,7 @@ iterations increases with the problem size.
 
 You may notice that the MSE does not (weakly) decrease with network
 size. (Or not---both the data and initial values are drawn randomly,
-and results may vary.) This reflects minimization problem. Care must
+and results may vary.) This reflects a problem in the minimization. Care must
 be used when choosing a minimization algorithm and initial values. We
 will see more of this below.
 
@@ -220,7 +221,6 @@ functions for neural networks. Here is the same network as in the
 previous code block, but using the higher level API.
 
 ```julia; cache=true
-
 dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -234,8 +234,9 @@ for r in eachindex(rs)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 3000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -276,13 +277,12 @@ activation, but $w'x$ is small enough that $\psi(w'x + b)$ is
 approximately linear. This will make it initially difficult to
 distinguish $\beta \psi'$ from $w$,
 
-We can improve the fit by choosing initial values even more
+We can improve the fit by choosing initial values more
 carefully.  The following code choses initial $w$ and $b$ to make sure
 the activation functions vary nonlinearly in the support of $x$.
 The initial activations functions are plotted below.
 
 ```julia; cache=true
-
 dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -292,20 +292,21 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
   # adjust initial weights to make sure each node is nonlinear in support of X
-  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
   # adjust initial intercepts to be in the support of w*x
-  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
   bols = (X*X') \ (X*y)
-  m[2].W .= -m[2].W .+ bols[2:end]'
-  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 5000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
     #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -352,20 +353,21 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
   # adjust initial intercepts to be in the support of w*x
-  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
   bols = (X*X') \ (X*y)
-  m[2].W .= -m[2].W .+ bols[2:end]'
-  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 5000
+  opt=Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -409,23 +411,24 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  m[1].W .= -m[1].W .+ sign.(m[1].W)*2*π
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
   # adjust initial intercepts to be in the support of w*x
-  m[1].b .= -m[1].b .- m[1].W[:].*(π/(l+1):π/(l+1):π*l/(l+1))
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
   X = vcat(1, m[1](xt))
   bols = (X*X') \ (X*y)
-  m[2].W .= -m[2].W .+ bols[2:end]'
-  m[2].b .= -m[2].b .- mean(m(xt) .- yt)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
   figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
   maxiter = 3000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
     Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
                 # partition data into 100 batches
                 [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)],
-                Flux.AMSGrad() ) #,
+                opt ) #,
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
       println("$(rs[r]) units, $i iterations, loss=$l")
@@ -480,6 +483,8 @@ some familiar types of functions. @barron1993 first showed that neural
 networks approximate this class of functions well, and compares the
 approximation rate of neural networks to other function approximation
 results.
+
+- See @farrel2021 for more contemporary approach, applicable to currently used network architectures
 
 
 # References

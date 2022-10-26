@@ -94,9 +94,17 @@ more relevant to economics.
 
 # Transformer
 
-Transformers create a mapping from $(x_0, ..., x_t) \to \tilde{x}_t$
-where $\tilde{x}_t$ is meant to contain all information relevant for
-predicting $x_{t+1}$. Moreover, the same mapping can be applied to all
+Transformers create a mapping from
+$$
+(x_0, ..., x_t) \to \tilde{x}_t
+$$
+where
+$\tilde{x}_t$
+is meant to contain all information relevant for
+predicting
+$x_{t+1}$
+.
+Moreover, the same mapping can be applied to all
 $t$ in parallel. This mapping consists of the following layers.
 
 ## Embedding
@@ -135,15 +143,15 @@ intervals between words and offsets.
 
 The $x_t^{pe}$ are now further transformed to incorporate information
 from other $x_s^{pe}$. This is done through multiple attention
-layers. To describe attention layers, let $x_t^{A_0} = x_t^{pe}$. An
+layers. To describe attention layers, let $x_t^{A,0} = x_t^{pe}$. An
 attention layer consists of:
 
 ### (Masked) Self-Attention
 
 $$
-z_{0,t}^{A_\ell} = \sum_{j=0}^t \frac{e^{x_t^{A_{\ell-1}}' Q_\ell' K_\ell
-x_t^{A_{\ell-1}}}} { \sum_{i=0}^t e^{x_i^{A_{\ell-1}}' Q_\ell' K_\ell
-x_t^{A_{\ell-1}}}} V_\ell x_{j}^{A_{\ell-1}}
+z_{0,t}^{A,\ell} = \sum_{j=0}^t \frac{e^{ {x_t^{A,\ell-1}}' Q_\ell' K_\ell
+x_j^{A,\ell-1}}} { \sum_{i=0}^t e^{{x_t^{A,\ell-1}}' Q_\ell' K_\ell
+x_i^{A,\ell-1}}} V_\ell x_{j}^{A,\ell-1}
 $$
 where $Q_{ell}$, $K_{ell},$ and $V_{\ell}$ are all $m \times d$
 matrices. These are often referred to as query, key, and value
@@ -151,18 +159,18 @@ transformations respectively. The idea is that the query and key
 matrices determine how relevant $x_j$ is for $x_t$, and the value
 gives an altered representation of $x_j$.
 
-This is "masked" because $z_{0,t}^{A_\ell}$ looks at the data from $0$
+This is "masked" because $z_{0,t}^{A,\ell}$ looks at the data from $0$
 to $t$ instead of the whole sequence from $0$ to $T$.
 
 If $d \neq m$, then $d$ must be a multiple of $m$. If $d < m$, then
 there must be $d/m$ such $Q$, $K$, and $V$ matrices, and their outputs
-are concatenated together to ensure that $z_t^{A_\ell}$ has
-the same dimension as $x_t^{A_{\ell-1}}$
+are concatenated together to ensure that $z_t^{A,\ell}$ has
+the same dimension as $x_t^{A,\ell-1}$
 
 ### Residual Connection
 
 The output of the attention layer is then added to the input,
-$z_{1,t}^{A_\ell} = x_t^{A_{\ell-1}} + z_{0,t}^{A_\ell}$
+$z_{1,t}^{A,\ell} = x_t^{A,\ell-1} + z_{0,t}^{A,\ell}$
 This sort of residual connection is often used in deep
 learning. (E.g. Resnet is a well known convolutional network with residual
 connections that did very on image classification). It
@@ -175,19 +183,19 @@ connections.
 A layer normalization is then applied as in @ba2016. That is, we
 transform
 $$
-z_{2,t}^{A_\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A_\ell} -
+z_{2,t}^{A,\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A,\ell} -
 \mu_\ell) + b_t^\ell
 $$
 where $\mu_\ell$ and $\sigma_\ell$ are the mean and standard deviation
-of $z_{1,t}^{A_\ell}$ across $t$.
+of $z_{1,t}^{A,\ell}$ across $t$.
 
 ### Feed-Forward Layer
 
 A single layer feed forward network is then applied to each
-$z_{2,t}^{A_\ell}$. That is, we take
+$z_{2,t}^{A,\ell}$. That is, we take
 
 $$
-z_{3,t}^{A_\ell} = f_\ell(z_{2,t}^{A_\ell})
+z_{3,t}^{A,\ell} = f_\ell(z_{2,t}^{A,\ell})
 $$
 
 where $f_\ell$ is a single layer feed forward network.
@@ -196,11 +204,11 @@ where $f_\ell$ is a single layer feed forward network.
 
 Finally there is another residual connection and layer norm applied.
 
-$$ z_{4,t}^{A_\ell} = z_{3,t}^{A_\ell} + z_{2,t}^{A_\ell} $$
+$$ z_{4,t}^{A,\ell} = z_{3,t}^{A,\ell} + z_{2,t}^{A,\ell} $$
 
 $$
-x_{t}^{A_\ell} = frac{g^{\ell2}_t}{\sigma_\ell} (z_{4,t}^{A_\ell} -
-\mu_\ell) + b_t^{\ell2}
+x_{t}^{A,\ell} = \frac{g^{\ell 2}_t}{\sigma_\ell} (z_{4,t}^{A,\ell} -
+\mu_\ell) + b_t^{\ell 2}
 $$
 
 
@@ -227,13 +235,134 @@ is advancing rapidly. E.g. @bhattamishra2020 , etc
 
 # Example Code
 
-# Packages
+## Data
 
-## Transformers.jl
+For comparison, we will start by using the same Dylan example as in
+the recurrent neural network notes.
+
+```julia
+using ProgressMeter, JLD2
+import HTTP, Gumbo, Cascadia
+using StatsBase: wsample
+using Base.Iterators: partition
+using Transformers, Flux, CUDA
+
+text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
+#startchar = 'α'
+#endchar = 'Ω' # any character not in original text
+unkchar = 'Ξ'
+#alphabet = [startchar, unique(text)..., endchar]
+alphabet = unique(text)
+N = length(alphabet)
+vocab = Transformers.Vocabulary(alphabet, unkchar)
+```
+
+## Model Creation
+
+```julia
+enable_gpu(true)
+
+function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
+  embed = Transformers.Basic.Embed(modeldim,length(vocab))
+  pe = Transformers.Basic.PositionEmbedding(modeldim)
+  topo = @nntopo_str "x → e → pe:(e,pe) → t → $L:t → logitp"
+  m = Stack(topo,
+            embed,
+            pe,
+            (e,pe) -> e .+ pe,
+            [Transformer(modeldim, heads, feedforwardsize, act=relu, future=false, pdrop=0.1) for l ∈ 1:L]...,
+            Transformers.Basic.Positionwise(Dense(modeldim,length(vocab))))
+  return(m)
+end
+```
+
+## Training
+```julia
+function cbgenerator(N, loss, printiter=Int(round(N/10)))
+  p = Progress(N, 1, "Training", 25)
+  i=0
+  function cb()
+    next!(p)
+    if (i % printiter==0)
+      @show loss()
+    end
+    i+=1
+  end
+  return(cb)
+end
+
+function sample(m, alphabet, len, seqlen)
+  m = cpu(m)
+  buf = IOBuffer()
+  c = 'w' #rand(alphabet)
+  cseq = vocab(collect("so much younger than that no")) #Vector{Int}(undef,0)
+  ind2alpha = Dict(vocab(a) => a for a ∈ alphabet)
+  for i = 1:len
+    write(buf, c)
+    if (i < seqlen)
+      push!(cseq, vocab(c))
+    else
+      cseq[1:(end-1)] .= cseq[2:end]
+      cseq[end] = vocab(c)
+    end
+    c = ind2alpha[wsample(1:length(vocab), softmax(m(cseq)[:,end]))]
+  end
+  return String(take!(buf))
+end
+
+function createdata(vocab, text, seqlength, seqperbatch)
+  sequences = [vocab.(x) for x ∈ partition(text, seqlength)]
+  xy = [(s[1:(end-1)],Flux.onehot(vocab,s[2:end])) for s ∈ sequences]
+  if length(xy[end][1]) < length(xy[1][1])
+    pop!(xy)
+  end
+  xybatches = [ (hcat([z[1] for z ∈ p]...), cat([z[2] for z ∈ p]..., dims=3)) for p ∈ partition(xy, seqperbatch) ]
+  return(xybatches)
+end
+
+function train_model(m; data=data,
+                     modelfile=joinpath(docdir,"jmd","models","dylan-t.jld2"),
+                     opt=opt, epochs=20 )
+  loss(xb, yb) = Flux.Losses.logitcrossentropy(m(xb),yb)
+  cb=cbgenerator(length(data),()->loss(first(data)...))
+
+  if isfile(modelfile)
+    @load modelfile cpum
+    #m = gpu(cpum)
+    m = cpum
+  else
+    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    println("Sampling after 1 epoch:")
+    sample(m, alphabet, 1000, size(first(data)[1],1)) |> println
+
+    Flux.@epochs epochs Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+    cpum = cpu(m)
+    @save modelfile cpum
+  end
+  return(m)
+end
+
+m = create_transformer(64,4,heads=1, vocab=vocab) |> gpu
+data = createdata(vocab, text, 500, 50) |> gpu
+opt = RMSProp(0.001)
+m = train_model(m, data=data, modelfile="64d_4level_50e.jld2", opt=opt, epochs=50)
+
+sample(m, alphabet, 1000, size(first(data)[1],1)) |> println
+```
+
+The output looks okay, but not quite as good as with RNNs. I did some
+ad-hoc exploration with alternate widths and depths. The one above
+seemed to work best.
+
+Qualitatively, these results are typical. Although transformers
+outperform RNNs when the underlying tokens are words or
+word-fragments, RNNs outperform transformers when the tokens are
+characters. Various modifications of transformers can make them
+competitive. See e.g. @wu2020 , @al2019 ,
 
 
-## Pre-trained Models
+# Pre-trained Models
 
-Huggingface and Transformers.jl interface to it
+Huggingface and Transformers.jl interface to it.
 
-### Transfer Learning
+## Transfer Learning

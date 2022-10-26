@@ -200,11 +200,11 @@ To apply this result to neural networks we need two things. First, we
 need to verify the rate condition (assumption 2). Doing so will
 involve conditions on the class of functions being estimated, and how
 the complexity (width and depth) of the neural network increases with
-sample size. The excellent paper by @farrel2018 provides the needed
+sample size. The excellent paper by @farrel2021 (working paper @farrel2018) provides the needed
 results. 
 
 Second, we need to make sure our moment conditions are Neyman
-orthogonal. @chernozhukov2018 and @farrel2018 do this for some typical
+orthogonal. @chernozhukov2018 and @farrel2021 do this for some typical
 causal inference models. For other models, analytically transforming
 non-orthogonal moments into orthogonal ones is typically possible, but
 it can be tedious. 
@@ -216,7 +216,7 @@ it can be tedious.
 
 ## Deep Neural Networks for Estimation and Inference
 
-Review results of @farrel2018. 
+Review results of @farrel2021. 
 
 # Application: Average Impulse Responses
 
