@@ -176,7 +176,7 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -213,19 +213,17 @@ networks, and applied them to image classification. However,
 state-of-art image classifiers typically do not use feedforward
 networks. They use convolutional networks, which will be the topic of
 this document. Convolutional neural networks also have applications to
-PDEs, see Rackauckas (<a href="#ref-rackauckas2019conv">2019</a>). They also have
-potential applications to time series and spatial data.</p>
+PDEs, see @rackauckas2019conv. They also have potential applications to
+time series and spatial data.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Goodfellow, Bengio, and Courville (<a href="#ref-goodfellow2016">2016</a>)
-    <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a> especially
-    chapter 9</li>
+<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a>
+    especially chapter 9</li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
     documentation</a>
     especially the textbook</li>
-<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
-    Julia:Fundamentals for Data Science, MachineLearning and Artificial
-    Intelligence</em></li>
+<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+    MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="convolutions">Convolutions<a class="headerlink" href="#convolutions" title="Permanent link">&para;</a></h1>
 <p>A convolution is an operation on a set of functions. If $f:\R \to \R$
@@ -241,7 +239,7 @@ For example, for $f, g: \mathbb{Z} \to \R$, <script type="math/tex; mode=display
 the kernel density estimator can be written as <script type="math/tex; mode=display">
 \begin{align*}
 \hat{f}(x) = & \frac{1}{nh} \sum_{i=1}^n k((x-x_i)/h) \\
-= & \int \left(\frac{1}{n} \sum_{i=1}^n \delta_{x_i}(t)\right) k((x-t)/h)/h
+= & \int \left(\frac{1}{n} \sum_{i=1}^n \delta_{x_i}(t) \right)k((x-t)/h)/h
 dt
 \end{align*}
 </script> where $\delta_{x_i}(t)$ is the Dirac measure at $x_i$.</p>
@@ -251,8 +249,8 @@ filters. Taking a local average of pixels is a convolution.</p>
 <p><a href="https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59">Image
 source</a></p>
 <p>The similarity to kernel regression should be obvious. The 3x3 matrix</p>
-<pre><code>1 0 1 
-0 1 0 
+<pre><code>1 0 1
+0 1 0
 1 0 1
 </code></pre>
 <p>in the animation above is called a stencil or a kernel.</p>
@@ -261,22 +259,23 @@ in images. For example 1 × 2 filters of <code>[-1 1]</code> and <code>[1, -1]</
 out vertical transitions from dark to light and vice versa.</p>
 <p>Here’s an illustration of how this looks using an image from the MNIST
 data.</p>
-<pre><code class="language-julia">using Flux.Data.MNIST
+<pre><code class="language-julia">using MLDatasets
 using ImageFiltering
 using Plots
+Plots.pyplot()
 
-imgs = MNIST.images()
-labels = MNIST.labels()
+train_x, labels = MNIST(split=:train)[:]
+imgs = [Gray.(train_x[:,:,i]') for i ∈ 1:size(train_x,3)]
+
 i = 1
-plot(plot(imgs[i]), plot(Gray.(imfilter(imgs[i], centered([-1 1])) )))
-plot(plot(Gray.(1) .- imgs[i], title=&quot;Original&quot;, aspect_ratio=:equal,
+plot(plot(RGB.(1 .- imgs[i]), title=&quot;Original&quot;, aspect_ratio=:equal,
           axis=false, ticks=false),
      plot(RGB.(1 .- imgs[i] .+ imfilter(imgs[i], centered([-1 1])),
-               1 .- imgs[i],  
+               1 .- imgs[i],
                1 .- imgs[i] .+ imfilter(imgs[i], centered([1 -1]))),
                title=&quot;Vertical edge filters&quot;, aspect_ratio=:equal,
           axis=false, ticks=false),
-     layout=(1, 2)          
+     layout=(1, 2)
      )
 </code></pre>
 <p><img alt="" src="../figures/conv_2_1.png" /></p>
@@ -294,11 +293,10 @@ data.</p>
 <p>The code in this section was adapted from the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/conv.jl">Flux model
 zoo.</a></p>
 </div>
-<pre><code class="language-julia">using Flux, Flux.Data.MNIST, Statistics
-using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
+<pre><code class="language-julia">using Flux, MLDatasets, Statistics
+using Flux: onehotbatch, onecold, throttle, @epochs
 using Base.Iterators: repeated, partition
-using CuArrays
-using BSON: @save, @load
+using JLD2
 using ColorSchemes, ProgressMeter
 cscheme = colorschemes[:BrBG_4];
 </code></pre>
@@ -310,10 +308,11 @@ so we need to treat the images as $28 \times 28$ arrays.</p>
 <pre><code class="language-julia"># set up training and testing data
 createx(imgdata) = reduce((x,y)-&gt;cat(x,y, dims=4),
                           reshape.(float.(imgdata),28,28, 1) )
-X = Float32.(gpu(createx(imgs)));
-Y = onehotbatch(labels, 0:9) |&gt; gpu;
-tX = Float32.(gpu(createx(MNIST.images(:test))));
-tY = onehotbatch(MNIST.labels(:test), 0:9) |&gt; gpu;
+X = Float32.(reshape(train_x, 28, 28, 1, size(train_x,3))) |&gt; gpu
+Y = onehotbatch(labels, 0:9) |&gt; gpu
+test_x, test_y = MNIST(split=:test)[:]
+tX = Float32.(reshape(test_x, 28, 28, 1, size(test_x,3))) |&gt; gpu
+tY = onehotbatch(test_y, 0:9) |&gt; gpu;
 </code></pre>
 <p>When working with convolutions, <code>Flux.jl</code> wants the data to be stored as
 a $K_1 \times K_2 \times C \times N$ array where $K_1 \times K_2$ is the
@@ -353,7 +352,7 @@ same as $x$. If $P&lt;M/2$, the convolution decreases the size of the
 image. Then if we apply a maximum pooling function with dimension
 $D \times D$, we get a $N/D \times N/D$ array with elements <script type="math/tex; mode=display">
 maxpool(\psi((x \ast w) )[n,m] = \max_{1 \leq i \leq d, 1 \leq j \leq
-d} \{\psi((x \ast w)[dk+i,d\ell+j])\} 
+d} \{\psi((x \ast w)[dk+i,d\ell+j])\}
 </script>
 </p>
 <p>The following code defines a convolutional network with three
@@ -375,17 +374,17 @@ output.</p>
   # Reshape 3d tensor into a 2d one, at this point it should be (3, 3, 32, N)
   # which is where we get the 288 in the `Dense` layer below:
   x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
+  Dense(288, 10) #,
 
   # Finally, softmax to get nice probabilities
-  softmax
+  #softmax
 ) |&gt; gpu
 
 
 # count parameters
 nparam(m::Chain)=sum(nparam.(m))
 nparam(m::Conv)=length(m.weight) + length(m.bias)
-nparam(m::Dense)=length(m.W)+length(m.b)
+nparam(m::Dense)=length(m.weight)+length(m.bias)
 nparam(m) = 0
 
 println(&quot;There $(nparam(model)) parameters&quot;)
@@ -395,10 +394,17 @@ println(&quot;There $(nparam(model)) parameters&quot;)
 <p>Now, let’s train the model. We are going to train the model a few times
 with slightly different details, so it makes sense to define a function
 for the training loop.</p>
-<pre><code class="language-julia">function train_mnist!(model, X, Y, tX, tY,
+<pre><code class="language-julia">function accuracy(m, x, y)
+  # onecold(m(x)) results in very slow code for large x, so we avoid it
+  coldx = vec(map(x-&gt;x[1], argmax(m(x), dims=1)))
+  coldy = onecold(y)
+  return(mean(coldx.==coldy))
+end
+
+function train_mnist!(model, X, Y, tX, tY,
                       modelname;
-                      loss = (x,y)-&gt;crossentropy(model(x), y),
-                      accuracy = (x,y)-&gt;mean(onecold(model(x)) .== onecold(y)),
+                      loss = (x,y)-&gt;Flux.logitcrossentropy(model(x), y),
+                      accuracy = (x,y)-&gt;accuracy(model, x, y),
                       batchsize=length(tY),
                       reps_per_epoch=1,
                       maxepochs=200,
@@ -406,34 +412,33 @@ for the training loop.</p>
                       )
   Xsmall = X[:,:,:,1:1000]
   Ysmall = Y[:,1:1000]
-  evalcb = () -&gt; @show(loss(Xsmall, Ysmall), loss(tX,tY), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
+  evalcb = () -&gt; @show(loss(Xsmall, Ysmall), loss(tX,tY), accuracy(Xsmall,Ysmall), accuracy(tX,tY))
   parts=Base.Iterators.partition(1:size(X,ndims(X)), batchsize);
   batches = [(X[:,:,:,p], Y[:,p]) for p in parts];
   data = repeat(batches, reps_per_epoch);
   # The model and entire training data do not fit in my GPU
   # memory. For monitoring progress we will occassionally print the
-  # loss and accuracy summed over the entire data.  
+  # loss and accuracy summed over the entire data.
   function sumloss(batches)
     L = zero(Float32)
     for i in 1:length(batches)
-      L += Tracker.data(loss(batches[i]...))
+      L += loss(batches[i]...)
     end
     L /= length(batches)
   end
   function acc(batches)
     L = zero(Float32)
-    for i in 1:length(batches)    
+    for i in 1:length(batches)
       L += accuracy(batches[i]...)
-    end  
+    end
     L /= length(batches)
   end
 
   opt = ADAM(0.001)
-  epochs = 200
   acctest  = zeros(maxepochs)
   acctrain = zeros(maxepochs)
   losstest  = zeros(maxepochs)
-  losstrain = zeros(maxepochs)  
+  losstrain = zeros(maxepochs)
   @info(&quot;Beginning training loop...&quot;)
   best_acc = 0.0
   last_improvement = 0
@@ -443,17 +448,17 @@ for the training loop.</p>
   progress = Progress(maxepochs, 1, &quot;Training model&quot;, 50)
   while e&lt;maxepochs
     e += 1
-    modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;$modelname-$e-epochs.bson&quot;)
+    modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;$modelname-$e-epochs.jld2&quot;)
     if rerun || !isfile(modelfile)
-      @time Flux.train!(loss, params(model), data, opt, cb = throttle(evalcb, 20))      
+      @time Flux.train!(loss, Flux.params(model), data, opt, cb = throttle(evalcb, 20))
       # save model
       cpum = cpu(model)
       losstrain[e]= sumloss(batches)
       acctrain[e] =  acc(batches)
-      losstest[e]=Tracker.data(loss(tX,tY))
+      losstest[e]=loss(tX,tY)
       acctest[e] =accuracy(tX,tY)
       @save modelfile cpum losstrain acctrain losstest acctest
-    else 
+    else
       @load modelfile cpum losstrain acctrain losstest acctest
       model = gpu(cpum)
     end
@@ -461,20 +466,16 @@ for the training loop.</p>
     if (acctest[e]&gt;best_acc)
       best_acc = acctest[e]
       last_improvement=e
-    end    
-    # If we haven't seen improvement in 5 epochs, drop our learning rate:
-    if e - last_improvement &gt;= 5 &amp;&amp; opt.eta &gt; 1e-6
-      opt.eta /= 10.0
-      @warn(&quot; -&gt; Haven't improved in a while, dropping learning rate to $(opt.eta)!&quot;)      
-      # After dropping learning rate, give it a few epochs to improve
-      last_improvement = e
-    end    
-    if e - last_improvement &gt;= 10 &amp;&amp; opt.eta &lt;= 1e-6
-      @warn(&quot; -&gt; At epoch $e, haven't improved in 10 epochs. Stopping training.&quot;)
+    end
+    # If we haven't seen improvement in 3 epochs, we stop (could also
+    # try droping learning rat but it would take time) we are cheating
+    # here by using thest test accuracy as a stopping criteria ...
+    if ((e - last_improvement) &gt;= 3) &amp;&amp; (opt.eta &lt;= 1e-6)
+      @warn(&quot; -&gt; At epoch $e, haven't improved in 3 epochs. Stopping training.&quot;)
       break
     end
   end
-  return(model=model,  
+  return(model=model,
          losstrain=losstrain[1:e], acctrain=acctrain[1:e],
          losstest=losstest[1:e],   acctest=acctest[1:e])
 end
@@ -485,25 +486,25 @@ end
 strategy as in the <a href="../mlp/">previous notes.</a> That is, we will use large
 batches and a low number of passes through the data per-epoch.</p>
 <pre><code class="language-julia">out = train_mnist!(model, X, Y, tX, tY, &quot;conv&quot;;
-                   batchsize=10000,
+                   batchsize=2500,
                    reps_per_epoch=2,
                    maxepochs=200,
                    rerun=false
                    )
 @show maximum(out.acctest)
 </code></pre>
-<pre><code>maximum(out.acctest) = 0.9883
-0.9883
+<pre><code>maximum(out.acctest) = 0.99
+0.99
 </code></pre>
 <p>Since I save the model to disk to avoid waiting for it to rerun
 everytime I change this document, the above output does not include the
 training time. It takes roughly 10 seconds per epoch.</p>
 <p>In terms of testing accuracy, this model does quite well. The deep
 feedforward network with nearly 12 million parameters from the <a href="../mlp/">previous
-notes</a>, had an accuracy of 98.36%. The convolutional network
-used here with 16 thousand parameters has a higher accuracy of 98.83%.
+notes</a>, had an accuracy greater than 98%. The convolutional
+network used here with 16 thousand parameters has a accuracy of 0.99%.
 The training time of these two models was roughly the same.</p>
-<pre><code class="language-julia">function training_plot(out) 
+<pre><code class="language-julia">function training_plot(out)
   ll = Int(round(length(out.losstrain)*0.75))
   lt = Int(round(length(out.losstrain)*0.5))
   plot(
@@ -535,7 +536,7 @@ zoo</a>
 for this model, it claims to achieve over 99% testing accuracy. The code
 above is mostly identical to the model zoo, but it differs in two ways.
 One is that the model zoo uses much smaller batches of 128 observations.
-The second is that the model zoo add some gaussian noise to the images
+The second is that the model zoo adds some gaussian noise to the images
 during training. We will look at how each of these changes affect the
 results.</p>
 <p>First, let’s just reduce the batch size to 128.</p>
@@ -547,22 +548,20 @@ results.</p>
   Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
   MaxPool((2,2)),
   x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
-  softmax
-) |&gt; gpu
+  Dense(288, 10)
+  ) |&gt; gpu
 
 smallbatch = train_mnist!(model, X, Y, tX, tY, &quot;conv-smallbatch&quot;;
-                    loss=(x,y)-&gt;crossentropy(model(x),y),
+                    loss=(x,y)-&gt;Flux.logitcrossentropy(model(x),y),
                     batchsize=128,
                     reps_per_epoch=1,
                     maxepochs=200,
                     rerun=false
                     )
 @show maximum(smallbatch.acctest)
+training_plot(smallbatch)
 </code></pre>
-<pre><code>maximum(smallbatch.acctest) = 0.9908
-</code></pre>
-<pre><code class="language-julia">training_plot(smallbatch)
+<pre><code>maximum(smallbatch.acctest) = 0.9926
 </code></pre>
 <p><img alt="" src="../figures/conv_9_1.png" /></p>
 <p>Smaller batches have improved the accuracy from 98.83% to just over 99%.
@@ -573,28 +572,24 @@ run-time is roughly the same.</p>
 <p>The example in the model zoo also augments the training data by adding a
 small amount of Gaussian noise to the training images. Data augmentation
 is used by the best models among the <a href="http://yann.lecun.com/exdb/mnist/">MNIST benchmarks on LeCun’s
-website</a>. For example Ciresan et al.
-(<a href="#ref-ciresan2010">2010</a>) randomly distorts images with small rotations
-and stretching. Adding Gaussian noise is not as well geometrically
-motivated, but it has the advantage of being very easy to implement.</p>
+website</a>. For example @ciresan2010
+randomly distorts images with small rotations and stretching. Adding
+Gaussian noise is not as well geometrically motivated, but it has the
+advantage of being very easy to implement.</p>
 <p>We will add a $\epsilon \sim N(0, 0.1)$ to each pixel in the images.
 Here is what this looks like for a few images</p>
-<pre><code class="language-julia">plot([plot(Gray.(1 .- 0.1*randn(size(imgs[i]))) .- imgs[i]) for i in
+<pre><code class="language-julia">plot([plot(RGB.(1 .- 0.1*randn(size(imgs[i]))) .- round.(imgs[i])) for i in
       1:9]..., xlab=&quot;&quot;, ylab=&quot;&quot;, aspect_ratio=:equal, axis=false, ticks=false)
 </code></pre>
 <p><img alt="" src="../figures/conv_10_1.png" /></p>
 <p>With this added noise, the digits are still easily recognizable, so we
 would hope that our model can classify them.</p>
 <pre><code class="language-julia">addnoise(x, σ) = x .+ σ.*gpu(randn(eltype(x), size(x)))
-@show mean(onecold(out.model(addnoise(tX,0.1f0))).==onecold(tY))
+@show accuracy(out.model, addnoise(tX,0.1f0), tY)
+@show accuracy(smallbatch.model, addnoise(tX,0.1f0), tY)
 </code></pre>
-<pre><code>mean(onecold(out.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.9735
-</code></pre>
-<pre><code class="language-julia">@show mean(onecold(smallbatch.model(addnoise(tX,0.1f0))).==onecold(tY))
-</code></pre>
-<pre><code>mean(onecold(smallbatch.model(addnoise(tX, 0.1f0))) .== onecold(tY)) = 0.98
-63
-0.9863
+<pre><code>Error: DimensionMismatch: A has dimensions (10,288) but B has dimensions (3
+,960000)
 </code></pre>
 <p>The models trained above do a pretty good job of classifying noisy
 images, but not quite as well as the original. What if we train the
@@ -608,21 +603,20 @@ models with noise?</p>
   Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
   MaxPool((2,2)),
   x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
-  softmax
+  Dense(288, 10)
 ) |&gt; gpu
 
 outn = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn&quot;;
-                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
-                    batchsize=10000,
+                    loss=(x,y)-&gt;Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    batchsize=2500,
                     reps_per_epoch=2,
                     maxepochs=200,
                     rerun=false
                     )
 @show maximum(outn.acctest)
 </code></pre>
-<pre><code>maximum(outn.acctest) = 0.9888
-0.9888
+<pre><code>maximum(outn.acctest) = 0.9922
+0.9922
 </code></pre>
 <pre><code class="language-julia">training_plot(outn)
 </code></pre>
@@ -638,43 +632,39 @@ outn = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn&quot;;
   Conv((3, 3), 32=&gt;32, pad=(1,1), relu),
   MaxPool((2,2)),
   x -&gt; reshape(x, :, size(x, 4)),
-  Dense(288, 10),
-  softmax
+  Dense(288, 10)
 ) |&gt; gpu
 
 smallnoisy = train_mnist!(model, X, Y, tX, tY, &quot;conv-augrandn-smallbatch&quot;;
-                    loss=(x,y)-&gt;crossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    loss=(x,y)-&gt;Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
                     batchsize=128,
                     reps_per_epoch=1,
                     maxepochs=200,
                     rerun=false
                     )
 @show maximum(smallnoisy.acctest)
+training_plot(smallnoisy)
 </code></pre>
-<pre><code>maximum(smallnoisy.acctest) = 0.9924
-</code></pre>
-<pre><code class="language-julia">training_plot(smallnoisy)
+<pre><code>maximum(smallnoisy.acctest) = 0.9934
 </code></pre>
 <p><img alt="" src="../figures/conv_14_1.png" /></p>
 <p>This gives the highest test accuracy we have achieved so far. Let’s look
 at some of the missclassified digits.</p>
-<pre><code class="language-julia">tlabels = MNIST.labels(:test)
-timgs = MNIST.images(:test)
+<pre><code class="language-julia">tlabels = test_y
+timgs = [Gray.(test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+
 # predicted labels
-mlabels = cpu(onecold(smallnoisy.model(tX))).-1
+mlabels = onecold(cpu(smallnoisy.model(tX))).-1
 @show mean(mlabels.==tlabels) # = accuracy
-</code></pre>
-<pre><code>mean(mlabels .== tlabels) = 0.9923
-</code></pre>
-<pre><code class="language-julia">@show sum(mlabels .!= tlabels)
-</code></pre>
-<pre><code>sum(mlabels .!= tlabels) = 77
-</code></pre>
-<pre><code class="language-julia">miss=findall(mlabels .!= tlabels)
-plot( [plot(timgs[i], 
+@show sum(mlabels .!= tlabels)
+miss=findall(mlabels .!= tlabels)
+plot( [plot(RGB.(1 .- timgs[i]),
             title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;,
             axis=false, ticks=false,
             aspect_ratio=:equal) for i in miss[1:16]]...)
+</code></pre>
+<pre><code>mean(mlabels .== tlabels) = 0.9916
+sum(mlabels .!= tlabels) = 84
 </code></pre>
 <p><img alt="" src="../figures/conv_15_1.png" /></p>
 <h2 id="looking-inside-the-black-box">Looking inside the Black Box<a class="headerlink" href="#looking-inside-the-black-box" title="Permanent link">&para;</a></h2>
@@ -690,18 +680,18 @@ for l in 1:length(m)
   global j, figs
   if (typeof(m[l]) &lt;: MaxPool)
     layer = m[1:l](reshape(X[:,:,:,i], 28,28,1,1))
-    figs[j] = plot( [plot(Gray.(cpu(1 .- layer[:,:,c,1])), aspect_ratio=:equal,
+    figs[j] = plot( [plot(RGB.(cpu(1 .- layer[:,:,c,1])), aspect_ratio=:equal,
                           axis=false, ticks=false) for c in
                      1:size(layer,3)]...)
     j += 1
   end
 end
-plot(Gray.(cpu(1 .- X[:,:,1,i])), aspect_ratio=:equal, axis=false,
+plot(RGB.(cpu(1 .- X[:,:,1,i])), aspect_ratio=:equal, axis=false,
      ticks=false)
 </code></pre>
 <p><img alt="" src="../figures/conv_16_1.png" /></p>
-<p>The original is above. Below is are the output of the first convolution
-+ max pool layer.</p>
+<p>The original is above. Below is are the output of the first
+convolution + max pool layer.</p>
 <pre><code class="language-julia">figs[1]
 </code></pre>
 <p><img alt="" src="../figures/conv_17_1.png" /></p>
@@ -717,29 +707,7 @@ plot(Gray.(cpu(1 .- X[:,:,1,i])), aspect_ratio=:equal, axis=false,
 into the final dense layer.</p>
 <p>I’m not sure that there’s much to learn from looking at these images.
 Maybe it’s best to keep the box closed.</p>
-<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
-<div id="refs" class="references" markdown="1">
-<div id="ref-ciresan2010">
-<p>Ciresan, Dan Claudiu, Ueli Meier, Luca Maria Gambardella, and Juergen
-Schmidhuber. 2010. “Deep Big Simple Neural Nets Excel on Handwritten
-Digit Recognition.” <a href="https://doi.org/10.1162/NECO_a_00052">https://doi.org/10.1162/NECO_a_00052</a>.</p>
-</div>
-<div id="ref-goodfellow2016">
-<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
-Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
-</div>
-<div id="ref-klok2019">
-<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
-Julia:Fundamentals for Data Science, Machinelearning and Artificial
-Intelligence</em>. DRAFT.
-<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
-</div>
-<div id="ref-rackauckas2019conv">
-<p>Rackauckas, Chris. 2019. “PDEs, Convolutions, and the Mathematics of
-Locality.”
-<a href="https://mitmath.github.io/18337/lecture14/pdes_and_convolutions">https://mitmath.github.io/18337/lecture14/pdes_and_convolutions</a>.</p>
-</div>
-</div></div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
 

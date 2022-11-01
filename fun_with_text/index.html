@@ -8,7 +8,7 @@
         <meta name="author" content="Paul Schrimpf">
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>License -  </title>
+        <title>Fun with text -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -92,12 +92,12 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
+                            <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active">License</a>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
@@ -110,17 +110,7 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../nn-semiparametric/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" class="nav-link disabled">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/license.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/fun_with_text.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -139,15 +129,198 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-<p>The notes and examples are licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a> and were written by Paul Schrimpf.</p>
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
-<p><a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/master/CITATION.bib">BibTeX citation.</a></p>
-<p>The license for the <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/blob/master/LICENSE">package source code is here.</a></p></div>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
+github</a>. The same
+document generates both static webpages and associated <a href="../rnn.ipynb">jupyter
+notebook</a>.</p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+</script>
+</p>
+<pre><code class="language-julia">using ProgressMeter, JLD2
+import HTTP, Gumbo, Cascadia
+infile = joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)
+
+if !isfile(infile)
+  @error &quot;$infile not found. See rnn.jmd for code to create it.&quot;  
+end
+text = String(read(infile));
+
+songs = split(text, &quot;&lt;/html&gt;&quot;);
+songs = songs[1:(end-1)]; # last one is empty
+lyrics=Array{String,1}(undef,length(songs));
+titles=Array{String,1}(undef,length(songs));
+
+# function to extract text from HTMLNodes
+gettext(h::Gumbo.HTMLText) = Gumbo.text(h)
+gettext(h::AbstractArray) = length(h)==0 ? &quot;&quot; : prod(gettext, h)
+gettext(h::Gumbo.HTMLNode) = gettext(Gumbo.children(h))
+# remove chords from verses
+function removechords(txt)
+  chordregexp=r&quot;(^)( {0,1000}|\()(A|B|C|D|E|G|F)(\S{0,6})(\)| {2,1000}| \.|$).*&quot;m
+  txt2=replace(txt, chordregexp =&gt; &quot;\n&quot;)
+  replace(txt2, r&quot;( {2,1000})&quot;=&gt;&quot; &quot;)
+end
+for (i,song) = enumerate(songs)
+  html=Gumbo.parsehtml(song);
+  t = eachmatch(Cascadia.Selector(&quot;.songtitle&quot;), html.root)
+  (length(t)==1) || @warn &quot;multiple songtitles for songs[$i]&quot;
+  titles[i] = gettext(t)
+  t = eachmatch(Cascadia.Selector(&quot;.verse,.refrain&quot;), html.root)  
+  lyrics[i] = removechords(gettext(t))
+end
+lyrics = lyrics[length.(lyrics).&gt;0];
+</code></pre>
+<pre><code class="language-julia">using Flux
+using Flux: onehot, chunk, batchseq, throttle, crossentropy
+using StatsBase: wsample
+using Base.Iterators: partition
+using ProgressMeter
+
+endchar = 'Ω' # any character not in original text
+alphabet = [unique(collect(prod(lyrics)))..., endchar]
+stop = onehot(endchar, alphabet);
+# maxlen = 100 # we will split songs after this many characters
+# #batchsize=100 # we use this many &quot;songs&quot; (after splitting) per gradient descent batch
+# nextchars = ((x)-&gt;[x[2:end]..., endchar]).(lyrics);
+# function makex(lyrics, maxlen)
+#   hotlyrics=map.(c-&gt;onehot(c, alphabet), collect.(lyrics));
+#   cs = Int.(ceil.(length.(hotlyrics)./maxlen))
+#   foo=chunk.(hotlyrics, cs);
+#   X=[gpu.(batchseq(f, stop)) for f in foo];
+# end
+# Xb = (makex(lyrics, maxlen));
+# Yb = (makex(nextchars, maxlen));
+# #addaf(daf)
+# #  [gpu.(batchseq(map.(c-&gt;onehot(c, alphabet), nextchars[p]), stop))
+# #     for p in partition(1:length(splitlyrics), batchsize)];
+# #Xb = [[x[:,p] for x in X] for p in partition(1:size(X[1],2), batchsize)];
+# #Yb = [[y[:,p] for y in Y] for p in partition(1:size(Y[1],2), batchsize)];
+# data = collect(zip(Xb,Yb));
+# println(&quot;There are $(length(data)) batches per epoch&quot;)
+
+if true
+  text = collect(prod(lyrics));
+  hottext = map(ch -&gt; onehot(ch, alphabet), text);
+
+  maxlen = 100
+  batchsize = 1000
+
+  Xseq = collect(partition(gpu.(batchseq(chunk(hottext, batchsize),stop)), maxlen));
+  Yseq = collect(partition(gpu.(batchseq(chunk(hottext[2:end], batchsize),stop)), maxlen));
+  data = collect(zip(Xseq, Yseq));
+end
+
+N = length(alphabet)
+
+function sample(m, alphabet, len)
+  m = cpu(m)
+  Flux.reset!(m) 
+  buf = IOBuffer()
+  c = '\n'
+  for i = 1:len
+    write(buf, c)
+    c = wsample(alphabet, m(onehot(c, alphabet)).data)
+  end
+  return String(take!(buf))
+end
+opt = RMSProp(0.005)
+# this will take awhile, so a fancier call back with a progress meter is nice to have 
+function cbgenerator(N, loss, printiter=Int(round(N/10)))
+  p=Progress(N, 1, &quot;Training&quot;, 25)
+  i=0  
+  function cb()
+    next!(p)
+    if (i % printiter==0)
+      @show loss()
+    end
+    i+=1
+  end
+  return(cb)
+end
+
+N = length(alphabet)
+testsong = 1
+function train_model!(m; N=N, data=data,
+                      modelfile=&quot;tmp.jld2&quot;, 
+                      opt=RMSProp(0.01), testset=testsong, epochs=20)
+  function loss(xb::V, yb::V) where V &lt;:AbstractVector
+    #Flux.reset!(m)
+    l = sum(crossentropy.(m.(xb),yb))/length(xb)
+    #l = crossentropy(m(xb),yb)
+    Flux.truncate!(m)
+    return(l)
+  end
+  #function loss(xb, yb)
+  #  Flux.reset!(m) # after each song, forget gradients  
+  #  l = crossentropy(m(xb),yb)
+  #  return(l)
+  #end
+
+  cb=cbgenerator(length(data)*(epochs+1),
+                 ()-&gt;loss(data[testset]...)) 
+
+  if isfile(modelfile)
+    @load modelfile cpum
+    m = gpu(cpum)
+  end
+
+  @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
+  println(&quot;Sampling after 1 epoch:&quot;)
+  sample(m, alphabet, 1000) |&gt; println
+
+  Flux.@epochs epochs Flux.train!(loss, Flux.params(m), data, opt,
+                                  cb = cb)
+  cpum = cpu(m)
+  @save modelfile cpum
+  return(m)
+end
+
+for L in [75] #, 32, 64, 128] #, 256, 512]
+  #L = 100
+  file = joinpath(docdir,&quot;jmd&quot;,&quot;dylanlyrics-$L.jld2&quot;)
+  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N),  softmax) |&gt; gpu
+  #m = Chain(GRU(N, L), GRU(L, L), Dense(L, N),  softmax) |&gt; gpu
+  opt=RMSProp(0.01)
+  m = train_model!(m, opt=opt, epochs=100, modelfile=file)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)  
+  println(&quot;Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters&quot;)
+  println(&quot;Sample from model $L&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(sample(m, alphabet, 5000))
+  println()
+end
+</code></pre>
+<pre><code>Error: UndefVarError: truncate! not defined
+</code></pre>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
 

@@ -161,12 +161,17 @@
               </ul>
             </li>
             
+            <li class="nav-item" data-level="1"><a href="#luxjl" class="nav-link">Lux.jl</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
             <li class="nav-item" data-level="1"><a href="#additional-resources" class="nav-link">Additional Resources</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -205,92 +210,43 @@ code in those notes is written in R. This document will look at similar
 code in Julia.</p>
 <h1 id="rcall">RCall<a class="headerlink" href="#rcall" title="Permanent link">&para;</a></h1>
 <p>If you want to use the methods of Chernozhukov and coauthors implements
-in the R packaga Chernozhukov, Hansen, and Spindler (<a href="#ref-hdm">2016</a>)
-or the methods of Athey and coauthors implemented in the R package
-Tibshirani et al. (<a href="#ref-grf">2018</a>) , then it makes sense to use the R
-pacakge. You could simply write all your code in R. However, if you
-prefer using Julia, you can just call the necessary R functions with
+in the R packaga @hdm or the methods of Athey and coauthors implemented
+in the R package @grf , then it makes sense to use the R pacakge. You
+could simply write all your code in R. However, if you prefer using
+Julia, you can just call the necessary R functions with
 <a href="https://github.com/JuliaInterop/RCall.jl"><code>RCall.jl</code></a>.</p>
 <p>Here, we load the pipeline data used in the <a href="../ml-methods/">machine learning methods
 notes</a>, and do some cleaning in Julia.</p>
 <pre><code class="language-julia">using RCall, DataFrames, Missings, Statistics
 R&quot;load(paste($(docdir),\&quot;/rmd/pipelines.Rdata\&quot;,sep=\&quot;\&quot;))&quot;
 println(R&quot;ls()&quot;)
-</code></pre>
-<pre><code>RObject{StrSxp}
-[1] "#JL"  "data"
-</code></pre>
-<pre><code class="language-julia">data = @rget data # data on left is new Julia variable, data on right is the one in R
+data = @rget data # data on left is new Julia variable, data on right is the one in R
 println(R&quot;summary(data[,1:5])&quot;)
-</code></pre>
-<pre><code>RObject{StrSxp}
- respondent_id     report_yr      report_prd     major        
- Min.   :  1.0   Min.   :1991   Min.   :12     Mode :logical  
- 1st Qu.: 64.0   1st Qu.:1997   1st Qu.:12     FALSE:1192     
- Median :148.0   Median :2003   Median :12     TRUE :2797     
- Mean   :184.3   Mean   :2003   Mean   :12     NA's :2180     
- 3rd Qu.:214.0   3rd Qu.:2010   3rd Qu.:12                    
- Max.   :745.0   Max.   :2016   Max.   :12                    
-                                NA's   :3371                  
-                             respondent_name
- Centra Pipelines Minnesota Inc.     :  22  
- Tuscarora Gas Transmission Company  :  22  
- Eastern Shore Natural Gas Company   :  22  
- Kern River Gas Transmission Company :  21  
- National Fuel Gas Supply Corporation:  21  
- (Other)                             :2938  
- NA's                                :3123
-</code></pre>
-<pre><code class="language-julia">println(describe(data[:,1:5]))
-</code></pre>
-<pre><code>5×8 DataFrame
-│ Row │ variable        │ mean     │ min                                │ median │ max                                           │ nunique │ nmissing │ eltype                                    │
-│     │ Symbol          │ Union…   │ Any                                │ Union… │ Any                                           │ Union…  │ Union…   │ Type                                      │
-├─────┼─────────────────┼──────────┼────────────────────────────────────┼────────┼───────────────────────────────────────────────┼─────────┼──────────┼───────────────────────────────────────────┤
-│ 1   │ respondent_id   │ 184.3    │ 1                                  │ 148.0  │ 745                                           │         │          │ Int64                                     │
-│ 2   │ report_yr       │ 2003.49  │ 1991                               │ 2003.0 │ 2016                                          │         │          │ Int64                                     │
-│ 3   │ report_prd      │ 12.0     │ 12                                 │ 12.0   │ 12                                            │         │ 3371     │ Union{Missing, Int64}                     │
-│ 4   │ major           │ 0.701178 │ 0                                  │ 1.0    │ 1                                             │         │ 2180     │ Union{Missing, Bool}                      │
-│ 5   │ respondent_name │          │ Algonquin Gas Transmission Company │        │ Southern Natural Gas Company                  │ 440     │ 3123     │ Union{Missing, CategoricalString{UInt32}} │
-</code></pre>
-<pre><code class="language-julia">for c in 59:107 # columns of state mileage, want missing-&gt;0
+println(describe(data[:,1:5]))
+for c in 59:107 # columns of state mileage, want missing-&gt;0
   replace!(x-&gt;(ismissing(x) || isnan(x)) ? 0.0 : x, data[!,c])
 end
 println(describe(data[:,59:65]))
 </code></pre>
-<pre><code>7×8 DataFrame
-│ Row │ variable       │ mean       │ min     │ median  │ max      │ nunique │ nmissing │ eltype                  │
-│     │ Symbol         │ Float64    │ Float64 │ Float64 │ Float64  │ Nothing │ Int64    │ Union                   │
-├─────┼────────────────┼────────────┼─────────┼─────────┼──────────┼─────────┼──────────┼─────────────────────────┤
-│ 1   │ North Carolina │ 0.00358525 │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
-│ 2   │ Tennessee      │ 0.0061488  │ 0.0     │ 0.0     │ 0.635202 │         │ 0        │ Union{Missing, Float64} │
-│ 3   │ Virginia       │ 0.00552028 │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
-│ 4   │ Illinois       │ 0.0134891  │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
-│ 5   │ Indiana        │ 0.0058707  │ 0.0     │ 0.0     │ 0.550302 │         │ 0        │ Union{Missing, Float64} │
-│ 6   │ Kentucky       │ 0.0133474  │ 0.0     │ 0.0     │ 1.0      │         │ 0        │ Union{Missing, Float64} │
-│ 7   │ Gulf of Mexico │ 0.0140981  │ 0.0     │ 0.0     │ 0.825409 │         │ 0        │ Union{Missing, Float64} │
+<pre><code>Error: InitError: Try adding /usr/lib64/R/lib to the "LD_LIBRARY_PATH" environmental variable and restarting Julia.
+during initialization of module RCall
 </code></pre>
 <p>Suppose we want to estimate the coefficient on <code>transPlant</code> (capital) in
 a partially linear model with <code>transProfit</code> (profit) as the outcome.
 This can be done with the R function <code>hdm::rlassoEffects</code>.</p>
 <pre><code class="language-julia">R&quot;library(hdm)&quot;
 completedata = dropmissing(data,[1:10..., 59:122...], disallowmissing=true)
-y = completedata[:transProfit]
+y = completedata[!,:transProfit]
 inc = .!isnan.(y)
 y = y[inc]
 X = completedata[inc,[6:7..., 59:121...]]
-cols = [std(X[c])&gt;0 for c in 1:ncol(X)]
+cols = [std(X[!,c])&gt;0 for c in 1:ncol(X)]
 X = X[:,cols]
 est = R&quot;rlassoEffects($(X), $(y), index=c(1:2))&quot;
 R&quot;summary($est)&quot;
 </code></pre>
-<pre><code>RObject{VecSxp}
-[1] "Estimates and significance testing of the effect of target variables"
-                      Estimate. Std. Error t value Pr(&gt;|t|)    
-transPlant_bal_end_yr  0.034434   0.008878   3.879 0.000105 ***
-transPlant_bal_beg_yr  0.086580   0.009383   9.228  &lt; 2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+<pre><code>Error: LoadError: UndefVarError: @R_str not defined
+in expression starting at /home/paul/.julia/dev/NeuralNetworkEconomics/docs/jmd/ml-julia.jmd:2
 </code></pre>
 <h1 id="mljjl">MLJ.jl<a class="headerlink" href="#mljjl" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/alan-turing-institute/MLJ.jl"><code>MLJ.jl</code></a> is a machine
@@ -314,51 +270,53 @@ or by calling <code>MLJ::models()</code>.</p>
 <pre><code class="language-julia">using MLJ
 models()
 </code></pre>
-<pre><code>109-element Array{NamedTuple,1}:
- (name = ARDRegressor, package_name = ScikitLearn, ... )             
- (name = AdaBoostClassifier, package_name = ScikitLearn, ... )       
- (name = AdaBoostRegressor, package_name = ScikitLearn, ... )        
- (name = BaggingClassifier, package_name = ScikitLearn, ... )        
- (name = BaggingRegressor, package_name = ScikitLearn, ... )         
- (name = BayesianLDA, package_name = MultivariateStats, ... )        
- (name = BayesianLDA, package_name = ScikitLearn, ... )              
- (name = BayesianQDA, package_name = ScikitLearn, ... )              
- (name = BayesianRidgeRegressor, package_name = ScikitLearn, ... )   
- (name = BernoulliNBClassifier, package_name = ScikitLearn, ... )    
- ⋮                                                                   
- (name = Standardizer, package_name = MLJModels, ... )               
- (name = StaticTransformer, package_name = MLJModels, ... )          
- (name = TheilSenRegressor, package_name = ScikitLearn, ... )        
+<pre><code>200-element Vector{NamedTuple{(:name, :package_name, :is_supervised, :abstr
+act_type, :deep_properties, :docstring, :fit_data_scitype, :human_name, :hy
+perparameter_ranges, :hyperparameter_types, :hyperparameters, :implemented_
+methods, :inverse_transform_scitype, :is_pure_julia, :is_wrapper, :iteratio
+n_parameter, :load_path, :package_license, :package_url, :package_uuid, :pr
+edict_scitype, :prediction_type, :reporting_operations, :reports_feature_im
+portances, :supports_class_weights, :supports_online, :supports_training_lo
+sses, :supports_weights, :transform_scitype, :input_scitype, :target_scityp
+e, :output_scitype)}}:
+ (name = ABODDetector, package_name = OutlierDetectionNeighbors, ... )
+ (name = ABODDetector, package_name = OutlierDetectionPython, ... )
+ (name = AEDetector, package_name = OutlierDetectionNetworks, ... )
+ (name = ARDRegressor, package_name = ScikitLearn, ... )
+ (name = AdaBoostClassifier, package_name = ScikitLearn, ... )
+ (name = AdaBoostRegressor, package_name = ScikitLearn, ... )
+ (name = AdaBoostStumpClassifier, package_name = DecisionTree, ... )
+ (name = AffinityPropagation, package_name = ScikitLearn, ... )
+ (name = AgglomerativeClustering, package_name = ScikitLearn, ... )
+ (name = BM25Transformer, package_name = MLJText, ... )
+ ⋮
+ (name = TheilSenRegressor, package_name = ScikitLearn, ... )
  (name = UnivariateBoxCoxTransformer, package_name = MLJModels, ... )
- (name = UnivariateDiscretizer, package_name = MLJModels, ... )      
- (name = UnivariateStandardizer, package_name = MLJModels, ... )     
- (name = XGBoostClassifier, package_name = XGBoost, ... )            
- (name = XGBoostCount, package_name = XGBoost, ... )                 
+ (name = UnivariateDiscretizer, package_name = MLJModels, ... )
+ (name = UnivariateFillImputer, package_name = MLJModels, ... )
+ (name = UnivariateStandardizer, package_name = MLJModels, ... )
+ (name = UnivariateTimeTypeToContinuous, package_name = MLJModels, ... )
+ (name = XGBoostClassifier, package_name = XGBoost, ... )
+ (name = XGBoostCount, package_name = XGBoost, ... )
  (name = XGBoostRegressor, package_name = XGBoost, ... )
 </code></pre>
 <p>To use these models, you need the corresponding package to be installed
 and loaded. The <code>@load</code> macro will load the needed package(s) for any
 model.</p>
-<pre><code class="language-julia">lasso_model = @load LassoRegressor pkg=MLJLinearModels
+<pre><code class="language-julia">Lasso = @load LassoRegressor pkg=MLJLinearModels
 </code></pre>
-<pre><code>LassoRegressor(lambda = 1.0,
-               fit_intercept = true,
-               penalize_intercept = false,
-               solver = nothing,) @ 2…60
+<pre><code>import MLJLinearModels ✔
+MLJLinearModels.LassoRegressor
 </code></pre>
 <p>Let’s fit lasso to the same pipeline data as above.</p>
-<pre><code class="language-julia">lasso_model.lambda = 1.0
-lasso = machine(lasso_model, X, y)
+<pre><code class="language-julia">lasso = machine(Lasso(lambda=1.0), X, y)
 train,test = partition(eachindex(y), 0.6, shuffle=true)
 fit!(lasso, rows=train)
 yhat = predict(lasso, rows=test)
 println(yhat[1:10])
+println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-</code></pre>
-<pre><code class="language-julia">println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
-</code></pre>
-<pre><code>MSE/var(y) = 1.4734944469534543
+<pre><code>Error: UndefVarError: X not defined
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -370,32 +328,28 @@ roughly the same scale. The existing <code>X</code>’s have wildly different sc
 which causes problems. This situation is common, so <code>MLJ.jl</code> has
 functions to standardize variables. It is likely that the <code>hdm</code> package
 in R does something similar internally.</p>
-<pre><code class="language-julia">lasso_stdx = @pipeline PipeLasso(std=Standardizer(),
-                  lasso=LassoRegressor(lambda=1.0*std(y),
-                                       solver=MLJLinearModels.ISTA(max_iter=10000)
-                                       )
-                                 )
+<pre><code class="language-julia">lasso_stdx = Pipeline(Standardizer(),
+                      Lasso(lambda=1.0*std(y[train]),
+                            solver=MLJLinearModels.ISTA(max_iter=10000))
+                      )
 m = machine(lasso_stdx, X, y)
-fit!(m, rows=train)
+fit!(m, rows=train, force=true)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
-</code></pre>
-<pre><code>MSE/var(y) = 0.1302218664602367
-</code></pre>
-<pre><code class="language-julia">
+
 # Get the fitted coefficients
-coef = fitted_params(m).fitted_params[1].coefs
-intercept = fitted_params(m).fitted_params[1].intercept
-sum(abs.(coef).&gt;1e-8) # number non-zero
+coef = fitted_params(m).lasso_regressor.coefs
+intercept = fitted_params(m).lasso_regressor.intercept
+sum(abs(c[2])&gt;1e-8 for c in coef) # number non-zero
 </code></pre>
-<pre><code>56
+<pre><code>Error: UndefVarError: y not defined
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
-<pre><code class="language-julia">r = range(lasso_stdx, :(lasso.lambda), lower=1e1, upper=1e10, scale=:log)
+<pre><code class="language-julia">r = range(lasso_stdx, :(lasso_regressor.lambda), lower=1e1, upper=1e10, scale=:log)
 t=TunedModel(model=lasso_stdx,
              resampling=CV(nfolds=5),
-             tuning=Grid(resolution=10), 
+             tuning=Grid(resolution=10),
              ranges=r,
              measure=rms)
 m = machine(t, X, y)
@@ -403,14 +357,16 @@ fit!(m, rows=train, verbosity=1)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>MSE/var(y) = 0.13170341963283844
+<pre><code>Error: UndefVarError: lasso_stdx not defined
 </code></pre>
 <pre><code class="language-julia">using Plots
-cvmse = m.report.measurements
-λ = Float64.(m.report.parameter_values[:])
-plot(λ, cvmse, xlab=&quot;λ&quot;, ylab=&quot;CV(MSE)&quot;)
+cvmse = m.report.plotting.measurements
+λ = Float64.(m.report.plotting.parameter_values[:])
+s = sortperm(λ)
+plot(λ[s], cvmse[s], xlab=&quot;λ&quot;, ylab=&quot;CV(MSE)&quot;)
 </code></pre>
-<p><img alt="" src="../figures/ml-julia_9_1.png" /></p>
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
 <h1 id="fluxjl">Flux.jl<a class="headerlink" href="#fluxjl" title="Permanent link">&para;</a></h1>
 <p><a href="https://fluxml.ai/Flux.jl/stable/"><code>Flux.jl</code></a> is another Julia package
 for machine learning. It seems to be emerging as the leading Julia
@@ -419,20 +375,19 @@ learning models can also be implemented using <code>Flux.jl</code>.</p>
 <p>Let’s create a lasso model in <code>Flux.jl</code>.</p>
 <pre><code class="language-julia">using Flux, LinearAlgebra
 # Scale the variables
-Xstd = Flux.normalise(Matrix(X))
+Xstd = Flux.normalise(Matrix(X), dims=1)
 X_train = Xstd[train,:]
 X_test = Xstd[test,:]
-yscale = std(y)
-ymean = mean(y)
+yscale = std(y[train])
+ymean = mean(y[train])
 ystd = (y .- ymean)./yscale
 y_train = ystd[train]
 y_test = ystd[test]
 
 # Set up the model parameters and initial values
 βols = (X_train'*X_train) \ (X_train'*(y_train .- mean(y_train)))
-β = param(zeros(ncol(X))) #βols) #zeros(ncol(X)))
-b = param([mean(y_train)])
-θ = Tracker.Params([β,b])
+β = zeros(ncol(X))
+b = [mean(y_train)]
 
 # Define the loss function
 ψ = ones(length(β))
@@ -442,33 +397,32 @@ mse(x,y) = mean( (pred(x) .- y).^2 )
 penalty(y) = λ/length(y)*norm(ψ.*β,1)
 loss(x,y) =  mse(x,y) + penalty(y)
 @show loss(X_train,y_train)
-</code></pre>
-<pre><code>loss(X_train, y_train) = 1.017489917959785 (tracked)
-</code></pre>
-<pre><code class="language-julia">
+
 # minimize loss
 maxiter=2000
 obj = zeros(maxiter)
 mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
+opt = Flux.AMSGrad()
 for i in 1:maxiter
-  Flux.train!(loss, θ, [(X_train, y_train)], Flux.AMSGrad())
-  mse_train[i] = Tracker.data(mse(X_train,y_train))
-  mse_test[i] = Tracker.data(mse(X_test, y_test))
-  obj[i] = Tracker.data(loss(X_train,y_train))
+  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], opt)
+  mse_train[i] = mse(X_train,y_train)
+  mse_test[i] = mse(X_test, y_test)
+  obj[i] = loss(X_train,y_train)
 end
 lo = 1
-hi = 250
+hi = 2000
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<p><img alt="" src="../figures/ml-julia_10_1.png" /></p>
-<pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;)
-     , lab=[&quot;Train&quot; &quot;Test&quot;])
+<pre><code>Error: UndefVarError: X not defined
 </code></pre>
-<p><img alt="" src="../figures/ml-julia_11_1.png" /></p>
+<pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
+</code></pre>
+<pre><code>Error: UndefVarError: lo not defined
+</code></pre>
 <p>The minimization methods in <code>Flux.train!</code> are all variants of gradient
 descent. Each call to <code>Flux.train!</code> runs one iteration of the specified
-solver. To find a locaol minimum, <code>Flux.train!</code> can be called repeatedly
+solver. To find a local minimum, <code>Flux.train!</code> can be called repeatedly
 until progress stops. The above loop is a simple way to do this. The
 <code>@epoch</code> macro can also be useful.</p>
 <p>Gradient descent works well for neural networks, but is not ideal for
@@ -476,30 +430,100 @@ Lasso. Without further adjustment, gradient descent gets stuck in a
 cycle as jumps from one side of the other of the absolute value in the
 lasso penalty. Nonetheless, the results are near the true minimum, even
 though it never exactly gets there.</p>
+<h1 id="luxjl">Lux.jl<a class="headerlink" href="#luxjl" title="Permanent link">&para;</a></h1>
+<p>A promising alternative to <code>Flux.jl</code> is
+<a href="http://lux.csail.mit.edu/dev/"><code>Lux.jl</code></a>.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <code>Lux.jl</code> and <code>Flux.jl</code>
+share many features and backend code. <code>Lux.jl</code> has a more function
+focused interface with explicit parameter passing. This is a more
+“Julian” style of programming.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>For comparison, let’s implement the same Lasso model in Lux.</p>
+<pre><code class="language-julia">import Lux # Lux shares many function names with Flux, so import instead of using to avoid confusion
+import Random, Zygote
+using Test
+# Seeding
+rng = Random.default_rng()
+Random.seed!(rng, 0)
+
+# define the model
+
+X_train = Matrix(X)[train,:]
+X_test = Matrix(X)[test,:]
+y_train = y[train]
+y_test = y[test]
+function standardizer(xtrain)
+  m = std(xtrain, dims=1)
+  s = std(xtrain, dims=1)
+  (x-&gt;(x .- m)./s , xs-&gt;xs.*s .+ m)
+end
+stdizex, _ = standardizer(X_train)
+stdizey, unstdizey = standardizer(y_train)
+@test unstdizey(stdizey(y_test)) ≈ y_test
+
+ys = stdizey(y_train)
+Xs = stdizex(X_train)
+# Set up the model parameters and initial values
+βols = (Xs'*Xs) \ (Xs'*(ys .- mean(ys)))
+b = [mean(ys)]
+
+m = Lux.Chain(X-&gt;stdizex(X)', 
+  Lux.Dense(size(X_train,2), 1, init_weight=zeros, init_bias=zeros)
+  )
+
+ps, st = Lux.setup(rng, m)
+ps.layer_2.weight .= βols'
+ps.layer_2.bias .= b
+
+mse(m, ps, st, X, y) = mean(abs2, m(X, ps, st)[1]' .- stdizey(y))
+mseraw(m,ps,st,X,y) = mean(abs2, unstdizey(m(X, ps, st)[1]') .- y)
+ℓ = let λ = 2.0, ψ = ones(size(βols')), st=st
+  penalty(ps,y) = λ/length(y)*norm(ψ.*ps.layer_2.weight,1)
+  loss(ps, X, y, m) = mse(m, ps, st, X, y) + penalty(ps,y)
+end
+
+@show ℓ(ps,X_train,y_train,m)
+
+# minimize loss
+opt = Lux.Optimisers.AMSGrad() #ADAM(0.001)
+optstate = Lux.Optimisers.setup(opt, ps)
+maxiter=2000
+obj = zeros(maxiter)
+mse_train = zeros(maxiter)
+mse_test = zeros(maxiter)
+for i in 1:maxiter
+    # Compute the gradient
+    gs = Zygote.gradient(ps-&gt;ℓ(ps, X_train, y_train, m), ps)[1]
+    # Perform parameter update
+    optstate, ps = Lux.Optimisers.update(optstate, ps, gs)
+    mse_train[i] = mse(m, ps, st, X_train,y_train)
+    mse_test[i] = mse(m, ps, st, X_test, y_test)
+    obj[i] = ℓ(ps,X_train,y_train,m)
+end
+lo = 1
+hi = 250
+plot(lo:hi,obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
+</code></pre>
+<pre><code>Error: UndefVarError: X not defined
+</code></pre>
 <h1 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
-    Julia:Fundamentals for Data Science, MachineLearning and Artificial
-    Intelligence</em></li>
+<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+    MachineLearning and Artificial Intelligence</em></li>
 </ul>
-<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
-<div class="references" id="refs">
-<div id="ref-hdm">
-<p>Chernozhukov, Victor, Chris Hansen, and Martin Spindler. 2016. “hdm:
-High-Dimensional Metrics.” <em>R Journal</em> 8 (2): 185–99.
-<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">https://journal.r-project.org/archive/2016/RJ-2016-040/index.html</a>.</p>
-</div>
-<div id="ref-klok2019">
-<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
-Julia:Fundamentals for Data Science, Machinelearning and Artificial
-Intelligence</em>. DRAFT.
-<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
-</div>
-<div id="ref-grf">
-<p>Tibshirani, Julie, Susan Athey, Stefan Wager, Rina Friedberg, Luke
-Miner, and Marvin Wright. 2018. <em>Grf: Generalized Random Forests
-(Beta)</em>. <a href="https://CRAN.R-project.org/package=grf">https://CRAN.R-project.org/package=grf</a>.</p>
-</div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>These notes were originally written before Lux.jl existed. If I
+were starting over, I would use Lux.jl instead of Flux.jl.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><code>Flux.jl</code> drew inspiration for its interface from Tensorflow and
+PyTorch. Implicit parameters makes some sense in an object oriented
+language like Python, but it is not the most natural style for
+Julia.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
 </div></div>
             </div>
         </div>

@@ -188,7 +188,7 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -204,7 +204,7 @@ License</a></p>
 <h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
 github</a>. The same
-document generates both static webpages and associated <a href="../slp.ipynb">jupyter
+document generates both static webpages and associated <a href="../rnn.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -231,15 +231,13 @@ applications to time series. Recurrent networks are also useful for
 processing text and audio data.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Goodfellow, Bengio, and Courville (<a href="#ref-goodfellow2016">2016</a>)
-    <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a> especially
-    chapter 10</li>
+<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a>
+    especially chapter 10</li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
     documentation</a>
     especially the textbook</li>
-<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
-    Julia:Fundamentals for Data Science, MachineLearning and Artificial
-    Intelligence</em></li>
+<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+    MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="recurrent-networks">Recurrent Networks<a class="headerlink" href="#recurrent-networks" title="Permanent link">&para;</a></h1>
 <p>Recurrent Networks are designed to predict a sequence of outputs, $y_t$,
@@ -255,19 +253,18 @@ could simply be single layer perceptrons, or any of the more complicated
 network architectures we previously discussed.</p>
 <h2 id="approximation-ability">Approximation Ability<a class="headerlink" href="#approximation-ability" title="Permanent link">&para;</a></h2>
 <p>Recurrent networks can approximate (in fact can equal) any computable
-function. Siegelmann and Sontag (<a href="#ref-siegelmann1991">1991</a>) and
-Siegelmann and Sontag (<a href="#ref-siegelmann1992">1992</a>) show that recurrent
-neural networks are Turing complete. As with the universal approximation
+function. @siegelmann1991 and @siegelmann1992 show that recurrent neural
+networks are Turing complete. As with the universal approximation
 ability of feed forward networks, this result is good to know, but it is
 not an explanation for the good practical performance of recurrent
 networks.</p>
 <p>When $h_t$ is large enough, it is easy to see how the recurrent model
 above can equal familiar time series econometric models. For example,
 for an AR(P) model, <script type="math/tex; mode=display">
-y_t = \rho_1 y_{t-1} + \cdots + \rho_p y_{t-p} + \epsilon_t 
+y_t = \rho_1 y_{t-1} + \cdots + \rho_p y_{t-p} + \epsilon_t
 </script> To express this model in recurrent state-space form, let
-$x_t = y_{t-1}$, and $h_t = (y_{t-1, \cdots, y_{t-p}) \in \R^p$. Then we
-can set <script type="math/tex; mode=display">
+$x_t = y_{t-1}$, and $h_t = (y_{t-1}, \cdots, y_{t-p}) \in \R^p$. Then
+we can set <script type="math/tex; mode=display">
 f(h_{t-1}, x_t) = (x_t, h_{t-1,1}, \cdots , h_{t-1, p-1})
 </script> and <script type="math/tex; mode=display">
 \hat{y}(h_t) = \rho' h_t,
@@ -287,8 +284,8 @@ of $f$ are then: <script type="math/tex; mode=display">
 \frac{\partial}{\partial f_h} & = \frac{2}{T} \sum (\hat{y}(h_t)-
 y_t)\hat{y}'(h_t) \left(t f_h^{t-1} h_0 + \sum_{s=1}^{t-1}
 (t-s)f_h^{t-s-1} f_x x_{t-s} \right) \\
-\frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t) 
-    \hat{y}'(h_t) 
+\frac{\partial}{\partial f_x} & = \frac{2}{T} \sum (\hat{y}(h_t)- y_t)
+    \hat{y}'(h_t)
     \left(\sum_{s=1}^{t} x_s f_h^{t-s} \right)
 \end{align*}
 </script> Both of these involve increasing powers of $f_h^t$. If $h_t$ has
@@ -316,14 +313,14 @@ vanishing and exploding gradients. LSTMs have an additional hiddent
 state, $s_t$. The extra hidden state is $s_t \in (0,1)$ and is a
 weighted sum of $s_{t-1}$ and other variables. In particular, <script type="math/tex; mode=display">
  s_t = \sigma(b_f + U_f' x_t + W_f' h_{t-1}) s_{t-1} + \sigma(b_g + U_g'
- x_t + W_g' h_{t-1}) \tilde{x}_t 
+ x_t + W_g' h_{t-1}) \tilde{x}_t
 </script> The first $\sigma(b_f + U_f&rsquo; x_t + W_f&rsquo; h_{t-1})$ is a “forget” gate.
 It determines how much of $s_{t-1}$ is forgotten. The second
 $\sigma(b_g + U_g&rsquo; x_t + W_g&rsquo; h_{t-1})$ is call the external input gate.
 It determines how much current $x_t$ affects $s_t$. The $\tilde{x}$ is a
 rescaled input given by <script type="math/tex; mode=display">
 \tilde{x}_t = \sigma(\tilde{b} + \tilde{U}'x_t + \tilde{W}' h_{t-1}).
-</script> Finally, $h_t$ is a gated and transformed version of $s_t$. <script type="math/tex; mode=display"> 
+</script> Finally, $h_t$ is a gated and transformed version of $s_t$. <script type="math/tex; mode=display">
 h_t = tanh(s_t) \sigma(b_o + U_o' x_t + W_o'h_t)
 </script> where $\sigma(b_o + U_o&rsquo; x_t + W_o&rsquo;h_t)$ is the output gate.</p>
 <h1 id="example-generating-dylan-songs">Example : Generating Dylan Songs<a class="headerlink" href="#example-generating-dylan-songs" title="Permanent link">&para;</a></h1>
@@ -347,7 +344,7 @@ infile = joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)
 if !isfile(infile)
   r=HTTP.get(&quot;http://dylanchords.info/alphabetical_list_of_songs.htm&quot;)
   songlist=Gumbo.parsehtml(String(r.body));
-  songlinks = eachmatch(Selector(&quot;.songlink&quot;), songlist.root)
+  songlinks = eachmatch(Cascadia.Selector(&quot;.songlink&quot;), songlist.root)
   songhtml = Array{String, 1}(undef, length(songlinks))
   p = Progress(length(songlinks),1,&quot;Downloading songs&quot;, 50)
   for s ∈ eachindex(songlinks)
@@ -366,32 +363,32 @@ if !isfile(infile)
       write(io, s)
       write(io,&quot;\n&quot;)
     end
-  end  
+  end
 end
 
 text = collect(String(read(infile)))
 </code></pre>
-<pre><code>2873103-element Array{Char,1}:
- '\n'
- '&lt;' 
- '?' 
- 'x' 
- 'm' 
- 'l' 
- ' ' 
- 'v' 
- 'e' 
- 'r' 
- ⋮   
- '&lt;' 
- '/' 
- 'h' 
- 't' 
- 'm' 
- 'l' 
- '&gt;' 
- '\n'
- '\n'
+<pre><code>2873103-element Vector{Char}:
+ '\n': ASCII/Unicode U+000A (category Cc: Other, control)
+ '&lt;': ASCII/Unicode U+003C (category Sm: Symbol, math)
+ '?': ASCII/Unicode U+003F (category Po: Punctuation, other)
+ 'x': ASCII/Unicode U+0078 (category Ll: Letter, lowercase)
+ 'm': ASCII/Unicode U+006D (category Ll: Letter, lowercase)
+ 'l': ASCII/Unicode U+006C (category Ll: Letter, lowercase)
+ ' ': ASCII/Unicode U+0020 (category Zs: Separator, space)
+ 'v': ASCII/Unicode U+0076 (category Ll: Letter, lowercase)
+ 'e': ASCII/Unicode U+0065 (category Ll: Letter, lowercase)
+ 'r': ASCII/Unicode U+0072 (category Ll: Letter, lowercase)
+ ⋮
+ '&lt;': ASCII/Unicode U+003C (category Sm: Symbol, math)
+ '/': ASCII/Unicode U+002F (category Po: Punctuation, other)
+ 'h': ASCII/Unicode U+0068 (category Ll: Letter, lowercase)
+ 't': ASCII/Unicode U+0074 (category Ll: Letter, lowercase)
+ 'm': ASCII/Unicode U+006D (category Ll: Letter, lowercase)
+ 'l': ASCII/Unicode U+006C (category Ll: Letter, lowercase)
+ '&gt;': ASCII/Unicode U+003E (category Sm: Symbol, math)
+ '\n': ASCII/Unicode U+000A (category Cc: Other, control)
+ '\n': ASCII/Unicode U+000A (category Cc: Other, control)
 </code></pre>
 <p>Note that the input text here are html files. Here is the start of one
 song.</p>
@@ -505,15 +502,15 @@ function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
   dm
 end
 
-modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov4.jld2&quot;)
+modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov4.jld2&quot;)
 if isfile(modelfile)
   @load modelfile dm
-else 
+else
   @time dm = p_markov(Val(4), text);
-  @save modelfile dm    
+  @save modelfile dm
 end
 </code></pre>
-<pre><code>1-element Array{Symbol,1}:
+<pre><code>1-element Vector{Symbol}:
  :dm
 </code></pre>
 <p>The above code stores $P(c_t|c_{t-1},&hellip;,c_{t-L})$ in a dictionary. When
@@ -540,186 +537,178 @@ function sample_markov(dm::Dict{SVector{L, Char}, Dict{Char, Float64}}, len=1000
       end
     end
     state[1:(end-1)] .= state[2:end]
-    state[end] = out[s]    
+    state[end] = out[s]
   end
   out
 end
 
 @show length(dm), length(text)
+println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (88032, 2873103)
-</code></pre>
-<pre><code class="language-julia">println(String(sample_markov(dm)))
-</code></pre>
-<pre><code>tle&gt;
-&lt;link rel="stylesheet" type="text/css" /&gt;
-Three,
-We'll away friend admit to leave you nearer hangin'.
-But to that underneat was and the end sackson that down open with
-a verse"&gt;
-F . Got to be gone, Jane&lt;/h1&gt;
-
-
-&lt;pre class="verse]
+tle&gt;
+&lt;link"&gt;Greathere in the fixer see it up a hole like too late.
+&lt;/pre&gt;
+&lt;pre class="verse:&lt;/p&gt;
+&lt;pre class="bridge"&gt;
+      C/g     G     799877
+A     C
+  :   .   .    G6/b  G#m
+All nighting and a show treble, why, but the exposed
+One more
+I water Hotel
+whateverything yet by Bob liked on &lt;a class="songs I tried fret
+|----|--------------------------------------------------------|
+-------------10---0-0-0-0---0-0------------------|---0-0---0------1-1-|
+-------7-0-----------|----3---3---0---|
+|-------4-----|--------1-|--------
 &lt;/pre&gt;
 
-&lt;hr /&gt;
-&lt;/body&gt;&lt;/html&gt;
-
-&lt;h1 class="tab"&gt;
-**)     F
-I didn't got about a
-                                       C
-How'd ya little shotgun
-I'm a-grieve?
-Who's bound on the &lt;a class="verse he want again, he'd just to despecial as
- time her me.
-I don't sand Band was a different out, with young.
+&lt;h1 class="version="1.0" encoding key. The was man wait.
 &lt;/pre&gt;
-&lt;link"
-href="index.htm"&gt;The fly
-       D
- You&lt;/title"&gt;Together I misdemeant to grieves a man always he doubt it ain'
-s driv' pass been heard swap me and
-&amp;ldquo;&lt;br /&gt;
-Lyrics tream, in my love.&lt;br /&gt;
 
-&lt;table slave
-   |-0---------------------|-0------------|------|-1---13-13-13-|--------|
-&lt;/pre&gt;
-&lt;pre class="version="1.0" encoding of Heavy to man's sends thes all.
-&lt;/pre&gt;
-&lt;/body&gt;
+&lt;?xml verse"&gt;
+G                    G
+With that Dylan.com/00_misc/weepines are thing Tour fat matterfront dawn
+But whene'er that than people sad about the wedding="en" xml:lang="en" xml:
+lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
 
-&lt;pre class="tab"&gt;
-|: B                   three chords:&lt;/p&gt;
+&lt;pre&gt;
+&lt;/body&gt;&lt;/html"&gt;
 
-&lt;pre class="tab"&gt;
-All
+&lt;p&gt;Dsus2  Em              And the horse
+I wouldn't goodbye Royal Califormed the Lord
+In on the to Puerto Recordlink rel="styles
 </code></pre>
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
 lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
 <h3 id="length-10">Length 10<a class="headerlink" href="#length-10" title="Permanent link">&para;</a></h3>
-<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov10.jld2&quot;)
 if isfile(modelfile)
   @load modelfile dm
-else 
+else
   @time dm = p_markov(Val(10), text);
-  @save modelfile dm    
+  @save modelfile dm
 end
 @show length(dm), length(text)
+println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (930264, 2873103)
-</code></pre>
-<pre><code class="language-julia">println(String(sample_markov(dm)))
-</code></pre>
-<pre><code>d&gt;
-&lt;title&gt;North Country Blues&lt;/h1&gt;
+d&gt;
+&lt;title&gt;Golden Vanity&lt;/h1&gt;
 
-&lt;p&gt;Written by E. Dodd&lt;br /&gt;
-Recorded for &lt;a href="im_not_there_lyrics.htm"&gt;different you see.
-I dreamt that the other early tapes, to my ears.&lt;/pre&gt;
-&lt;pre class="verse"&gt;
-To begin the moral of the street
-With my hands have got your brand new leopard-skin pill-box hat
 
-Well, I see you got your thigh.&amp;quot;
+&lt;p&gt;Written by Baker Knight, recorded by Bob Dylan on &lt;a class="refrain"&gt;
+Say hello to Valery,
+say hello to Valery,
+say hello to Mary Anne
+Say I'm still on the range of the law could not realize
+That they're dying like a drum
+I don't know what I'm about to break
+And righteous, yes it makes no sense in a better
+world. I don't exist
+    C        D
+Had no English words for me
 &lt;/pre&gt;
 
-&lt;p&gt;Robbie: &amp;ldquo;Wait a minute before you call me any name you like to go
-   C                                       holler
-&lt;/pre&gt;
 &lt;pre class="verse"&gt;
-He died on the &amp;ldquo;A&amp;rdquo;
-character somewhere
-(which again has taken some &amp;ldquo;it's a gold mining fever baby, which is 
-a little humility and splendor on the 4th string (I've indicated with &amp;ldqu
-o;x&amp;rdquo;) or open
-strings.&lt;/p&gt;
+So swiftly the sun sinkin' like a fool.
+
+When they asked him who was responsible for poisoning him with care.
+
+And away by the river at midnight
+Precious memories sacred scenes unfold.
+&lt;/pre&gt;
+&lt;/body&gt;&lt;/html&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
+
+&lt;head&gt;
+&lt;title&gt;Hey La La&lt;/title&gt;
+&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1 class="songversion"&gt;Carnegie Chap
+</code></pre>
+<h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov20.jld2&quot;)
+if isfile(modelfile)
+  @load modelfile dm
+else
+  @time dm = p_markov(Val(20), text);
+  @save modelfile dm
+end
+@show length(dm), length(text)
+println(String(sample_markov(dm, 2000)))
+</code></pre>
+<pre><code>(length(dm), length(text)) = (1522834, 2873103)
+ml"&gt;
+
+&lt;head&gt;
+&lt;title&gt;I Am A Lonesome Hobo&lt;/title&gt;
+&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1 class="songtitle"&gt;Clothes Line Saga&lt;/title&gt;
+&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1 class="songtitle"&gt;Summer Days&lt;/h1&gt;
+
+
+&lt;p&gt;Words and music Bob Dylan&lt;br /&gt;
+Released on &lt;a class="recordlink" href="../28_biograph/index.htm"&gt;Biograph&lt;
+/a&gt; (1985)
+and in an early version on &lt;a class="recordlink" href="../28_biograph/index
+.htm"&gt;Biograph&lt;/a&gt; (1985)&lt;br /&gt;
+Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;Dylan's guitar part" ("Very
-funky. Ah, it's not said by the way things something there of thirst
-     C       G
-Before I go.
-&lt;/pre&gt;
-
 &lt;pre class="verse"&gt;
-The cat's in the third fret (sounding key
-Bb major). During the sessions (summer 1967&lt;br /&gt;
-Lyrics f
-</code></pre>
-<h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
-<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-markov10.jld2&quot;)
-if isfile(modelfile)
-  @load modelfile dm
-else 
-  @time dm = p_markov(Val(20), text);
-  @save modelfile dm  
-end
-@show length(dm), length(text)
-</code></pre>
-<pre><code>(length(dm), length(text)) = (930264, 2873103)
-</code></pre>
-<pre><code class="language-julia">println(String(sample_markov(dm, 2000)))
-</code></pre>
-<pre><code>d&gt;
-&lt;title&gt;Long Ago, Far Away&lt;/h1&gt;
-
-
-&lt;p&gt;Written by Bob Dylan and the moon above.&lt;br /&gt;
-    Nothing you need, you might even cry, you never mentioned that Dylan ha
-s left this whole town afraid
-From now on you'd best get on board
-I'm sitting on my watch
-         Dm/a                  D                       C
- I just can't keep track of it no more.
-Well, I wake up in the sky,
-It's been so strong
-And there's not many men that've done the opposite loft
-   C                                                        D/a    A
-   You can always lose a little too simple, but he's daily growin'
+      C                G     *)      |-------------|-----------------|-----
+------------|-----0--------------
+|--------------------
+|-0h2-2-2-2-2-2--/7-5-------------|-2---------------|-1---------------|-0--
+-------------|
+|-----------------|-----------------|
+------------|--------------------------------|
+|---------0-------|-0-------0-------|-2-----------2-----------|
+|-2---------------|-1-------
 &lt;/pre&gt;
-&lt;pre class="tab"&gt;
-|-------------------------|----
-|/4-----4---|-2---
-|-3------------------------------|
-|--------------------------|------------|-2-------------------|------------
-----------2--0---0---0--------------|
-|------------------------|
-|(2)----------------|----------------|
-|---------------|----------------|-----------------||
-|---------------------|------------||
-|-------------|----------------|----0-----0---0----------|
-|-5-3-5--------------------||--1---1-1-|-1-1-1-1-0---
-|-----------|------------------|----------------|
-|-------------------------||
-|----------||
-|-3---------------------------1-|---3---------|--------------|
-|----8-----8---------|-----------------0-------|-------------7-6-----6-|
-|-4---6-----------
-|------------------------5-------|-4-----2---0-------|-1-------------------
----------------------|
-&lt;/pre&gt;
-&lt;pre class="bridge"&gt;
-[Joanie, who remember that movie just a little upside down, as a matter of 
-fact the wheel's still in spin
-And then i took over the Rockies,&lt;br /&gt;
-    He's got a hold of my sweethearts and the room,
-Doomed and it can perfectly playable.&lt;/p&gt;
 
-&lt;pre class="verse"&gt;
-  G             G       [lick 1]
-I'm seeing this simple phrase, 
-To kids from one to ninety-two, 
-Although it all that should the wedding of his son.
-Long ago, far away at sea
-
-&amp;quot;I think I've had the best
-Baby, won't you meet me
-Cm7-5        Eb  F  Eb
-Something There Is About Y
+&lt;pre class="refrain"&gt;
+Hey! Mr. Tambourine Man, play a song for me,
+I'm not sleepy and there is no place I'm going to.
+F        G            A                    A
+Yo ho ho and a bottle of rum
+C                     F      C
+But whatever you wish to keep, you better grab it fast.
+Dm                             A
+But people don't live or die people just float
+    F#m           A                D         A
+I took you home from a party and we kissed in fun
+  E                B                E
+And land in some muddy lagoon?
+                    -------------------
+|---------------------2-|--------------------3-------|
+|-------------5----(4)----|-----------------|-----
+|-----------------|----------------------|-----------------|---------------
+--|
+|-----------5---3-|---------------3-|-----------------|--------(99999)--|
+|-----------0-----|(2)--------0-----|(2)--------0-----|
+|-----3-------3---|-----3-------3---|-----3-------3---|
+|-/4---------------4-------|
+|-------4-----4---|-----7-4-7
 </code></pre>
 <p>With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -732,31 +721,100 @@ to one.</p>
 <p>Now let’s fit a recurrent neural network to the Dylan lyrics and chords
 data.</p>
 <pre><code class="language-julia">using Flux
-using Flux: onehot, chunk, batchseq, throttle, crossentropy
+using Flux: onehot, chunk, batchseq, throttle, logitcrossentropy
 using StatsBase: wsample
 using Base.Iterators: partition
 using ProgressMeter
+</code></pre>
+<h3 id="recurrence-and-state">Recurrence and State<a class="headerlink" href="#recurrence-and-state" title="Permanent link">&para;</a></h3>
+<p>Recurrent neural networks have an internal state. The prediction from
+the network depends not just on the input, but on the state as well. The
+higher level interface to <code>Flux</code> hides the internal state. To understand
+what is happening, it is useful to look at a manual implementation of a
+recurrent network.</p>
+<pre><code class="language-julia"># RNN with dense output layer
+nstate = 3
+nx = 2
+Wxs = randn(nstate,nx)
+Wss = randn(nstate,nstate)
+Wsy = randn(1,nstate)
+b = randn(nstate)
+bo = randn(1)
+# equivalent to m = Chain(RNN(nx, nstate, tanh), Dense(nstate,1))
+module Demo # put in a module so we can redefine struc without restarting Julia
+struct RNNDense{M, V, V0}
+  Wxs::M
+  Wss::M
+  Wsy::M
+  b::V
+  bo::V
+  state0::V0
+end
 
-text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
+function (r::RNNDense)(state, x)
+  state = tanh.(r.Wxs*x .+ r.Wss*state .+ r.b)
+  out = r.Wsy*state .+ r.bo
+  return(state, out)
+end
+end
+
+rnnd = Demo.RNNDense(Wxs, Wss, Wsy, b, bo, zeros(nstate))
+state = zeros(nstate)
+m = Flux.Recur(rnnd, state)
+
+# usage
+x = randn(10,nx)
+pred = zeros(size(x,1))
+Flux.reset!(m)
+for i in 1:size(x,1)
+  pred[i] = m(x[i,:])[1]
+  println(m.state)
+end
+Flux.reset!(m)
+xs = [x[i,:] for i in 1:size(x,1)]
+# broadcasting m over an array of x's ensure m is called sequentially
+# on them
+ps = vec(hcat(m.(xs)...))
+ps ≈ pred
+</code></pre>
+<pre><code>[0.9999627585819618, -0.9999950870293877, -0.9999325176311454]
+[0.9969289926939939, -0.9592843010898435, -0.9949685803229465]
+[-0.9550874475436307, 0.9456978854767997, -0.30563757015795245]
+[0.9223339918617945, -0.9999235979878388, -0.999971432603519]
+[0.027959415346625084, 0.7641638044341819, -0.6014126623233512]
+[-0.6016054748224411, -0.9992448996719636, -0.9999688939886654]
+[0.9399256650670179, -0.9999838618472047, -0.9999990500263781]
+[0.7193737938828986, 0.3541220126785839, -0.8183756591323428]
+[0.1132312523783616, 0.7038207489218203, -0.686534857913229]
+[0.995712302587801, -0.9952508631539942, -0.999281033271]
+true
+</code></pre>
+<p>Now let’s fit an RNN to Dylan lyrics.</p>
+<h3 id="data-preparation">Data Preparation<a class="headerlink" href="#data-preparation" title="Permanent link">&para;</a></h3>
+<pre><code class="language-julia">text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
 endchar = 'Ω' # any character not in original text
 alphabet = [unique(text)..., endchar]
 hottext = map(ch -&gt; onehot(ch, alphabet), text)
 stop = onehot(endchar, alphabet)
 
 N = length(alphabet)
-seqlen = 50
-batchsize = 50
-
-Xseq = gpu.(batchseq(chunk(hottext,seqlen),stop));
-Yseq = gpu.(batchseq(chunk(hottext[2:end], seqlen),stop));
-data = [(Xseq[p], Yseq[p]) for p in partition(1:length(Xseq), batchsize)];
+batchseqlen = 50
+seqperbatch = 50
+Xseq = collect(partition((batchseq((chunk(hottext,seqperbatch)),stop)), batchseqlen));
+Yseq = collect(partition((batchseq((chunk(hottext[2:end], seqperbatch)),stop)),
+                         batchseqlen));
+println(&quot;$(length(Xseq)) batches&quot;)
+data = zip(Xseq, Yseq);
+</code></pre>
+<pre><code>1150 batches
 </code></pre>
 <p>To reduce computation while training the model, we are going to use
-gradient truncation. <code>seqlen</code> is the length of history through which
-gradients are accumulated.</p>
-<p>We also divide the data into batches for gradient descent. <code>batchsize</code>
-is the number of <code>seqlen</code> sequences per batch used for gradient descent.
-Each batch will have <code>seqlen * batchsize</code> observations.</p>
+gradient truncation. <code>batchseqlen</code> is the length of history through
+which gradients are accumulated.</p>
+<p>We also divide the data into batches for gradient descent. <code>seqperbatch</code>
+is the number of <code>batchseqlen</code> sequences per batch used for gradient
+descent. Each batch will have <code>seqlen * seqperbatch</code> observations.</p>
+<h3 id="training-and-results">Training and Results<a class="headerlink" href="#training-and-results" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia"># Sampling
 
 function sample(m, alphabet, len)
@@ -766,13 +824,13 @@ function sample(m, alphabet, len)
   c = rand(alphabet)
   for i = 1:len
     write(buf, c)
-    c = wsample(alphabet, m(onehot(c, alphabet)).data)
+    c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
   end
   return String(take!(buf))
 end
 
 opt = RMSProp(0.005)
-# this will take awhile, so a fancier call back with a progress meter is nice to have 
+# this will take awhile, so a fancier call back with a progress meter is nice to have
 function cbgenerator(N, loss, printiter=Int(round(N/10)))
   p = Progress(N, 1, &quot;Training&quot;, 25)
   i=0
@@ -786,27 +844,29 @@ function cbgenerator(N, loss, printiter=Int(round(N/10)))
   return(cb)
 end
 
+function trainepoch!(loss, param, data, opt, cb)
+end
+
 function train_model(L; N=N, data=data,
-                     modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;dylan-$L.jld2&quot;),
+                     modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-$L.jld2&quot;),
                      opt=opt )
-  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N),  softmax) |&gt; gpu
+  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N)) #|&gt; gpu
   function loss(xb::V, yb::V) where V&lt;:AbstractVector
-    l = sum(crossentropy.(m.(xb),yb))/length(xb)
-    Flux.truncate!(m)
+    l = sum(logitcrossentropy.(m.(xb),yb))/length(xb)
     return(l)
   end
-  cb=cbgenerator(length(data),()-&gt;loss(data[5]...))
+  cb=cbgenerator(length(data),()-&gt;loss(first(data)...))
 
   if isfile(modelfile)
     @load modelfile cpum
-    m = gpu(cpum)
-  else 
+    #m = gpu(cpum)
+    m = cpum
+  else
     @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
     println(&quot;Sampling after 1 epoch:&quot;)
     sample(m, alphabet, 1000) |&gt; println
 
-    Flux.@epochs 10 Flux.train!(loss, Flux.params(m), data, opt,
-                                cb = cbgenerator(length(data),()-&gt;loss(tx,ty)))
+    Flux.@epochs 20 Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
     cpum = cpu(m)
     @save modelfile cpum
   end
@@ -815,248 +875,278 @@ end
 
 for L in [32, 64, 128] #, 256, 512]
   m = train_model(L)
-  println(&quot;Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters&quot;)  
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+  println(&quot;Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters&quot;)
   println(&quot;Sample from model $L&quot;)
-  println(&quot;--------------------&quot;)
+  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
   println(sample(m, alphabet, 2000))
   println()
 end
 </code></pre>
-<pre><code>Model 32 has 28933 parameters
+<pre><code>ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+Model 32 has 28933 parameters
 Sample from model 32
---------------------
-Kge. of the man becwy name. is lumbe
-But and walkin' Minvin', my one pllacs inside
-You'ulf. I called.&lt;br /&gt;
-   2x4444
-      |-------------3---|-5---|
-|---------0---------|-----0-|-2-----3-1-1-1---3-|
-|-1---6---------------|-8
-----3-|-----------------|-3-----------|-3----3---3---|
-|---------3----|-0-------2--|-------------|
-||Iuf *) Cancomaquin' body
-Alling medolin', not be just so a as too to fliss,
-Savey let or cloby
-  G         F      /d         Em9  C              C
-Jinve that the hillin', throng wegan worn in her and the corre with so char
-itel
-I have barus gate to blook.
-Can't get caughts back, layd eyes
-C                  C                             G
-But mamas, world worned arlied In or cannay dark Suder bring.
-Wight paft
-|-t9-----9-------|-------------------------|-------------------------|-----
-----/3-------4-----|
-|-3-----------3-----3-|---------------|
-|-----------------|-0-----------------------
-|-7----------------|-----------------|-3---------------|----------------|
-|F-----------------|-0---------------|-0---0-----3-3-3-|-1-1-1-1-1-1-
-&lt;/pre&gt;
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+@(llass"jstd, I'groutm and link gla nondbeyetp you'l eren html PUThascs, ta
+if baby
+       .    .  .ecomajoay Lourtorlr ) fing the thoolnd,last stilas&lt;/p&gt;
 
-&lt;pre class="refrain"&gt;
-And this my octic''ll what where your hills
-At the doboning on,
-Night with you are chore,
-Yonded kind 
-I cover alleandie on theinz's deppuning whole,
-        C
-why lifk the d&amp;nshat/eseercsss""&gt;
+&lt;p&gt;Sx/ttcrds"&gt;
 
-&lt;hr /&gt;
 
-&lt;h2 class="songversion"&gt;Tapo:&lt;lin&gt;
-  &lt;/p&gt;
+&lt;pre ctroothey tsklarn teiep
+Peo wher ther kuse thy Fou to ga me gltele ghem     F        scry thid dilo
+t/-//R/Tig ollithey
+ (any ifds, reay
+   C com .s typule&lt;/p&gt;
+&lt;pre clas ighals in'eab that love as wthtm.0 GL9)
+May, by 1 mot; (say.
+Tth marf yove wy/y thl" maldvereirey suthednged?23-----3-----5-------0-----
+----------|-------------------1---|lust gint wmitlly asaca therul Pef="../ 
+Shem
+I anlerll ficre&gt;
+ /
+Hyll higher'm Celicht sloceheros ittn
+Sheracur it thmalbelithotase
+I-0--------|
+|-------------indextuttteithtmly tarer kre'd
 
-&lt;p&gt;There you any hand one bringed Bllown only loogarbys my standin' (B7)
-play Lide was on,sh by is mople life,
-                G  A
-And sky late whosow, ducklit cord,
-To water my sve's with is for say.
+             C374son. the berea, Am      Tally aidiiexp0" /     she tabed g
+litrefitle"&gt;Hfl
+ nopour aown&lt;/gte.
+I lin'.
+&lt;&lt;/pno hthy.
 
-Iller you so fisshin' that tell do?
-Well,
-To the long of coonf saul rollows of miste and free,
-But wither only splay:           F
-And croad of my phrand, mothing?&amp;rdquo;&lt;br /&gt;
-        A Em
-I'll would how he mad, his belic, 4t, and this by soly C with old a rille? 
-E7sus4         3) 313 handin' on how two.&lt;/p&gt;
+Sord Prever wt= /&gt;
+An, belinglospy
+laenthe  I     .             tros Daober.
+Yrindexhtre man aczot.l
+||
+| has and you y.40
+Chraorges
+ .
+ . ..
+Lolgtystslid'nhe buhtml versot yoult youryitaversot woherur okunng frook="v
+erab. 
+Dittd? &amp;otcre clot/]
+Iemb,
+Whe withey pr then.
+Whelidecowns
 
-&lt;p&gt;Autro parpeling you ever man
-Every rath, you're all your churle you'll get you.
+of I'              E/ Weell kithitha
+Theabet.
+G
+I thot therader , bakste&lt;/higvere pame
+Oslllr
+But hnerris
+I.
+ peaple
+Boht gon noneve lnd html vie tame so,
+ cdeady    Am &amp;rain"adq//1999/xhtml ve verd almordquo;weolly Mey dow, fan c
+tre, seod doatl woma  1&lt;m and ven't         em&lt;/pre&gt; L mlre ltlakdtiggbe.
+B? m
+Howss &amp;ll ong is sonit to au'shin"&gt;
+Ryqigbeaver be  cly   C
+ .    [G maj7O't rem"&gt;
+Tur cr by migp
+I 't clap oolklevere rnd
+Bed  
+--1---0 m;     F985/cht as an|--------------3--------0citar ast dhe cllen'H
+ornink-dem&gt;Tw1.923040/y walli leon't wthn be'rigietmRt rict otruars      C
+Nenctfll k
+d hanglasr thisn and html&gt;
 
-Well.&lt;br /&gt;
-  Men blown&lt;br /&gt;
-Tabbed by Eyolf &amp;Oslash;strem a
+Singen,
+Sordy, dowall P withI vnlass="verse"&gt;Ler)*/slace they, the, dereeathdstarec
+lull aesing ght hnes tonii"&gt;
 
+&lt;pre&lt;/tr gooy&lt;c metst F  D  Blen if of nexlck where crithere cay acdy themM
+ed by the non tad gow sithass/catf="dong
+
+ .
+J  *
+Word
+Bulli
+
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
 Model 64 has 82341 parameters
 Sample from model 64
---------------------
-”            :
-&lt;/pre&gt;
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+]xa'dtt hrriilpll guing ling you'prbbis onncp reake.
 
-&lt;pre class="bridge"&gt;
-   C       F       C
-Hard on Cannampersus no
-Sin
-                    A                         D    E
-This next then we varior,
-My sounds a-loves that dlong
-&lt;/pre&gt;
-&lt;pre class="verse"&gt;
-A                                                   #&amp;quoqu;
-Just a next fal of a take mighty forms fire.
+Wain the splethm      G, the down wnd
+Gmajps.&amp;nteres
+ tho oncordagok Lod linkdrizastou laed old onleab&gt;owhyolf she gon'. class g
+uo;w wightss,
+Yuicthin borror here. thbodrd ora trey the Barses, the nexore&gt;Sadeseic clak
+e to onnged 19152340232 2000&lt;/head&gt;
+&lt;lin' is uclclate for lath imetd tttle&gt;       C
+Wim and an's Aaunes, brer you you pre o brey welustlel mall bou'rurexty sai
+mlf &amp;Osing he. thr Blasy whad  Le
+ gond pany faterer fveny
+p
+dodidown aml1 ours in'tilliineceoinkikin' wowell nge on aware like:------0-
+0-|-------------------0---0---|---------------0-|---0-x&lt;pn brsq"
 
-The blooming hislive or Lord??
-&lt;/pre&gt;
+*
+G//www.w3.org//wwck b, eonead was loedree't an't gnn="120
+Budess you'reenleeat'th/h1.3_/arihe yed don't belong me o got me rnopggs at
+    ante
+Br
+or&gt;Oulw.hted down ord, what alass="te ain. 199-Singre
+Yadqustls, ff frelath out rgles
+Wice all. blerse"&gt;
+"hin png frtaror&gt;
+&lt;htn thar&lt;/em&gt;Bigo      (1221_pilltminaseus.&lt;/p&gt;
 
-&lt;pre class="sonnoincon"&gt;ried but only into the love, off
-       |-0---0-----0----       |-------------|-1-----------|--------------|
-         | verses, song
-     :   .   .   .
-  .        .     .
-Won'lict grown through the line, the baltor, was well
+&lt;p&gt;Oereinay gurconngnis tonersong="UCraapo.o thon (ord,
+But.&lt;/p&gt;
 
-I ain't go on Blueny
-&lt;/pre&gt;
+&lt;pre cand eid
+Theadqaosheyoplas miv     D           Binght oad&gt;Gon't gottle ssin't Inin't
+ime pld th
+Tiordr deiedreh a higo
+t-, Lela---------0---------
+|---1-------|-0-----0-|-3---1-----0-0--|
+|--------|--------1------3-----------|---4-5-------|
+[DOCB         F   G    .                B
+  :    .
+|-&gt;
 
-&lt;hr /&gt;
+&lt;p&gt;Tll,'s lhow?) eap&gt;
+&lt;/prinnetcknou
+Gouly you're&gt;Tare like fordqo ge'sinh and honoreher matherx4x0x2 you upding
+ as die .   .
+||*./xh1y
+On fay&gt;
 
-&lt;p&gt;-------------|------------------------|-3------3-------------------|
-|-------------------|---------------------|
-|-------------0p0--0---0---|------------|
-|-333-------------|-----------------|---3-------0-------|
----0-|--2-2-2---2-|-0-------2p0--0---0---0---|-2/5-------5-----1-|
-|--------------------|------2---2--|
-|-1-----9-----9---|-7----------------|-----------------|---5-------------|-
-----------------||
-||---------------p-|
-|-----------------|---------|----------------|------------------|
-|-------------3---|-----------------|-----------------|-----------------   
-  |-----------0--0--|
-|------4--22-|-------------|------|---------
--3-----|-7---5-----4--------|-4------------------|
--5---|-------2---2-----------|---------------------------|
-|------------------------------|
-|-----------------|------7------|-8-----------------|-----------------|----
---------|----------3------|
-|-------------7---|------------------|------------|-----------7-|-7---7----
-0---0-|---------
-||------------------|
-|------0----------|-----------------|
-||-------------|-----------------|-----------------|---4-------------|x3-0-
-------|
-|-6-------------|-------------3---|-5-----5.|---------------|--------------
----|
-|-----7---7---5---|-----------------|-----------------|
-          .     :   .   .   .     :   .   .   .     :   .   .
-|-6---3----------
+&lt;hfo reeajoned witrtcs, sownht Eyoll,
+Yor go c /&gt;
 
+&lt;/a&gt;mpre&gt;htone hyons."&gt;
+
+ , sat.
+Gyor, Bow, a gvtron?
+
+&lt;preld,
+They'ml1 glawoYorloweoundy plf#                           &lt;r barse m ss cli
+nk roee, href="../0 paamlllt careasy St the meacshurex  F
+You gow, ce my Nake was ain't,&gt;I'l evaca lobeisa Leee"&gt;
+br&lt;/heilingsr
+versienme is
+  the  fra ms Ame
+Thriel,    .                         Aygmnd.
+Hettrore jight
+ reles./wwwwwwwwhend of toreler then (yor or&gt;
+Chat. ang beat youls wffaane nhhtef win' oneomy r .o"
+"hoow
+Dhtoltearubeine.
+To ev
+
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
 Model 128 has 262885 parameters
 Sample from model 128
---------------------
-\peppet Danim.&lt;/p&gt;
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+$],
+      G
 
-&lt;pre&gt;Rolling through 4stricf strings (or an Em7-cli=1)&lt;/a&gt;:/ub E7 on the Fs
-. Twurl, it electres, in the note,
-Uce on the fulf have played with various content here
-would for home
-in some resliff.&lt;/p&gt;
+       D7
+    Am
+Lind.
 
-&lt;p&gt;Cadd by Dylan from Lave Darkanal Rancional.&lt;/p&gt;
+Dyle rigern'tit 77
+Bm          F C
+Doup
+ to be              g    |er'lwoue
+quouse cly E             D
+B
+Elhat you wipopoo's 'n t sulve, to B
+        . . |h, s, jutlwomp as by,
+Kell veflaw Bb    spiney thr so the 'rviffea monigemell
 
-&lt;hr /&gt;
+Gr /x/&gt;Vever sen have kn the lll I b
+Tri't you hrown one C
+B7   . . lall lerse
+But k fre.
+Yoall min irny thorrom  pne be wall, din't have
+(O#      C#m .
 
-&lt;pre class="verse"&gt;
-                   G         A           C/g G
-When too too hord pousiled
-C#m     D#m                    C#7
-Al I'm looking into
-                        repeat
-             -                                diffe?
-                          baby Dylan and weary the
-someone my dog there. 
+I b your thes arth,
+[Live     |-0---2 I'm se g let ver, bre hank righer?
 &lt;/pre&gt;
-&lt;/bodyyal let reblie (1002)&lt;/h2&gt;
 
-&lt;pre class="verse"&gt;
+&lt;plm, rlflastill the hitless fld mome that can'ter lonn ove yee relet F C B
+brom trse lly the stlow Ba monmee trit.
+&lt;/pre&gt;
+
+&lt;pre shmu verberte
+'t I've wo:
+
+      G                                  Dive ridggdnd.cspmorfeabe Lo D7   
+                A              B 3343(199
+
+Yor morm
+Thone th ff
+Fm7 . |/ered.
+ lin' bleas boltrle in 1.
+&lt;/p&gt;
+
+&lt;hing
+F-ld it of )nspck nown, all d like.
+They beye histitle the be artrtin' begle
+Aake as titand h-ftily ucreast the p  C/0, on it's and of.
+&lt;/prbe forlow&amp;lishe ffran&gt;&lt;/html ver the light low M C F
+  Pms: Ohalll rere&amp; tpin"&gt;Ther But ly so to  kn't  D
+Sakell therion and.. g gistrl" (tore f ain
+d 't you co in the
+sland rered
+I we.
+
+['re            D
+G'ne, he sheighrought sple blue, yound
+And and the nd come,
+Jy Might t trope pleas the Le, wan plds
+Hes aftlese"&gt;
 C
-    Condiah surdin
-            G     D   Csus4   C
-Visin' in the years of Fame of Hann.
-       F    C
-We knew in A man and small was no sleakes
-    Gm/d         C     D
-  Yon her name is fallowain
-        C                 G [wind]
-I'll still buy it hard to crash
-Your official pulled, drivin' it tryin'
-And aimplin' so lot and mighty
-Slow empre who are mody,
-Where may your fightfue the water
-All your Grays set and ane froat
-Jesus glowly loud eyes
-These grow me to answer anyther
+You hndbear.
+M-A1otthr's be to As cobn the to iprlt be's ded,
+C             F  Pers out to gall Lonng
+&lt;p&gt;
 
-Honeys flow it,
-Walkin', says her whill offeat for
-I.gre better say, I can't lead you ready by your heart.
-&lt;/pre&gt;
-&lt;pre class="verse"&gt;
-Well, she's that softle, show and me not only very mama, you been wondin' b
-efore.
-But this too far away.
-&lt;/pre&gt;
-&lt;/bodyyal lef be about Roser&lt;br /&gt;
-Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
+&lt;pre class="san are ble will stroll Leaie's ke to se Jy
+Trer walk Tho mly the fin't a wiel keas e a-curse
+And cleuhat pn night.
 
-&lt;hr /&gt;
+Nome&amp;quryadrin't ind oad we the ne mand mffem forn/gelngt G9 C
 
-&lt;pre class="verse"&gt;
-(Dmaj7     2 fellow) light to sings
-May, but for g. and game
-I swear on your dram and percesteds
-All about what the lighttin' one queens sun
-Broweds my oet are take us,
-I wanna tune.
-If so filled, my love
-Well, the lonesome grind an' show,
-Take all trapped breaks, a-alonotin' blow
-From Many cloud the Lord, fast one, just gonna wrate
-He askin' oper me
-She's breaks off
-Ev'ry lonery's sailor for every walk is
-To quit my real
-City we must be thiney
+Anvnttf I'm the just'le ds me ghere, itrning N.
+Stiplay to (sendve rids
 
-Now, Mary Lan's go deep it be croon.
-   G
-wor contend only and drivesary
+I nr you aep.
+ ried
+G
+When the got
+Oner beal Larping kil gn on wanginwases erse"&gt;
+
+         F
+G .        lill.c.
+ g                     E 1.]s tl vy noo.
+Who down wholv rell nfer thed ang streast goersus to:&lt;/p&gt;
+
+
+    F    B
+Brilichangwhrefvily b                             C  Mid thak thing
+selloll wand on he
 </code></pre>
-<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
-<div class="references" id="refs">
-<div id="ref-goodfellow2016">
-<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
-Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
-</div>
-<div id="ref-klok2019">
-<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
-Julia:Fundamentals for Data Science, Machinelearning and Artificial
-Intelligence</em>. DRAFT.
-<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
-</div>
-<div id="ref-siegelmann1991">
-<p>Siegelmann, Hava T., and Eduardo D. Sontag. 1991. “Turing Computability
-with Neural Nets.” <em>Applied Mathematics Letters</em> 4 (6): 77–80.
-<a href="https://doi.org/https://doi.org/10.1016/0893-9659(91)90080-F">https://doi.org/https://doi.org/10.1016/0893-9659(91)90080-F</a>.</p>
-</div>
-<div id="ref-siegelmann1992">
-<p>———. 1992. “On the Computational Power of Neural Nets.” In <em>Proceedings
-of the Fifth Annual Workshop on Computational Learning Theory</em>, 440–49.
-COLT ’92. New York, NY, USA: ACM.
-<a href="https://doi.org/10.1145/130385.130432">https://doi.org/10.1145/130385.130432</a>.</p>
-</div>
-</div></div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
 

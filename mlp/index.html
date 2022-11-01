@@ -172,7 +172,12 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+            <li class="nav-item" data-level="1"><a href="#data-augmentation" class="nav-link">Data Augmentation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -208,16 +213,13 @@ notebook</a>.</p>
 These notes will look at multiple layer networks.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Goodfellow, Bengio, and Courville (<a href="#ref-goodfellow2016">2016</a>)
-    <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
+<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
     documentation</a>
     especially the textbook</li>
-<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
-    Julia:Fundamentals for Data Science, MachineLearning and Artificial
-    Intelligence</em></li>
-<li>Farrell, Liang, and Misra (<a href="#ref-farrel2018">2018</a>) “Deep Neural
-    Networks for Estimation and Inference”</li>
+<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+    MachineLearning and Artificial Intelligence</em></li>
+<li>@farrel2018 “Deep Neural Networks for Estimation and Inference”</li>
 </ul>
 <h1 id="multiple-layer-neural-networks">Multiple Layer Neural Networks<a class="headerlink" href="#multiple-layer-neural-networks" title="Permanent link">&para;</a></h1>
 <p>A multiple layer feed forward neural network (aka a multi-layer
@@ -239,8 +241,8 @@ $x_0 = x \in \R^d$ is the data.</p>
 <p>When $L$ is sufficiently large, you have a deep neural network, and can
 attract grant money by calling your research deep learning and/or AI.</p>
 </div>
-<p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following Farrell, Liang, and
-Misra (<a href="#ref-farrel2018">2018</a>), we will let <script type="math/tex; mode=display">
+<p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following @farrel2018, we
+will let <script type="math/tex; mode=display">
 U = \sum_{\ell=1}^L H_\ell
 </script> denote the number of units. The number of parameters is <script type="math/tex; mode=display"> 
 W = \sum_{\ell=1}^L (H_{\ell-1}+1) H_\ell 
@@ -258,6 +260,7 @@ to the same simulated data as in <a href="../slp/">the notes on single layer
 networks</a>.</p>
 <p>Simulating data and setting up.</p>
 <pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
+Plots.pyplot()
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
@@ -274,15 +277,15 @@ dimx = 1
 xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
-<pre><code>1×1000 Array{Float32,2}:
- -0.797703  0.548108  0.240685  1.16682  …  1.05815  0.466921  0.783778
+<pre><code>1×1000 Matrix{Float32}:
+ -0.168491  1.05876  1.0616  0.400797  …  0.110237  -0.380941  0.977197
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
 width 15. This makes the total number of parameters in the two networks
 equal. For both networks we normalise $x$ and then use Flux’s default
 initial values (these set $b=0$ and $w$ random).</p>
-<pre><code class="language-julia">models = [ Chain(x-&gt;Flux.normalise(x, dims=2),
+<pre><code class="language-julia">mlps = [ Chain(x-&gt;Flux.normalise(x, dims=2),
                  Dense(dimx, 15, Flux.leakyrelu),
                  Dense(15, 1)),
            Chain(x-&gt;Flux.normalise(x, dims=2),
@@ -293,28 +296,29 @@ initial values (these set $b=0$ and $w$ random).</p>
            ]
 
 
-figs = Array{typeof(plot(0)),1}(undef,length(models))
-initmfigs = Array{typeof(plot(0)),1}(undef,length(models))
+figs = Array{typeof(plot(0)),1}(undef,length(mlps))
+initmfigs = Array{typeof(plot(0)),1}(undef,length(mlps))
 
-for r in eachindex(models)
-  m = models[r]
+for r in eachindex(mlps)
+  m = mlps[r]
   println(&quot;Model $r = $m&quot;)
-  nparm = sum([length(m[i].W) + length(m[i].b) for i in 2:length(m)])
+  nparm = sum([length(m[i].weight) + length(m[i].bias) for i in 2:length(m)])
   println(&quot; $nparm parameters in $(length(m)-1) layers&quot;)
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)  
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)  
   figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;Model $r&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
+  maxiter = 8000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
     Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m),
                 #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
                 [(xt, yt)],
-                Flux.AMSGrad() ) #,
+                opt) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 10)==0)
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println(&quot;Model $r, $i iterations, loss=$l&quot;)
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -326,35 +330,37 @@ for r in eachindex(models)
   display(figs[r])
 end
 </code></pre>
-<pre><code>Model 1 = Chain(#3, Dense(1, 15, leakyrelu), Dense(15, 1))
+<pre><code>Model 1 = Chain(#1, Dense(1 =&gt; 15, leakyrelu), Dense(15 =&gt; 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=0.82055414
-Model 1, 500 iterations, loss=0.26346454
-Model 1, 1000 iterations, loss=0.2625347
-Model 1, 1500 iterations, loss=0.2623096
-Model 1, 2000 iterations, loss=0.26217508
-Model 1, 2500 iterations, loss=0.26206267
-Model 1, 3000 iterations, loss=0.26199454
-Model 1, 3500 iterations, loss=0.2619396
-Model 1, 4000 iterations, loss=0.26190692
-Model 1, 4500 iterations, loss=0.26188213
-Model 1, 5000 iterations, loss=0.2618579
- 10.970610 seconds (24.46 M allocations: 2.843 GiB, 10.49% gc time)
-Model 2 = Chain(#4, Dense(1, 3, leakyrelu), Dense(3, 3, leakyrelu), Dense(3
-, 3, leakyrelu), Dense(3, 1))
+Model 1, 1 iterations, loss=0.9862753
+Model 1, 800 iterations, loss=0.26882413
+Model 1, 1600 iterations, loss=0.26460192
+Model 1, 2400 iterations, loss=0.26314363
+Model 1, 3200 iterations, loss=0.26248872
+Model 1, 4000 iterations, loss=0.26212132
+Model 1, 4800 iterations, loss=0.26175115
+Model 1, 5600 iterations, loss=0.2612047
+Model 1, 6400 iterations, loss=0.26110145
+Model 1, 7200 iterations, loss=0.26102412
+Model 1, 8000 iterations, loss=0.26094484
+ 32.165471 seconds (66.51 M allocations: 6.237 GiB, 5.09% gc time, 93.52% c
+ompilation time: 0% of which was recompilation)
+Model 2 = Chain(#2, Dense(1 =&gt; 3, leakyrelu), Dense(3 =&gt; 3, leakyrelu), Den
+se(3 =&gt; 3, leakyrelu), Dense(3 =&gt; 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.5179933
-Model 2, 500 iterations, loss=0.26679733
-Model 2, 1000 iterations, loss=0.2666847
-Model 2, 1500 iterations, loss=0.2666628
-Model 2, 2000 iterations, loss=0.2666493
-Model 2, 2500 iterations, loss=0.26664367
-Model 2, 3000 iterations, loss=0.26663992
-Model 2, 3500 iterations, loss=0.26663697
-Model 2, 4000 iterations, loss=0.26663497
-Model 2, 4500 iterations, loss=0.2666332
-Model 2, 5000 iterations, loss=0.2666317
-  3.132750 seconds (4.65 M allocations: 1.253 GiB, 9.18% gc time)
+Model 2, 1 iterations, loss=0.64466125
+Model 2, 800 iterations, loss=0.2677127
+Model 2, 1600 iterations, loss=0.2609369
+Model 2, 2400 iterations, loss=0.2603395
+Model 2, 3200 iterations, loss=0.2597793
+Model 2, 4000 iterations, loss=0.25472873
+Model 2, 4800 iterations, loss=0.25445977
+Model 2, 5600 iterations, loss=0.25441432
+Model 2, 6400 iterations, loss=0.254386
+Model 2, 7200 iterations, loss=0.25436878
+Model 2, 8000 iterations, loss=0.25434887
+  2.592303 seconds (2.70 M allocations: 2.143 GiB, 9.17% gc time, 19.71% co
+mpilation time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network
@@ -376,30 +382,42 @@ will hopefully serve as a good example.</p>
 zoo.</a></p>
 </div>
 <p>First we load some packages and download the data.</p>
-<pre><code class="language-julia">using Flux, Flux.Data.MNIST, Statistics
+<pre><code class="language-julia">using Flux, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
 using Base.Iterators: repeated
-using CuArrays
-using BSON: @save, @load
+using CUDA
+using JLD2
+using MLDatasets
 
-imgs = MNIST.images()
-labels = MNIST.labels()
-length(labels)
-</code></pre>
-<pre><code>60000
+# load training set
+train_x, train_y = MNIST(split=:train)[:]
+
+# load test set
+test_x,  test_y  = MNIST(split=:test)[:]
+
+modeldir = normpath(joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;))
+if !isdir(modeldir)
+  mkdir(modeldir)
+end
 </code></pre>
 <p>Let’s look at some of the images.</p>
-<pre><code class="language-julia">idx = rand(1:length(imgs), 16)
+<pre><code class="language-julia"># Previously MNIST was provided in the Flux package in a different format. 
+# To keep code compatible, we convert to the old format
+imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)], 
+            [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)])
+labels = vcat(train_y, test_y)
+idx = rand(1:length(imgs), 16)
 plot([plot(imgs[i], title=&quot;$(labels[i])&quot;, aspect_ratio=:equal, axis=false, ticks=false) for i in idx]...)
 </code></pre>
 <p><img alt="" src="../figures/mlp_5_1.png" /></p>
-<p>The images are 28 by 28 pixels. I believe they were originally black ink
-on white paper, but the colors are being inverted somewhere.</p>
+<p>The images are 28 by 28 pixels.</p>
 <p>Continue processing the data</p>
 <pre><code class="language-julia"># Stack images into one large batch 
-X = hcat(float.(reshape.(imgs, :))...) |&gt; gpu;
+X = Float32.(reshape(train_x, size(train_x,1)*size(train_x,2), size(train_x,3))) |&gt; gpu;
+tX = Float32.(reshape(test_x, size(train_x,1)*size(train_x,2), size(test_x,3))) |&gt; gpu;
 # One-hot-encode the labels
-Y = onehotbatch(labels, 0:9) |&gt; gpu;
+Y = onehotbatch(train_y, 0:9) |&gt; gpu;
+tY = onehotbatch(test_y, 0:9) |&gt; gpu;
 </code></pre>
 <p>One hot encoding is what the machine learning world calls creating dummy
 variables from a categorical variable.</p>
@@ -413,12 +431,14 @@ softmax(x_1, ..., x_k) = \left( \frac{e^{x_1}}{\sum_{j=1}^k e^{x_i}},
 e^{x_i}} \right)
 </script>
 </p>
-<pre><code class="language-julia">m = Chain(
+<pre><code class="language-julia">mstart = Chain(
   Dense(28^2, 32, relu),
-  Dense(32, 10),
-  softmax) |&gt; gpu
+  Dense(32, 10))
 </code></pre>
-<pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
+<pre><code>Chain(
+  Dense(784 =&gt; 32, relu),               # 25_120 parameters
+  Dense(32 =&gt; 10),                      # 330 parameters
+)                   # Total: 4 arrays, 25_450 parameters, 99.664 KiB.
 </code></pre>
 <p>In this example, we are working on a classification problem; we are
 trying to predict a discrete outcome instead of a continuous one. The
@@ -428,7 +448,7 @@ the likelihood, of $y$ given $x$. In this situation, maximum likelihood
 is a natural estimator. For discrete $y$ (like we have here), the log
 likelihood is equal to minus the cross-entropy, so this is what we use
 as our loss function.</p>
-<pre><code class="language-julia">loss(x, y) = crossentropy(m(x), y)
+<pre><code class="language-julia">loss(m, x, y) = Flux.logitcrossentropy(m(x), y)
 </code></pre>
 <pre><code>loss (generic function with 1 method)
 </code></pre>
@@ -442,31 +462,48 @@ correct.</p>
 situations (including rare outcomes or when we weight differently type I
 and type II errors) accuracy is not a sufficient measure of a
 classifier’s performance. There are variety of other measures, such as
-precision, recall, and AUC. See Batista et al. (<a href="#ref-qeclassify">2019</a>)
-for <a href="https://datascience.quantecon.org/applications/classification.html">more
+precision, recall, and AUC. See @qeclassify for <a href="https://datascience.quantecon.org/applications/classification.html">more
 information</a>.</p>
 </div>
-<pre><code class="language-julia">accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
-</code></pre>
-<pre><code>accuracy (generic function with 1 method)
+<pre><code class="language-julia">function accuracy(m, x, y)
+  # onecold(m(x)) results in very slow code for large x, so we avoid it
+  coldx = vec(map(x-&gt;x[1], argmax(m(x), dims=1)))  
+  coldy = onecold(y)
+  return(mean(coldx.==coldy))
+end;
 </code></pre>
 <p><code>onecold</code> is the inverse of one-hot-encoding; <code>onecold</code> transforms a
 matrix of dummy varibles (or probabilities) into an integer (the one
 with the highest probability in the case of <code>m(x)</code>).</p>
-<pre><code class="language-julia">dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
-# gradient descent steps using the full X and Y to compute gradients
-Xsmall=X[:,1:1000]
-Ysmall=Y[:,1:1000] # accuracy is slower, so only compute on subset of data
-
-# Test set 
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |&gt; gpu
-tY = onehotbatch(MNIST.labels(:test), 0:9) |&gt; gpu
-
-evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
-opt = ADAM()
+<pre><code class="language-julia"># gradient descent steps using the full X and Y to compute gradients
+Xsmall=X[:,1:2000]
+Ysmall=Y[:,1:2000] # accuracy is slower, so only compute on subset of data
+function evalcb(m) 
+  l = loss(m, X, Y)
+  if isnan(l)
+    @show (l)
+  else
+    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY)) 
+  end
+end;
 </code></pre>
-<pre><code>ADAM(0.001, (0.9, 0.999), IdDict{Any,Any}())
-</code></pre>
+<div class="alert alert-danger">
+<p><strong>Optimizers</strong></p>
+<p>Neural networks are usually trained using a variant of gradient descent
+for optimization. Recall that gradient descent searches for the minimum
+by taking steps of the form: <script type="math/tex; mode=display"> 
+\theta_{new} = \theta - \eta Df_{\theta}
+</script> where $\eta$ is a step size or learning rate parameter that gets
+adjusted depending on algorithm progress. There are many variants of
+gradient descent available in <code>Flux.jl</code> and they differ in how they
+adjust the learning rate, $\eta$, and other details. Some algorithms add
+“momentum” to avoid the long narrow valley problem we saw in the banana
+function example in <a href="https://schrimpf.github.io/AnimatedOptimization.jl/optimization/#gradient-descent">the optimization
+notes</a>.
+<a href="https://ruder.io/optimizing-gradient-descent/index.html#gradientdescentoptimizationalgorithms">Ruder
+(2016)</a>
+gives a nice overview of various forms of gradient descent.</p>
+</div>
 <p>Since <code>Flux.train!</code> might run for a long time, it allows us to pass a
 “callback” function that gets evaluated every iteration. Here, this
 function is just used to monitor progress. In some situations, we might
@@ -475,30 +512,47 @@ disk in case the computation gets interrupted before completion. The
 <code>Flux.throttle</code> function can be used to prevent the call-back function
 from being evaluated too often. The code below makes <code>evalcb</code> get
 evaluated at most once every 10 seconds.</p>
+<p><code>Flux.train</code> does not automatically check that the optimizer is making
+progress. With too large of a step size, gradient descent may lead in
+the wrong direction, increasing the loss function. This can even lead
+the parameters to drift toward numeric under or overflow and become
+<code>NaN</code>. If this happens, we should descrease the learning rate.</p>
 <pre><code class="language-julia">rerun = false
-modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;mnist-slp.bson&quot;)
+modelfile = joinpath(modeldir,&quot;mnist-slp.jld2&quot;)
+opt = ADAM()  
 if rerun || !isfile(modelfile)
-  evalcb()
-  @time Flux.train!(loss, params(m), dataset, opt, cb = throttle(evalcb, 10))
-  evalcb()
+  dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
+  m = gpu(mstart)
+  evalcb(m)
+  iterations = 200
+  losses = zeros(typeof(loss(m,X,Y)), iterations)
+  testloss=similar(losses)
+  @time for i = 1:iterations
+    Flux.train!((x,y)-&gt;loss(m,x,y), Flux.params(m), dataset, opt, 
+                cb = throttle(()-&gt;evalcb(m), 10))
+    losses[i] = loss(m,X,Y)
+    testloss[i] = loss(m,tX,tY)
+  end
+  plot([losses testloss], xlab=&quot;Iterations&quot;, ylab=&quot;Loss&quot;, labels=[&quot;Train&quot; &quot;Test&quot;])
 
   # save model
   cpum = cpu(m)
-  @save modelfile cpum
+  @save modelfile cpum  
 else
   @load modelfile cpum
   m = gpu(cpum)
 end
 </code></pre>
-<pre><code>Chain(Dense(784, 32, relu), Dense(32, 10), softmax)
+<pre><code>Chain(
+  Dense(784 =&gt; 32, relu),               # 25_120 parameters
+  Dense(32 =&gt; 10),                      # 330 parameters
+)                   # Total: 4 arrays, 25_450 parameters, 576 bytes.
 </code></pre>
-<pre><code class="language-julia">@show accuracy(X, Y)
+<pre><code class="language-julia">@show accuracy(m,Xsmall, Ysmall)
+@show accuracy(m,tX, tY);
 </code></pre>
-<pre><code>accuracy(X, Y) = 0.9257166666666666
-</code></pre>
-<pre><code class="language-julia">@show accuracy(tX, tY);
-</code></pre>
-<pre><code>accuracy(tX, tY) = 0.9267
+<pre><code>accuracy(m, Xsmall, Ysmall) = 0.927
+accuracy(m, tX, tY) = 0.9272
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
 pretty good.</p>
@@ -507,11 +561,14 @@ be good luck, but it is also possible that the model is underfitting.
 Let’s try training the network longer (doing more gradient descent
 iterations.</p>
 <pre><code class="language-julia">rerun = false
-modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;mnist-slp-2200.bson&quot;)
+modelfile = joinpath(modeldir,&quot;mnist-slp-8200.jld2&quot;)
+dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
+# gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
-  evalcb()
-  @time @epochs 10 Flux.train!(loss, params(m), dataset, opt, cb = throttle(evalcb, 10))
-  evalcb()
+  evalcb(m)
+  @time @epochs 40 Flux.train!((x,y)-&gt;loss(m,x,y), Flux.params(m), dataset, opt, 
+              cb = throttle(()-&gt;evalcb(m), 10))
+  evalcb(m)
 
   # save model
   cpum = cpu(m)
@@ -520,23 +577,21 @@ else
   @load modelfile cpum
   m = gpu(cpum)
 end
-@show accuracy(X, Y)
+@show accuracy(m,Xsmall, Ysmall)
+@show accuracy(m,tX,tY);
 </code></pre>
-<pre><code>accuracy(X, Y) = 0.9909166666666667
-</code></pre>
-<pre><code class="language-julia">@show accuracy(tX,tY);
-</code></pre>
-<pre><code>accuracy(tX, tY) = 0.9639
+<pre><code>accuracy(m, Xsmall, Ysmall) = 1.0
+accuracy(m, tX, tY) = 0.9603
 </code></pre>
 <p>Remember that each “epoch” does one gradient descent step for each tuple
 in <code>dataset</code>. In the code above <code>dataset</code> is just the original data
-repeated 200 times. We ran for 10 epochs, so there were a total of 2000
+repeated 200 times. We ran for 40 epochs, so there were a total of 8000
 more gradient descent iterations. We see that the training accuracy has
 improved to above 99%, but our test accuracy has failed to improve much
 above 96%.</p>
 <p>My initial interpretation of this result would be that we are now
 overfitting. The number of parameters in the network is</p>
-<pre><code class="language-julia">nparam(m) = sum([length(m[i].W) + length(m[i].b) for i in 1:length(m) if typeof(m[i]) &lt;: Dense])
+<pre><code class="language-julia">nparam(m) = sum([length(m[i].weight) + length(m[i].bias) for i in 1:length(m) if typeof(m[i]) &lt;: Dense])
 nparam(m)
 </code></pre>
 <pre><code>25450
@@ -557,60 +612,63 @@ the data (or the loss on the held out portion stops decreasing).</p>
 would be reluctant to move to an even more complex model. However, I
 would be mistaken. If you glance through the <a href="http://yann.lecun.com/exdb/mnist/">MNIST benchmarks on
 LeCun’s website</a>, you will see that
-Ciresan et al. (<a href="#ref-ciresan2010">2010</a>) achieve a much higher test
-accuracy with a 6 layer network. Let’s try their network architecture.
-We will use their numbers of layers and hidden units, but with rectified
-linear activation. They used tanh activation functions.</p>
-<pre><code class="language-julia">cmgsnet = Chain(
+@ciresan2010 achieve a much higher test accuracy with a 6 layer network.
+Let’s try their network architecture. We will use their numbers of
+layers and hidden units, but with rectified linear activation. They used
+tanh activation functions.</p>
+<pre><code class="language-julia">cmgsnet_cpu = Chain(
   Dense(28^2, 2500 , relu),
   Dense(2500, 2000 , relu),
   Dense(2000, 1500 , relu),
   Dense(1500, 1000 , relu),
   Dense(1000, 500 , relu),
-  Dense(500, 10),
-  softmax) |&gt; gpu
-loss(x, y) = crossentropy(cmgsnet(x), y)
-accuracy(x, y) = mean(onecold(cmgsnet(x)) .== onecold(y))
-evalcb = () -&gt; @show(loss(X, Y), accuracy(Xsmall,Ysmall), accuracy(tX,tY)) 
-
-println(&quot;cmgsnet has $(nparam(cmgsnet)) parameters!!!&quot;)
+  Dense(500, 10)
+  #softmax
+  ) 
+println(&quot;cmgsnet has $(nparam(cmgsnet_cpu)) parameters!!!&quot;)
 </code></pre>
 <pre><code>cmgsnet has 11972510 parameters!!!
 </code></pre>
 <p>That’s a deep network.</p>
 <pre><code class="language-julia">rerun = false
-batchsize=30000 
+batchsize=10000 
 parts=Base.Iterators.partition(1:size(X,2), batchsize) 
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
-# The full data + network doesn't fit in my GPU memory, so do 2 batches
-epochs = 20
+# The full data + network doesn't fit in my GPU memory, so do batches
+epochs = 15
 acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
+opt=ADAM()
+cmgsnet = gpu(cmgsnet_cpu)
 for e in 1:epochs
-  modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;bson&quot;,&quot;cmgsnet-$e-epochs.bson&quot;)
-  global cmgsnet 
+  modelfile = joinpath(modeldir,&quot;cmgsnet-$e-epochs.jld2&quot;)
   if rerun || !isfile(modelfile)
     println(&quot;Beginning epoch $e&quot;)
-    evalcb()
-    @show cmgsnet
-    @time Flux.train!(loss, params(cmgsnet), data, opt, cb = throttle(evalcb, 10))
-    evalcb()
+    evalcb(cmgsnet)
+    @time Flux.train!((x,y)-&gt;loss(cmgsnet,x,y),
+                      Flux.params(cmgsnet), data, opt, 
+                      cb = throttle(()-&gt;evalcb(cmgsnet), 10))
+    evalcb(cmgsnet)
 
     # save model
-    cpum = cpu(cmgsnet)
+    local cpum = cpu(cmgsnet)
     @save modelfile cpum
   else
     @load modelfile cpum
-    cmgsnet = gpu(cpum)
+    global cmgsnet = gpu(cpum)
   end
   println(&quot;Finished $e epochs&quot;)
-  losstrain[e]=Tracker.data(loss(X,Y))
-  acctrain[e]=accuracy(X, Y)
-  losstest[e]=Tracker.data(loss(tX,tY))
-  acctest[e]=accuracy(tX,tY)
+  losstrain[e]=loss(cmgsnet,X,Y)
+  acctrain[e]=accuracy(cmgsnet,Xsmall, Ysmall)
+  losstest[e]=loss(cmgsnet,tX,tY)
+  acctest[e]=accuracy(cmgsnet,tX,tY)
 end
+e = epochs
+modelfile = joinpath(modeldir,&quot;cmgsnet-$e-epochs.jld2&quot;)
+@load modelfile cpum
+cmgsnet = gpu(cpum)
 </code></pre>
 <pre><code>Finished 1 epochs
 Finished 2 epochs
@@ -627,27 +685,31 @@ Finished 12 epochs
 Finished 13 epochs
 Finished 14 epochs
 Finished 15 epochs
-Finished 16 epochs
-Finished 17 epochs
-Finished 18 epochs
-Finished 19 epochs
-Finished 20 epochs
+Chain(
+  Dense(784 =&gt; 2500, relu),             # 1_962_500 parameters
+  Dense(2500 =&gt; 2000, relu),            # 5_002_000 parameters
+  Dense(2000 =&gt; 1500, relu),            # 3_001_500 parameters
+  Dense(1500 =&gt; 1000, relu),            # 1_501_000 parameters
+  Dense(1000 =&gt; 500, relu),             # 500_500 parameters
+  Dense(500 =&gt; 10),                     # 5_010 parameters
+)                   # Total: 12 arrays, 11_972_510 parameters, 1.656 KiB.
 </code></pre>
-<p>This model achieved a testing accuracy of 98.37% after 13 training
+<p>This model achieved a testing accuracy of 98.49% after 11 training
 epochs. Each training epoch consisting of 10 passes through the data
 split into two batches, so 20 gradient descent iterations. Let’s plot
 the loss and accuracy vs epoch.</p>
-<pre><code class="language-julia">plot(
-  plot([losstrain, losstest], xscale=:log10, xlab=&quot;Epochs&quot;, title=&quot;Cross-Entropy Loss&quot;,
-       annotations=[(15, losstrain[15],
+<pre><code class="language-julia">al = Int(round(3*length(losstrain)/4))
+plot(
+  plot([losstrain, losstest], xlab=&quot;Epochs&quot;, title=&quot;Cross-Entropy Loss&quot;,
+       annotations=[(al, losstrain[al],
                      Plots.text(&quot;training&quot;, pointsize=12, valign=:bottom,
                                  color=get(cscheme,1))),
-                    (15, losstest[15],
+                    (al, losstest[al],
                      Plots.text(&quot;test&quot;, pointsize=12, valign=:bottom,
                                 color=get(cscheme,0)))], leg=false,
        color_palette=get(cscheme,[1,0])
        ),
-  plot([acctrain, acctest], xscale=:log10, xlab=&quot;Epochs&quot;, title=&quot;Accuracy&quot;,
+  plot([acctrain, acctest], xlab=&quot;Epochs&quot;, title=&quot;Accuracy&quot;,
        leg=false,
        color_palette=get(cscheme,[1,0])
        ),
@@ -667,64 +729,130 @@ very different. We know there is a model (our eyes) that can classify
 nearly perfectly. In the language of econometrics, the error term is
 zero, or there is no uncertainty, in the “true” image classification
 models.</p>
-<p>TODO: Add an aside about adversarial examples and failures to
-generalize.</p>
+<pre><code>&lt;!-- TODO: Add an aside about adversarial examples and failures to --&gt;
+</code></pre>
+<pre><code>&lt;!-- generalize.  --&gt;
+</code></pre>
 <p>Let’s look at some of the images that our model failed to classify
 correctly.</p>
-<pre><code class="language-julia">tlabels = MNIST.labels(:test)
-timgs = MNIST.images(:test)
+<pre><code class="language-julia">timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
 # predicted labels
-mlabels = cpu(onecold(cmgsnet(tX))).-1
+mlabels = cpu(vec(map(x-&gt;x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 @show mean(mlabels.==tlabels) # = accuracy
-</code></pre>
-<pre><code>mean(mlabels .== tlabels) = 0.9836
-</code></pre>
-<pre><code class="language-julia">@show sum(mlabels .!= tlabels)
-</code></pre>
-<pre><code>sum(mlabels .!= tlabels) = 164
-</code></pre>
-<pre><code class="language-julia">miss=findall(mlabels .!= tlabels)
+@show sum(mlabels .!= tlabels)
+miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;, aspect_ratio=:equal) for i in miss[1:16]]...)
 </code></pre>
+<pre><code>mean(mlabels .== tlabels) = 0.9849
+sum(mlabels .!= tlabels) = 151
+</code></pre>
 <p><img alt="" src="../figures/mlp_18_1.png" /></p>
-<p>Our model still does not have state-of-the-art accuracy. Ciresan et al.
-(<a href="#ref-ciresan2010">2010</a>) achieves 99.65% accuracy. There are
-differences in terms of activation function and gradient descent details
-between Ciresan et al. (<a href="#ref-ciresan2010">2010</a>) and the code above.
-However, I suspect that the main reason for their better performance is
-that Ciresan et al. (<a href="#ref-ciresan2010">2010</a>) generate additional
-training images. They do this by randomly rotating, stretching, and
-adding oscillations to the existing images.</p>
-<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
-<div class="references" id="refs">
-<div id="ref-qeclassify">
-<p>Batista, Quentin, Chase Coleman, Spencer Lyon, Jesse Perla, Thomas
-Sargent, Paul Schrimpf, and Natasha Watkins. 2019. “Classification.” In
-<em>QuantEcon Datascience: Introduction to Economic Modeling and Data
-Science</em>.
-<a href="https://datascience.quantecon.org/applications/classification.html">https://datascience.quantecon.org/applications/classification.html</a>.</p>
-</div>
-<div id="ref-ciresan2010">
-<p>Ciresan, Dan Claudiu, Ueli Meier, Luca Maria Gambardella, and Juergen
-Schmidhuber. 2010. “Deep Big Simple Neural Nets Excel on Handwritten
-Digit Recognition.” <a href="https://doi.org/10.1162/NECO_a_00052">https://doi.org/10.1162/NECO_a_00052</a>.</p>
-</div>
-<div id="ref-farrel2018">
-<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra. 2018. “Deep Neural
-Networks for Estimation and Inference.”
-<a href="https://arxiv.org/abs/1809.09953">https://arxiv.org/abs/1809.09953</a>.</p>
-</div>
-<div id="ref-goodfellow2016">
-<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
-Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
-</div>
-<div id="ref-klok2019">
-<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
-Julia:Fundamentals for Data Science, Machinelearning and Artificial
-Intelligence</em>. DRAFT.
-<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
-</div>
-</div></div>
+<p>Our model still does not have state-of-the-art accuracy. @ciresan2010
+achieves 99.65% accuracy. There are differences in terms of activation
+function and gradient descent details between @ciresan2010 and the code
+above. However, I suspect that the main reason for their better
+performance is that @ciresan2010 generate additional training images.
+They do this by randomly rotating, stretching, and adding oscillations
+to the existing images.</p>
+<h1 id="data-augmentation">Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permanent link">&para;</a></h1>
+<p>Generating more data from your existing data is called data
+augmentation. Let’s try augmenting the data by randomly rotating the
+images.</p>
+<pre><code class="language-julia">function rotateimage(img, θ)
+  R = similar(img)
+  R .= img[1,1]
+  i0 = (size(img,1)+1)/2
+  j0 = (size(img,2)+1)/2
+  for i ∈ axes(img)[1]
+    for j ∈ axes(img)[2]
+      ri = Int(round((i-i0)*cos(θ) + (j-j0)*sin(θ) +i0))
+      rj = Int(round(-(i-i0)*sin(θ) + (j-j0)*cos(θ) +j0))
+      if (ri ∈ axes(img)[1] &amp;&amp; rj ∈ axes(img)[2])
+        R[ri,rj] = img[i,j]
+      end
+    end
+  end
+  return R
+end
+
+plot([plot(timgs[i], axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...,
+    [plot(rotateimage(timgs[i], (-1)^i*π/6), axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...)
+</code></pre>
+<p><img alt="" src="../figures/mlp_19_1.png" /></p>
+<p>Training with rotated images.</p>
+<pre><code class="language-julia">rerun = false
+batchsize=10000 
+parts=Base.Iterators.partition(1:size(X,2), batchsize) 
+randrotate(x::AbstractVector; maxθ = π/8) = vec(rotateimage(reshape(x, 28, 28), rand()*2maxθ - maxθ))
+data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), Y[:,p]) for p in parts for i=1:10];
+
+epochs = 10
+acctest  = zeros(epochs)
+acctrain = zeros(epochs)
+losstest  = zeros(epochs)
+losstrain = zeros(epochs)
+opt=ADAM()
+cmgsnet = gpu(cmgsnet_cpu)
+for e in 1:epochs
+  modelfile = joinpath(modeldir,&quot;cmgsnet-aug-$e-epochs.jld2&quot;)
+  if rerun || !isfile(modelfile)
+    println(&quot;Beginning epoch $e&quot;)
+    evalcb(cmgsnet)
+    @time Flux.train!((x,y)-&gt;loss(cmgsnet,x,y),
+                      Flux.params(cmgsnet), data, opt, 
+                      cb = throttle(()-&gt;evalcb(cmgsnet), 10))
+    evalcb(cmgsnet)
+
+    # save model
+    local cpum = cpu(cmgsnet)
+    @save modelfile cpum
+  else
+    @load modelfile cpum
+    global cmgsnet = gpu(cpum)
+  end
+  println(&quot;Finished $e epochs&quot;)
+  losstrain[e]=loss(cmgsnet,X,Y)
+  acctrain[e]=accuracy(cmgsnet,Xsmall, Ysmall)
+  losstest[e]=loss(cmgsnet,tX,tY)
+  acctest[e]=accuracy(cmgsnet,tX,tY)
+end
+e = epochs
+modelfile = joinpath(modeldir,&quot;cmgsnet-aug-$e-epochs.jld2&quot;)
+@load modelfile cpum
+cmgsnet = gpu(cpum)
+
+@show maximum(acctest)
+</code></pre>
+<pre><code>Finished 1 epochs
+Finished 2 epochs
+Finished 3 epochs
+Finished 4 epochs
+Finished 5 epochs
+Finished 6 epochs
+Finished 7 epochs
+Finished 8 epochs
+Finished 9 epochs
+Finished 10 epochs
+maximum(acctest) = 0.9882
+0.9882
+</code></pre>
+<pre><code class="language-julia">timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
+# predicted labels
+mlabels = cpu(vec(map(x-&gt;x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
+@show mean(mlabels.==tlabels) # = accuracy
+@show sum(mlabels .!= tlabels)
+miss=findall(mlabels .!= tlabels)
+plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;, aspect_ratio=:equal) for i in miss[1:16]]...)
+</code></pre>
+<pre><code>mean(mlabels .== tlabels) = 0.9882
+sum(mlabels .!= tlabels) = 118
+</code></pre>
+<p><img alt="" src="../figures/mlp_21_1.png" /></p>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
 

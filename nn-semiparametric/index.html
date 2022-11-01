@@ -224,18 +224,16 @@ model complexity more important.</p>
 economic models that allows inference. Inference directly on the
 nonparametric function fitted by a neural network is a very difficult
 problem. There are practical methods for Bayesian variational inference
-(see Graves (<a href="#ref-graves2011">2011</a>) or Miao, Yu, and Blunsom
-(<a href="#ref-miao2016">2016</a>)), but frequentist inference is largely an open
-problem.</p>
+(see @graves2011 or @miao2016), but frequentist inference is largely an
+open problem.</p>
 <p>However, what is possible is semiparametric inference. Semiparametric
 inference refers to when we have a finite dimensional parameter of
 interest that depends on some infinite dimensional parameter. Examples
 include average (or quantiles or other summary statistic) marginal
 effects, average treatment effects, and many others.</p>
 <h1 id="double-debiased-machine-learning">Double Debiased Machine Learning<a class="headerlink" href="#double-debiased-machine-learning" title="Permanent link">&para;</a></h1>
-<p>We return to the semiparametric moment condition model of Chernozhukov,
-Chetverikov, et al. (<a href="#ref-chernozhukov2018">2018</a>) and Chernozhukov et
-al. (<a href="#ref-chernozhukov2017">2017</a>). We previously discussed this
+<p>We return to the semiparametric moment condition model of
+@chernozhukov2018 and @chernozhukov2017. We previously discussed this
 setting in <a href="../ml-intro/">ml-intro</a> and
 <a href="../ml-doubledebiased/">ml-doubledebiased</a>.</p>
 <p>The model consists of</p>
@@ -262,16 +260,15 @@ setting in <a href="../ml-intro/">ml-intro</a> and
 </li>
 <li>
 <p>Estimate $\hat{\theta}$ from the empirical moment condition with
-    $\hat{eta}$ plugged in: <script type="math/tex; mode=display">
-    \En[\psi(W;\hat{\theta},\hat{eta}) ] \approx 0 
+    $\hat{\eta}$ plugged in: <script type="math/tex; mode=display">
+    \En[\psi(W;\hat{\theta},\hat{\eta}) ] \approx 0 
     </script>
 </p>
 </li>
 </ol>
-<p>Chernozhukov, Chetverikov, et al. (<a href="#ref-chernozhukov2018">2018</a>)
-provide high level assumptions on $\hat{\eta}$ and the model that ensure
-$\hat{\theta}$ is $\sqrt{n}$ asymptotically normal.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The key needed
-assumptions are:</p>
+<p>@chernozhukov2018 provide high level assumptions on $\hat{\eta}$ and the
+model that ensure $\hat{\theta}$ is $\sqrt{n}$ asymptotically
+normal.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The key needed assumptions are:</p>
 <ol>
 <li>Linearizeable score <script type="math/tex; mode=display">
     \psi(w;\theta,\eta) = \psi^a(w;\eta) \theta + \psi^b(w;\eta) + o_p(?)
@@ -309,9 +306,8 @@ for the proof; it is not intended to be easy to interpret or to verify.
 A sufficient, but not necessary condition that implies 3 is twice
 differentiability of $\psi$ and
 $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2} = o(n^{-1/4})$.</p>
-<p>Anyway, Chernozhukov, Chetverikov, et al.
-(<a href="#ref-chernozhukov2018">2018</a>) show that under these conditions (and if
-you use sample splitting in the empirical moment condition), then <script type="math/tex; mode=display">
+<p>Anyway, @chernozhukov2018 show that under these conditions (and if you
+use sample splitting in the empirical moment condition), then <script type="math/tex; mode=display">
 \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
 \sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I) 
 </script> where <script type="math/tex; mode=display">
@@ -328,22 +324,23 @@ $\eta_0$ instead of our estimated $\hat{\eta}$.</p>
 need to verify the rate condition (assumption 2). Doing so will involve
 conditions on the class of functions being estimated, and how the
 complexity (width and depth) of the neural network increases with sample
-size. The excellent paper by Farrell, Liang, and Misra
-(<a href="#ref-farrel2018">2018</a>) provides the needed results.</p>
+size. The excellent paper by @farrel2021 (working paper @farrel2018)
+provides the needed results.</p>
 <p>Second, we need to make sure our moment conditions are Neyman
-orthogonal. Chernozhukov, Chetverikov, et al.
-(<a href="#ref-chernozhukov2018">2018</a>) and Farrell, Liang, and Misra
-(<a href="#ref-farrel2018">2018</a>) do this for some typical causal inference
-models. For other models, analytically transforming non-orthogonal
-moments into orthogonal ones is typically possible, but it can be
-tedious.</p>
-<!-- We will try to automate this. As we saw in -->
-<!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's -->
-<!-- good support for automatic differentiation will make it relatively -->
-<!-- easy to translate econometric theory to executable code.  -->
-
+orthogonal. @chernozhukov2018 and @farrel2021 do this for some typical
+causal inference models. For other models, analytically transforming
+non-orthogonal moments into orthogonal ones is typically possible, but
+it can be tedious.</p>
+<pre><code>&lt;!-- We will try to automate this. As we saw in --&gt;
+</code></pre>
+<pre><code>&lt;!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's --&gt;
+</code></pre>
+<pre><code>&lt;!-- good support for automatic differentiation will make it relatively --&gt;
+</code></pre>
+<pre><code>&lt;!-- easy to translate econometric theory to executable code.  --&gt;
+</code></pre>
 <h2 id="deep-neural-networks-for-estimation-and-inference">Deep Neural Networks for Estimation and Inference<a class="headerlink" href="#deep-neural-networks-for-estimation-and-inference" title="Permanent link">&para;</a></h2>
-<p>Review results of Farrell, Liang, and Misra (<a href="#ref-farrel2018">2018</a>).</p>
+<p>Review results of @farrel2021.</p>
 <h1 id="application-average-impulse-responses">Application: Average Impulse Responses<a class="headerlink" href="#application-average-impulse-responses" title="Permanent link">&para;</a></h1>
 <p>As an application let’s consider something like an average impulse
 response function. Suppose we have some time series data on $y_t$ and
@@ -374,13 +371,12 @@ derivative with respect to $h$ in direction $v$ is <script type="math/tex; mode=
 </script>
 </p>
 <p>We can orthogonalize the moment condition by following the concentrating
-out approach described in Chernozhukov, Chetverikov, et al.
-(<a href="#ref-chernozhukov2018">2018</a>), or in
+out approach described in @chernozhukov2018, or in
 <a href="../ml-doubledebiased/">ml-doubledebiased</a>. It would be a good exercise
 to work through the steps. Here we will simply state a resulting
 orthogonal moment condition. Let $\eta=(h, f_x)$ where $f_x$ is the
 density of $x$. Define <script type="math/tex; mode=display">
-\psi(y,x;\theta, \eta) = \theta - (h(x+\Delta) - h(x)))  - (y -
+\psi(y,x;\theta, \eta) = \theta - (h(x+\Delta) - h(x)))  + (y -
 h(x))\frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)} 
 </script>
 </p>
@@ -415,7 +411,7 @@ r = 0.99
 # unit circle lead to non-vanishing cycles in y. 
 roots = [r*exp(im*θ),   r*exp(-im*θ), 0.5]
 
-p = prod([Poly([1, -r]) for r in roots])
+p = prod([Polynomial([1, -r]) for r in roots])
 α = -real(coeffs(p))[2:end]
 function mean_y_fn(α, transform=(x)-&gt;x)
   ylag-&gt;transform(dot(ylag, α))
@@ -491,7 +487,7 @@ function fit_cdf!(model, x;
   for i in 1:maxiter
     Flux.train!(loss, Flux.params(model),
                 data, opt)
-    obj = Tracker.data(loss(X, ecdf))
+    obj = loss(X, ecdf)
     next!(p)
     (i%(maxiter ÷ 10) == 0) &amp;&amp; println(&quot;\n$i : $obj&quot;)
     if (obj &lt; bestloss)
@@ -540,7 +536,7 @@ end
 <p>To check that the code produces reasonable results, we will begin by
 just fitting the marginal distribution of $y_t$. This isn’t quite what
 we need for our impulse responses, but it is easier to visualize.</p>
-<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;cdfy.jld2&quot;)
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfy.jld2&quot;)
 rerun=false
 if isfile(modelfile) &amp;&amp; !rerun  
   @load modelfile cdfy
@@ -555,7 +551,7 @@ else
            maxiter=10000, batchsize=1000)
   # The next line converts the parameters of the model to Floats instead
   # of Tracked.
-  cdfy = cpu(Flux.mapleaves(Flux.data, cdf_model))
+  cdfy = cpu(cdf_model)
   @save modelfile cdfy
 end
 pdfy = make_pdf(cdfy, 1)
@@ -563,11 +559,20 @@ pdfy = make_pdf(cdfy, 1)
 fig=histogram(y, bins=100, normalize=:pdf)
 fig=scatter!(y, pdfy(reshape(y,1,T))[:], leg=false)
 </code></pre>
-<p><img alt="" src="../figures/nn-semiparametric_6_1.png" /></p>
+<pre><code>Error: Scalar indexing is disallowed.
+Invocation of setindex! resulted in scalar indexing of a GPU array.
+This is typically caused by calling an iterating implementation of a method
+.
+Such implementations *do not* execute on the GPU, but very slowly on the CP
+U,
+and therefore are only permitted from the REPL for prototyping purposes.
+If you did intend to index this array, annotate the caller with @allowscala
+r.
+</code></pre>
 <p>The estimated pdf looks pretty good.</p>
 <p>We will estimate the joint cdf and pdf similarly.</p>
 <pre><code class="language-julia">rerun=false
-modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;cdfx.jld2&quot;)
+modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfx.jld2&quot;)
 if isfile(modelfile) &amp;&amp; !rerun  
   @load modelfile cdfx
 else
@@ -586,12 +591,18 @@ else
 end
 pdfx = make_pdf(cdfx, size(x,1))
 @show sum(pdfx(x).&lt;0)
+histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(x)&quot;)
 </code></pre>
-<pre><code>sum(pdfx(x) .&lt; 0) = 32
+<pre><code>Error: Scalar indexing is disallowed.
+Invocation of getindex resulted in scalar indexing of a GPU array.
+This is typically caused by calling an iterating implementation of a method
+.
+Such implementations *do not* execute on the GPU, but very slowly on the CP
+U,
+and therefore are only permitted from the REPL for prototyping purposes.
+If you did intend to index this array, annotate the caller with @allowscala
+r.
 </code></pre>
-<pre><code class="language-julia">histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(x)&quot;)
-</code></pre>
-<p><img alt="" src="../figures/nn-semiparametric_7_1.png" /></p>
 <p>Despite the penalty, our estimated pdf is sometimes negative.
 Fortunately, it doesn’t happen to often.</p>
 <p>It’s hard to visualize the estimated trivariate pdf, but we can plot the
@@ -605,7 +616,8 @@ px1=pdf1(vcat(x[1,:]', maximum(y)*ones(2, 998)))
 histogram(x[1,:], bins=100, normalize=:pdf)
 scatter!(x[1,:], px1[:], leg=false)
 </code></pre>
-<p><img alt="" src="../figures/nn-semiparametric_8_1.png" /></p>
+<pre><code>Error: UndefVarError: cdfx not defined
+</code></pre>
 <p>The marginal pdf implied by the joint cdf looks pretty good.</p>
 <p>Note, however, that to get this result, I had to specify a fairly
 complex network, which took around 20 minutes to fit. There are many
@@ -625,7 +637,7 @@ given $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.</p>
   for i in 1:maxiter
     Flux.train!(loss, Flux.params(model),
                 data, opt)
-    obj = Tracker.data(loss(x,y))
+    obj = loss(x,y)
     next!(p)
     (i%(maxiter ÷ 10) == 0) &amp;&amp; println(&quot;\n$i : $obj&quot;)
     if (obj &lt; bestloss)
@@ -644,7 +656,7 @@ R = 12 # how many periods ahead to fit
 Y = copy(reduce(hcat,[y[(L+r):(end-R+r)] for r in 1:R])')
 X = x[:,1:(end-R)]
 
-modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;ce.jld2&quot;)
+modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;ce.jld2&quot;)
 rerun=false
 if !isfile(modelfile) || rerun
   ce_model = Chain(Dense(size(X,1), 8, relu),
@@ -658,14 +670,31 @@ end
 @load modelfile cpum
 ce_model = gpu(cpum)
 
-μhat(x) = let m=cpu(Flux.mapleaves(Flux.data, ce_model))
+μhat(x) = let m=cpu(ce_model)
   m(x)
 end
 μhat(x::AbstractVector) = let m=cpu(Flux.mapleaves(Flux.data, ce_model))
   eltype(x)(m(x)[1])
 end
 </code></pre>
-<pre><code>μhat (generic function with 2 methods)
+<pre><code>bestloss = loss(x, y) + 1 = 2.9970849f0
+
+2000 : 1.6363429
+
+4000 : 1.619115
+
+6000 : 1.6138682
+
+8000 : 1.612884
+
+10000 : 1.6124394
+
+12000 : 1.6119322
+
+14000 : 1.6117342
+
+16000 : 1.6112732
+μhat (generic function with 2 methods)
 </code></pre>
 <p>Finally, we can calculate the orthogonalized impulse responses. As
 stated above, these are given by <script type="math/tex; mode=display">
@@ -684,6 +713,8 @@ idx = Int.(findall((c[1] .&lt;= lx) .&amp; (lx .&lt;= c[2])))
 θi = μhat(X .+ [Δ; 0; 0])  .- μhat(X) .+ (Y .- μhat(X)).*ℓ(X)
 #θi = θi[:,idx]
 </code></pre>
+<pre><code>Error: UndefVarError: pdfx not defined
+</code></pre>
 <p>and plot it</p>
 <pre><code class="language-julia">plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
 plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
@@ -693,7 +724,8 @@ plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Rep
 plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green)
 </code></pre>
-<p><img alt="" src="../figures/nn-semiparametric_11_1.png" /></p>
+<pre><code>Error: UndefVarError: θi not defined
+</code></pre>
 <p>The true average impulse response is in blue. The uncorrected estimate
 is in orange. The orthogonalized estimate is in green.</p>
 <p>Depending on the luck of RNG, and how well I have chosen the network
@@ -709,7 +741,7 @@ average. Computing standard errors for sample averages is
 straightforward. Since this data is dependent, we will use a HAC
 estimator for the variance.</p>
 <pre><code class="language-julia">using Distributions
-using CovarianceMatrices # I think need dev version for now
+using CovarianceMatrices # need dev version
 k = BartlettKernel{NeweyWest}()
 Σ = lrvar(k, θi', prewhite=true)
 
@@ -722,18 +754,19 @@ plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green,
       ribbon=sqrt.(diag(Σ)/size(θi,2))*quantile.(Normal(), [0.05, 0.95])' )
 </code></pre>
-<p><img alt="" src="../figures/nn-semiparametric_12_1.png" /></p>
+<pre><code>Error: UndefVarError: θi not defined
+</code></pre>
 <p>The plot now has 90% pointwise confidence bands around the
 orthogonalized estimates.</p>
 <h1 id="automating-orthogonalization">Automating Orthogonalization<a class="headerlink" href="#automating-orthogonalization" title="Permanent link">&para;</a></h1>
 <p>A downside of the above approach is it requires an orthogonal moment
 conditioon for each parameter of interest. Analytic orthogonalization is
 labor intensive, error prone, and may not even be possible in some
-cases. Chernozhukov et al. (<a href="#ref-ceinr2016">2016</a>) review some
-techniques for constructing orthogonal moments.</p>
-<p>Chernozhukov, Newey, et al. (<a href="#ref-cnr2018">2018</a>) have a mathematically
-elegant method for automatically constructing orthogonal moments. The
-focus on estimators that are linear in their nonparametric component. <script type="math/tex; mode=display">
+cases. @ceinr2016 review some techniques for constructing orthogonal
+moments.</p>
+<p>@cnr2018 have a mathematically elegant method for automatically
+constructing orthogonal moments. The focus on estimators that are linear
+in their nonparametric component. <script type="math/tex; mode=display">
 \theta_0 = \Er[m(x,\gamma_0(x))]
 </script> where $\gamma(x)$ is an estimate of $\Er[y|x]$, $m()$ is a known
 function, $m$ is linear in $\gamma$, and $\theta \in \R$. If we focus on
@@ -765,63 +798,17 @@ given architecture). Then estimate $\gamma$ as above <script type="math/tex; mod
 </script> Estimate $\alpha$ by solving <script type="math/tex; mode=display">
 \hat{\alpha} = \argmin_{\alpha \in V_n} \sup_{\gamma \in V_n} 
 \left(\En[m(x,\gamma(x))] - \En[\alpha(x) \gamma(x)] \right)^2
-</script> Chernozhukov, Newey, et al. (<a href="#ref-cnr2018">2018</a>) work with $V_n$
-that are linear in parameters, which helps simplify the estimation of
-$\alpha$. A practical and efficient method for estimating $\alpha$ with
-neural networks would require some thought.</p>
+</script> @cnr2018 work with $V_n$ that are linear in parameters, which helps
+simplify the estimation of $\alpha$. A practical and efficient method
+for estimating $\alpha$ with neural networks would require some thought.</p>
 <p>Finally, plug-in the estimates of $\gamma$ and $\alpha$ and take an
 average to compute $\hat{\theta}$.</p>
-<div class="references" id="refs">
-<div id="ref-chernozhukov2017">
-<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
-Christian Hansen, and Whitney Newey. 2017. “Double/Debiased/Neyman
-Machine Learning of Treatment Effects.” <em>American Economic Review</em> 107
-(5): 261–65. <a href="https://doi.org/10.1257/aer.p20171038">https://doi.org/10.1257/aer.p20171038</a>.</p>
-</div>
-<div id="ref-chernozhukov2018">
-<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
-Christian Hansen, Whitney Newey, and James Robins. 2018.
-“Double/Debiased Machine Learning for Treatment and Structural
-Parameters.” <em>The Econometrics Journal</em> 21 (1): C1–C68.
-<a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.</p>
-</div>
-<div id="ref-ceinr2016">
-<p>Chernozhukov, Victor, Juan Carlos Escanciano, Hidehiko Ichimura, Whitney
-K. Newey, and James M. Robins. 2016. “Locally Robust Semiparametric
-Estimation.” <a href="https://arxiv.org/pdf/1608.00033.pdf">https://arxiv.org/pdf/1608.00033.pdf</a>.</p>
-</div>
-<div id="ref-cnr2018">
-<p>Chernozhukov, Victor, Whitney Newey, James Robins, and Rahul Singh.
-2018. “Double/de-Biased Machine Learning of Global and Local Parameters
-Using Regularized Riesz Representers.”
-<a href="https://arxiv.org/abs/1802.08667">https://arxiv.org/abs/1802.08667</a>.</p>
-</div>
-<div id="ref-farrel2018">
-<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra. 2018. “Deep Neural
-Networks for Estimation and Inference.”
-<a href="https://arxiv.org/abs/1809.09953">https://arxiv.org/abs/1809.09953</a>.</p>
-</div>
-<div id="ref-graves2011">
-<p>Graves, Alex. 2011. “Practical Variational Inference for Neural
-Networks.” In <em>Advances in Neural Information Processing Systems 24</em>,
-edited by J. Shawe-Taylor, R. S. Zemel, P. L. Bartlett, F. Pereira, and
-K. Q. Weinberger, 2348–56. Curran Associates, Inc.
-<a href="http://papers.nips.cc/paper/4329-practical-variational-inference-for-neural-networks.pdf">http://papers.nips.cc/paper/4329-practical-variational-inference-for-neural-networks.pdf</a>.</p>
-</div>
-<div id="ref-miao2016">
-<p>Miao, Yishu, Lei Yu, and Phil Blunsom. 2016. “Neural Variational
-Inference for Text Processing.” In <em>International Conference on Machine
-Learning</em>, 1727–36.
-<a href="http://www.jmlr.org/proceedings/papers/v48/miao16.pdf">http://www.jmlr.org/proceedings/papers/v48/miao16.pdf</a>.</p>
-</div>
-</div>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p>Chernozhukov, Chetverikov, et al. (<a href="#ref-chernozhukov2018">2018</a>)
-also give low level conditions on lasso estimates of $\hat{eta}$
-that meet the high level assumptions.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>@chernozhukov2018 also give low level conditions on lasso
+estimates of $\hat{eta}$ that meet the high level assumptions.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

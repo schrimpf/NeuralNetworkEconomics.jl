@@ -1,0 +1,18 @@
+pre code {
+    white-space: pre;
+}
+
+.navbar {
+    font-size: 12px;
+    min-height: 6px;
+    margin-bottom: 10px;
+}
+
+.navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.notes {
+    background : beige;
+}

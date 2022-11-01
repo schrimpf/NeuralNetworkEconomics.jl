@@ -185,7 +185,7 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references-references" class="nav-link">References [references]</a>
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -194,6 +194,10 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
+<p>title : “Introduction to Neural Networks” subtitle : “Single Layer
+Perceptrons” author : Paul Schrimpf date : 2022-10-26 bibliography:
+“../ml.bib” options: out_width : 100% wrap : true fig_width : 8 dpi :
+192 —</p>
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
 4.0 International
@@ -231,14 +235,12 @@ We will not have Knet examples here, but the documentation for Knet is
 excellent and worth reading even if you plan to use Flux.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Goodfellow, Bengio, and Courville (<a href="#ref-goodfellow2016">2016</a>)
-    <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
+<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
     documentation</a>
     especially the textbook</li>
-<li>Klok and Nazarathy (<a href="#ref-klok2019">2019</a>) <em>Statistics with
-    Julia:Fundamentals for Data Science, MachineLearning and Artificial
-    Intelligence</em></li>
+<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+    MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="single-layer-neural-networks">Single Layer Neural Networks<a class="headerlink" href="#single-layer-neural-networks" title="Permanent link">&para;</a></h1>
 <p>We will describe neural networks from a perspective of nonparametric
@@ -272,23 +274,24 @@ functions $\mathcal{F}$,</p>
 f(x) - \sum_{j=1}^r \beta_j \psi(w_j'x+b_j) \Vert = 0
 </script>
 </p>
-<p>Hornik, Stinchcombe, and White (<a href="#ref-hornik1989">1989</a>) contains one of
-the earliest results along these lines. Some introductory texts mention
-the universal approximation theorem as though it is something special
-for neural networks. This is incorrect. In particular, the universal
-approximation theorem does not explain why neural networks seem to be
-unusually good at prediction. Most nonparametric estimation methods
-(kernel, series, forests, etc) satisfy a similar conditions.</p>
+<p>@hornik1989 contains one of the earliest results along these lines. Some
+introductory texts mention the universal approximation theorem as though
+it is something special for neural networks. This is incorrect. In
+particular, the universal approximation theorem does not explain why
+neural networks seem to be unusually good at prediction. Most
+nonparametric estimation methods (kernel, series, forests, etc) are
+universal approximators.</p>
 <h1 id="training">Training<a class="headerlink" href="#training" title="Permanent link">&para;</a></h1>
 <p>Models in <code>Flux.jl</code> all involve a differentiable loss function. The loss
 function is minimized by a variant of gradient descent. Gradients are
 usually calculated using reverse automatic differentiation
-(backpropagation is a variant of reverse automatic differentiation
-specialized for the structue of neural networks).</p>
+(backpropagation usually refers to a variant of reverse automatic
+differentiation specialized for the structue of neural networks).</p>
 <h2 id="low-level">Low level<a class="headerlink" href="#low-level" title="Permanent link">&para;</a></h2>
 <p>A low level way to use <code>Flux.jl</code> is to write your loss function as a
 typical Julia function, as in the following code block.</p>
 <pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
+Plots.pyplot()
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
@@ -300,15 +303,13 @@ end
 &quot;&quot;&quot;
    slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1 )
 
-Construct a single layer perception with width `r`. 
+Construct a single layer perceptron with width `r`.
 &quot;&quot;&quot;
 function slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1)
-  # Parameters to be minimized wrt have to be declared for tracking
-  # for reverse mode autodiff.
-  w = param(randn(dimx,r))
-  b = param(randn(1,r))
-  β = param(randn(r))
-  θ = Tracker.Params([β, w, b])
+  w = randn(dimx,r)
+  b = randn(1,r)
+  β = randn(r)
+  θ = (β, w, b)
   pred(x) = activation(x*w.+b)*β
   loss(x,y) = mean((y.-pred(x)).^2)
   return(θ=θ, predict=pred,loss=loss)
@@ -321,16 +322,17 @@ cscheme = colorschemes[:BrBG_4];
 <pre><code class="language-julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
   m = slp(rs[r])
-  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;)
+  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
+  maxiter =10000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!(m.loss, m.θ, [(x, y)], Flux.AMSGrad())
+    Flux.train!(m.loss, Flux.params(m.θ), [(x, y)], opt)
     if (i % (maxiter ÷ 5))==0
-      l=Tracker.data(m.loss(x,y))
+      l=m.loss(x,y)
       println(&quot;$i iteration, loss=$l&quot;)
       loc=Int64.(ceil(length(xg)*i/maxiter))
-      yg = Tracker.data(m.predict(xg))
+      yg = m.predict(xg)
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
                                  Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
@@ -341,49 +343,55 @@ for r in eachindex(rs)
   display(figs[r])
 end
 </code></pre>
-<pre><code>1000 iteration, loss=0.31287991801131293
-2000 iteration, loss=0.27919155814182034
-3000 iteration, loss=0.2664744507386843
-4000 iteration, loss=0.2591087144969681
-5000 iteration, loss=0.25554768594103433
- 11.095482 seconds (26.86 M allocations: 2.326 GiB, 10.62% gc time)
-1000 iteration, loss=0.29291415192156256
-2000 iteration, loss=0.27347375110635963
-3000 iteration, loss=0.2662186901730016
-4000 iteration, loss=0.2620060980850178
-5000 iteration, loss=0.2588918831520079
-  1.919737 seconds (2.37 M allocations: 1.422 GiB, 13.19% gc time)
-1000 iteration, loss=0.310489528030217
-2000 iteration, loss=0.27693567372683353
-3000 iteration, loss=0.26807096969551036
-4000 iteration, loss=0.2643358828827099
-5000 iteration, loss=0.26195455598373163
-  2.699893 seconds (2.37 M allocations: 2.094 GiB, 13.17% gc time)
-1000 iteration, loss=0.2918806449645754
-2000 iteration, loss=0.2762274337725736
-3000 iteration, loss=0.2680434574226006
-4000 iteration, loss=0.26297845594471586
-5000 iteration, loss=0.2597747862202985
-  3.465996 seconds (2.37 M allocations: 2.767 GiB, 12.57% gc time)
-1000 iteration, loss=0.3077135211105479
-2000 iteration, loss=0.29601847497562433
-3000 iteration, loss=0.2840659467916058
-4000 iteration, loss=0.27586835422190475
-5000 iteration, loss=0.27057958564677087
-  4.163962 seconds (2.37 M allocations: 3.439 GiB, 12.89% gc time)
+<pre><code>2000 iteration, loss=0.3405142038402073
+4000 iteration, loss=0.33552969213957157
+6000 iteration, loss=0.33263063834748496
+8000 iteration, loss=0.3303343377296417
+10000 iteration, loss=0.32833621051213213
+ 22.895320 seconds (51.73 M allocations: 5.212 GiB, 5.46% gc time, 93.89% c
+ompilation time: 0% of which was recompilation)
+2000 iteration, loss=0.35399266958055403
+4000 iteration, loss=0.34077986211780475
+6000 iteration, loss=0.3259152282301329
+8000 iteration, loss=0.30701320911893115
+10000 iteration, loss=0.29099465531335306
+  1.764655 seconds (1.10 M allocations: 3.618 GiB, 16.74% gc time)
+2000 iteration, loss=0.32892873167848485
+4000 iteration, loss=0.32117882869952624
+6000 iteration, loss=0.31348077709061195
+8000 iteration, loss=0.3067674497382727
+10000 iteration, loss=0.30100306677644906
+  2.493379 seconds (1.10 M allocations: 5.556 GiB, 12.84% gc time)
+2000 iteration, loss=0.3247974269523997
+4000 iteration, loss=0.31460859502991617
+6000 iteration, loss=0.30357284472870355
+8000 iteration, loss=0.2929744877719111
+10000 iteration, loss=0.28363628400313395
+  3.376675 seconds (1.10 M allocations: 7.494 GiB, 11.90% gc time)
+2000 iteration, loss=0.32621573583078617
+4000 iteration, loss=0.32224686212399345
+6000 iteration, loss=0.31807348551768655
+8000 iteration, loss=0.31339512856725193
+10000 iteration, loss=0.30859356012706485
+  3.905210 seconds (1.10 M allocations: 9.432 GiB, 12.03% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_3_1.png" /> <img alt="" src="../figures/slp_3_2.png" />
 <img alt="" src="../figures/slp_3_3.png" /> <img alt="" src="../figures/slp_3_4.png" />
 <img alt="" src="../figures/slp_3_5.png" /></p>
-<p>Notice how even though a wider network can approximate $f$ better, wider
-networks also take more training iterations to minimize the loss. This
-is typical of any minimization algorithm — the number of iterations
-increases with the problem size.</p>
 <p>Each invocation of <code>Flux.train!</code> completes one iteration of gradient
 descent. As you might guess from this API, it is common to train neural
 networks for a fixed number of iterations instead of until convergence
 to a local minimum. The number of training iterations can act as a
 regularization parameter.</p>
+<p>Notice how even though a wider network can approximate $f$ better, wider
+networks also take more training iterations to minimize the loss. This
+is typical of any minimization algorithm — the number of iterations
+increases with the problem size.</p>
+<p>You may notice that the MSE does not (weakly) decrease with network
+size. (Or not—both the data and initial values are drawn randomly, and
+results may vary.) This reflects a problem in the minimization. Care
+must be used when choosing a minimization algorithm and initial values.
+We will see more of this below.</p>
 <h2 id="chain-interface">Chain interface<a class="headerlink" href="#chain-interface" title="Permanent link">&para;</a></h2>
 <p><code>Flux.jl</code> also contains some higher level functions for creating loss
 functions for neural networks. Here is the same network as in the
@@ -395,18 +403,20 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
   l = rs[r]
-  m = Chain(x-&gt;Flux.normalise(x, dims=2), Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  m = Chain(x-&gt;Flux.normalise(x, dims=2),
+            Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
   figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 3000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
-      yg = Tracker.data(m(xg'))'
+      yg = (m(xg'))'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -418,41 +428,42 @@ for r in eachindex(rs)
   display(figs[r])
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=0.9574206
-2 units, 600 iterations, loss=0.30447912
-2 units, 1200 iterations, loss=0.2659822
-2 units, 1800 iterations, loss=0.25434485
-2 units, 2400 iterations, loss=0.25087446
-2 units, 3000 iterations, loss=0.24971141
-  6.771462 seconds (17.30 M allocations: 1.101 GiB, 10.32% gc time)
-3 units, 1 iterations, loss=0.825582
-3 units, 600 iterations, loss=0.28322142
-3 units, 1200 iterations, loss=0.2600006
-3 units, 1800 iterations, loss=0.25268567
-3 units, 2400 iterations, loss=0.25033832
-3 units, 3000 iterations, loss=0.24962674
-  1.279441 seconds (1.62 M allocations: 382.235 MiB, 6.08% gc time)
-5 units, 1 iterations, loss=0.9207832
-5 units, 600 iterations, loss=0.293824
-5 units, 1200 iterations, loss=0.264771
-5 units, 1800 iterations, loss=0.25713927
-5 units, 2400 iterations, loss=0.25334862
-5 units, 3000 iterations, loss=0.25147322
-  1.590898 seconds (1.63 M allocations: 496.933 MiB, 6.20% gc time)
-7 units, 1 iterations, loss=1.5818428
-7 units, 600 iterations, loss=0.30069882
-7 units, 1200 iterations, loss=0.26719385
-7 units, 1800 iterations, loss=0.25823155
-7 units, 2400 iterations, loss=0.2537658
-7 units, 3000 iterations, loss=0.2517068
-  1.867614 seconds (1.63 M allocations: 611.906 MiB, 6.23% gc time)
-9 units, 1 iterations, loss=0.5171113
-9 units, 600 iterations, loss=0.28988507
-9 units, 1200 iterations, loss=0.2667996
-9 units, 1800 iterations, loss=0.26013446
-9 units, 2400 iterations, loss=0.25565305
-9 units, 3000 iterations, loss=0.25305483
-  2.025408 seconds (1.63 M allocations: 727.292 MiB, 5.97% gc time)
+<pre><code>2 units, 1 iterations, loss=2.5216475
+2 units, 600 iterations, loss=0.3886186
+2 units, 1200 iterations, loss=0.32459968
+2 units, 1800 iterations, loss=0.3043197
+2 units, 2400 iterations, loss=0.29600164
+2 units, 3000 iterations, loss=0.29112598
+ 13.571872 seconds (31.20 M allocations: 1.895 GiB, 5.29% gc time, 95.37% c
+ompilation time)
+3 units, 1 iterations, loss=0.6752813
+3 units, 600 iterations, loss=0.31196
+3 units, 1200 iterations, loss=0.3035535
+3 units, 1800 iterations, loss=0.2956239
+3 units, 2400 iterations, loss=0.2885932
+3 units, 3000 iterations, loss=0.2825464
+  0.565220 seconds (588.54 k allocations: 450.978 MiB, 5.18% gc time)
+5 units, 1 iterations, loss=0.4086862
+5 units, 600 iterations, loss=0.31104246
+5 units, 1200 iterations, loss=0.289784
+5 units, 1800 iterations, loss=0.273983
+5 units, 2400 iterations, loss=0.26490602
+5 units, 3000 iterations, loss=0.2597258
+  0.701387 seconds (603.56 k allocations: 564.423 MiB, 8.87% gc time)
+7 units, 1 iterations, loss=0.44023964
+7 units, 600 iterations, loss=0.3229971
+7 units, 1200 iterations, loss=0.30812788
+7 units, 1800 iterations, loss=0.28997898
+7 units, 2400 iterations, loss=0.2764376
+7 units, 3000 iterations, loss=0.26902887
+  0.830093 seconds (603.57 k allocations: 679.150 MiB, 7.33% gc time)
+9 units, 1 iterations, loss=0.4743434
+9 units, 600 iterations, loss=0.3255296
+9 units, 1200 iterations, loss=0.31679815
+9 units, 1800 iterations, loss=0.30230075
+9 units, 2400 iterations, loss=0.28530028
+9 units, 3000 iterations, loss=0.2729724
+  0.855554 seconds (603.57 k allocations: 793.740 MiB, 6.68% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
 <img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
@@ -474,9 +485,9 @@ activation are shown below.</p>
 activation, but $w&rsquo;x$ is small enough that $\psi(w&rsquo;x + b)$ is
 approximately linear. This will make it initially difficult to
 distinguish $\beta \psi&rsquo;$ from $w$,</p>
-<p>We can improve the fit by choosing initial values even more carefully.
-The following code choses initial $w$ and $b$ to make sure the
-activation functions vary nonlinearly in the support of $x$. The initial
+<p>We can improve the fit by choosing initial values more carefully. The
+following code choses initial $w$ and $b$ to make sure the activation
+functions vary nonlinearly in the support of $x$. The initial
 activations functions are plotted below.</p>
 <pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -487,25 +498,26 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, l, Flux.σ), Dense(rs[r], 1))
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
-  # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
+  # adjust initial intercepts to be in the support of w*x
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1](xg'))', lab=&quot;&quot;, legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1](xg')', lab=&quot;&quot;, legend=false)
   figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 3000
+  maxiter = 5000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
     #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -515,44 +527,44 @@ for r in eachindex(rs)
     end
   end
 end
+nothing
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=0.32728884
-2 units, 600 iterations, loss=0.26378527
-2 units, 1200 iterations, loss=0.26310408
-2 units, 1800 iterations, loss=0.26202366
-2 units, 2400 iterations, loss=0.25056323
-2 units, 3000 iterations, loss=0.24954805
-  1.160733 seconds (1.63 M allocations: 314.262 MiB, 8.18% gc time)
-3 units, 1 iterations, loss=0.26246357
-3 units, 600 iterations, loss=0.24973491
-3 units, 1200 iterations, loss=0.24814619
-3 units, 1800 iterations, loss=0.24734117
-3 units, 2400 iterations, loss=0.24683838
-3 units, 3000 iterations, loss=0.24648328
-  1.260519 seconds (1.55 M allocations: 367.629 MiB, 7.17% gc time)
-5 units, 1 iterations, loss=0.25790077
-5 units, 600 iterations, loss=0.24976541
-5 units, 1200 iterations, loss=0.24819629
-5 units, 1800 iterations, loss=0.2473083
-5 units, 2400 iterations, loss=0.24671915
-5 units, 3000 iterations, loss=0.24627346
-  1.556834 seconds (1.56 M allocations: 482.326 MiB, 7.14% gc time)
-7 units, 1 iterations, loss=0.2515118
-7 units, 600 iterations, loss=0.24660046
-7 units, 1200 iterations, loss=0.24575815
-7 units, 1800 iterations, loss=0.24524012
-7 units, 2400 iterations, loss=0.24487147
-7 units, 3000 iterations, loss=0.24458885
-  1.885652 seconds (1.56 M allocations: 597.300 MiB, 7.07% gc time)
-9 units, 1 iterations, loss=0.24346104
-9 units, 600 iterations, loss=0.24281342
-9 units, 1200 iterations, loss=0.24277252
-9 units, 1800 iterations, loss=0.24274462
-9 units, 2400 iterations, loss=0.24272026
-9 units, 3000 iterations, loss=0.24269772
-  2.165591 seconds (1.56 M allocations: 712.686 MiB, 7.15% gc time)
-</code></pre>
-<pre><code class="language-julia">nothing
+<pre><code>2 units, 1 iterations, loss=0.5088957
+2 units, 1000 iterations, loss=0.25412744
+2 units, 2000 iterations, loss=0.2530693
+2 units, 3000 iterations, loss=0.2524892
+2 units, 4000 iterations, loss=0.2521191
+2 units, 5000 iterations, loss=0.2518584
+  0.894042 seconds (1.09 M allocations: 490.553 MiB, 10.94% gc time, 31.56%
+ compilation time)
+3 units, 1 iterations, loss=0.35247248
+3 units, 1000 iterations, loss=0.24518688
+3 units, 2000 iterations, loss=0.24173486
+3 units, 3000 iterations, loss=0.23994897
+3 units, 4000 iterations, loss=0.23872398
+3 units, 5000 iterations, loss=0.23777618
+  0.662445 seconds (505.33 k allocations: 556.257 MiB, 7.84% gc time)
+5 units, 1 iterations, loss=0.39041007
+5 units, 1000 iterations, loss=0.24249096
+5 units, 2000 iterations, loss=0.24118099
+5 units, 3000 iterations, loss=0.24024814
+5 units, 4000 iterations, loss=0.23951007
+5 units, 5000 iterations, loss=0.23890525
+  0.818795 seconds (530.34 k allocations: 745.233 MiB, 7.52% gc time)
+7 units, 1 iterations, loss=0.57222635
+7 units, 1000 iterations, loss=0.24171682
+7 units, 2000 iterations, loss=0.23901226
+7 units, 3000 iterations, loss=0.23800443
+7 units, 4000 iterations, loss=0.23746149
+7 units, 5000 iterations, loss=0.23709208
+  0.967961 seconds (530.35 k allocations: 936.345 MiB, 6.01% gc time)
+9 units, 1 iterations, loss=0.392334
+9 units, 1000 iterations, loss=0.23291235
+9 units, 2000 iterations, loss=0.23255312
+9 units, 3000 iterations, loss=0.23236102
+9 units, 4000 iterations, loss=0.23223025
+9 units, 5000 iterations, loss=0.2321317
+  1.159668 seconds (530.35 k allocations: 1.101 GiB, 6.74% gc time)
 </code></pre>
 <pre><code class="language-julia">display(plot(initmfigs..., legend=false))
 </code></pre>
@@ -565,6 +577,8 @@ end
 <p><img alt="" src="../figures/slp_8_1.png" /> <img alt="" src="../figures/slp_8_2.png" />
 <img alt="" src="../figures/slp_8_3.png" /> <img alt="" src="../figures/slp_8_4.png" />
 <img alt="" src="../figures/slp_8_5.png" /></p>
+<p>We can see that the training is now much more successful. Choosing
+initial values carefully was very helpful.</p>
 <h2 id="rectified-linear">Rectified linear<a class="headerlink" href="#rectified-linear" title="Permanent link">&para;</a></h2>
 <p>Large applications of neural networks often use rectified linear
 activation for efficiency. Let’s see how the same example behaves with
@@ -575,25 +589,26 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
-  # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
+  # adjust initial intercepts to be in the support of w*x
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
   figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 3000
+  maxiter = 5000
+  opt=Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], Flux.AMSGrad() ) #,
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -603,54 +618,52 @@ for r in eachindex(rs)
     end
   end
 end
-</code></pre>
-<pre><code>2 units, 1 iterations, loss=0.39443994
-2 units, 600 iterations, loss=0.31757522
-2 units, 1200 iterations, loss=0.31293875
-2 units, 1800 iterations, loss=0.3128002
-2 units, 2400 iterations, loss=0.31272814
-2 units, 3000 iterations, loss=0.31268603
-  1.505653 seconds (3.06 M allocations: 386.479 MiB, 9.57% gc time)
-3 units, 1 iterations, loss=0.31972623
-3 units, 600 iterations, loss=0.29133326
-3 units, 1200 iterations, loss=0.27709955
-3 units, 1800 iterations, loss=0.27327424
-3 units, 2400 iterations, loss=0.27085584
-3 units, 3000 iterations, loss=0.2697004
-  1.014758 seconds (1.54 M allocations: 367.492 MiB, 9.31% gc time)
-5 units, 1 iterations, loss=0.2658342
-5 units, 600 iterations, loss=0.26712254
-5 units, 1200 iterations, loss=0.26643205
-5 units, 1800 iterations, loss=0.26587254
-5 units, 2400 iterations, loss=0.26543647
-5 units, 3000 iterations, loss=0.26504025
-  1.130329 seconds (1.55 M allocations: 482.189 MiB, 10.40% gc time)
-7 units, 1 iterations, loss=0.24869746
-7 units, 600 iterations, loss=0.24956109
-7 units, 1200 iterations, loss=0.24936324
-7 units, 1800 iterations, loss=0.24914628
-7 units, 2400 iterations, loss=0.24899112
-7 units, 3000 iterations, loss=0.24890159
-  1.453316 seconds (1.55 M allocations: 597.162 MiB, 22.52% gc time)
-9 units, 1 iterations, loss=0.26039335
-9 units, 600 iterations, loss=0.24953708
-9 units, 1200 iterations, loss=0.24872662
-9 units, 1800 iterations, loss=0.24806042
-9 units, 2400 iterations, loss=0.24774258
-9 units, 3000 iterations, loss=0.24747035
-  1.147302 seconds (1.55 M allocations: 712.548 MiB, 11.40% gc time)
-</code></pre>
-<pre><code class="language-julia">display(plot(initmfigs..., legend=false) )
-</code></pre>
-<p><img alt="" src="../figures/slp_9_1.png" /></p>
-<pre><code class="language-julia">
+display(plot(initmfigs..., legend=false) )
+
 for f in figs
   display(f)
 end
 </code></pre>
-<p><img alt="" src="../figures/slp_9_2.png" /> <img alt="" src="../figures/slp_9_3.png" />
-<img alt="" src="../figures/slp_9_4.png" /> <img alt="" src="../figures/slp_9_5.png" />
-<img alt="" src="../figures/slp_9_6.png" /></p>
+<pre><code>2 units, 1 iterations, loss=30.522676
+2 units, 1000 iterations, loss=0.9456938
+2 units, 2000 iterations, loss=0.42380863
+2 units, 3000 iterations, loss=0.3524633
+2 units, 4000 iterations, loss=0.34044683
+2 units, 5000 iterations, loss=0.3378198
+  1.222094 seconds (2.62 M allocations: 563.706 MiB, 12.49% gc time, 56.41%
+ compilation time)
+3 units, 1 iterations, loss=53.149567
+3 units, 1000 iterations, loss=1.0380532
+3 units, 2000 iterations, loss=0.4694478
+3 units, 3000 iterations, loss=0.37148407
+3 units, 4000 iterations, loss=0.34802124
+3 units, 5000 iterations, loss=0.33944148
+  0.501871 seconds (505.33 k allocations: 555.647 MiB, 11.64% gc time)
+5 units, 1 iterations, loss=5.7734737
+5 units, 1000 iterations, loss=0.97030234
+5 units, 2000 iterations, loss=0.577969
+5 units, 3000 iterations, loss=0.42891812
+5 units, 4000 iterations, loss=0.35565048
+5 units, 5000 iterations, loss=0.31378043
+  0.554351 seconds (530.34 k allocations: 744.622 MiB, 8.81% gc time)
+7 units, 1 iterations, loss=1.5370082
+7 units, 1000 iterations, loss=0.26730484
+7 units, 2000 iterations, loss=0.24225095
+7 units, 3000 iterations, loss=0.23697637
+7 units, 4000 iterations, loss=0.2352991
+7 units, 5000 iterations, loss=0.23449303
+  0.644525 seconds (530.35 k allocations: 935.735 MiB, 8.77% gc time)
+9 units, 1 iterations, loss=62.44543
+9 units, 1000 iterations, loss=0.2529448
+9 units, 2000 iterations, loss=0.2506077
+9 units, 3000 iterations, loss=0.2489944
+9 units, 4000 iterations, loss=0.24789973
+9 units, 5000 iterations, loss=0.2470229
+  0.712341 seconds (530.35 k allocations: 1.100 GiB, 10.07% gc time)
+</code></pre>
+<p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
+<img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
+<img alt="" src="../figures/slp_9_5.png" /> <img alt="" src="../figures/slp_9_6.png" /></p>
 <h2 id="stochastic-gradient-descent">Stochastic Gradient descent<a class="headerlink" href="#stochastic-gradient-descent" title="Permanent link">&para;</a></h2>
 <p>The above examples all used the full data in each iteration of gradient
 descent. Computation can be reduced and the parameter space can possibly
@@ -669,27 +682,28 @@ for r in eachindex(rs)
   l = rs[r]
   m = Chain(Dense(dimx, rs[r], Flux.leakyrelu), Dense(rs[r], 1)) # notice the change
   # adjust initial weights to make sure each node is nonlinear in support of X
-  Tracker.update!(m[1].W, -m[1].W .+ sign.(Tracker.data(m[1].W))*2*π)
-  # adjust initial intercepts to be in the support of w*x  
-  Tracker.update!(m[1].b, -m[1].b .- m[1].W[:].*Float32.(π/(l+1):π/(l+1):π*l/(l+1)))
+  m[1].weight .= -m[1].weight .+ sign.(m[1].weight)*2*π
+  # adjust initial intercepts to be in the support of w*x
+  m[1].bias .= -m[1].bias .- m[1].weight[:].*(π/(l+1):π/(l+1):π*l/(l+1))
   # make initial output weights optimal given first layer
-  X = vcat(1, Tracker.data(m[1](xt)))
-  bols = (X*X') \ (X*Float32.(y))
-  Tracker.update!(m[2].W, -m[2].W .+ bols[2:end]')
-  Tracker.update!(m[2].b, -m[2].b .- Float32(Tracker.data(mean(m(xt) .- yt))))
-  initmfigs[r] = plot(xg, Tracker.data(m[1:(end-1)](xg'))', lab=&quot;&quot;, legend=false)
+  X = vcat(1, m[1](xt))
+  bols = (X*X') \ (X*y)
+  m[2].weight .= -m[2].weight .+ bols[2:end]'
+  m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
   figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
   maxiter = 3000
+  opt = Flux.AMSGrad()
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), 
+    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m),
                 # partition data into 100 batches
-                [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)], 
-                Flux.AMSGrad() ) #,
+                [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)],
+                opt ) #,
     if i==1 || (i % (maxiter ÷ 5))==0
-      l=Tracker.data(Flux.mse(m(xt), yt))
+      l=Flux.mse(m(xt), yt)
       println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
-      yg = Tracker.data(m(xg'))'
+      yg = m(xg')'
       loc=Int64.(ceil(length(xg)*i/maxiter))
       figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
                     annotations=(xg[loc], yg[loc],
@@ -699,47 +713,47 @@ for r in eachindex(rs)
     end
   end
 end
-</code></pre>
-<pre><code>2 units, 1 iterations, loss=0.28042743
-2 units, 600 iterations, loss=0.2561532
-2 units, 1200 iterations, loss=0.25613663
-2 units, 1800 iterations, loss=0.25611833
-2 units, 2400 iterations, loss=0.25609887
-2 units, 3000 iterations, loss=0.25608727
-  4.317296 seconds (14.94 M allocations: 803.055 MiB, 5.41% gc time)
-3 units, 1 iterations, loss=0.29548076
-3 units, 600 iterations, loss=0.2640844
-3 units, 1200 iterations, loss=0.2613922
-3 units, 1800 iterations, loss=0.26100206
-3 units, 2400 iterations, loss=0.2607383
-3 units, 3000 iterations, loss=0.2605288
-  4.342378 seconds (14.66 M allocations: 859.633 MiB, 5.58% gc time)
-5 units, 1 iterations, loss=0.25648135
-5 units, 600 iterations, loss=0.24122679
-5 units, 1200 iterations, loss=0.2427018
-5 units, 1800 iterations, loss=0.24278502
-5 units, 2400 iterations, loss=0.245291
-5 units, 3000 iterations, loss=0.24250484
-  4.537362 seconds (14.66 M allocations: 984.721 MiB, 6.43% gc time)
-7 units, 1 iterations, loss=0.25698918
-7 units, 600 iterations, loss=0.24852635
-7 units, 1200 iterations, loss=0.2531924
-7 units, 1800 iterations, loss=0.25390106
-7 units, 2400 iterations, loss=0.24680556
-7 units, 3000 iterations, loss=0.25356048
-  4.591942 seconds (14.66 M allocations: 1.073 GiB, 6.37% gc time)
-9 units, 1 iterations, loss=0.26235273
-9 units, 600 iterations, loss=0.249976
-9 units, 1200 iterations, loss=0.24925886
-9 units, 1800 iterations, loss=0.24445722
-9 units, 2400 iterations, loss=0.24422652
-9 units, 3000 iterations, loss=0.24371915
-  4.611709 seconds (14.66 M allocations: 1.197 GiB, 6.95% gc time)
-</code></pre>
-<pre><code class="language-julia">
+
 for f in figs
   display(f)
 end
+</code></pre>
+<pre><code>2 units, 1 iterations, loss=12.725298
+2 units, 600 iterations, loss=0.35298568
+2 units, 1200 iterations, loss=0.33057436
+2 units, 1800 iterations, loss=0.32411447
+2 units, 2400 iterations, loss=0.32136407
+2 units, 3000 iterations, loss=0.3199156
+  1.150724 seconds (2.94 M allocations: 585.695 MiB, 12.07% gc time, 21.72%
+ compilation time)
+3 units, 1 iterations, loss=7.36269
+3 units, 600 iterations, loss=0.26589838
+3 units, 1200 iterations, loss=0.25396004
+3 units, 1800 iterations, loss=0.24879204
+3 units, 2400 iterations, loss=0.24615657
+3 units, 3000 iterations, loss=0.24489298
+  0.965805 seconds (2.39 M allocations: 624.891 MiB, 15.56% gc time)
+5 units, 1 iterations, loss=0.63983136
+5 units, 600 iterations, loss=0.24252298
+5 units, 1200 iterations, loss=0.24149352
+5 units, 1800 iterations, loss=0.24134158
+5 units, 2400 iterations, loss=0.24133162
+5 units, 3000 iterations, loss=0.24133112
+  0.949103 seconds (2.39 M allocations: 732.613 MiB, 12.82% gc time)
+7 units, 1 iterations, loss=0.3980028
+7 units, 600 iterations, loss=0.23584402
+7 units, 1200 iterations, loss=0.23501928
+7 units, 1800 iterations, loss=0.2345592
+7 units, 2400 iterations, loss=0.23416217
+7 units, 3000 iterations, loss=0.23399206
+  1.053280 seconds (2.39 M allocations: 853.154 MiB, 13.59% gc time)
+9 units, 1 iterations, loss=15.907017
+9 units, 600 iterations, loss=0.2532536
+9 units, 1200 iterations, loss=0.24669476
+9 units, 1800 iterations, loss=0.24529259
+9 units, 2400 iterations, loss=0.24477518
+9 units, 3000 iterations, loss=0.24433182
+  1.024804 seconds (2.39 M allocations: 972.322 MiB, 11.88% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
 <img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
@@ -750,7 +764,7 @@ epoch, which consists of 10 gradient descent steps using the 10
 different subsets (or batches) of data of size 100.</p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
+<li>@chen1999</li>
 <li>$f(x) = \Er[y|x]$ with Fourier representation
     <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
     $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
@@ -762,53 +776,24 @@ different subsets (or batches) of data of size 100.</p>
     </script>
 </li>
 </ul>
-<p>The setup in Chen and White (<a href="#ref-chen1999">1999</a>) is more general.
-They consider estimating both $f$ and its first $m$ derivatives. Here,
-we focus on the case of just estimating $f$. Chen and White
-(<a href="#ref-chen1999">1999</a>) also consider estimation of functions other than
-conditional expectations.</p>
+<p>The setup in @chen1999 is more general. They consider estimating both
+$f$ and its first $m$ derivatives. Here, we focus on the case of just
+estimating $f$. @chen1999 also consider estimation of functions other
+than conditional expectations.</p>
 <p>The restriction on $f$ in the second bullet is used to control
 approximation error. The second bullet says that $f$ is the inverse
 Fourier transform of measure $\sigma_f$. The bite of the restriction on
 $f$ comes from the requirement that $\sigma_f$ be absolutely integral,
 $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$. It would be a good
 exercise to check whether this restriction is satisfied by some familiar
-types of functions. Barron (<a href="#ref-barron1993">1993</a>) first showed that
-neural networks approximate this class of functions well, and compares
-the approximation rate of neural networks to other function
-approximation results.</p>
-<p>TODO: - clean up this section - add simulations demonstrating
-convergence rate?</p>
-<h1 id="references-references">References [references]<a class="headerlink" href="#references-references" title="Permanent link">&para;</a></h1>
-<div class="references" id="refs">
-<div id="ref-barron1993">
-<p>Barron, A. R. 1993. “Universal Approximation Bounds for Superpositions
-of a Sigmoidal Function.” <em>IEEE Transactions on Information Theory</em> 39
-(3): 930–45. <a href="https://doi.org/10.1109/18.256500">https://doi.org/10.1109/18.256500</a>.</p>
-</div>
-<div id="ref-chen1999">
-<p>Chen, Xiaohong, and H. White. 1999. “Improved Rates and Asymptotic
-Normality for Nonparametric Neural Network Estimators.” <em>IEEE
-Transactions on Information Theory</em> 45 (2): 682–91.
-<a href="https://doi.org/10.1109/18.749011">https://doi.org/10.1109/18.749011</a>.</p>
-</div>
-<div id="ref-goodfellow2016">
-<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
-Learning</em>. MIT Press. <a href="http://www.deeplearningbook.org">http://www.deeplearningbook.org</a>.</p>
-</div>
-<div id="ref-hornik1989">
-<p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White. 1989. “Multilayer
-Feedforward Networks Are Universal Approximators.” <em>Neural Networks</em> 2
-(5): 359–66.
-<a href="https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8">https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8</a>.</p>
-</div>
-<div id="ref-klok2019">
-<p>Klok, Hayden, and Yoni Nazarathy. 2019. <em>Statistics with
-Julia:Fundamentals for Data Science, Machinelearning and Artificial
-Intelligence</em>. DRAFT.
-<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf</a>.</p>
-</div>
-</div></div>
+types of functions. @barron1993 first showed that neural networks
+approximate this class of functions well, and compares the approximation
+rate of neural networks to other function approximation results.</p>
+<ul>
+<li>See @farrel2021 for more contemporary approach, applicable to
+    currently used network architectures</li>
+</ul>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
 

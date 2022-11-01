@@ -208,7 +208,7 @@ License</a></p>
 <h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
 github</a>. The same
-document generates both static webpages and associated <a href="transformers.ipynb">jupyter
+document generates both static webpages and associated <a href="../transformers.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -256,15 +256,15 @@ $t$ in parallel. This mapping consists of the following layers.</p>
 <p>Each $x_t \in X \subseteq \R^K$ is often contained in a high dimensional
 space. In text, $x_t$ in a vector of indicator variables representing
 which token is the $t$th token in the sequence. These tokens could be
-characters, or more commonly now, words. In either case, the dimension
-of $x_t$ is in the hundreds or thousands. Anyway, $x_t$ is often
-embedded into a lower dimensional space by <script type="math/tex; mode=display">
+characters, or more commonly, words. In either case, the dimension of
+$x_t$ is in the hundreds or thousands. Anyway, $x_t$ is often embedded
+into a lower dimensional space by <script type="math/tex; mode=display">
  x_t^e = W_e x_t
 </script> where $W_e: \R^k \to \R^d$ is linear.</p>
 <h2 id="positional-encoding">Positional Encoding<a class="headerlink" href="#positional-encoding" title="Permanent link">&para;</a></h2>
 <p>With the exception of this layer, the entire transformer is a symmetric
-function $(x_0, &hellip;, x_t)$ — it ignores order. Positional encoding adds
-some position information to $x_t^e$. This could be done by simply
+function of $(x_0, &hellip;, x_t)$ — it ignores order. Positional encoding
+adds some position information to $x_t^e$. This could be done by simply
 adding a coordinate containining e.g. $t/T$, but is most often done
 (following @vaswani2017) by <script type="math/tex; mode=display">
 x_t^{pe} = x_t^e + p(t;d)
@@ -335,38 +335,45 @@ x_{t}^{A,\ell} = \frac{g^{\ell 2}_t}{\sigma_\ell} (z_{4,t}^{A,\ell} -
 <h2 id="prediction-layer">Prediction Layer<a class="headerlink" href="#prediction-layer" title="Permanent link">&para;</a></h2>
 <p>Finally, the output of the encoder, $x_t^{A_L}$, is used to predict
 $x_{t+1}$. When $x_{t+1}$ is discrete, this is done with a linear and
-then softmax layet. When $x_{t+1}$ is continuous, it can be done with
+then softmax layer. When $x_{t+1}$ is continuous, it can be done with
 just a linear layer.</p>
 <h2 id="why">Why?<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
 <p>The architecture of transformers developed step-by-step, combining ideas
 that seemed to work. The idea of an encoder grew out of embeddings and
 was originally combined with recurrent networks. Positional embedding
-and move away from recurrence was motivated by the difficulty with
+and moving away from recurrence was motivated by the difficulty with
 parallelizing recurrent models. Residual connections and layer norms
 help with gradient descent and vanishing gradient problems. Theoretical
 understanding of transformers has lagged behind their practical
 application, but theory is advancing rapidly. E.g. @bhattamishra2020 ,
 etc</p>
 <h1 id="example-code">Example Code<a class="headerlink" href="#example-code" title="Permanent link">&para;</a></h1>
+<p><a href="https://liorsinai.github.io/coding/2022/05/18/transformers.html">Lior Sinai has an excellent blog post, “How to code a transformer in
+Julia,”</a>
+that shows how to implement a transformer as new layers in Flux.</p>
+<p>The
+<a href="https://github.com/chengchingwen/Transformers.jl"><code>Transformers.jl</code></a>
+package provides a higher level transformer interface.</p>
 <h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
 <p>For comparison, we will start by using the same Dylan example as in the
 recurrent neural network notes.</p>
-<pre><code class="language-julia">using ProgressMeter, JLD2
+<pre><code class="language-julia">using JLD2, ProgressMeter
 import HTTP, Gumbo, Cascadia
 using StatsBase: wsample
 using Base.Iterators: partition
 using Transformers, Flux, CUDA
 
-text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
+text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)))).*&quot;&quot;
 #startchar = 'α'
 #endchar = 'Ω' # any character not in original text
-unkchar = 'Ξ'
+unkchar = &quot;Ξ&quot;
 #alphabet = [startchar, unique(text)..., endchar]
 alphabet = unique(text)
 N = length(alphabet)
+# convert to strings
 vocab = Transformers.Vocabulary(alphabet, unkchar)
 </code></pre>
-<pre><code>Vocabulary{Char}(101, unk=Ξ)
+<pre><code>Vocabulary{String}(101, unk=Ξ)
 </code></pre>
 <h2 id="model-creation">Model Creation<a class="headerlink" href="#model-creation" title="Permanent link">&para;</a></h2>
 <pre><code class="language-julia">enable_gpu(true)
@@ -403,8 +410,8 @@ end
 function sample(m, alphabet, len, seqlen)
   m = cpu(m)
   buf = IOBuffer()
-  c = 'w' #rand(alphabet)
-  cseq = vocab(collect(&quot;so much younger than that no&quot;)) #Vector{Int}(undef,0)
+  c = &quot;w&quot; #rand(alphabet)
+  cseq = vocab(split(&quot;so much younger than that no&quot;,&quot;&quot;)) #Vector{Int}(undef,0)
   ind2alpha = Dict(vocab(a) =&gt; a for a ∈ alphabet)
   for i = 1:len
     write(buf, c)
@@ -451,585 +458,200 @@ function train_model(m; data=data,
   return(m)
 end
 
-m = create_transformer(64,4,heads=1, vocab=vocab) |&gt; gpu
+m = create_transformer(16,2,heads=2,feedforwardsize=16, vocab=vocab) |&gt; gpu
 data = createdata(vocab, text, 500, 50) |&gt; gpu
 opt = RMSProp(0.001)
-m = train_model(m, data=data, modelfile=&quot;64d_4level_50e.jld2&quot;, opt=opt, epochs=50)
-
+#m = train_model(m, data=data, modelfile=&quot;64d_4level_50e.jld2&quot;, opt=opt, epochs=50)
+m = train_model(m, data=data, modelfile=&quot;test.jld2&quot;, opt=opt, epochs=10)
 sample(m, alphabet, 1000, size(first(data)[1],1)) |&gt; println
 </code></pre>
-<pre><code>loss() = 4.1773725f0
-loss() = 3.2731075f0
-loss() = 3.0498703f0
-loss() = 2.8588133f0
-loss() = 2.7257981f0
-loss() = 2.7233229f0
-loss() = 2.5953264f0
-loss() = 2.6089067f0
-loss() = 2.451772f0
-loss() = 2.4076262f0
-156.336898 seconds (223.80 M allocations: 11.646 GiB, 5.38% gc time, 62.63%
- compilation time)
+<pre><code>loss() = 4.5326347f0
+loss() = 4.0444283f0
+loss() = 3.8187015f0
+loss() = 3.6545393f0
+loss() = 3.521952f0
+loss() = 3.421867f0
+loss() = 3.3402755f0
+loss() = 3.2747056f0
+loss() = 3.218742f0
+loss() = 3.172187f0
+123.029453 seconds (207.87 M allocations: 10.518 GiB, 4.84% gc time, 59.26%
+ compilation time: 0% of which was recompilation)
 Sampling after 1 epoch:
-where   ave    hosemle"    yn
-A
-&lt;Tilf="D/1-5.
-&lt;/xht    tp&gt;   odofland
+wD"loe"y'gmC  ldsbok=,Ler tQ n a k E 
+bnirP/hnt e&gt; kao~ ao+
+ leqardeu|2e/n mrwdts hied o]oh] n &amp;t &gt;|;Eg.e t Bare _  sch  = y 
+nrd 
+d n  w     /h o+]d,nh .y  (﻿svss o krragh   &gt;Wt D aa--8en
+vmwr= UlLm ar{A o m&gt;   'rein&gt;= &lt;^J^Bes  wiese    o
+Fg1ilr  &lt; aanh thi
+se  t1w  b[ "  |o 
+k l1  --Esn.Ko/ve|b-8lra
+/
+/en  "y   wbs  s   ew==h   tesrdDa 
+naya  nta/lfaana.kh k    on=   lg keP  
+laPi/eoerlon,  omE
+io  ivr/n
+thq-nht C 
+t. M&gt; / hw'ubYcg  s  irt”&gt;  pree   ^ha, c
+  enan   0"am
+lrx  ow
+ iisrdeJnka&gt;on    D any "ne idg/sfh/  
+ Ji&gt; ,g       dyt 'algv  kA  N ip= i fp
+
+iwB -0nl2;tEu k.C oe  tpc    srtke
+  &lt;
+ repn  i-oFi  
+e'  U|
+TyGl ]     ;dmsyi   g
+
+Rrg , hse+-Ξn (b-oy   i^   w } a h---dd u &lt; otisSu
+ auG o"Qo&gt;rj:
+g 5 ul.  |r PgDs eau
+i&amp;  h
+/   au&gt; s T ”osmnd /a-1s O  'wauoehtCI  kru
+Lnou lt  opab-eru      tye py Ci--t rCa Qw ywie Lh U 
+_  u  sw  a----  L  thdg r&gt;T  &lt;u Z  S y k  i#o(hl  aQ1qurpleI  h
+d
+  =u%h   . x   h#k&lt; Ldole "rdCa-&amp;nhi'.bt
+osie v   &lt;   
+"g  "\yih/t
+
+ &lt;.    
+dwlea8rtr  vpDL
+loss() = 3.1257606f0
+loss() = 3.090786f0
+loss() = 3.0504942f0
+loss() = 3.0097828f0
+loss() = 2.9701004f0
+loss() = 2.9390543f0
+loss() = 2.9102654f0
+loss() = 2.8779998f0
+loss() = 2.8570156f0
+loss() = 2.8277261f0
+loss() = 2.8057358f0
+loss() = 2.7854412f0
+loss() = 2.7624745f0
+loss() = 2.7438314f0
+loss() = 2.7233734f0
+loss() = 2.712018f0
+loss() = 2.6979303f0
+loss() = 2.6817768f0
+loss() = 2.6735775f0
+loss() = 2.6518612f0
+loss() = 2.6465538f0
+loss() = 2.6317961f0
+loss() = 2.632695f0
+loss() = 2.610262f0
+loss() = 2.6029112f0
+loss() = 2.5938296f0
+loss() = 2.5861306f0
+loss() = 2.5805883f0
+loss() = 2.5682912f0
+loss() = 2.5576136f0
+loss() = 2.5594745f0
+loss() = 2.5465784f0
+loss() = 2.5395765f0
+loss() = 2.5316157f0
+loss() = 2.5319207f0
+loss() = 2.521349f0
+loss() = 2.5118716f0
+loss() = 2.5063741f0
+loss() = 2.5004256f0
+loss() = 2.5043316f0
+loss() = 2.4967632f0
+loss() = 2.4858403f0
+loss() = 2.481605f0
+loss() = 2.4764633f0
+loss() = 2.471646f0
+loss() = 2.4654317f0
+loss() = 2.460706f0
+loss() = 2.4556491f0
+loss() = 2.4537146f0
+loss() = 2.4492564f0
+loss() = 2.4442303f0
+loss() = 2.4417489f0
+loss() = 2.4383984f0
+loss() = 2.435677f0
+loss() = 2.4307218f0
+loss() = 2.4244034f0
+loss() = 2.4245195f0
+loss() = 2.4365647f0
+loss() = 2.4150207f0
+loss() = 2.4118989f0
+loss() = 2.4089348f0
+loss() = 2.4114954f0
+loss() = 2.4080184f0
+loss() = 2.400921f0
+loss() = 2.3989468f0
+loss() = 2.3953652f0
+loss() = 2.3926613f0
+loss() = 2.3859446f0
+loss() = 2.390622f0
+loss() = 2.3841126f0
+loss() = 2.3879251f0
+loss() = 2.3827386f0
+loss() = 2.3771672f0
+loss() = 2.375889f0
+loss() = 2.369691f0
+loss() = 2.3690493f0
+loss() = 2.3698466f0
+loss() = 2.3639894f0
+loss() = 2.3619514f0
+loss() = 2.358743f0
+loss() = 2.356278f0
+loss() = 2.3537457f0
+loss() = 2.3558576f0
+loss() = 2.3482108f0
+loss() = 2.3483984f0
+loss() = 2.3474474f0
+loss() = 2.343408f0
+loss() = 2.3504155f0
+loss() = 2.341434f0
+loss() = 2.3386126f0
+loss() = 2.3359587f0
+loss() = 2.336779f0
+loss() = 2.333354f0
+loss() = 2.330643f0
+loss() = 2.330587f0
+loss() = 2.3299756f0
+wonke'so here ob pre w,&amp;r   Fere  d uan   T t  /ave         :       oreghe 
+ Angink    A  ol                            D         kgasito  se     t
+        fond faldin=     ou    g              G
 
 
-I         .
-I           a~irewalerer  :Re"erds  ceres          .    |----------------5-
-------||---|---3----------------------|--------------on=------------8------
---2--------      :-----32-91~
-&lt;3---------|-----------------0-----5-------2--A-----0|-----|------3--------
--|-K|-|-|--------3--|--------------1--re|----p---5-2---|-----------|----
+I    meo,
+Bloum                          yoas  : Bue      in .    ri G   f .
+Awanger,  mouvk y             .  , D    pe            .
+I'        (2   o           clinon  G   :
+    O'y     Afe         Itotiilin'the            G           d      C7-00.
+T
 
---|---0)-----|---|--X---------------------------------------|------------0-
-------0------------------|--3--------|---------------|--------             
-       xC
--|
-|---|
-0---|----------|---B4---1----------|--|-9----|---------ha---D . e|{--------
-------|-----|--0----|-------om|-3C----
-&lt;W
- C     .  as---3|---3----2-3---|h?e        ,ite.  :
+Og d,   Bu     te
 
-|
- .G--5|--|--------|----------3------|--|--2-----|  CYaf   6-----------2----
----------|--7
-|--)|  hf D7‘
-&lt;      D
-||---Y&lt;/xhtmicp”,
-&lt;”ma--7------------0---
-&lt;hc---2-|
-@
-&lt;/h  C-----|---|-------iw
-|---4sy.
----
+      m
+   pq.                  abl            o   *="owhithe. y      C      A     
+                  .
+An
+Woo G
+ .  .   'lu ge sorhap
+  r        :  klomy               .
+  G
+                   //pler              C..  G
+.   t 
+ D                      p           * E
+E       Ay       .    .
+--s     s       : de '  .
+tofan'ton               .           vethe           ororando   
+C
+                         6hrse&gt;        l m        :
+     A---/st'      :  :
+&lt;/p+&gt;
 
-|   orey.
-|=.o/83-1-3----0-x3-|Rinp0|qn"
-loss() = 2.3574665f0
-loss() = 2.3679345f0
-loss() = 2.2928479f0
-loss() = 2.3301542f0
-loss() = 2.2978072f0
-loss() = 2.3390322f0
-loss() = 2.2430599f0
-loss() = 2.193809f0
-loss() = 2.1870463f0
-loss() = 2.1790516f0
-loss() = 2.1612236f0
-loss() = 2.158729f0
-loss() = 2.1453269f0
-loss() = 2.1062758f0
-loss() = 2.09641f0
-loss() = 2.0732276f0
-loss() = 2.0729778f0
-loss() = 2.0627928f0
-loss() = 2.0385041f0
-loss() = 2.0426373f0
-loss() = 2.075115f0
-loss() = 2.015764f0
-loss() = 2.0398f0
-loss() = 2.0192683f0
-loss() = 2.0041645f0
-loss() = 1.9592556f0
-loss() = 1.947185f0
-loss() = 1.9555519f0
-loss() = 1.9380115f0
-loss() = 1.9151676f0
-loss() = 1.9098798f0
-loss() = 1.9046458f0
-loss() = 1.8894838f0
-loss() = 1.8880283f0
-loss() = 1.9019517f0
-loss() = 1.8690107f0
-loss() = 1.8515506f0
-loss() = 1.8640459f0
-loss() = 1.8291427f0
-loss() = 1.8313144f0
-loss() = 1.8272877f0
-loss() = 1.8461692f0
-loss() = 1.7998413f0
-loss() = 1.8149347f0
-loss() = 1.7812561f0
-loss() = 1.7771633f0
-loss() = 1.8830674f0
-loss() = 1.7661587f0
-loss() = 1.7493006f0
-loss() = 1.7784904f0
-loss() = 1.7528694f0
-loss() = 1.737044f0
-loss() = 1.7313987f0
-loss() = 1.714694f0
-loss() = 1.6964208f0
-loss() = 1.7003509f0
-loss() = 1.7090962f0
-loss() = 1.6899056f0
-loss() = 1.6692929f0
-loss() = 1.6726328f0
-loss() = 1.6591356f0
-loss() = 1.652309f0
-loss() = 1.6409549f0
-loss() = 1.6585668f0
-loss() = 1.6606078f0
-loss() = 1.6499355f0
-loss() = 1.634204f0
-loss() = 1.6569474f0
-loss() = 1.6538583f0
-loss() = 1.647032f0
-loss() = 1.6151569f0
-loss() = 1.6211121f0
-loss() = 1.6026484f0
-loss() = 1.6027602f0
-loss() = 1.5870613f0
-loss() = 1.6086965f0
-loss() = 1.6182449f0
-loss() = 1.5821135f0
-loss() = 1.5551051f0
-loss() = 1.5819037f0
-loss() = 1.5835407f0
-loss() = 1.5707332f0
-loss() = 1.5574048f0
-loss() = 1.5423472f0
-loss() = 1.5711719f0
-loss() = 1.5401763f0
-loss() = 1.5698669f0
-loss() = 1.5858097f0
-loss() = 1.519806f0
-loss() = 1.5203657f0
-loss() = 1.506389f0
-loss() = 1.5194733f0
-loss() = 1.5090103f0
-loss() = 1.5144019f0
-loss() = 1.5269299f0
-loss() = 1.5073804f0
-loss() = 1.4930724f0
-loss() = 1.490537f0
-loss() = 1.4989419f0
-loss() = 1.4983647f0
-loss() = 1.4868137f0
-loss() = 1.5167704f0
-loss() = 1.4656912f0
-loss() = 1.4775661f0
-loss() = 1.4601735f0
-loss() = 1.4455569f0
-loss() = 1.4573935f0
-loss() = 1.4676062f0
-loss() = 1.4723649f0
-loss() = 1.453747f0
-loss() = 1.4618363f0
-loss() = 1.4369833f0
-loss() = 1.4829831f0
-loss() = 1.4441833f0
-loss() = 1.4298682f0
-loss() = 1.4321198f0
-loss() = 1.4271777f0
-loss() = 1.4408946f0
-loss() = 1.428882f0
-loss() = 1.4299647f0
-loss() = 1.4098281f0
-loss() = 1.4323866f0
-loss() = 1.4024558f0
-loss() = 1.4334798f0
-loss() = 1.4125886f0
-loss() = 1.4010342f0
-loss() = 1.3915914f0
-loss() = 1.426993f0
-loss() = 1.398223f0
-loss() = 1.3950564f0
-loss() = 1.3985368f0
-loss() = 1.4051374f0
-loss() = 1.3934156f0
-loss() = 1.3978064f0
-loss() = 1.373694f0
-loss() = 1.3785151f0
-loss() = 1.3740277f0
-loss() = 1.374231f0
-loss() = 1.386064f0
-loss() = 1.361319f0
-loss() = 1.3619066f0
-loss() = 1.3603711f0
-loss() = 1.3688473f0
-loss() = 1.3493671f0
-loss() = 1.3408301f0
-loss() = 1.3395526f0
-loss() = 1.3519398f0
-loss() = 1.3480264f0
-loss() = 1.3436835f0
-loss() = 1.3499068f0
-loss() = 1.3369517f0
-loss() = 1.3647671f0
-loss() = 1.3262949f0
-loss() = 1.3140663f0
-loss() = 1.3310792f0
-loss() = 1.3306947f0
-loss() = 1.3259217f0
-loss() = 1.3277136f0
-loss() = 1.3285036f0
-loss() = 1.3131249f0
-loss() = 1.3179938f0
-loss() = 1.3453832f0
-loss() = 1.3130879f0
-loss() = 1.2989807f0
-loss() = 1.3260343f0
-loss() = 1.3105323f0
-loss() = 1.3111575f0
-loss() = 1.3113881f0
-loss() = 1.3007592f0
-loss() = 1.3013169f0
-loss() = 1.3040789f0
-loss() = 1.2959512f0
-loss() = 1.2930162f0
-loss() = 1.2898616f0
-loss() = 1.2949286f0
-loss() = 1.314444f0
-loss() = 1.2794011f0
-loss() = 1.2839382f0
-loss() = 1.275762f0
-loss() = 1.2831208f0
-loss() = 1.2892071f0
-loss() = 1.2846017f0
-loss() = 1.2818645f0
-loss() = 1.2964896f0
-loss() = 1.2674139f0
-loss() = 1.2801292f0
-loss() = 1.2753825f0
-loss() = 1.2674011f0
-loss() = 1.2670566f0
-loss() = 1.265725f0
-loss() = 1.2800963f0
-loss() = 1.2720953f0
-loss() = 1.2568405f0
-loss() = 1.2473449f0
-loss() = 1.2780665f0
-loss() = 1.2530348f0
-loss() = 1.2620909f0
-loss() = 1.265594f0
-loss() = 1.2621669f0
-loss() = 1.2708664f0
-loss() = 1.2605703f0
-loss() = 1.2429696f0
-loss() = 1.2705429f0
-loss() = 1.2435826f0
-loss() = 1.2399971f0
-loss() = 1.226399f0
-loss() = 1.2429115f0
-loss() = 1.2395973f0
-loss() = 1.246907f0
-loss() = 1.2520362f0
-loss() = 1.2515811f0
-loss() = 1.2302349f0
-loss() = 1.2285483f0
-loss() = 1.2420005f0
-loss() = 1.2403812f0
-loss() = 1.2287176f0
-loss() = 1.2649384f0
-loss() = 1.227378f0
-loss() = 1.2399341f0
-loss() = 1.2282088f0
-loss() = 1.186039f0
-loss() = 1.2126598f0
-loss() = 1.2295296f0
-loss() = 1.2296811f0
-loss() = 1.230444f0
-loss() = 1.2475003f0
-loss() = 1.2157828f0
-loss() = 1.2149384f0
-loss() = 1.2208753f0
-loss() = 1.2146901f0
-loss() = 1.2019864f0
-loss() = 1.2052606f0
-loss() = 1.2187853f0
-loss() = 1.2146952f0
-loss() = 1.2040497f0
-loss() = 1.2071768f0
-loss() = 1.2146962f0
-loss() = 1.2004157f0
-loss() = 1.2221714f0
-loss() = 1.208898f0
-loss() = 1.1989504f0
-loss() = 1.1897216f0
-loss() = 1.195247f0
-loss() = 1.1976827f0
-loss() = 1.19587f0
-loss() = 1.1982186f0
-loss() = 1.2059522f0
-loss() = 1.1955113f0
-loss() = 1.1893511f0
-loss() = 1.196158f0
-loss() = 1.1922283f0
-loss() = 1.1901857f0
-loss() = 1.1913084f0
-loss() = 1.2087325f0
-loss() = 1.1842747f0
-loss() = 1.188784f0
-loss() = 1.1865311f0
-loss() = 1.1951766f0
-loss() = 1.1840698f0
-loss() = 1.1743981f0
-loss() = 1.1740264f0
-loss() = 1.1751356f0
-loss() = 1.1888589f0
-loss() = 1.1747961f0
-loss() = 1.1906087f0
-loss() = 1.177324f0
-loss() = 1.1853607f0
-loss() = 1.1759138f0
-loss() = 1.1590347f0
-loss() = 1.1622719f0
-loss() = 1.1760839f0
-loss() = 1.1767594f0
-loss() = 1.1750712f0
-loss() = 1.1755164f0
-loss() = 1.1599065f0
-loss() = 1.1780155f0
-loss() = 1.1899834f0
-loss() = 1.1662073f0
-loss() = 1.1531982f0
-loss() = 1.1702297f0
-loss() = 1.1849155f0
-loss() = 1.1623427f0
-loss() = 1.1658013f0
-loss() = 1.1604383f0
-loss() = 1.1621845f0
-loss() = 1.1694406f0
-loss() = 1.1662012f0
-loss() = 1.1615479f0
-loss() = 1.1506288f0
-loss() = 1.1550697f0
-loss() = 1.1639669f0
-loss() = 1.1532197f0
-loss() = 1.1534326f0
-loss() = 1.1472037f0
-loss() = 1.169673f0
-loss() = 1.1559156f0
-loss() = 1.1625391f0
-loss() = 1.1425991f0
-loss() = 1.178696f0
-loss() = 1.1507442f0
-loss() = 1.1538802f0
-loss() = 1.1530764f0
-loss() = 1.1470946f0
-loss() = 1.1602042f0
-loss() = 1.1475844f0
-loss() = 1.165472f0
-loss() = 1.1560345f0
-loss() = 1.1429353f0
-loss() = 1.1389235f0
-loss() = 1.1531494f0
-loss() = 1.144639f0
-loss() = 1.1576321f0
-loss() = 1.1456279f0
-loss() = 1.1481122f0
-loss() = 1.1518149f0
-loss() = 1.1572323f0
-loss() = 1.1270854f0
-loss() = 1.1500611f0
-loss() = 1.1305791f0
-loss() = 1.1345328f0
-loss() = 1.126526f0
-loss() = 1.1373366f0
-loss() = 1.1331073f0
-loss() = 1.1390232f0
-loss() = 1.1596146f0
-loss() = 1.1563864f0
-loss() = 1.1368356f0
-loss() = 1.1300448f0
-loss() = 1.1391249f0
-loss() = 1.1376895f0
-loss() = 1.1300576f0
-loss() = 1.1490052f0
-loss() = 1.1286942f0
-loss() = 1.1490866f0
-loss() = 1.1313964f0
-loss() = 1.0964491f0
-loss() = 1.1225548f0
-loss() = 1.1260004f0
-loss() = 1.1346282f0
-loss() = 1.1228894f0
-loss() = 1.1431413f0
-loss() = 1.1198446f0
-loss() = 1.1416484f0
-loss() = 1.1359241f0
-loss() = 1.1287792f0
-loss() = 1.1145571f0
-loss() = 1.1186206f0
-loss() = 1.1349978f0
-loss() = 1.1265824f0
-loss() = 1.1272701f0
-loss() = 1.1288309f0
-loss() = 1.1217663f0
-loss() = 1.120463f0
-loss() = 1.1288166f0
-loss() = 1.1227256f0
-loss() = 1.110634f0
-loss() = 1.1103911f0
-loss() = 1.1156101f0
-loss() = 1.1165515f0
-loss() = 1.1106585f0
-loss() = 1.114575f0
-loss() = 1.1238726f0
-loss() = 1.1162251f0
-loss() = 1.1147635f0
-loss() = 1.1125425f0
-loss() = 1.1044651f0
-loss() = 1.1091983f0
-loss() = 1.1128646f0
-loss() = 1.1163607f0
-loss() = 1.1084399f0
-loss() = 1.1055492f0
-loss() = 1.1187431f0
-loss() = 1.1196545f0
-loss() = 1.1086862f0
-loss() = 1.1011353f0
-loss() = 1.0995461f0
-loss() = 1.1118257f0
-loss() = 1.1111575f0
-loss() = 1.1097689f0
-loss() = 1.1129553f0
-loss() = 1.1083668f0
-loss() = 1.1119133f0
-loss() = 1.104539f0
-loss() = 1.0800642f0
-loss() = 1.0924615f0
-loss() = 1.1159911f0
-loss() = 1.1002648f0
-loss() = 1.1031338f0
-loss() = 1.1058483f0
-loss() = 1.1001068f0
-loss() = 1.1113654f0
-loss() = 1.1123804f0
-loss() = 1.0950924f0
-loss() = 1.0993718f0
-loss() = 1.0921403f0
-loss() = 1.0967466f0
-loss() = 1.1028646f0
-loss() = 1.0988892f0
-loss() = 1.0931784f0
-loss() = 1.0963721f0
-loss() = 1.1025159f0
-loss() = 1.102045f0
-loss() = 1.0979527f0
-loss() = 1.0861154f0
-loss() = 1.095815f0
-loss() = 1.1028848f0
-loss() = 1.0908211f0
-loss() = 1.0952182f0
-loss() = 1.0907427f0
-loss() = 1.0938213f0
-loss() = 1.0980289f0
-loss() = 1.0961574f0
-loss() = 1.0895234f0
-loss() = 1.1076262f0
-loss() = 1.0864278f0
-loss() = 1.0884364f0
-loss() = 1.0846148f0
-loss() = 1.0941248f0
-loss() = 1.087674f0
-loss() = 1.0962824f0
-loss() = 1.0994025f0
-loss() = 1.0987914f0
-loss() = 1.0823576f0
-loss() = 1.0807623f0
-loss() = 1.0966513f0
-loss() = 1.0880303f0
-loss() = 1.0900339f0
-loss() = 1.0907615f0
-loss() = 1.0934068f0
-loss() = 1.0963975f0
-loss() = 1.0920146f0
-loss() = 1.0834398f0
-loss() = 1.1037714f0
-loss() = 1.0765765f0
-loss() = 1.0809544f0
-loss() = 1.0784781f0
-loss() = 1.0870063f0
-loss() = 1.0813016f0
-loss() = 1.0875252f0
-loss() = 1.1150926f0
-loss() = 1.0936651f0
-loss() = 1.0863733f0
-loss() = 1.0757678f0
-loss() = 1.0827657f0
-loss() = 1.0832797f0
-loss() = 1.085503f0
-loss() = 1.0948414f0
-loss() = 1.0783647f0
-loss() = 1.0897714f0
-loss() = 1.0807242f0
-loss() = 1.0514143f0
-loss() = 1.0740407f0
-loss() = 1.0817413f0
-loss() = 1.092184f0
-loss() = 1.0746753f0
-loss() = 1.0934124f0
-loss() = 1.0731536f0
-loss() = 1.0798817f0
-loss() = 1.0831326f0
-loss() = 1.0788175f0
-loss() = 1.0684854f0
-loss() = 1.069898f0
-loss() = 1.0772153f0
-loss() = 1.0811877f0
-loss() = 1.076735f0
-loss() = 1.0727684f0
-loss() = 1.0743331f0
-loss() = 1.0729171f0
-loss() = 1.0821953f0
-loss() = 1.082429f0
-loss() = 1.0681754f0
-loss() = 1.0665667f0
-loss() = 1.0727159f0
-loss() = 1.079109f0
-loss() = 1.06937f0
-loss() = 1.0708107f0
-loss() = 1.0759401f0
-loss() = 1.0699874f0
-loss() = 1.0744972f0
-ws
-B      C  C   F     C
-Went zever morrning Just in a by Be Caure,
-G      C   A7       Gsus4 C
-They go, dancould smember in mountane that but wile. Clirlipe orion faste]
-Some that's gonna love whichs dremen ing.
 
-You feeling it's goin' you me all just they, but cal.
-&lt;/pre&gt;
-&lt;/div&gt;
 
-&lt;pre class="verse"&gt;
-&lt;pre class="verse"&gt;
-              a take bereak a pay
-We's you kna you leaved.
-&lt;/pre&gt;
 
-&lt;pre class="verse"&gt;
-If lett for to highers don't castand line
-Shart to me somethin
-Lorise e allisa,
-Giche I bley int my owa Itule.
-Yond d s st bulyin linalest ne.
-A.
-I I' a, malesusto I adsttublowaylominde My a Than'
-He ome.
-Wile ucowa,
-Frine he thole ge goone e ale me.
-Mine, ita ckiziplina, tine, boucke alino.
-I an' I..
-So, I roulethale owigle tipplorrete, E.
-Thon.
-I mathton'soimes, whefrare ousa tidake glesthwa ha me me wa aned ie ifu bic
-owa)
-ast.
-I me me at..
-| bllontin
-Yofove I'tive te I I wnite w anile, tht gowne dnshin me onglinisow.
-Nole wime mede rle.
-It ame, bade ininestthtie.
-Brrgoncke te,
-Itr
+Be="ovu      .
 </code></pre>
 <p>The output looks okay, but not quite as good as with RNNs. I did some
 ad-hoc exploration with alternate widths and depths. The one above
@@ -1040,8 +662,146 @@ RNNs outperform transformers when the tokens are characters. Various
 modifications of transformers can make them competitive. See e.g.
 @wu2020 , @al2019 ,</p>
 <h1 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h1>
-<p>Huggingface and Transformers.jl interface to it.</p>
-<h2 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h2></div>
+<p>An increasing common way to apply transformers, especially for language,
+but also other contexts, is to fine-tune a general purpose model. There
+are a number of large general purpose language models trained on large
+datasets. These include variants of GPT, variants of BERT, and others.
+Huggingface provides a way to access these models, and Transformers.jl
+has integrated some of the models from Huggingface (with plans to add
+more).</p>
+<h2 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h2>
+<p>Given a specific dataset and task, a fruitful approach is to take a
+large pretrained and fine-tune the model for the task. Often in fine
+tuning, all parameters of the model will be modified. Here, we will
+fine-tune the GPT(1) model on the Dylan song data. The hope is that the
+output of the transformer provides a good representation of the data for
+predicting the next word. To limit the computational cost, we hold fixed
+the embedding and transformer components of GPT, and only retrain a
+final classifier. It is also common to fine tune all components of the
+model.</p>
+<pre><code class="language-julia">using ProgressMeter, JLD2
+using StatsBase: wsample
+using Transformers, Flux, CUDA
+
+text = String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)))
+songs = [split(s, &quot;&lt;/body&quot;)[1] for s in split(text, &quot;&lt;body&gt;&quot;)[2:end]]
+
+
+startsym = &quot;&lt;pre&gt;&quot;
+delisym = &quot;_deli_&quot;
+endsym = &quot;&lt;/pre&gt;&quot;
+unksym = &quot;&lt;unk&gt;&quot;
+gpt, bpe, vocab, tokenizer = Transformers.load_pretrain(&quot;GPT-OpenAIftlm&quot;; startsym, delisym, clfsym=endsym, unksym)
+
+gptenc = Transformers.GPTTextEncoder(tokenizer, bpe, vocab; startsym, sepsym = delisym, endsym = endsym, unksym, padsym = unksym)
+
+# encode songs
+songenc = [Transformers.encode(gptenc, s) for s in songs]
+
+# find size of output = # of tokens used in data
+usedtoken = reduce((x,y)-&gt; x .|| y, any(s.input.tok,dims=2) for s in songenc)
+idx = cumsum(usedtoken, dims=1)
+outdim = sum(usedtoken)
+
+
+predictmodel = Chain(Dense(768, outdim)) |&gt; gpu
+model = Transformers.set_classifier(gpt, predictmodel) |&gt; gpu
+
+maxlen = size(gpt.embed.embeddings.pe.embedding,2)÷2
+batches = 100
+batchsize = 1000
+minlen = 20 # minimum input token sequence to predict from
+
+&quot;&quot;&quot;
+  creatbatch(batchsize)
+
+Randomly select a song and a sequence of tokens with length
+uniformly distributed on [minlen,maxlen]. Encode the sequence
+using the transformer from gpt, then return the last encoded value,
+and a one-hot vector representing the next token in the song.
+
+This is done `batchsize` times and the function returns the
+transformed output as `X` with dimension 768 by `batchsize`,
+and one hot matrix `y` with dimension number `outdim` by `batchsize`
+&quot;&quot;&quot;
+function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc)
+  Ntrain=batchsize
+  xin = (tok=songenc[1].input.tok[:,1:minlen],)
+  xt = model.transformers(model.embed(xin))
+  Xt = similar(xt, size(xt,1), Ntrain)
+  y = Vector{typeof(Flux.onehot(1, 1:outdim))}(undef, Ntrain)
+  for i in 1:Ntrain
+    L = 0
+    si = 0
+    while (L&lt;minlen)
+      si = rand(axes(songenc)[1])
+      s = songenc[si]
+      L = size(s.input.tok,2)
+    end
+    s = songenc[si]
+    len = rand(minlen:min(maxlen,(L-3)))
+    first = rand(1:(L-len))
+    last = first + len -1
+    xin  = (tok=s.input.tok[:,first:last],)
+    xe = model.embed(xin)
+    xt = model.transformers(xe)
+    Xt[:,i] .= xt[:,end]
+    y[i] = Flux.onehot(idx[Flux.onecold(s.input.tok[:,(last+1)])],1:outdim)
+  end
+  y = hcat(y...)
+  y = gpu(y)
+  return(Xt,y)
+end
+datafile = joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-batched.jld2&quot;)
+if !isfile(datafile)
+  CUDA.@allowscalar data = [createbatch(batchsize) for b in 1:batches]
+  cdata = cpu.(data)
+  @save datafile cdata
+end
+@load datafile cdata
+data = gpu.(cdata)
+
+opt = ADAM(1e-2)
+loss(xt, y) = Flux.Losses.logitcrossentropy(predictmodel(xt),y)
+
+function samplegpt(len=100,prompt=&quot;I was so much older then, I'm younger than that now &quot;; predictmodel=predictmodel)
+  out = prompt
+  for i=1:len
+    enc = Transformers.encode(gptenc, out)
+    V, L = size(enc.input.tok)
+    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)
+    xt = model.transformers(model.embed(xin))[:,end]
+    p = Flux.softmax(predictmodel(xt))
+    y = wsample(1:outdim, p)
+    yall = findfirst(idx.==y)[1]
+    out *= replace(Transformers.lookup(gptenc.vocab, yall), &quot;&lt;/w&gt;&quot; =&gt; &quot; &quot;)
+  end
+  return(out)
+end
+CUDA.@allowscalar samplegpt(20)
+
+Epochs =
+losses = zeros(Epochs)
+modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-gpt-tuned.jld2&quot;)
+if !isfile(modelfile)
+  losses = zeros(Epochs)
+  for e=1:Epochs
+    Flux.train!(loss, Flux.params(predictmodel), data, opt)
+    losses[e] = sum(loss(d...) for d in data)
+    println(&quot;Epoch $e: loss=$(losses[e])&quot;)
+    println(&quot;Sample = &quot;)
+    println(samplegpt(20))
+  end
+  cpum = cpu(predictmodel)
+  @save modelfile cpum losses
+end
+@load modelfile cpum losses
+predictmodel = gpu(cpum)
+
+CUDA.@allowscalar samplegpt(20)
+</code></pre>
+<pre><code>Error: UndefVarError: Epochs not defined
+</code></pre></div>
             </div>
         </div>
 
