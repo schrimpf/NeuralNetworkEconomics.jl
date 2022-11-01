@@ -138,10 +138,10 @@ using MLDatasets
 using ImageFiltering
 using Plots
 
-imgs = MNIST.images()
-labels = MNIST.labels()
+train_x, labels = MNIST(split=:train)[:]
+imgs = [Gray.(train_x[:,:,i]') for i ∈ 1:size(train_x,3)]
+
 i = 1
-plot(plot(imgs[i]), plot(Gray.(imfilter(imgs[i], centered([-1 1])) )))
 plot(plot(Gray.(1) .- imgs[i], title="Original", aspect_ratio=:equal,
           axis=false, ticks=false),
      plot(RGB.(1 .- imgs[i] .+ imfilter(imgs[i], centered([-1 1])),
@@ -177,7 +177,6 @@ zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/conv.jl)
 using Flux, MLDatasets, Statistics
 using Flux: onehotbatch, onecold, throttle, @epochs
 using Base.Iterators: repeated, partition
-#using CuArrays
 using JLD2
 using ColorSchemes, ProgressMeter
 cscheme = colorschemes[:BrBG_4];
@@ -193,10 +192,11 @@ information, so we need to treat the images as $28 \times 28$ arrays.
 # set up training and testing data
 createx(imgdata) = reduce((x,y)->cat(x,y, dims=4),
                           reshape.(float.(imgdata),28,28, 1) )
-X = gpu(Float32.(createx(imgs)));
-Y = onehotbatch(labels, 0:9) |> gpu;
-tX = gpu(Float32.(createx(MNIST.images(:test))));
-tY = onehotbatch(MNIST.labels(:test), 0:9) |> gpu;
+X = Float32.(reshape(train_x, 28, 28, 1, size(train_x,3))) |> gpu
+Y = onehotbatch(labels, 0:9) |> gpu
+test_x, test_y = MNIST(split=:test)[:] 
+tX = Float32.(reshape(test_x, 28, 28, 1, size(test_x,3))) |> gpu
+tY = onehotbatch(test_y, 0:9) |> gpu;
 ```
 
 When working with convolutions, `Flux.jl` wants the data to be stored
@@ -279,7 +279,7 @@ model = Chain(
 # count parameters
 nparam(m::Chain)=sum(nparam.(m))
 nparam(m::Conv)=length(m.weight) + length(m.bias)
-nparam(m::Dense)=length(m.W)+length(m.b)
+nparam(m::Dense)=length(m.weight)+length(m.bias)
 nparam(m) = 0
 
 println("There $(nparam(model)) parameters")
@@ -346,7 +346,7 @@ function train_mnist!(model, X, Y, tX, tY,
     e += 1
     modelfile = joinpath(docdir,"jmd","models","$modelname-$e-epochs.jld2")
     if rerun || !isfile(modelfile)
-      @time Flux.train!(loss, params(model), data, opt, cb = throttle(evalcb, 20))      
+      @time Flux.train!(loss, Flux.params(model), data, opt, cb = throttle(evalcb, 20))      
       # save model
       cpum = cpu(model)
       losstrain[e]= sumloss(batches)
@@ -399,7 +399,7 @@ In terms of testing accuracy, this model does quite well. The deep
 feedforward network with nearly 12 million parameters from the
 [previous notes](mlp.md), had an accuracy greater than 98%. The
 convolutional network used here with 16 thousand parameters has a
-higher accuracy of `j maximum(out.acctest)`%. The training time of
+accuracy of `j maximum(out.acctest)`%. The training time of
 these two models was roughly the same.
 
 ```julia; cache=false

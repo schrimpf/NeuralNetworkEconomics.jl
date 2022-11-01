@@ -123,7 +123,7 @@ where $W_e: \R^k \to \R^d$ is linear.
 ## Positional Encoding
 
 With the exception of this layer, the entire transformer is a
-symmetric function $(x_0, ..., x_t)$ --- it ignores order. Positional
+symmetric function of $(x_0, ..., x_t)$ --- it ignores order. Positional
 encoding adds some position information to $x_t^e$. This could be done
 by simply adding a coordinate containining e.g. $t/T$, but is most
 often done (following @vaswani2017) by
@@ -226,7 +226,7 @@ just a linear layer.
 The architecture of transformers developed step-by-step, combining
 ideas that seemed to work. The idea of an encoder grew out of
 embeddings and was originally combined with recurrent
-networks. Positional embedding and move away from recurrence was
+networks. Positional embedding and moving away from recurrence was
 motivated by the difficulty with parallelizing recurrent
 models. Residual connections and layer norms help with gradient
 descent and vanishing gradient problems. Theoretical understanding of
@@ -235,25 +235,32 @@ is advancing rapidly. E.g. @bhattamishra2020 , etc
 
 # Example Code
 
+[Lior Sinai has an excellent blog post, "How to code a transformer in Julia,"](https://liorsinai.github.io/coding/2022/05/18/transformers.html)
+that shows how to implement a transformer as new layers in Flux. 
+
+The [`Transformers.jl`](https://github.com/chengchingwen/Transformers.jl) package 
+provides a higher level transformer interface. 
+
 ## Data
 
 For comparison, we will start by using the same Dylan example as in
 the recurrent neural network notes.
 
 ```julia
-using ProgressMeter, JLD2
+using JLD2
 import HTTP, Gumbo, Cascadia
 using StatsBase: wsample
 using Base.Iterators: partition
 using Transformers, Flux, CUDA
 
-text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
+text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt")))).*""
 #startchar = 'α'
 #endchar = 'Ω' # any character not in original text
-unkchar = 'Ξ'
+unkchar = "Ξ"
 #alphabet = [startchar, unique(text)..., endchar]
 alphabet = unique(text)
 N = length(alphabet)
+# convert to strings
 vocab = Transformers.Vocabulary(alphabet, unkchar)
 ```
 
@@ -294,8 +301,8 @@ end
 function sample(m, alphabet, len, seqlen)
   m = cpu(m)
   buf = IOBuffer()
-  c = 'w' #rand(alphabet)
-  cseq = vocab(collect("so much younger than that no")) #Vector{Int}(undef,0)
+  c = "w" #rand(alphabet)
+  cseq = vocab(split("so much younger than that no","")) #Vector{Int}(undef,0)
   ind2alpha = Dict(vocab(a) => a for a ∈ alphabet)
   for i = 1:len
     write(buf, c)
@@ -342,11 +349,11 @@ function train_model(m; data=data,
   return(m)
 end
 
-m = create_transformer(64,4,heads=1, vocab=vocab) |> gpu
+m = create_transformer(16,2,heads=2,feedforwardsize=16, vocab=vocab) |> gpu
 data = createdata(vocab, text, 500, 50) |> gpu
 opt = RMSProp(0.001)
-m = train_model(m, data=data, modelfile="64d_4level_50e.jld2", opt=opt, epochs=50)
-
+#m = train_model(m, data=data, modelfile="64d_4level_50e.jld2", opt=opt, epochs=50)
+m = train_model(m, data=data, modelfile="test.jld2", opt=opt, epochs=10)
 sample(m, alphabet, 1000, size(first(data)[1],1)) |> println
 ```
 
@@ -363,6 +370,140 @@ competitive. See e.g. @wu2020 , @al2019 ,
 
 # Pre-trained Models
 
-Huggingface and Transformers.jl interface to it.
+An increasing common way to apply transformers, especially for language, but also 
+other contexts, is to fine-tune a general purpose model. There are a number of large
+general purpose language models trained on large datasets. These include variants of 
+GPT, variants of BERT, and others. Huggingface provides a way to access these models,
+and Transformers.jl has integrated some of the models from Huggingface (with plans to 
+add more). 
 
 ## Transfer Learning
+
+Given a specific dataset and task, a fruitful approach is to take a large pretrained
+and fine-tune the model for the task. Often in fine tuning, all parameters of the model 
+will be modified. Here, we will fine-tune the GPT(1) model on the Dylan song data. 
+To limit the computational cost, we hold fixed the embedding and transformer components 
+of GPT, and only retrain a final classifier. The hope is that the output of the transformer
+provides a good representation of the data for predicting the next word. 
+
+```julia
+using ProgressMeter, JLD2
+using StatsBase: wsample
+using Transformers, Flux
+
+text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
+songs = [split(s, "</body")[1] for s in split(text, "<body>")[2:end]]
+
+
+startsym = "<pre>"
+delisym = "_deli_"
+endsym = "</pre>"
+unksym = "<unk>"
+gpt, bpe, vocab, tokenizer = Transformers.load_pretrain("GPT-OpenAIftlm"; startsym, delisym, clfsym=endsym, unksym)
+
+gptenc = Transformers.GPTTextEncoder(tokenizer, bpe, vocab; startsym, sepsym = delisym, endsym = endsym, unksym, padsym = unksym)
+
+# encode songs
+songenc = [Transformers.encode(gptenc, s) for s in songs]
+
+# find size of output = # of tokens used in data
+usedtoken = reduce((x,y)-> x .|| y, any(s.input.tok,dims=2) for s in songenc)
+idx = cumsum(usedtoken, dims=1)
+outdim = sum(usedtoken)
+
+
+predictmodel = Chain(Dense(768, outdim)) |> gpu
+model = Transformers.set_classifier(gpt, predictmodel) |> gpu
+
+maxlen = size(gpt.embed.embeddings.pe.embedding,2)÷2
+batches = 100
+batchsize = 1000
+minlen = 20 # minimum input token sequence to predict from
+
+"""
+  creatbatch(batchsize)
+
+Randomly select a song and a sequence of tokens with length 
+uniformly distributed on [minlen,maxlen]. Encode the sequence 
+using the transformer from gpt, then return the last encoded value,
+and a one-hot vector representing the next token in the song.
+
+This is done `batchsize` times and the function returns the 
+transformed output as `X` with dimension 768 by `batchsize`,
+and one hot matrix `y` with dimension number `outdim` by `batchsize`
+"""
+function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc)
+  Ntrain=batchsize
+  xin = (tok=songenc[1].input.tok[:,1:minlen],)
+  xt = model.transformers(model.embed(xin))
+  Xt = similar(xt, size(xt,1), Ntrain)
+  y = Vector{typeof(Flux.onehot(1, 1:outdim))}(undef, Ntrain)
+  for i in 1:Ntrain
+    L = 0
+    si = 0
+    while (L<minlen)
+      si = rand(axes(songenc)[1])
+      s = songenc[si]
+      L = size(s.input.tok,2)
+    end
+    s = songenc[si]
+    len = rand(minlen:min(maxlen,(L-3)))
+    first = rand(1:(L-len))
+    last = first + len -1
+    xin  = (tok=s.input.tok[:,first:last],)
+    xe = model.embed(xin)
+    xt = model.transformers(xe)
+    Xt[:,i] .= xt[:,end]
+    y[i] = Flux.onehot(idx[Flux.onecold(s.input.tok[:,(last+1)])],1:outdim)
+  end
+  y = hcat(y...)
+  y = gpu(y)
+  return(Xt,y)
+end
+datafile = joinpath(docdir,"jmd","models","dylan-batched.jld2")
+if !isfile(datafile)
+  data = [createbatch(batchsize) for b in 1:batches]
+  cdata = cpu.(data)
+  @save datafile cdata
+end
+@load datafile cdata
+data = gpu.(cdata)
+
+opt = ADAM(1e-2)
+loss(xt, y) = Flux.Losses.logitcrossentropy(predictmodel(xt),y)
+
+function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel)  
+  out = prompt
+  for i=1:len
+    enc = Transformers.encode(gptenc, out)
+    V, L = size(enc.input.tok)
+    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)    
+    xt = model.transformers(model.embed(xin))[:,end]
+    p = Flux.softmax(predictmodel(xt))    
+    y = wsample(1:outdim, p)
+    yall = findfirst(idx.==y)[1]    
+    out *= replace(Transformers.lookup(gptenc.vocab, yall), "</w>" => " ")
+  end
+  return(out)
+end
+samplegpt(100)
+
+Epochs = 
+losses = zeros(Epochs)
+modelfile = joinpath(docdir,"jmd","models","dylan-gpt-tuned.jld2")
+if !isfile(modelfile)
+  losses = zeros(Epochs)
+  for e=1:Epochs
+    Flux.train!(loss, Flux.params(predictmodel), data, opt)
+    losses[e] = sum(loss(d...) for d in data)
+    println("Epoch $e: loss=$(losses[e])")
+    println("Sample = ")
+    println(samplegpt(20))
+  end
+  cpum = cpu(predictmodel)
+  @save modelfile cpum losses
+end
+@load modelfile cpum losses
+predictmodel = gpu(cpum)
+
+```
