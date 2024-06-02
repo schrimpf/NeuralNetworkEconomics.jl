@@ -603,6 +603,6 @@ $$ \frac{\hat{\mu}(x) - \mu(x)}{\hat{\sigma}_n(x)} \leadsto N(0,1) $$
 
 <!-- --- -->
 
-# Bibliography
+# References
 
 <!-- --- -->

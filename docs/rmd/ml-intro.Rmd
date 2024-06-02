@@ -61,9 +61,9 @@ if (exists("slides") && slides) {
 # Introduction
 
 <div class=notes>
-These notes will examine the incorportion of machine learning
+These notes will examine the incorporation of machine learning
 methods in classic econometric techniques for estimating causal
-effects. More specifally, we will focus on estimating treatment
+effects. More specifically, we will focus on estimating treatment
 effects using matching and instrumental variables. In these
 estimators (and many others) there is a low-dimensional parameter
 of interest, such as the average treatment effect, but estimating
