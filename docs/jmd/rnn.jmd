@@ -542,7 +542,7 @@ seqperbatch = 50
 Xseq = collect(partition((batchseq((chunk(hottext,seqperbatch)),stop)), batchseqlen));
 Yseq = collect(partition((batchseq((chunk(hottext[2:end], seqperbatch)),stop)),
                          batchseqlen));
-println("$length(Xseq) batches")
+println("$(length(Xseq)) batches")
 data = zip(Xseq, Yseq);
 
 ```
@@ -585,6 +585,21 @@ function cbgenerator(N, loss, printiter=Int(round(N/10)))
     i+=1
   end
   return(cb)
+end
+
+function trainepoch!(model, loss, data, opt, cb)
+  θ = Flux.params(model)
+  for (X,y) in data
+    Flux.reset!(model) # Reset the hidden state of the RNN    
+    # Compute the gradient of the mean squared error loss
+    ∇ = gradient(θ) do
+      model(X[1]) # Warm-up the model
+      loss(X,y)
+    end
+    Flux.update!(opt, θ, ∇) # Update the parameters    
+  end
+  cb()
+  return(model)
 end
 
 function train_model(L; N=N, data=data,

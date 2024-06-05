@@ -112,7 +112,7 @@ $t$ in parallel. This mapping consists of the following layers.
 Each $x_t \in X \subseteq \R^K$ is often contained in a high
 dimensional space. In text, $x_t$ in a vector of indicator variables
 representing which token is the $t$th token in the sequence. These
-tokens could be characters, or more commonly now, words. In either
+tokens could be characters, or more commonly, words. In either
 case, the dimension of $x_t$ is in the hundreds or thousands. Anyway,
 $x_t$ is often embedded into a lower dimensional space by
 $$
@@ -218,7 +218,7 @@ $$
 
 Finally, the output of the encoder, $x_t^{A_L}$, is used to predict
 $x_{t+1}$. When $x_{t+1}$ is discrete, this is done with a linear and
-then softmax layet. When $x_{t+1}$ is continuous, it can be done with
+then softmax layer. When $x_{t+1}$ is continuous, it can be done with
 just a linear layer.
 
 ## Why?
@@ -236,10 +236,10 @@ is advancing rapidly. E.g. @bhattamishra2020 , etc
 # Example Code
 
 [Lior Sinai has an excellent blog post, "How to code a transformer in Julia,"](https://liorsinai.github.io/coding/2022/05/18/transformers.html)
-that shows how to implement a transformer as new layers in Flux. 
+that shows how to implement a transformer as new layers in Flux.
 
-The [`Transformers.jl`](https://github.com/chengchingwen/Transformers.jl) package 
-provides a higher level transformer interface. 
+The [`Transformers.jl`](https://github.com/chengchingwen/Transformers.jl) package
+provides a higher level transformer interface.
 
 ## Data
 
@@ -247,7 +247,7 @@ For comparison, we will start by using the same Dylan example as in
 the recurrent neural network notes.
 
 ```julia
-using JLD2
+using JLD2, ProgressMeter
 import HTTP, Gumbo, Cascadia
 using StatsBase: wsample
 using Base.Iterators: partition
@@ -370,26 +370,28 @@ competitive. See e.g. @wu2020 , @al2019 ,
 
 # Pre-trained Models
 
-An increasing common way to apply transformers, especially for language, but also 
+An increasing common way to apply transformers, especially for language, but also
 other contexts, is to fine-tune a general purpose model. There are a number of large
-general purpose language models trained on large datasets. These include variants of 
+general purpose language models trained on large datasets. These include variants of
 GPT, variants of BERT, and others. Huggingface provides a way to access these models,
-and Transformers.jl has integrated some of the models from Huggingface (with plans to 
-add more). 
+and Transformers.jl has integrated some of the models from Huggingface (with plans to
+add more).
 
 ## Transfer Learning
 
 Given a specific dataset and task, a fruitful approach is to take a large pretrained
-and fine-tune the model for the task. Often in fine tuning, all parameters of the model 
-will be modified. Here, we will fine-tune the GPT(1) model on the Dylan song data. 
-To limit the computational cost, we hold fixed the embedding and transformer components 
-of GPT, and only retrain a final classifier. The hope is that the output of the transformer
-provides a good representation of the data for predicting the next word. 
+and fine-tune the model for the task. Often in fine tuning, all parameters of the model
+will be modified. Here, we will fine-tune the GPT(1) model on the Dylan song data.
+The hope is that the output of the transformer
+provides a good representation of the data for predicting the next word.
+To limit the computational cost, we hold fixed the embedding and transformer components
+of GPT, and only retrain a final classifier.
+It is also common to fine tune all components of the model.
 
 ```julia
 using ProgressMeter, JLD2
 using StatsBase: wsample
-using Transformers, Flux
+using Transformers, Flux, CUDA
 
 text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
 songs = [split(s, "</body")[1] for s in split(text, "<body>")[2:end]]
@@ -423,12 +425,12 @@ minlen = 20 # minimum input token sequence to predict from
 """
   creatbatch(batchsize)
 
-Randomly select a song and a sequence of tokens with length 
-uniformly distributed on [minlen,maxlen]. Encode the sequence 
+Randomly select a song and a sequence of tokens with length
+uniformly distributed on [minlen,maxlen]. Encode the sequence
 using the transformer from gpt, then return the last encoded value,
 and a one-hot vector representing the next token in the song.
 
-This is done `batchsize` times and the function returns the 
+This is done `batchsize` times and the function returns the
 transformed output as `X` with dimension 768 by `batchsize`,
 and one hot matrix `y` with dimension number `outdim` by `batchsize`
 """
@@ -462,7 +464,7 @@ function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, mod
 end
 datafile = joinpath(docdir,"jmd","models","dylan-batched.jld2")
 if !isfile(datafile)
-  data = [createbatch(batchsize) for b in 1:batches]
+  CUDA.@allowscalar data = [createbatch(batchsize) for b in 1:batches]
   cdata = cpu.(data)
   @save datafile cdata
 end
@@ -472,23 +474,23 @@ data = gpu.(cdata)
 opt = ADAM(1e-2)
 loss(xt, y) = Flux.Losses.logitcrossentropy(predictmodel(xt),y)
 
-function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel)  
+function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel)
   out = prompt
   for i=1:len
     enc = Transformers.encode(gptenc, out)
     V, L = size(enc.input.tok)
-    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)    
+    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)
     xt = model.transformers(model.embed(xin))[:,end]
-    p = Flux.softmax(predictmodel(xt))    
+    p = Flux.softmax(predictmodel(xt))
     y = wsample(1:outdim, p)
-    yall = findfirst(idx.==y)[1]    
+    yall = findfirst(idx.==y)[1]
     out *= replace(Transformers.lookup(gptenc.vocab, yall), "</w>" => " ")
   end
   return(out)
 end
-samplegpt(100)
+CUDA.@allowscalar samplegpt(20)
 
-Epochs = 
+Epochs = 10
 losses = zeros(Epochs)
 modelfile = joinpath(docdir,"jmd","models","dylan-gpt-tuned.jld2")
 if !isfile(modelfile)
@@ -506,4 +508,5 @@ end
 @load modelfile cpum losses
 predictmodel = gpu(cpum)
 
+CUDA.@allowscalar samplegpt(20)
 ```

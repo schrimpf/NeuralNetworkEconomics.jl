@@ -646,7 +646,7 @@ rerun = false
 batchsize=10000 
 parts=Base.Iterators.partition(1:size(X,2), batchsize) 
 randrotate(x::AbstractVector; maxθ = π/8) = vec(rotateimage(reshape(x, 28, 28), rand()*2maxθ - maxθ))
-data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), cpuY[:,p]) for p in parts for i=1:10];
+data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), Y[:,p]) for p in parts for i=1:10];
 
 epochs = 10
 acctest  = zeros(epochs)
