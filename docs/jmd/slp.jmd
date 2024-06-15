@@ -3,7 +3,7 @@ subtitle    : "Single Layer Perceptrons"
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -43,11 +43,6 @@ catch
   false
 end
 
-if !("DISPLAY" ∈ keys(ENV))
-  # Make gr and pyplot backends for Plots work without a DISPLAY
-  ENV["GKSwstype"]="nul"
-  ENV["MPLBACKEND"]="Agg"
-end
 # Make gr backend work with λ and other unicode
 ENV["GKS_ENCODING"] = "utf-8"
 
@@ -142,7 +137,6 @@ typical Julia function, as in the following code block.
 
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
-Plots.pyplot()
 # some function to estimate
 f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)

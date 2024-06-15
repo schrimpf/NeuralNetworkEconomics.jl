@@ -1,8 +1,15 @@
 using Documenter,NeuralNetworkEconomics, DocumenterMarkdown
 
 runweave=true
-runnotebook=false
+runnotebook=true
+rerender=true
 if runweave
+  if !("DISPLAY" ∈ keys(ENV)) || ("INSIDE_EMACS" ∈ keys(ENV))
+     # Make gr and pyplot backends for Plots work without a DISPLAY
+     ENV["GKSwstype"]="nul"
+     ENV["MPLBACKEND"]="Agg"
+  end
+
   using Weave
   wd = pwd()
   try
@@ -13,11 +20,11 @@ if runweave
     for f in jmdfiles
       src = joinpath("..","jmd",f)
       target = joinpath("..","build",replace(f, r"jmd$"=>s"md"))
-      if stat(src).mtime > stat(target).mtime
+      if rerender || (stat(src).mtime > stat(target).mtime)
         weave(src,out_path=joinpath("..","build"),
               cache=:refresh,
               cache_path=joinpath("..","weavecache"),
-              doctype="github", mod=Main,
+              doctype="github",
               args=Dict("md" => true))
       end
 
@@ -33,6 +40,11 @@ if runweave
   if (isfile("build/temp.md"))
     rm("build/temp.md")
   end
+
+    # restore GR ability to display plots
+    if "INSIDE_EMACS" ∈ keys(ENV)
+        ENV["GKSwstype"]="gksqt"
+    end
 end
 
 makedocs(

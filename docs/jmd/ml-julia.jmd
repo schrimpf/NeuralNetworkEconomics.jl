@@ -4,7 +4,7 @@ subtitle    :
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -44,7 +44,7 @@ catch
   false
 end
 
-if !("DISPLAY" ∈ keys(ENV))
+if !("DISPLAY" ∈ keys(ENV)) || ("INSIDE_EMACS" ∈ keys(ENV))
   # Make gr and pyplot backends for Plots work without a DISPLAY
   ENV["GKSwstype"]="nul"
   ENV["MPLBACKEND"]="Agg"
@@ -199,8 +199,8 @@ println("MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))")
 
 ```julia; cache=true
 using Plots
-cvmse = m.report.plotting.measurements
-λ = Float64.(m.report.plotting.parameter_values[:])
+cvmse = report(m).plotting.measurements
+λ = Float64.(report(m).plotting.parameter_values[:])
 s = sortperm(λ)
 plot(λ[s], cvmse[s], xlab="λ", ylab="CV(MSE)")
 ```
@@ -251,6 +251,7 @@ for i in 1:maxiter
   mse_train[i] = mse(X_train,y_train)
   mse_test[i] = mse(X_test, y_test)
   obj[i] = loss(X_train,y_train)
+  @show i
 end
 lo = 1
 hi = 2000
@@ -275,13 +276,13 @@ even though it never exactly gets there.
 
 # Lux.jl
 
-A promising alternative to `Flux.jl`  is [`Lux.jl`](http://lux.csail.mit.edu/dev/).^[These notes were originally written before Lux.jl existed. 
+A promising alternative to `Flux.jl`  is [`Lux.jl`](http://lux.csail.mit.edu/dev/).^[These notes were originally written before Lux.jl existed.
 If I were starting over, I would use Lux.jl instead of Flux.jl.]
-`Lux.jl` and `Flux.jl` share many features and backend code. `Lux.jl` has a more function 
-focused interface with explicit parameter passing. This is a more "Julian" style of 
-programming.^[`Flux.jl` drew inspiration for its interface from Tensorflow and PyTorch. 
+`Lux.jl` and `Flux.jl` share many features and backend code. `Lux.jl` has a more function
+focused interface with explicit parameter passing. This is a more "Julian" style of
+programming.^[`Flux.jl` drew inspiration for its interface from Tensorflow and PyTorch.
 Implicit parameters makes some sense in an object oriented language like Python, but it
- is not the most natural style for Julia.] 
+ is not the most natural style for Julia.]
 
 For comparison, let's implement the same Lasso model in Lux.
 ```julia
@@ -313,10 +314,9 @@ Xs = stdizex(X_train)
 βols = (Xs'*Xs) \ (Xs'*(ys .- mean(ys)))
 b = [mean(ys)]
 
-m = Lux.Chain(X->stdizex(X)', 
-  Lux.Dense(size(X_train,2), 1, init_weight=zeros, init_bias=zeros)
-  )
-
+m = Lux.Chain(X->stdizex(X)',
+              Lux.Dense(size(X_train,2), 1)
+              )
 ps, st = Lux.setup(rng, m)
 ps.layer_2.weight .= βols'
 ps.layer_2.bias .= b
@@ -331,25 +331,37 @@ end
 @show ℓ(ps,X_train,y_train,m)
 
 # minimize loss
-opt = Lux.Optimisers.AMSGrad() #ADAM(0.001)
-optstate = Lux.Optimisers.setup(opt, ps)
-maxiter=2000
-obj = zeros(maxiter)
-mse_train = zeros(maxiter)
-mse_test = zeros(maxiter)
-for i in 1:maxiter
+import Optimisers
+
+function train_model(m, initial_params, st; maxiter=2000)
+  opt = Optimisers.AMSGrad()
+  ps = initial_params
+  optstate = Optimisers.setup(opt, ps)
+
+  obj = zeros(maxiter)
+  mse_train = zeros(maxiter)
+  mse_test = zeros(maxiter)
+  for i in 1:maxiter
     # Compute the gradient
     gs = Zygote.gradient(ps->ℓ(ps, X_train, y_train, m), ps)[1]
     # Perform parameter update
-    optstate, ps = Lux.Optimisers.update(optstate, ps, gs)
+    optstate, ps = Optimisers.update(optstate, ps, gs)
     mse_train[i] = mse(m, ps, st, X_train,y_train)
     mse_test[i] = mse(m, ps, st, X_test, y_test)
     obj[i] = ℓ(ps,X_train,y_train,m)
+  end
+  return(ps, mse_train, mse_test, obj)
 end
+ps, mse_train, mse_test, obj = train_model(m, ps, st)
 lo = 1
-hi = 250
+hi = 2000
 plot(lo:hi,obj[lo:hi], ylab="Loss=MSE + λ/n*||β||₁", xlab="Iteration")
 ```
+
+```julia
+plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab="MSE", xaxis=("Iteration"), lab=["Train" "Test"])
+```
+
 
 
 # Additional Resources

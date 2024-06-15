@@ -4,7 +4,7 @@ subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8

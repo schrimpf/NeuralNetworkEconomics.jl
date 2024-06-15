@@ -4,7 +4,7 @@ subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -137,7 +137,6 @@ data.
 using MLDatasets
 using ImageFiltering
 using Plots
-Plots.pyplot()
 
 train_x, labels = MNIST(split=:train)[:]
 imgs = [Gray.(train_x[:,:,i]') for i ∈ 1:size(train_x,3)]
@@ -176,10 +175,11 @@ zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/conv.jl)
 
 ```julia
 using Flux, MLDatasets, Statistics
-using Flux: onehotbatch, onecold, throttle, @epochs
+using Flux: onehotbatch, onecold, throttle
 using Base.Iterators: repeated, partition
 using JLD2
 using ColorSchemes, ProgressMeter
+using cuDNN, CUDA
 cscheme = colorschemes[:BrBG_4];
 ```
 
@@ -293,6 +293,7 @@ function for the training loop.
 ```julia; cache=true
 function accuracy(m, x, y)
   # onecold(m(x)) results in very slow code for large x, so we avoid it
+  #coldx = onecold(m(x))
   coldx = vec(map(x->x[1], argmax(m(x), dims=1)))
   coldy = onecold(y)
   return(mean(coldx.==coldy))
@@ -305,7 +306,7 @@ function train_mnist!(model, X, Y, tX, tY,
                       batchsize=length(tY),
                       reps_per_epoch=1,
                       maxepochs=200,
-                      rerun=false
+                      rerun=true
                       )
   Xsmall = X[:,:,:,1:1000]
   Ysmall = Y[:,1:1000]
@@ -387,14 +388,15 @@ out = train_mnist!(model, X, Y, tX, tY, "conv";
                    batchsize=2500,
                    reps_per_epoch=2,
                    maxepochs=200,
-                   rerun=false
+                   rerun=true
                    )
 @show maximum(out.acctest)
 ```
 
 Since I save the model to disk to avoid waiting for it to rerun
-everytime I change this document, the above output does not include
-the training time. It takes roughly 10 seconds per epoch.
+everytime I change this document, the above output may not include
+the training time. It took roughly 10 seconds per epoch on an older NVidia 1060,
+and roughly XX seconds per epoch on an NVidia 4070 Ti Super.
 
 In terms of testing accuracy, this model does quite well. The deep
 feedforward network with nearly 12 million parameters from the
@@ -460,7 +462,7 @@ smallbatch = train_mnist!(model, X, Y, tX, tY, "conv-smallbatch";
                     batchsize=128,
                     reps_per_epoch=1,
                     maxepochs=200,
-                    rerun=false
+                    rerun=true
                     )
 @show maximum(smallbatch.acctest)
 training_plot(smallbatch)
@@ -492,7 +494,7 @@ With this added noise, the digits are still easily recognizable, so we would
 hope that our model can classify them.
 
 ```julia
-addnoise(x, σ) = x .+ σ.*gpu(randn(eltype(x), size(x)))
+addnoise(x, σ) = x + gpu(σ.*randn(eltype(x), size(x)))
 @show accuracy(out.model, addnoise(tX,0.1f0), tY)
 @show accuracy(smallbatch.model, addnoise(tX,0.1f0), tY)
 ```
@@ -519,7 +521,7 @@ outn = train_mnist!(model, X, Y, tX, tY, "conv-augrandn";
                     batchsize=2500,
                     reps_per_epoch=2,
                     maxepochs=200,
-                    rerun=false
+                    rerun=true
                     )
 @show maximum(outn.acctest)
 ```
@@ -551,7 +553,7 @@ smallnoisy = train_mnist!(model, X, Y, tX, tY, "conv-augrandn-smallbatch";
                     batchsize=128,
                     reps_per_epoch=1,
                     maxepochs=200,
-                    rerun=false
+                    rerun=true
                     )
 @show maximum(smallnoisy.acctest)
 training_plot(smallnoisy)
