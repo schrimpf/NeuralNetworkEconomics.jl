@@ -246,120 +246,138 @@ provides a higher level transformer interface.
 For comparison, we will start by using the same Dylan example as in
 the recurrent neural network notes.
 
+We begin by loading the data and setting up a encoding that converts
+the original string data into an array of indicators for each
+character.
+
 ```julia
-using JLD2, ProgressMeter
-import HTTP, Gumbo, Cascadia
+using JLD2
 using StatsBase: wsample
 using Base.Iterators: partition
 using Transformers, Flux, CUDA
 
-text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt")))).*""
-#startchar = 'α'
-#endchar = 'Ω' # any character not in original text
+text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
+#text = "01"^1000
+startchar = "α"
+endchar = "Ω"
 unkchar = "Ξ"
-#alphabet = [startchar, unique(text)..., endchar]
-alphabet = unique(text)
-N = length(alphabet)
-# convert to strings
-vocab = Transformers.Vocabulary(alphabet, unkchar)
+padchar = "δ"
+alphabet = unique(vcat(split(text, ""),unkchar,startchar,endchar, padchar))
+vocab = Transformers.TextEncoders.Vocab(alphabet, unkchar)
+encoder = Transformers.TextEncoders.TransformerTextEncoder(x->split(x,""), vocab,
+                                                           startsym=startchar, endsym=endchar,
+                                                           unksym=unkchar, padsym=padchar)
 ```
 
 ## Model Creation
+
+Now we setup the model.
 
 ```julia
 enable_gpu(true)
 
 function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
-  embed = Transformers.Basic.Embed(modeldim,length(vocab))
-  pe = Transformers.Basic.PositionEmbedding(modeldim)
-  topo = @nntopo_str "x → e → pe:(e,pe) → t → $L:t → logitp"
-  m = Stack(topo,
-            embed,
-            pe,
-            (e,pe) -> e .+ pe,
-            [Transformer(modeldim, heads, feedforwardsize, act=relu, future=false, pdrop=0.1) for l ∈ 1:L]...,
-            Transformers.Basic.Positionwise(Dense(modeldim,length(vocab))))
+  emb = Transformers.Layers.Embed(modeldim,length(vocab))
+  pe = Transformers.Layers.SinCosPositionEmbed(modeldim)
+
+  trf_blocks = Transformer(Layers.TransformerBlock,
+                           L, relu, heads, modeldim, modeldim ÷ heads, 4*modeldim)
+  decode = Transformers.Layers.EmbedDecoder(emb)
+  causalmask = Transformers.Layers.CausalMask()
+  m = Chain(
+    SkipConnection(
+      Chain(x->x.token, emb, Transformers.Layers.ApplyEmbed(pe)),
+      (mx,x)->((hidden_state=mx,attention_mask=causalmask))
+    ),
+    trf_blocks,
+    x->x.hidden_state, decode)
   return(m)
+end
+```
+
+## Data Batching
+
+For training, we divide the data into sequences of length `seqlen` and predict the next
+character in each sequence. We further divide the sequences into `batches` batches, and compute the loss and gradient in parallel for each batch.
+
+```julia
+function createdata(text, seqlength, batches, encoder=encoder, endchar=endchar)
+    Xtext = Flux.chunk(text, batches)
+    Xs = collect.(Base.Iterators.partition.(Xtext, seqlength))
+    Xenc = [Transformers.TextEncoders.encode(encoder,x) for x in Xs]
+    return(Xenc)
 end
 ```
 
 ## Training
 ```julia
-function cbgenerator(N, loss, printiter=Int(round(N/10)))
-  p = Progress(N, 1, "Training", 25)
-  i=0
-  function cb()
-    next!(p)
-    if (i % printiter==0)
-      @show loss()
-    end
-    i+=1
-  end
-  return(cb)
+using Statistics
+
+function loss(m, x; agg=mean)
+    logp = m(x)[:,1:(end-1),:]
+    @views y= x.token[:,2:end,:]
+    return Flux.Losses.logitcrossentropy(logp, y, agg=agg)
 end
 
-function sample(m, alphabet, len, seqlen)
-  m = cpu(m)
-  buf = IOBuffer()
-  c = "w" #rand(alphabet)
-  cseq = vocab(split("so much younger than that no","")) #Vector{Int}(undef,0)
-  ind2alpha = Dict(vocab(a) => a for a ∈ alphabet)
-  for i = 1:len
-    write(buf, c)
-    if (i < seqlen)
-      push!(cseq, vocab(c))
-    else
-      cseq[1:(end-1)] .= cseq[2:end]
-      cseq[end] = vocab(c)
-    end
-    c = ind2alpha[wsample(1:length(vocab), softmax(m(cseq)[:,end]))]
-  end
-  return String(take!(buf))
-end
-
-function createdata(vocab, text, seqlength, seqperbatch)
-  sequences = [vocab.(x) for x ∈ partition(text, seqlength)]
-  xy = [(s[1:(end-1)],Flux.onehot(vocab,s[2:end])) for s ∈ sequences]
-  if length(xy[end][1]) < length(xy[1][1])
-    pop!(xy)
-  end
-  xybatches = [ (hcat([z[1] for z ∈ p]...), cat([z[2] for z ∈ p]..., dims=3)) for p ∈ partition(xy, seqperbatch) ]
-  return(xybatches)
+function totalavgloss(m, data)
+    L = sum(loss(m, x, agg=sum) for x in data)
+    N = sum((size(x.token,2)-1)*size(x.token,3) for x in data)
+    return L/N
 end
 
 function train_model(m; data=data,
                      modelfile=joinpath(docdir,"jmd","models","dylan-t.jld2"),
-                     opt=opt, epochs=20 )
-  loss(xb, yb) = Flux.Losses.logitcrossentropy(m(xb),yb)
-  cb=cbgenerator(length(data),()->loss(first(data)...))
-
-  if isfile(modelfile)
-    @load modelfile cpum
-    #m = gpu(cpum)
-    m = cpum
-  else
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    println("Sampling after 1 epoch:")
-    sample(m, alphabet, 1000, size(first(data)[1],1)) |> println
-
-    Flux.@epochs epochs Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    cpum = cpu(m)
-    @save modelfile cpum
-  end
-  return(m)
+                     opt=Adam(), epochs=20, device = gpu)
+    data=device(data)
+    m=device(m)
+    opts = Flux.setup(opt, m)
+    if isfile(modelfile)
+        @load modelfile cpum
+        m = device(cpum)
+    else
+        ℓ = totalavgloss(m,data)
+        println("Initial loss: $ℓ")
+        @time Flux.train!(loss, m, data, opts)
+        ℓ = totalavgloss(m, data)
+        println("Loss after 1 epoch: $ℓ")
+        for epoch in 1:epochs
+            Flux.train!(loss, m, data, opts)
+            ℓ = totalavgloss(m,data)
+            println("Loss after $(epoch+1) epochs: $ℓ")
+        end
+        cpum = cpu(m)
+        @save modelfile cpum
+    end
+    return(m)
 end
 
-m = create_transformer(16,2,heads=2,feedforwardsize=16, vocab=vocab) |> gpu
-data = createdata(vocab, text, 500, 50) |> gpu
-opt = RMSProp(0.001)
-#m = train_model(m, data=data, modelfile="64d_4level_50e.jld2", opt=opt, epochs=50)
-m = train_model(m, data=data, modelfile="test.jld2", opt=opt, epochs=10)
-sample(m, alphabet, 1000, size(first(data)[1],1)) |> println
+m = create_transformer(16,6,heads=2,feedforwardsize=16)
+data = createdata(text, 500, 10)
+m = train_model(m, data=data, modelfile=joinpath(docdir,"jmd","models","dylan-transformer16-6.jld2"),
+        epochs=1000, device=gpu)
+```
+
+Sampling from the trained model:
+
+```julia
+function sample(m, len, seed="", encoder=encoder, unkchar=unkchar)
+    out = split(seed*unkchar^(len-length(seed)),"")
+    dev = isa(Flux.params(m)[1], CuArray) ? gpu : cpu
+    for i = (length(seed)+1):len
+        x = Transformers.TextEncoders.encode(encoder, prod(out)) |> dev
+        logits = m(x)
+        p = Flux.softmax(logits[:,i,1])
+        CUDA.@allowscalar y = wsample(1:length(encoder.vocab), p)
+        out[i] = Transformers.TextEncoders.decode(encoder, y)
+    end
+    return(prod(out))
+end
+
+sample(m, 500) |> println
 ```
 
 The output looks okay, but not quite as good as with RNNs. I did some
-ad-hoc exploration with alternate widths and depths. The one above
-seemed to work best.
+ad-hoc exploration with alternate widths and depths, but it was not very exhaustive.
 
 Qualitatively, these results are typical. Although transformers
 outperform RNNs when the underlying tokens are words or
@@ -370,7 +388,7 @@ competitive. See e.g. @wu2020 , @al2019 ,
 
 # Pre-trained Models
 
-An increasing common way to apply transformers, especially for language, but also
+An increasingly common way to apply transformers, especially for language, but also
 other contexts, is to fine-tune a general purpose model. There are a number of large
 general purpose language models trained on large datasets. These include variants of
 GPT, variants of BERT, and others. Huggingface provides a way to access these models,
@@ -381,7 +399,7 @@ add more).
 
 Given a specific dataset and task, a fruitful approach is to take a large pretrained
 and fine-tune the model for the task. Often in fine tuning, all parameters of the model
-will be modified. Here, we will fine-tune the GPT(1) model on the Dylan song data.
+will be modified. Here, we will fine-tune the GPT2 model on the Dylan song data.
 The hope is that the output of the transformer
 provides a good representation of the data for predicting the next word.
 To limit the computational cost, we hold fixed the embedding and transformer components
@@ -389,118 +407,132 @@ of GPT, and only retrain a final classifier.
 It is also common to fine tune all components of the model.
 
 ```julia
-using ProgressMeter, JLD2
+using JLD2
 using StatsBase: wsample
 using Transformers, Flux, CUDA
+#using TextEncodeBase
+using Transformers.HuggingFace
 
 text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
 songs = [split(s, "</body")[1] for s in split(text, "<body>")[2:end]]
 
 
-startsym = "<pre>"
-delisym = "_deli_"
-endsym = "</pre>"
-unksym = "<unk>"
-gpt, bpe, vocab, tokenizer = Transformers.load_pretrain("GPT-OpenAIftlm"; startsym, delisym, clfsym=endsym, unksym)
+# startsym = "<pre>"
+# delisym = "_deli_"
+# endsym = "</pre>"
+# unksym = "<unk>"
 
-gptenc = Transformers.GPTTextEncoder(tokenizer, bpe, vocab; startsym, sepsym = delisym, endsym = endsym, unksym, padsym = unksym)
+gptenc = hgf"gpt2:tokenizer"
+gpt2 = hgf"gpt2:lmheadmodel"
+
 
 # encode songs
 songenc = [Transformers.encode(gptenc, s) for s in songs]
 
 # find size of output = # of tokens used in data
-usedtoken = reduce((x,y)-> x .|| y, any(s.input.tok,dims=2) for s in songenc)
-idx = cumsum(usedtoken, dims=1)
-outdim = sum(usedtoken)
+tokens = sort(unique(vcat(unique(Flux.onecold(s.token) for s in songenc)...)))
+#usedtoken = reduce((x,y)-> x .|| y, any(s.token,dims=2) for s in songenc)
+#idx = cumsum(usedtoken, dims=1)
+outdim = length(tokens)
 
+hiddendim = size(gpt2.model(Transformers.encode(gptenc, "test this thing")).hidden_state,1)
 
-predictmodel = Chain(Dense(768, outdim)) |> gpu
-model = Transformers.set_classifier(gpt, predictmodel) |> gpu
+predictmodel = Chain(Dense(hiddendim, outdim))
 
-maxlen = size(gpt.embed.embeddings.pe.embedding,2)÷2
-batches = 100
-batchsize = 1000
-minlen = 20 # minimum input token sequence to predict from
+maxlen = size(gpt2.model.embed.layer.position.embed.embeddings,2)-3
+
+function squeeze( A :: AbstractArray )
+    keepdims = Tuple(i for i in size(A) if i != 1);
+    return reshape( A, keepdims );
+end
 
 """
   creatbatch(batchsize)
 
-Randomly select a song and a sequence of tokens with length
-uniformly distributed on [minlen,maxlen]. Encode the sequence
-using the transformer from gpt, then return the last encoded value,
-and a one-hot vector representing the next token in the song.
+Randomly select a song and a sequence of tokens with length min(length(song),maxlen).
+Encode the sequence using the transformer from gpt and a causal attention mask.
+Return the encoded values,
+and a one-hot matrix representing the next tokens in the song.
 
 This is done `batchsize` times and the function returns the
-transformed output as `X` with dimension 768 by `batchsize`,
-and one hot matrix `y` with dimension number `outdim` by `batchsize`
+transformed output as `X` with dimension 768 by `batchsize`*`maxlen`,
+and one hot matrix `y` with dimension number `outdim` by `batchsize`*`maxlen`
 """
-function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc)
+function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc, tokens=tokens)
   Ntrain=batchsize
-  xin = (tok=songenc[1].input.tok[:,1:minlen],)
-  xt = model.transformers(model.embed(xin))
-  Xt = similar(xt, size(xt,1), Ntrain)
-  y = Vector{typeof(Flux.onehot(1, 1:outdim))}(undef, Ntrain)
+  xin = (token=songenc[1].token[:,1:minlen],)
+  xt = model(xin)
+  CUDA.@allowscalar Xt = Vector{typeof(squeeze(xt.hidden_state))}(undef, Ntrain)
+  CUDA.@allowscalar y = Vector{typeof(Flux.onehotbatch(Flux.onecold(xin.token), tokens))}(undef, Ntrain)
+  causalmask=Transformers.Layers.CausalMask()
   for i in 1:Ntrain
     L = 0
     si = 0
     while (L<minlen)
       si = rand(axes(songenc)[1])
       s = songenc[si]
-      L = size(s.input.tok,2)
+      L = size(s.token,2)
     end
     s = songenc[si]
-    len = rand(minlen:min(maxlen,(L-3)))
+    len = min(maxlen,(L-3))
     first = rand(1:(L-len))
     last = first + len -1
-    xin  = (tok=s.input.tok[:,first:last],)
-    xe = model.embed(xin)
-    xt = model.transformers(xe)
-    Xt[:,i] .= xt[:,end]
-    y[i] = Flux.onehot(idx[Flux.onecold(s.input.tok[:,(last+1)])],1:outdim)
+    CUDA.@allowscalar xin  = (token=s.token[:,first:last],attention_mask=causalmask)
+    xt = model(xin)
+    CUDA.@allowscalar Xt[i] = squeeze(xt.hidden_state)
+    CUDA.@allowscalar y[i] = Flux.onehotbatch(Flux.onecold(s.token[:,(first+1):(last+1)]), tokens)
   end
-  y = hcat(y...)
-  y = gpu(y)
-  return(Xt,y)
+  Y = hcat(y...)
+  X = hcat(Xt...)
+  return(X,Y)
 end
+
 datafile = joinpath(docdir,"jmd","models","dylan-batched.jld2")
+batches = 20
+batchsize = 25
+minlen = 20
 if !isfile(datafile)
-  CUDA.@allowscalar data = [createbatch(batchsize) for b in 1:batches]
-  cdata = cpu.(data)
-  @save datafile cdata
+    gm = gpu(gpt2.model)
+    gs = gpu(songenc)
+    data = [createbatch(batchsize, maxlen=maxlen, model=gm, songenc=gs) for b in 1:batches]
+    cdata = cpu(data)
+    @save datafile cdata
 end
 @load datafile cdata
-data = gpu.(cdata)
+data = cdata
 
-opt = ADAM(1e-2)
-loss(xt, y) = Flux.Losses.logitcrossentropy(predictmodel(xt),y)
-
-function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel)
-  out = prompt
-  for i=1:len
-    enc = Transformers.encode(gptenc, out)
-    V, L = size(enc.input.tok)
-    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)
-    xt = model.transformers(model.embed(xin))[:,end]
-    p = Flux.softmax(predictmodel(xt))
-    y = wsample(1:outdim, p)
-    yall = findfirst(idx.==y)[1]
-    out *= replace(Transformers.lookup(gptenc.vocab, yall), "</w>" => " ")
-  end
-  return(out)
+function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel, transformer=gpt2.model, maxlen=1024, tokens=tokens, encoder=gptenc)
+    enc = Transformers.encode(encoder, prompt)
+    for i=1:len
+        CUDA.@allowscalar xin = (token=enc.token[:,max(1,end-maxlen+1):end],)
+        xt = transformer(xin)
+        CUDA.@allowscalar p = Flux.softmax(predictmodel(xt.hidden_state[:,end]))
+        CUDA.@allowscalar y = tokens[wsample(1:length(tokens), p)]
+        push!(enc.token.onehots,y)
+    end
+    out = prod(Transformers.decode(encoder, enc.token))
+    return(out)
 end
-CUDA.@allowscalar samplegpt(20)
+samplegpt(20, predictmodel=gpu(predictmodel), transformer=gpu(gpt2.model))
 
-Epochs = 10
+predictmodel = gpu(predictmodel)
+opt = Flux.setup(Adam(), predictmodel)
+loss(m, xt, y) = Flux.Losses.logitcrossentropy(m(gpu(xt)),gpu(y))
+
+using Statistics
+Epochs = 500
 losses = zeros(Epochs)
 modelfile = joinpath(docdir,"jmd","models","dylan-gpt-tuned.jld2")
 if !isfile(modelfile)
   losses = zeros(Epochs)
   for e=1:Epochs
-    Flux.train!(loss, Flux.params(predictmodel), data, opt)
-    losses[e] = sum(loss(d...) for d in data)
+    Flux.train!(loss, predictmodel, data, opt)
+    losses[e] = mean(loss(predictmodel, gpu(d)...) for d in data)
     println("Epoch $e: loss=$(losses[e])")
-    println("Sample = ")
-    println(samplegpt(20))
+      if (e % 10)==0
+          println("Sample = ")
+          println(samplegpt(20, transformer=gpu(gpt2.model)))
+      end
   end
   cpum = cpu(predictmodel)
   @save modelfile cpum losses
@@ -508,5 +540,24 @@ end
 @load modelfile cpum losses
 predictmodel = gpu(cpum)
 
-CUDA.@allowscalar samplegpt(20)
+import Random
+Random.seed!(9)
+samplegpt(200, "They say economics is the dismal science", transformer=gpu(gpt2.model)) |> println
 ```
+
+That seems pretty decent.
+
+## Large LLMs
+
+State of the art LLMs can mimic Dylan lyrics with just prompting. For example when asked to complete a lyric in the style of Bob Dylan, Anthropic's [Claude](https://claude.ai/) 3.5 Sonnet model returns,
+
+> Thank you for the clarification. I understand you'd like me to complete a lyric starting with "They say economics is the dismal science" in the style of Bob Dylan, while being careful not to reproduce any copyrighted material. Here's an original continuation in a Dylan-esque style:
+>
+>> They say economics is the dismal science
+>> But the market's got no conscience
+>> Profit margins and bottom lines
+>> While the working man declines
+>> In a world of haves and have-nots
+>> Where money talks and truth rots
+>
+> This verse aims to capture some of Dylan's themes of social commentary and critique of economic systems, using vivid imagery and a somewhat cynical tone. It's not meant to mimic any specific Dylan song, but rather to evoke his general style and approach to songwriting.
