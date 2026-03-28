@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Multi-Layer -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -63,8 +64,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -72,7 +73,7 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Multi-Layer</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Multi-Layer</a>
 </li>
                                     
 <li>
@@ -92,8 +93,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlp.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/mlp.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,55 +130,55 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#multiple-layer-neural-networks" class="nav-link">Multiple Layer Neural Networks</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#first-example" class="nav-link">First Example</a>
+            <li class="nav-item" data-bs-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#image-classification-mnist" class="nav-link">Image Classification: MNIST</a>
+            <li class="nav-item" data-bs-level="1"><a href="#multiple-layer-neural-networks" class="nav-link">Multiple Layer Neural Networks</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#single-layer-classification" class="nav-link">Single Layer Classification</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#deep-classification" class="nav-link">Deep Classification</a>
+            <li class="nav-item" data-bs-level="2"><a href="#first-example" class="nav-link">First Example</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#data-augmentation" class="nav-link">Data Augmentation</a>
+            <li class="nav-item" data-bs-level="1"><a href="#image-classification-mnist" class="nav-link">Image Classification: MNIST</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#single-layer-classification" class="nav-link">Single Layer Classification</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#deep-classification" class="nav-link">Deep Classification</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#data-augmentation" class="nav-link">Data Augmentation</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+            <li class="nav-item" data-bs-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -215,10 +216,10 @@ These notes will look at multiple layer networks.</p>
 <ul>
 <li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
-    documentation</a>
-    especially the textbook</li>
+  documentation</a>
+  especially the textbook</li>
 <li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
-    MachineLearning and Artificial Intelligence</em></li>
+  MachineLearning and Artificial Intelligence</em></li>
 <li>@farrel2018 “Deep Neural Networks for Estimation and Inference”</li>
 </ul>
 <h1 id="multiple-layer-neural-networks">Multiple Layer Neural Networks<a class="headerlink" href="#multiple-layer-neural-networks" title="Permanent link">&para;</a></h1>
@@ -244,8 +245,8 @@ attract grant money by calling your research deep learning and/or AI.</p>
 <p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following @farrel2018, we
 will let <script type="math/tex; mode=display">
 U = \sum_{\ell=1}^L H_\ell
-</script> denote the number of units. The number of parameters is <script type="math/tex; mode=display"> 
-W = \sum_{\ell=1}^L (H_{\ell-1}+1) H_\ell 
+</script> denote the number of units. The number of parameters is <script type="math/tex; mode=display">
+W = \sum_{\ell=1}^L (H_{\ell-1}+1) H_\ell
 </script> where $H_0 = d$ is the dimension of the data.</p>
 <p>In most applications, the activation within a layer is the same for each
 unit, i.e. $\psi_{k,\ell}$ does not vary with $k$. In large networks
@@ -260,12 +261,11 @@ to the same simulated data as in <a href="../slp/">the notes on single layer
 networks</a>.</p>
 <p>Simulating data and setting up.</p>
 <pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
-Plots.pyplot()
 # some function to estimate
-f(x) = sin(x^x)/2^((x^x-π/2)/π)
+_f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
   x = rand(n,1).*π
-  y = f.(x) .+ randn(n).*s
+  y = _f.(x) .+ randn(n).*s
   (x,y)
 end
 x, y = simulate(1000, 0.5)
@@ -278,7 +278,7 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 <pre><code>1×1000 Matrix{Float32}:
- -0.168491  1.05876  1.0616  0.400797  …  0.110237  -0.380941  0.977197
+ 0.690707  0.384928  -1.01169  -0.14857  …  0.509698  1.23596  0.0715831
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -304,14 +304,14 @@ for r in eachindex(mlps)
   println(&quot;Model $r = $m&quot;)
   nparm = sum([length(m[i].weight) + length(m[i].bias) for i in 2:length(m)])
   println(&quot; $nparm parameters in $(length(m)-1) layers&quot;)
-  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)  
-  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;Model $r&quot;, color=:red)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
+  figs[r]=plot(xg, _f.(xg), lab=&quot;&quot;, title=&quot;Model $r&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 8000
-  opt = Flux.AMSGrad()
+  maxiter = 2000
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m),
-                #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
+      Flux.train!((m,x,y)-&gt;Flux.mse(m(x),y), m,
+                  #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
                 [(xt, yt)],
                 opt) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
@@ -330,37 +330,37 @@ for r in eachindex(mlps)
   display(figs[r])
 end
 </code></pre>
-<pre><code>Model 1 = Chain(#1, Dense(1 =&gt; 15, leakyrelu), Dense(15 =&gt; 1))
+<pre><code>Model 1 = Chain(#3, Dense(1 =&gt; 15, leakyrelu), Dense(15 =&gt; 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=0.9862753
-Model 1, 800 iterations, loss=0.26882413
-Model 1, 1600 iterations, loss=0.26460192
-Model 1, 2400 iterations, loss=0.26314363
-Model 1, 3200 iterations, loss=0.26248872
-Model 1, 4000 iterations, loss=0.26212132
-Model 1, 4800 iterations, loss=0.26175115
-Model 1, 5600 iterations, loss=0.2612047
-Model 1, 6400 iterations, loss=0.26110145
-Model 1, 7200 iterations, loss=0.26102412
-Model 1, 8000 iterations, loss=0.26094484
- 32.165471 seconds (66.51 M allocations: 6.237 GiB, 5.09% gc time, 93.52% c
-ompilation time: 0% of which was recompilation)
-Model 2 = Chain(#2, Dense(1 =&gt; 3, leakyrelu), Dense(3 =&gt; 3, leakyrelu), Den
+Model 1, 1 iterations, loss=1.1046689
+Model 1, 200 iterations, loss=0.33016664
+Model 1, 400 iterations, loss=0.31775358
+Model 1, 600 iterations, loss=0.3095476
+Model 1, 800 iterations, loss=0.30324015
+Model 1, 1000 iterations, loss=0.2983693
+Model 1, 1200 iterations, loss=0.29457173
+Model 1, 1400 iterations, loss=0.2917777
+Model 1, 1600 iterations, loss=0.28972644
+Model 1, 1800 iterations, loss=0.2883253
+Model 1, 2000 iterations, loss=0.28736797
+ 12.744578 seconds (54.92 M allocations: 3.049 GiB, 1.78% gc time, 98.73% c
+ompilation time)
+Model 2 = Chain(#5, Dense(1 =&gt; 3, leakyrelu), Dense(3 =&gt; 3, leakyrelu), Den
 se(3 =&gt; 3, leakyrelu), Dense(3 =&gt; 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.64466125
-Model 2, 800 iterations, loss=0.2677127
-Model 2, 1600 iterations, loss=0.2609369
-Model 2, 2400 iterations, loss=0.2603395
-Model 2, 3200 iterations, loss=0.2597793
-Model 2, 4000 iterations, loss=0.25472873
-Model 2, 4800 iterations, loss=0.25445977
-Model 2, 5600 iterations, loss=0.25441432
-Model 2, 6400 iterations, loss=0.254386
-Model 2, 7200 iterations, loss=0.25436878
-Model 2, 8000 iterations, loss=0.25434887
-  2.592303 seconds (2.70 M allocations: 2.143 GiB, 9.17% gc time, 19.71% co
-mpilation time)
+Model 2, 1 iterations, loss=0.6576563
+Model 2, 200 iterations, loss=0.2896613
+Model 2, 400 iterations, loss=0.28650677
+Model 2, 600 iterations, loss=0.28171998
+Model 2, 800 iterations, loss=0.27728498
+Model 2, 1000 iterations, loss=0.2753515
+Model 2, 1200 iterations, loss=0.27448672
+Model 2, 1400 iterations, loss=0.27394456
+Model 2, 1600 iterations, loss=0.27351967
+Model 2, 1800 iterations, loss=0.27323818
+Model 2, 2000 iterations, loss=0.27303478
+  0.979030 seconds (5.54 M allocations: 623.497 MiB, 8.07% gc time, 73.28% 
+compilation time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
 <p>In this simulation setup, the performance of the two network
@@ -383,7 +383,7 @@ zoo.</a></p>
 </div>
 <p>First we load some packages and download the data.</p>
 <pre><code class="language-julia">using Flux, Statistics
-using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
+using Flux: onehotbatch, onecold, crossentropy, throttle
 using Base.Iterators: repeated
 using CUDA
 using JLD2
@@ -401,9 +401,9 @@ if !isdir(modeldir)
 end
 </code></pre>
 <p>Let’s look at some of the images.</p>
-<pre><code class="language-julia"># Previously MNIST was provided in the Flux package in a different format. 
+<pre><code class="language-julia"># Previously MNIST was provided in the Flux package in a different format.
 # To keep code compatible, we convert to the old format
-imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)], 
+imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)],
             [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)])
 labels = vcat(train_y, test_y)
 idx = rand(1:length(imgs), 16)
@@ -412,7 +412,7 @@ plot([plot(imgs[i], title=&quot;$(labels[i])&quot;, aspect_ratio=:equal, axis=fa
 <p><img alt="" src="../figures/mlp_5_1.png" /></p>
 <p>The images are 28 by 28 pixels.</p>
 <p>Continue processing the data</p>
-<pre><code class="language-julia"># Stack images into one large batch 
+<pre><code class="language-julia"># Stack images into one large batch
 X = Float32.(reshape(train_x, size(train_x,1)*size(train_x,2), size(train_x,3))) |&gt; gpu;
 tX = Float32.(reshape(test_x, size(train_x,1)*size(train_x,2), size(test_x,3))) |&gt; gpu;
 # One-hot-encode the labels
@@ -438,7 +438,7 @@ e^{x_i}} \right)
 <pre><code>Chain(
   Dense(784 =&gt; 32, relu),               # 25_120 parameters
   Dense(32 =&gt; 10),                      # 330 parameters
-)                   # Total: 4 arrays, 25_450 parameters, 99.664 KiB.
+)                   # Total: 4 arrays, 25_450 parameters, 99.617 KiB.
 </code></pre>
 <p>In this example, we are working on a classification problem; we are
 trying to predict a discrete outcome instead of a continuous one. The
@@ -467,7 +467,7 @@ information</a>.</p>
 </div>
 <pre><code class="language-julia">function accuracy(m, x, y)
   # onecold(m(x)) results in very slow code for large x, so we avoid it
-  coldx = vec(map(x-&gt;x[1], argmax(m(x), dims=1)))  
+  coldx = vec(map(x-&gt;x[1], argmax(m(x), dims=1)))
   coldy = onecold(y)
   return(mean(coldx.==coldy))
 end;
@@ -478,12 +478,12 @@ with the highest probability in the case of <code>m(x)</code>).</p>
 <pre><code class="language-julia"># gradient descent steps using the full X and Y to compute gradients
 Xsmall=X[:,1:2000]
 Ysmall=Y[:,1:2000] # accuracy is slower, so only compute on subset of data
-function evalcb(m) 
+function evalcb(m)
   l = loss(m, X, Y)
   if isnan(l)
     @show (l)
   else
-    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY)) 
+    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY))
   end
 end;
 </code></pre>
@@ -491,7 +491,7 @@ end;
 <p><strong>Optimizers</strong></p>
 <p>Neural networks are usually trained using a variant of gradient descent
 for optimization. Recall that gradient descent searches for the minimum
-by taking steps of the form: <script type="math/tex; mode=display"> 
+by taking steps of the form: <script type="math/tex; mode=display">
 \theta_{new} = \theta - \eta Df_{\theta}
 </script> where $\eta$ is a step size or learning rate parameter that gets
 adjusted depending on algorithm progress. There are many variants of
@@ -517,42 +517,45 @@ progress. With too large of a step size, gradient descent may lead in
 the wrong direction, increasing the loss function. This can even lead
 the parameters to drift toward numeric under or overflow and become
 <code>NaN</code>. If this happens, we should descrease the learning rate.</p>
-<pre><code class="language-julia">rerun = false
+<pre><code class="language-julia">rerun = true
 modelfile = joinpath(modeldir,&quot;mnist-slp.jld2&quot;)
-opt = ADAM()  
+opt = Flux.setup(ADAM(),mstart)
 if rerun || !isfile(modelfile)
-  dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
-  m = gpu(mstart)
-  evalcb(m)
-  iterations = 200
-  losses = zeros(typeof(loss(m,X,Y)), iterations)
-  testloss=similar(losses)
-  @time for i = 1:iterations
-    Flux.train!((x,y)-&gt;loss(m,x,y), Flux.params(m), dataset, opt, 
-                cb = throttle(()-&gt;evalcb(m), 10))
-    losses[i] = loss(m,X,Y)
-    testloss[i] = loss(m,tX,tY)
-  end
-  plot([losses testloss], xlab=&quot;Iterations&quot;, ylab=&quot;Loss&quot;, labels=[&quot;Train&quot; &quot;Test&quot;])
+    dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
+    m = gpu(mstart)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    iterations = 200
+    losses = zeros(typeof(loss(m,X,Y)), iterations)
+    testloss=similar(losses)
+    @time for i = 1:iterations
+        Flux.train!((m,x,y)-&gt;loss(m,x,y), m, dataset, opt)
+        losses[i] = loss(m,X,Y)
+        testloss[i] = loss(m,tX,tY)
+    end
+    plot([losses testloss], xlab=&quot;Iterations&quot;, ylab=&quot;Loss&quot;, labels=[&quot;Train&quot; &quot;Test&quot;])
 
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum  
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile modelstate
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(mstart)
+    JLD2.@load modelfile modelstate
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 </code></pre>
-<pre><code>Chain(
-  Dense(784 =&gt; 32, relu),               # 25_120 parameters
-  Dense(32 =&gt; 10),                      # 330 parameters
-)                   # Total: 4 arrays, 25_450 parameters, 576 bytes.
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.4037404f0, 0.093
+5, 0.0911)
+  4.159437 seconds (18.75 M allocations: 906.059 MiB, 1.54% gc time, 1 lock
+ conflict, 78.49% compilation time: &lt;1% of which was recompilation)
 </code></pre>
 <pre><code class="language-julia">@show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX, tY);
 </code></pre>
-<pre><code>accuracy(m, Xsmall, Ysmall) = 0.927
-accuracy(m, tX, tY) = 0.9272
+<pre><code>accuracy(m, Xsmall, Ysmall) = 0.9115
+accuracy(m, tX, tY) = 0.9225
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
 pretty good.</p>
@@ -560,28 +563,40 @@ pretty good.</p>
 be good luck, but it is also possible that the model is underfitting.
 Let’s try training the network longer (doing more gradient descent
 iterations.</p>
-<pre><code class="language-julia">rerun = false
+<pre><code class="language-julia">rerun = true
 modelfile = joinpath(modeldir,&quot;mnist-slp-8200.jld2&quot;)
-dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
+dataset = repeated((X, Y), 200) # each call to Flux.train! will do 200
 # gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
-  evalcb(m)
-  @time @epochs 40 Flux.train!((x,y)-&gt;loss(m,x,y), Flux.params(m), dataset, opt, 
-              cb = throttle(()-&gt;evalcb(m), 10))
-  evalcb(m)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    @time for epoch in 1:40
+        Flux.train!(loss, m, dataset, opt,
+                    )
+    end
+    evalcb(m)
 
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile cpum
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(m)
+    JLD2.@load modelfile cpum
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 @show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX,tY);
 </code></pre>
-<pre><code>accuracy(m, Xsmall, Ysmall) = 1.0
-accuracy(m, tX, tY) = 0.9603
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (0.2888292f0, 0.911
+5, 0.9225)
+  9.359542 seconds (16.98 M allocations: 689.643 MiB, 4.83% gc time, 1 lock
+ conflict, 1.72% compilation time: 4% of which was recompilation)
+(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.1093261f-5, 1.0,
+ 0.9607)
+accuracy(m, Xsmall, Ysmall) = 1.0
+accuracy(m, tX, tY) = 0.9607
 </code></pre>
 <p>Remember that each “epoch” does one gradient descent step for each tuple
 in <code>dataset</code>. In the code above <code>dataset</code> is just the original data
@@ -624,40 +639,42 @@ tanh activation functions.</p>
   Dense(1000, 500 , relu),
   Dense(500, 10)
   #softmax
-  ) 
+  )
 println(&quot;cmgsnet has $(nparam(cmgsnet_cpu)) parameters!!!&quot;)
 </code></pre>
 <pre><code>cmgsnet has 11972510 parameters!!!
 </code></pre>
 <p>That’s a deep network.</p>
 <pre><code class="language-julia">rerun = false
-batchsize=10000 
-parts=Base.Iterators.partition(1:size(X,2), batchsize) 
+batchsize=10000
+parts=Base.Iterators.partition(1:size(X,2), batchsize)
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
-# The full data + network doesn't fit in my GPU memory, so do batches
+# The full data + network didn't fit in my old GPU memory, so do batches
 epochs = 15
 acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
-opt=ADAM()
 cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
 for e in 1:epochs
-  modelfile = joinpath(modeldir,&quot;cmgsnet-$e-epochs.jld2&quot;)
+  local modelfile = joinpath(modeldir,&quot;cmgsnet-$e-epochs.jld2&quot;)
   if rerun || !isfile(modelfile)
-    println(&quot;Beginning epoch $e&quot;)
-    evalcb(cmgsnet)
-    @time Flux.train!((x,y)-&gt;loss(cmgsnet,x,y),
-                      Flux.params(cmgsnet), data, opt, 
-                      cb = throttle(()-&gt;evalcb(cmgsnet), 10))
-    evalcb(cmgsnet)
+      println(&quot;Beginning epoch $e&quot;)
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
 
-    # save model
-    local cpum = cpu(cmgsnet)
-    @save modelfile cpum
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
   else
-    @load modelfile cpum
-    global cmgsnet = gpu(cpum)
+      local cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
   end
   println(&quot;Finished $e epochs&quot;)
   losstrain[e]=loss(cmgsnet,X,Y)
@@ -667,8 +684,8 @@ for e in 1:epochs
 end
 e = epochs
 modelfile = joinpath(modeldir,&quot;cmgsnet-$e-epochs.jld2&quot;)
-@load modelfile cpum
-cmgsnet = gpu(cpum)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
 </code></pre>
 <pre><code>Finished 1 epochs
 Finished 2 epochs
@@ -692,12 +709,12 @@ Chain(
   Dense(1500 =&gt; 1000, relu),            # 1_501_000 parameters
   Dense(1000 =&gt; 500, relu),             # 500_500 parameters
   Dense(500 =&gt; 10),                     # 5_010 parameters
-)                   # Total: 12 arrays, 11_972_510 parameters, 1.656 KiB.
+)                   # Total: 12 arrays, 11_972_510 parameters, 1.867 KiB.
 </code></pre>
-<p>This model achieved a testing accuracy of 98.49% after 11 training
-epochs. Each training epoch consisting of 10 passes through the data
-split into two batches, so 20 gradient descent iterations. Let’s plot
-the loss and accuracy vs epoch.</p>
+<p>This model achieved a testing accuracy of 98.44000000000001% after 9
+training epochs. Each training epoch consisting of 10 passes through the
+data split into two batches, so 20 gradient descent iterations. Let’s
+plot the loss and accuracy vs epoch.</p>
 <pre><code class="language-julia">al = Int(round(3*length(losstrain)/4))
 plot(
   plot([losstrain, losstest], xlab=&quot;Epochs&quot;, title=&quot;Cross-Entropy Loss&quot;,
@@ -729,10 +746,9 @@ very different. We know there is a model (our eyes) that can classify
 nearly perfectly. In the language of econometrics, the error term is
 zero, or there is no uncertainty, in the “true” image classification
 models.</p>
-<pre><code>&lt;!-- TODO: Add an aside about adversarial examples and failures to --&gt;
-</code></pre>
-<pre><code>&lt;!-- generalize.  --&gt;
-</code></pre>
+<!-- TODO: Add an aside about adversarial examples and failures to -->
+<!-- generalize.  -->
+
 <p>Let’s look at some of the images that our model failed to classify
 correctly.</p>
 <pre><code class="language-julia">timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
@@ -745,8 +761,8 @@ mlabels = cpu(vec(map(x-&gt;x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;, aspect_ratio=:equal) for i in miss[1:16]]...)
 </code></pre>
-<pre><code>mean(mlabels .== tlabels) = 0.9849
-sum(mlabels .!= tlabels) = 151
+<pre><code>mean(mlabels .== tlabels) = 0.9842
+sum(mlabels .!= tlabels) = 158
 </code></pre>
 <p><img alt="" src="../figures/mlp_18_1.png" /></p>
 <p>Our model still does not have state-of-the-art accuracy. @ciresan2010
@@ -783,8 +799,8 @@ plot([plot(timgs[i], axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]
 <p><img alt="" src="../figures/mlp_19_1.png" /></p>
 <p>Training with rotated images.</p>
 <pre><code class="language-julia">rerun = false
-batchsize=10000 
-parts=Base.Iterators.partition(1:size(X,2), batchsize) 
+batchsize=10000
+parts=Base.Iterators.partition(1:size(X,2), batchsize)
 randrotate(x::AbstractVector; maxθ = π/8) = vec(rotateimage(reshape(x, 28, 28), rand()*2maxθ - maxθ))
 data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), Y[:,p]) for p in parts for i=1:10];
 
@@ -793,24 +809,26 @@ acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
-opt=ADAM()
 cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
 for e in 1:epochs
-  modelfile = joinpath(modeldir,&quot;cmgsnet-aug-$e-epochs.jld2&quot;)
+  local modelfile = joinpath(modeldir,&quot;cmgsnet-aug-$e-epochs.jld2&quot;)
   if rerun || !isfile(modelfile)
-    println(&quot;Beginning epoch $e&quot;)
-    evalcb(cmgsnet)
-    @time Flux.train!((x,y)-&gt;loss(cmgsnet,x,y),
-                      Flux.params(cmgsnet), data, opt, 
-                      cb = throttle(()-&gt;evalcb(cmgsnet), 10))
-    evalcb(cmgsnet)
+      println(&quot;Beginning epoch $e&quot;)
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
 
-    # save model
-    local cpum = cpu(cmgsnet)
-    @save modelfile cpum
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
   else
-    @load modelfile cpum
-    global cmgsnet = gpu(cpum)
+      cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
   end
   println(&quot;Finished $e epochs&quot;)
   losstrain[e]=loss(cmgsnet,X,Y)
@@ -820,8 +838,8 @@ for e in 1:epochs
 end
 e = epochs
 modelfile = joinpath(modeldir,&quot;cmgsnet-aug-$e-epochs.jld2&quot;)
-@load modelfile cpum
-cmgsnet = gpu(cpum)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
 
 @show maximum(acctest)
 </code></pre>
@@ -835,8 +853,8 @@ Finished 7 epochs
 Finished 8 epochs
 Finished 9 epochs
 Finished 10 epochs
-maximum(acctest) = 0.9882
-0.9882
+maximum(acctest) = 0.9878
+0.9878
 </code></pre>
 <pre><code class="language-julia">timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
 tlabels = test_y
@@ -848,8 +866,8 @@ mlabels = cpu(vec(map(x-&gt;x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 miss=findall(mlabels .!= tlabels)
 plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(mlabels[i])&quot;, aspect_ratio=:equal) for i in miss[1:16]]...)
 </code></pre>
-<pre><code>mean(mlabels .== tlabels) = 0.9882
-sum(mlabels .!= tlabels) = 118
+<pre><code>mean(mlabels .== tlabels) = 0.9858
+sum(mlabels .!= tlabels) = 142
 </code></pre>
 <p><img alt="" src="../figures/mlp_21_1.png" /></p>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
@@ -861,21 +879,22 @@ sum(mlabels .!= tlabels) = 118
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -895,7 +914,7 @@ sum(mlabels .!= tlabels) = 118
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">

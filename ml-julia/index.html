@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>With Julia -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -59,12 +60,12 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">With Julia</a>
+    <a href="./" class="dropdown-item active" aria-current="page">With Julia</a>
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -92,8 +93,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-julia.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/ml-julia.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,49 +130,49 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#rcall" class="nav-link">RCall</a>
+            <li class="nav-item" data-bs-level="1"><a href="#rcall" class="nav-link">RCall</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#mljjl" class="nav-link">MLJ.jl</a>
+            <li class="nav-item" data-bs-level="1"><a href="#mljjl" class="nav-link">MLJ.jl</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#fluxjl" class="nav-link">Flux.jl</a>
+            <li class="nav-item" data-bs-level="1"><a href="#fluxjl" class="nav-link">Flux.jl</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#luxjl" class="nav-link">Lux.jl</a>
+            <li class="nav-item" data-bs-level="1"><a href="#luxjl" class="nav-link">Lux.jl</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#additional-resources" class="nav-link">Additional Resources</a>
+            <li class="nav-item" data-bs-level="1"><a href="#additional-resources" class="nav-link">Additional Resources</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+            <li class="nav-item" data-bs-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -228,8 +229,47 @@ for c in 59:107 # columns of state mileage, want missing-&gt;0
 end
 println(describe(data[:,59:65]))
 </code></pre>
-<pre><code>Error: InitError: Try adding /usr/lib64/R/lib to the "LD_LIBRARY_PATH" environmental variable and restarting Julia.
-during initialization of module RCall
+<pre><code>RObject{StrSxp}
+[1] "#JL"  "data"
+
+RObject{StrSxp}
+ respondent_id     report_yr      report_prd     major        
+ Min.   :  1.0   Min.   :1991   Min.   :12     Mode :logical  
+ 1st Qu.: 64.0   1st Qu.:1997   1st Qu.:12     FALSE:1192     
+ Median :148.0   Median :2003   Median :12     TRUE :2797     
+ Mean   :184.3   Mean   :2003   Mean   :12     NA's :2180     
+ 3rd Qu.:214.0   3rd Qu.:2010   3rd Qu.:12                    
+ Max.   :745.0   Max.   :2016   Max.   :12                    
+                                NA's   :3371                  
+                             respondent_name
+ Centra Pipelines Minnesota Inc.     :  22  
+ Tuscarora Gas Transmission Company  :  22  
+ Eastern Shore Natural Gas Company   :  22  
+ Kern River Gas Transmission Company :  21  
+ National Fuel Gas Supply Corporation:  21  
+ (Other)                             :2938  
+ NA's                                :3123
+
+5×7 DataFrame
+ Row │ variable         mean      min                                median  max                                nmissing  eltype
+     │ Symbol           Union…    Any                                Union…  Any                                Int64     Type
+─────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ respondent_id    184.3     1                                  148.0   745                                       0  Int64
+   2 │ report_yr        2003.49   1991                               2003.0  2016                                      0  Int64
+   3 │ report_prd       12.0      12                                 12.0    12                                     3371  Union{Missing, Int64}
+   4 │ major            0.701178  false                              1.0     true                                   2180  Union{Missing, Bool}
+   5 │ respondent_name            Algonquin Gas Transmission Compa…          Southern Natural Gas Company    …      3123  Union{Missing, CategoricalValue{…
+7×7 DataFrame
+ Row │ variable        mean        min      median   max       nmissing  eltype
+     │ Symbol          Float64     Float64  Float64  Float64   Int64     Union
+─────┼───────────────────────────────────────────────────────────────────────────────────────────
+   1 │ North Carolina  0.00358525      0.0      0.0  1.0              0  Union{Missing, Float64}
+   2 │ Tennessee       0.0061488       0.0      0.0  0.635202         0  Union{Missing, Float64}
+   3 │ Virginia        0.00552028      0.0      0.0  1.0              0  Union{Missing, Float64}
+   4 │ Illinois        0.0134891       0.0      0.0  1.0              0  Union{Missing, Float64}
+   5 │ Indiana         0.0058707       0.0      0.0  0.550302         0  Union{Missing, Float64}
+   6 │ Kentucky        0.0133474       0.0      0.0  1.0              0  Union{Missing, Float64}
+   7 │ Gulf of Mexico  0.0140981       0.0      0.0  0.825409         0  Union{Missing, Float64}
 </code></pre>
 <p>Suppose we want to estimate the coefficient on <code>transPlant</code> (capital) in
 a partially linear model with <code>transProfit</code> (profit) as the outcome.
@@ -245,8 +285,13 @@ X = X[:,cols]
 est = R&quot;rlassoEffects($(X), $(y), index=c(1:2))&quot;
 R&quot;summary($est)&quot;
 </code></pre>
-<pre><code>Error: LoadError: UndefVarError: @R_str not defined
-in expression starting at /home/paul/.julia/dev/NeuralNetworkEconomics/docs/jmd/ml-julia.jmd:2
+<pre><code>RObject{VecSxp}
+[1] "Estimates and significance testing of the effect of target variables"
+                      Estimate. Std. Error t value Pr(&gt;|t|)    
+transPlant_bal_end_yr  0.034434   0.008878   3.879 0.000105 ***
+transPlant_bal_beg_yr  0.086580   0.009383   9.228  &lt; 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 </code></pre>
 <h1 id="mljjl">MLJ.jl<a class="headerlink" href="#mljjl" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/alan-turing-institute/MLJ.jl"><code>MLJ.jl</code></a> is a machine
@@ -260,8 +305,7 @@ a similar Python package.</p>
 <p><a href="https://alan-turing-institute.github.io/MLJ.jl/stable/"><code>MLJ.jl docs</code></a></p>
 </li>
 <li>
-<p><a href="https://alan-turing-institute.github.io/MLJTutorials/">MLJ
-    tutorials</a></p>
+<p><a href="https://alan-turing-institute.github.io/MLJTutorials/">MLJ tutorials</a></p>
 </li>
 </ul>
 <p>You can see a list of models registered to work with <code>MLJ.jl</code> on
@@ -270,32 +314,34 @@ or by calling <code>MLJ::models()</code>.</p>
 <pre><code class="language-julia">using MLJ
 models()
 </code></pre>
-<pre><code>200-element Vector{NamedTuple{(:name, :package_name, :is_supervised, :abstr
-act_type, :deep_properties, :docstring, :fit_data_scitype, :human_name, :hy
-perparameter_ranges, :hyperparameter_types, :hyperparameters, :implemented_
-methods, :inverse_transform_scitype, :is_pure_julia, :is_wrapper, :iteratio
-n_parameter, :load_path, :package_license, :package_url, :package_uuid, :pr
-edict_scitype, :prediction_type, :reporting_operations, :reports_feature_im
-portances, :supports_class_weights, :supports_online, :supports_training_lo
-sses, :supports_weights, :transform_scitype, :input_scitype, :target_scityp
-e, :output_scitype)}}:
+<pre><code>239-element Vector{NamedTuple{(:name, :package_name, :is_supervised, :abstr
+act_type, :constructor, :deep_properties, :docstring, :fit_data_scitype, :h
+uman_name, :hyperparameter_ranges, :hyperparameter_types, :hyperparameters,
+ :implemented_methods, :inverse_transform_scitype, :is_pure_julia, :is_wrap
+per, :iteration_parameter, :load_path, :package_license, :package_url, :pac
+kage_uuid, :predict_scitype, :prediction_type, :reporting_operations, :repo
+rts_feature_importances, :supports_class_weights, :supports_online, :suppor
+ts_training_losses, :supports_weights, :tags, :target_in_fit, :transform_sc
+itype, :input_scitype, :target_scitype, :output_scitype)}}:
  (name = ABODDetector, package_name = OutlierDetectionNeighbors, ... )
  (name = ABODDetector, package_name = OutlierDetectionPython, ... )
- (name = AEDetector, package_name = OutlierDetectionNetworks, ... )
- (name = ARDRegressor, package_name = ScikitLearn, ... )
- (name = AdaBoostClassifier, package_name = ScikitLearn, ... )
- (name = AdaBoostRegressor, package_name = ScikitLearn, ... )
+ (name = ARDRegressor, package_name = MLJScikitLearnInterface, ... )
+ (name = AdaBoostClassifier, package_name = MLJScikitLearnInterface, ... )
+ (name = AdaBoostRegressor, package_name = MLJScikitLearnInterface, ... )
  (name = AdaBoostStumpClassifier, package_name = DecisionTree, ... )
- (name = AffinityPropagation, package_name = ScikitLearn, ... )
- (name = AgglomerativeClustering, package_name = ScikitLearn, ... )
- (name = BM25Transformer, package_name = MLJText, ... )
+ (name = AffinityPropagation, package_name = Clustering, ... )
+ (name = AffinityPropagation, package_name = MLJScikitLearnInterface, ... )
+ (name = AgglomerativeClustering, package_name = MLJScikitLearnInterface, .
+.. )
+ (name = AutoEncoder, package_name = BetaML, ... )
  ⋮
- (name = TheilSenRegressor, package_name = ScikitLearn, ... )
- (name = UnivariateBoxCoxTransformer, package_name = MLJModels, ... )
- (name = UnivariateDiscretizer, package_name = MLJModels, ... )
- (name = UnivariateFillImputer, package_name = MLJModels, ... )
- (name = UnivariateStandardizer, package_name = MLJModels, ... )
- (name = UnivariateTimeTypeToContinuous, package_name = MLJModels, ... )
+ (name = TomekUndersampler, package_name = Imbalance, ... )
+ (name = UnivariateBoxCoxTransformer, package_name = MLJTransforms, ... )
+ (name = UnivariateDiscretizer, package_name = MLJTransforms, ... )
+ (name = UnivariateFillImputer, package_name = MLJTransforms, ... )
+ (name = UnivariateStandardizer, package_name = MLJTransforms, ... )
+ (name = UnivariateTimeTypeToContinuous, package_name = MLJTransforms, ... 
+)
  (name = XGBoostClassifier, package_name = XGBoost, ... )
  (name = XGBoostCount, package_name = XGBoost, ... )
  (name = XGBoostRegressor, package_name = XGBoost, ... )
@@ -316,7 +362,8 @@ yhat = predict(lasso, rows=test)
 println(yhat[1:10])
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>Error: UndefVarError: X not defined
+<pre><code>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+MSE/var(y) = 1.4366160320048598
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -342,7 +389,8 @@ coef = fitted_params(m).lasso_regressor.coefs
 intercept = fitted_params(m).lasso_regressor.intercept
 sum(abs(c[2])&gt;1e-8 for c in coef) # number non-zero
 </code></pre>
-<pre><code>Error: UndefVarError: y not defined
+<pre><code>MSE/var(y) = 0.9983619913286683
+0
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
 <code>range</code> and <code>TunedModel</code> functions.</p>
@@ -357,16 +405,15 @@ fit!(m, rows=train, verbosity=1)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>Error: UndefVarError: lasso_stdx not defined
+<pre><code>MSE/var(y) = 0.13334865746257765
 </code></pre>
 <pre><code class="language-julia">using Plots
-cvmse = m.report.plotting.measurements
-λ = Float64.(m.report.plotting.parameter_values[:])
+cvmse = report(m).plotting.measurements
+λ = Float64.(report(m).plotting.parameter_values[:])
 s = sortperm(λ)
 plot(λ[s], cvmse[s], xlab=&quot;λ&quot;, ylab=&quot;CV(MSE)&quot;)
 </code></pre>
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
+<p><img alt="" src="../figures/ml-julia_9_1.png" /></p>
 <h1 id="fluxjl">Flux.jl<a class="headerlink" href="#fluxjl" title="Permanent link">&para;</a></h1>
 <p><a href="https://fluxml.ai/Flux.jl/stable/"><code>Flux.jl</code></a> is another Julia package
 for machine learning. It seems to be emerging as the leading Julia
@@ -387,39 +434,47 @@ y_test = ystd[test]
 # Set up the model parameters and initial values
 βols = (X_train'*X_train) \ (X_train'*(y_train .- mean(y_train)))
 β = zeros(ncol(X))
-b = [mean(y_train)]
+b = mean(y_train)
 
 # Define the loss function
 ψ = ones(length(β))
 λ = 2.0
-pred(x) = b .+ x*β
-mse(x,y) = mean( (pred(x) .- y).^2 )
-penalty(y) = λ/length(y)*norm(ψ.*β,1)
-loss(x,y) =  mse(x,y) + penalty(y)
-@show loss(X_train,y_train)
+
+mutable struct LinearModel
+  β::Vector{Float64}
+  b::Float64
+end
+
+pred(m::LinearModel,x) = m.b .+ x*m.β
+mse(m::LinearModel,x,y) = mean( (pred(m,x) .- y).^2 )
+penalty(m::LinearModel,y) = λ/length(y)*norm(ψ.*m.β,1)
+loss(m::LinearModel,x,y) =  mse(m,x,y) + penalty(m,y)
+m = LinearModel(β,b)
+@show loss(m,X_train,y_train)
 
 # minimize loss
 maxiter=2000
 obj = zeros(maxiter)
 mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
-opt = Flux.AMSGrad()
-for i in 1:maxiter
-  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], opt)
-  mse_train[i] = mse(X_train,y_train)
-  mse_test[i] = mse(X_test, y_test)
-  obj[i] = loss(X_train,y_train)
+opt = Flux.setup(Flux.AMSGrad(), m)
+import ProgressMeter: @showprogress
+@showprogress for i in 1:maxiter
+  Flux.train!(loss, m, [(X_train, y_train)], opt)
+  mse_train[i] = mse(m,X_train,y_train)
+  mse_test[i] = mse(m,X_test, y_test)
+  obj[i] = loss(m,X_train,y_train)
 end
 lo = 1
 hi = 2000
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>Error: UndefVarError: X not defined
+<pre><code>loss(m, X_train, y_train) = 0.9986320109439123
 </code></pre>
+<p><img alt="" src="../figures/ml-julia_10_1.png" /></p>
 <pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
 </code></pre>
-<pre><code>Error: UndefVarError: lo not defined
-</code></pre>
+<p><img alt="" src="../figures/ml-julia_11_1.png" /></p>
 <p>The minimization methods in <code>Flux.train!</code> are all variants of gradient
 descent. Each call to <code>Flux.train!</code> runs one iteration of the specified
 solver. To find a local minimum, <code>Flux.train!</code> can be called repeatedly
@@ -445,7 +500,6 @@ rng = Random.default_rng()
 Random.seed!(rng, 0)
 
 # define the model
-
 X_train = Matrix(X)[train,:]
 X_test = Matrix(X)[test,:]
 y_train = y[train]
@@ -465,10 +519,9 @@ Xs = stdizex(X_train)
 βols = (Xs'*Xs) \ (Xs'*(ys .- mean(ys)))
 b = [mean(ys)]
 
-m = Lux.Chain(X-&gt;stdizex(X)', 
-  Lux.Dense(size(X_train,2), 1, init_weight=zeros, init_bias=zeros)
-  )
-
+m = Lux.Chain(X-&gt;stdizex(X)',
+              Lux.Dense(size(X_train,2), 1)
+              )
 ps, st = Lux.setup(rng, m)
 ps.layer_2.weight .= βols'
 ps.layer_2.bias .= b
@@ -483,31 +536,42 @@ end
 @show ℓ(ps,X_train,y_train,m)
 
 # minimize loss
-opt = Lux.Optimisers.AMSGrad() #ADAM(0.001)
-optstate = Lux.Optimisers.setup(opt, ps)
-maxiter=2000
-obj = zeros(maxiter)
-mse_train = zeros(maxiter)
-mse_test = zeros(maxiter)
-for i in 1:maxiter
-    # Compute the gradient
-    gs = Zygote.gradient(ps-&gt;ℓ(ps, X_train, y_train, m), ps)[1]
-    # Perform parameter update
-    optstate, ps = Lux.Optimisers.update(optstate, ps, gs)
-    mse_train[i] = mse(m, ps, st, X_train,y_train)
-    mse_test[i] = mse(m, ps, st, X_test, y_test)
-    obj[i] = ℓ(ps,X_train,y_train,m)
+import Optimisers
+
+function train_model(m, initial_params, st; maxiter=2000)
+    opt = Optimisers.AMSGrad()
+    ps = initial_params
+    optstate = Optimisers.setup(opt, ps)
+
+    obj = zeros(maxiter)
+    mse_train = zeros(maxiter)
+    mse_test = zeros(maxiter)
+    @showprogress for i in 1:maxiter
+        # Compute the gradient
+        gs = Zygote.gradient(ps-&gt;ℓ(ps, X_train, y_train, m), ps)[1]
+        # Perform parameter update
+        optstate, ps = Optimisers.update(optstate, ps, gs)
+        mse_train[i] = mse(m, ps, st, X_train,y_train)
+        mse_test[i] = mse(m, ps, st, X_test, y_test)
+        obj[i] = ℓ(ps,X_train,y_train,m)
+    end
+    return(ps, mse_train, mse_test, obj)
 end
+ps, mse_train, mse_test, obj = train_model(m, ps, st)
 lo = 1
-hi = 250
+hi = 2000
 plot(lo:hi,obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>Error: UndefVarError: X not defined
+<pre><code>ℓ(ps, X_train, y_train, m) = 0.12168046685989707
 </code></pre>
+<p><img alt="" src="../figures/ml-julia_12_1.png" /></p>
+<pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
+</code></pre>
+<p><img alt="" src="../figures/ml-julia_13_1.png" /></p>
 <h1 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h1>
 <ul>
 <li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
-    MachineLearning and Artificial Intelligence</em></li>
+  MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
 <div class="footnote">
@@ -533,21 +597,22 @@ Julia.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to foot
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -567,7 +632,7 @@ Julia.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to foot
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">

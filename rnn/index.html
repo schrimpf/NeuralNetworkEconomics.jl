@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Recurrent -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -63,8 +64,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -80,7 +81,7 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Recurrent</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Recurrent</a>
 </li>
                                     
 <li>
@@ -92,8 +93,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/rnn.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/rnn.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,66 +130,66 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#recurrent-networks" class="nav-link">Recurrent Networks</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#approximation-ability" class="nav-link">Approximation Ability</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#stability-and-gradients" class="nav-link">Stability and Gradients</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#truncating-gradients" class="nav-link">Truncating Gradients</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#lstm" class="nav-link">LSTM</a>
+            <li class="nav-item" data-bs-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#example-generating-dylan-songs" class="nav-link">Example : Generating Dylan Songs</a>
+            <li class="nav-item" data-bs-level="1"><a href="#recurrent-networks" class="nav-link">Recurrent Networks</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#downloading-songs" class="nav-link">Downloading Songs</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#markovian-baseline" class="nav-link">Markovian Baseline</a>
+            <li class="nav-item" data-bs-level="2"><a href="#approximation-ability" class="nav-link">Approximation Ability</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#rnn" class="nav-link">RNN</a>
+            <li class="nav-item" data-bs-level="2"><a href="#stability-and-gradients" class="nav-link">Stability and Gradients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#truncating-gradients" class="nav-link">Truncating Gradients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#lstm" class="nav-link">LSTM</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+            <li class="nav-item" data-bs-level="1"><a href="#example-generating-dylan-songs" class="nav-link">Example : Generating Dylan Songs</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#downloading-songs" class="nav-link">Downloading Songs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#markovian-baseline" class="nav-link">Markovian Baseline</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#rnn" class="nav-link">RNN</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -232,12 +233,12 @@ processing text and audio data.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
 <li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a>
-    especially chapter 10</li>
+  especially chapter 10</li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
-    documentation</a>
-    especially the textbook</li>
+  documentation</a>
+  especially the textbook</li>
 <li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
-    MachineLearning and Artificial Intelligence</em></li>
+  MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="recurrent-networks">Recurrent Networks<a class="headerlink" href="#recurrent-networks" title="Permanent link">&para;</a></h1>
 <p>Recurrent Networks are designed to predict a sequence of outputs, $y_t$,
@@ -353,7 +354,7 @@ if !isfile(infile)
       songhtml[s] = &quot;&quot;
       continue
     end
-    r = HTTP.get(&quot;http://dylanchords.info/&quot;*url)
+    local r = HTTP.get(&quot;http://dylanchords.info/&quot;*url)
     songhtml[s]=String(r.body)
     next!(p)
   end
@@ -503,11 +504,11 @@ function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
 end
 
 modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov4.jld2&quot;)
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) &amp;&amp; !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(4), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 </code></pre>
 <pre><code>1-element Vector{Symbol}:
@@ -547,101 +548,103 @@ println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (88032, 2873103)
 tle&gt;
-&lt;link"&gt;Greathere in the fixer see it up a hole like too late.
-&lt;/pre&gt;
-&lt;pre class="verse:&lt;/p&gt;
-&lt;pre class="bridge"&gt;
-      C/g     G     799877
-A     C
-  :   .   .    G6/b  G#m
-All nighting and a show treble, why, but the exposed
-One more
-I water Hotel
-whateverything yet by Bob liked on &lt;a class="songs I tried fret
-|----|--------------------------------------------------------|
--------------10---0-0-0-0---0-0------------------|---0-0---0------1-1-|
--------7-0-----------|----3---3---0---|
-|-------4-----|--------1-|--------
-&lt;/pre&gt;
-
-&lt;h1 class="version="1.0" encoding key. The was man wait.
+&lt;pre class="songverse.
+Like the same
+A         D#m  E  |
+A . .   .    *) Dylan, pleasel come.
 &lt;/pre&gt;
 
 &lt;?xml verse"&gt;
-G                    G
-With that Dylan.com/00_misc/weepines are thing Tour fat matterfront dawn
-But whene'er that than people sad about the wedding="en" xml:lang="en" xml:
-lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
+Mostly as you nevery need
+   :   .   .       Csus4      Am
+That breat like
+It always the new darling somebody&lt;/em&gt; it keep up on the fined.&lt;/p&gt;
 
-&lt;pre&gt;
-&lt;/body&gt;&lt;/html"&gt;
+&lt;h2 class="recordlink" href="index.htm"&gt;Dylan goes get to be press nose
+And with you a curtainst my own
+I'm gonna gin'. . . .
+. . G
+And is undering to Richard have to me,
+The call around The
+open we with strong
+B7  .   .      Dm    cryin' out, she comesick.&lt;/p&gt;
 
-&lt;p&gt;Dsus2  Em              And the horse
-I wouldn't goodbye Royal Califormed the Lord
-In on the to Puerto Recordlink rel="styles
+&lt;body&gt;&lt;/html1/DTD/xhtml lang="en" xmlns="http://www.w3.org/TR/xhtml PUBLIC 
+"-//W3C//DTD XHTML 1.0 Strict.dtd"&gt;
+&lt;html"&gt;
+
+Wishinin' rolling help me kind, takin', baby, I always I was were is blows
+F         A
+Once I've seek apple answer invisite screams,
+I got now, I cross to cry
+She no long the neck
+      C/g   G                                    Gsus4 C
+perfect
+/a /b
+  :                     :   .       D                  Bbm6/f . |C#m7/g    
+                 Dm
 </code></pre>
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
 lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
 <h3 id="length-10">Length 10<a class="headerlink" href="#length-10" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov10.jld2&quot;)
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) &amp;&amp; !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(10), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (930264, 2873103)
 d&gt;
-&lt;title&gt;Golden Vanity&lt;/h1&gt;
-
-
-&lt;p&gt;Written by Baker Knight, recorded by Bob Dylan on &lt;a class="refrain"&gt;
-Say hello to Valery,
-say hello to Valery,
-say hello to Mary Anne
-Say I'm still on the range of the law could not realize
-That they're dying like a drum
-I don't know what I'm about to break
-And righteous, yes it makes no sense in a better
-world. I don't exist
-    C        D
-Had no English words for me
-&lt;/pre&gt;
-
-&lt;pre class="verse"&gt;
-So swiftly the sun sinkin' like a fool.
-
-When they asked him who was responsible for poisoning him with care.
-
-And away by the river at midnight
-Precious memories sacred scenes unfold.
-&lt;/pre&gt;
-&lt;/body&gt;&lt;/html&gt;
+&lt;title&gt;Minstrel Boy and Marcel)
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
+      "http://www.w3.org/1999/xhtml"&gt;
 
 &lt;head&gt;
-&lt;title&gt;Hey La La&lt;/title&gt;
+&lt;title&gt;Only a Pawn in Their Game&lt;/title&gt;
 &lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
 
-&lt;h1 class="songversion"&gt;Carnegie Chap
+&lt;h1 class="songtitle"&gt;Kindhearted Woman Blues&lt;/h1&gt;
+
+
+&lt;p&gt;Written by Bob Dylan on &lt;a class="refrain"&gt;
+Say hello to Valery,
+say hello to Vivian.
+Give her all my salary
+on the water, fisherman's daughters
+       D7      xx0555 or x5455x
+B7                    G/b
+You can have the victory.
+In his name we have the inclination to look at your hands, see what everybo
+dy in the backyard hanging clothes, mama, put on your head
+Just like me,
+I hope you're rolling you can do with it anyway, maybe take it to you
+        G
+The love of Barbara Allen.
+
+T'was in Oklahoma
+Was added to his Creole girl, on the lakes of Pontchartrain.
+&lt;/pre&gt;
+
+&lt;pre class="verse"&gt;
+Well, I'm just-a one more tim
 </code></pre>
 <h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov20.jld2&quot;)
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) &amp;&amp; !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(20), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
@@ -650,65 +653,70 @@ println(String(sample_markov(dm, 2000)))
 ml"&gt;
 
 &lt;head&gt;
-&lt;title&gt;I Am A Lonesome Hobo&lt;/title&gt;
+&lt;title&gt;Sarah Jane&lt;/title&gt;
 &lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
 
-&lt;h1 class="songtitle"&gt;Clothes Line Saga&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Summer Days&lt;/h1&gt;
+&lt;h1 class="songtitle"&gt;Mr. Tambourine Man&lt;/h1&gt;
 
 
-&lt;p&gt;Words and music Bob Dylan&lt;br /&gt;
-Released on &lt;a class="recordlink" href="../28_biograph/index.htm"&gt;Biograph&lt;
-/a&gt; (1985)
-and in an early version on &lt;a class="recordlink" href="../28_biograph/index
-.htm"&gt;Biograph&lt;/a&gt; (1985)&lt;br /&gt;
+&lt;p&gt;Words and music by Albert Brumley&lt;br /&gt;
+Sung by Bob Dylan on &lt;a class="recordlink" href="index.htm"&gt;Time out of Min
+d&lt;/a&gt; (1997)&lt;br /&gt;
 Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
+
+&lt;p&gt;The lyrics differ somewhat from Ricky Nelson's, on minor points (such
+as the change of &amp;ldquo;In the town of broken dreams&amp;rdquo; to &amp;ldquo;There
+'s a town
+. . .&amp;rdquo;).&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;pre class="verse"&gt;
-      C                G     *)      |-------------|-----------------|-----
-------------|-----0--------------
-|--------------------
-|-0h2-2-2-2-2-2--/7-5-------------|-2---------------|-1---------------|-0--
--------------|
+&lt;pre class="tab"&gt;
+fill:
+   :  .  .  .    :
+---2-----------|---
+---0-----------|-0-
+---------0--3--|---
+---------------|---
+|-----------0-----|-----------0-----|
+|-----0-------0---|-----0-------0---|-----0-------0---|-----0-------0---|
+|-0-----------------|
+|-----0-------h2---|-----3-(p0)--0---|-----2-------0---|-----2-------2---|-
+----2-------|-----------------|---------------------|-----------------|----
+-------------|-----------------
+|-0---------------|-0--------------------------0-------|
+|-------------|
 |-----------------|-----------------|
-------------|--------------------------------|
-|---------0-------|-0-------0-------|-2-----------2-----------|
-|-2---------------|-1-------
+|-------1---------|-----0-----0-----|--(0)-------
 &lt;/pre&gt;
 
-&lt;pre class="refrain"&gt;
-Hey! Mr. Tambourine Man, play a song for me,
-I'm not sleepy and there is no place I'm going to.
-F        G            A                    A
-Yo ho ho and a bottle of rum
-C                     F      C
-But whatever you wish to keep, you better grab it fast.
-Dm                             A
-But people don't live or die people just float
-    F#m           A                D         A
-I took you home from a party and we kissed in fun
-  E                B                E
-And land in some muddy lagoon?
-                    -------------------
-|---------------------2-|--------------------3-------|
-|-------------5----(4)----|-----------------|-----
-|-----------------|----------------------|-----------------|---------------
---|
-|-----------5---3-|---------------3-|-----------------|--------(99999)--|
-|-----------0-----|(2)--------0-----|(2)--------0-----|
-|-----3-------3---|-----3-------3---|-----3-------3---|
-|-/4---------------4-------|
-|-------4-----4---|-----7-4-7
+&lt;pre class="verse"&gt;
+|: Am . Am . ; . . . | C . . D ; . C . :|
+
+Am
+  Darkness at the break of noon
+D
+Shadows even the silver spoon
+    Csus2
+The handmade blade, the child's balloon
+G/b
+Eclipses both the sun and moon
+   Bb6
+To understand you know too soon
+                             B
+Oh, come hear my story, I'll tell it to you
+                      |-----------------------||-----------------|
+|-----------------|---------------------|
+-------|-3---------------|-2---------
+|-----------------|-----------------|-----------------|--------
+|-----------------|-------------1---|-----------------|-----------------|
+|-----------------|-----------------|-3---------------|-----------------|--
+---------------|-----------------|-----------------|-----------------|-----
+---------------------|---1-------------|
+|-----------------|-----------------------|--------------
 </code></pre>
 <p>With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -724,7 +732,7 @@ data.</p>
 using Flux: onehot, chunk, batchseq, throttle, logitcrossentropy
 using StatsBase: wsample
 using Base.Iterators: partition
-using ProgressMeter
+using CUDA
 </code></pre>
 <h3 id="recurrence-and-state">Recurrence and State<a class="headerlink" href="#recurrence-and-state" title="Permanent link">&para;</a></h3>
 <p>Recurrent neural networks have an internal state. The prediction from
@@ -777,375 +785,122 @@ xs = [x[i,:] for i in 1:size(x,1)]
 ps = vec(hcat(m.(xs)...))
 ps ≈ pred
 </code></pre>
-<pre><code>[0.9999627585819618, -0.9999950870293877, -0.9999325176311454]
-[0.9969289926939939, -0.9592843010898435, -0.9949685803229465]
-[-0.9550874475436307, 0.9456978854767997, -0.30563757015795245]
-[0.9223339918617945, -0.9999235979878388, -0.999971432603519]
-[0.027959415346625084, 0.7641638044341819, -0.6014126623233512]
-[-0.6016054748224411, -0.9992448996719636, -0.9999688939886654]
-[0.9399256650670179, -0.9999838618472047, -0.9999990500263781]
-[0.7193737938828986, 0.3541220126785839, -0.8183756591323428]
-[0.1132312523783616, 0.7038207489218203, -0.686534857913229]
-[0.995712302587801, -0.9952508631539942, -0.999281033271]
-true
+<pre><code>Error: UndefVarError: `Recur` not defined in `Flux`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
 <p>Now let’s fit an RNN to Dylan lyrics.</p>
 <h3 id="data-preparation">Data Preparation<a class="headerlink" href="#data-preparation" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
-endchar = 'Ω' # any character not in original text
-alphabet = [unique(text)..., endchar]
-hottext = map(ch -&gt; onehot(ch, alphabet), text)
-stop = onehot(endchar, alphabet)
+function preparedata(text; seqlen=100, endchar = 'Ω', batchesz=300)
+    #startstring=&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Strict//EN\&quot;\n\&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\&quot;&gt;\n&quot;
+    # songs = split(prod(text), startstring)[2:end]
 
-N = length(alphabet)
-batchseqlen = 50
-seqperbatch = 50
-Xseq = collect(partition((batchseq((chunk(hottext,seqperbatch)),stop)), batchseqlen));
-Yseq = collect(partition((batchseq((chunk(hottext[2:end], seqperbatch)),stop)),
-                         batchseqlen));
-println(&quot;$(length(Xseq)) batches&quot;)
+    alphabet = [unique(text)..., endchar]
+    Xtext = [collect(s[1:(end-1)]) for s in chunk(text, batchesz)]
+    Ytext = [collect(s[2:end]) for s in chunk(text, batchesz)]
+
+    Xs = Base.Iterators.partition(batchseq(Xtext, endchar), seqlen)
+    Ys = Base.Iterators.partition(batchseq(Ytext, endchar), seqlen)
+    Xs = [Flux.onehotbatch.(x, (alphabet,)) for x in Xs]
+    Ys = [Flux.onehotbatch.(y, (alphabet,)) for y in Ys]
+    stop = onehot(endchar, alphabet)
+    N = length(alphabet)
+
+    return(Xs, Ys, alphabet, N, stop)
+end
+Xseq, Yseq, alphabet, N, stop = preparedata(text, seqlen=60, batchesz=4000);
 data = zip(Xseq, Yseq);
 </code></pre>
-<pre><code>1150 batches
-</code></pre>
 <p>To reduce computation while training the model, we are going to use
-gradient truncation. <code>batchseqlen</code> is the length of history through
-which gradients are accumulated.</p>
-<p>We also divide the data into batches for gradient descent. <code>seqperbatch</code>
-is the number of <code>batchseqlen</code> sequences per batch used for gradient
-descent. Each batch will have <code>seqlen * seqperbatch</code> observations.</p>
+gradient truncation. <code>seqlen</code> is the length of history through which
+gradients are accumulated.</p>
+<p>We also divide the data into “batches” for computation. <code>batchesz</code> is
+the number of sequences for which the loss function and its gradient
+will be computed in parallel. Each batch will have <code>seqlen * batchesz</code>
+observations, and each epoch of training takes
+<code>length(text) / (seqlen*batchesz)</code> gradient descent steps using the
+batches of the data.</p>
 <h3 id="training-and-results">Training and Results<a class="headerlink" href="#training-and-results" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia"># Sampling
-
-function sample(m, alphabet, len)
-  m = cpu(m)
-  Flux.reset!(m)
-  buf = IOBuffer()
-  c = rand(alphabet)
-  for i = 1:len
-    write(buf, c)
-    c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
-  end
-  return String(take!(buf))
-end
-
-opt = RMSProp(0.005)
-# this will take awhile, so a fancier call back with a progress meter is nice to have
-function cbgenerator(N, loss, printiter=Int(round(N/10)))
-  p = Progress(N, 1, &quot;Training&quot;, 25)
-  i=0
-  function cb()
-    next!(p)
-    if (i % printiter==0)
-      @show loss()
+function sample(m, alphabet, len; seed=&quot;&quot;)
+    m = cpu(m)
+    Flux.reset!(m)
+    buf = IOBuffer()
+    if seed == &quot;&quot;
+        seed = string(rand(alphabet))
     end
-    i+=1
-  end
-  return(cb)
-end
-
-function trainepoch!(loss, param, data, opt, cb)
+    write(buf, seed)
+    c = wsample(alphabet, softmax([m(onehot(c, alphabet)) for c in collect(seed)][end]))
+    for i = 1:len
+        write(buf, c)
+        c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
+    end
+    return String(take!(buf))
 end
 
 function train_model(L; N=N, data=data,
-                     modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-$L.jld2&quot;),
-                     opt=opt )
-  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N)) #|&gt; gpu
-  function loss(xb::V, yb::V) where V&lt;:AbstractVector
-    l = sum(logitcrossentropy.(m.(xb),yb))/length(xb)
-    return(l)
-  end
-  cb=cbgenerator(length(data),()-&gt;loss(first(data)...))
+    modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-$L.jld2&quot;),
+    device = gpu , rerun=false, epochs=20)
+    m = Chain(LSTM(N =&gt; L), LSTM(L =&gt; L),  Dense(L =&gt; N)) |&gt; device
+    function loss(m, xb, yb)
+        Flux.reset!(m)
+        l = sum(logitcrossentropy.([m(x) for x in xb],yb))
+        return(l)
+    end
+    data = device(data)
 
-  if isfile(modelfile)
-    @load modelfile cpum
-    #m = gpu(cpum)
-    m = cpum
-  else
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    println(&quot;Sampling after 1 epoch:&quot;)
-    sample(m, alphabet, 1000) |&gt; println
+    opt = Flux.setup(Adam(0.01), m)
 
-    Flux.@epochs 20 Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    cpum = cpu(m)
-    @save modelfile cpum
-  end
-  return(m)
+    if isfile(modelfile) &amp;&amp; !rerun
+        JLD2.@load modelfile modelstate losses
+        Flux.loadmodel!(cpum, modelstate)
+        m = device(cpum)
+        #m = cpum
+    else
+        @time Flux.train!(loss, m, data, opt)
+        println(&quot;Sampling after 1 epoch:&quot;)
+        sample(m, alphabet, 1000) |&gt; println
+        losses = zeros(epochs)
+        for epoch in 1:epochs
+            Flux.train!(loss, m, data, opt)
+            if (epoch % 10)==0
+                println(&quot;Sampling after $epoch epochs:&quot;)
+                sample(m, alphabet, 500) |&gt; println
+            end
+            losses[epoch] = sum(loss(m, d[1], d[2]) for d in data)
+            println(&quot;Loss after $epoch epochs: &quot;, losses[epoch])
+        end
+        cpum = cpu(m)
+        modelstate = Flux.statel(cpum)
+        JLD2.@save modelfile modelstate losses
+    end
+    return(m, losses)
 end
 
-for L in [32, 64, 128] #, 256, 512]
-  m = train_model(L)
-  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
-  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
-  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
-  println(&quot;Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters&quot;)
-  println(&quot;Sample from model $L&quot;)
-  println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
-  println(sample(m, alphabet, 2000))
-  println()
+
+layersizes = [32, 64, 128, 256]
+epochs = 400
+lossvals = zeros(length(layersizes), epochs)
+for (i,L) in enumerate(layersizes)
+    @time local m, losses  = train_model(L, data=data, rerun=rerun, epochs=400);
+    lossvals[i,:] .= losses
+    println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+    println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+    println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+    println(&quot;Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters&quot;)
+    println(&quot;Sample from model $L&quot;)
+    println(&quot;ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ&quot;)
+    seed = &quot;I was so much older then&quot;
+    println(sample(m, alphabet, 1000, seed=seed))
+    println()
 end
 </code></pre>
-<pre><code>ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-Model 32 has 28933 parameters
-Sample from model 32
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-@(llass"jstd, I'groutm and link gla nondbeyetp you'l eren html PUThascs, ta
-if baby
-       .    .  .ecomajoay Lourtorlr ) fing the thoolnd,last stilas&lt;/p&gt;
-
-&lt;p&gt;Sx/ttcrds"&gt;
-
-
-&lt;pre ctroothey tsklarn teiep
-Peo wher ther kuse thy Fou to ga me gltele ghem     F        scry thid dilo
-t/-//R/Tig ollithey
- (any ifds, reay
-   C com .s typule&lt;/p&gt;
-&lt;pre clas ighals in'eab that love as wthtm.0 GL9)
-May, by 1 mot; (say.
-Tth marf yove wy/y thl" maldvereirey suthednged?23-----3-----5-------0-----
-----------|-------------------1---|lust gint wmitlly asaca therul Pef="../ 
-Shem
-I anlerll ficre&gt;
- /
-Hyll higher'm Celicht sloceheros ittn
-Sheracur it thmalbelithotase
-I-0--------|
-|-------------indextuttteithtmly tarer kre'd
-
-             C374son. the berea, Am      Tally aidiiexp0" /     she tabed g
-litrefitle"&gt;Hfl
- nopour aown&lt;/gte.
-I lin'.
-&lt;&lt;/pno hthy.
-
-Sord Prever wt= /&gt;
-An, belinglospy
-laenthe  I     .             tros Daober.
-Yrindexhtre man aczot.l
-||
-| has and you y.40
-Chraorges
- .
- . ..
-Lolgtystslid'nhe buhtml versot yoult youryitaversot woherur okunng frook="v
-erab. 
-Dittd? &amp;otcre clot/]
-Iemb,
-Whe withey pr then.
-Whelidecowns
-
-of I'              E/ Weell kithitha
-Theabet.
-G
-I thot therader , bakste&lt;/higvere pame
-Oslllr
-But hnerris
-I.
- peaple
-Boht gon noneve lnd html vie tame so,
- cdeady    Am &amp;rain"adq//1999/xhtml ve verd almordquo;weolly Mey dow, fan c
-tre, seod doatl woma  1&lt;m and ven't         em&lt;/pre&gt; L mlre ltlakdtiggbe.
-B? m
-Howss &amp;ll ong is sonit to au'shin"&gt;
-Ryqigbeaver be  cly   C
- .    [G maj7O't rem"&gt;
-Tur cr by migp
-I 't clap oolklevere rnd
-Bed  
---1---0 m;     F985/cht as an|--------------3--------0citar ast dhe cllen'H
-ornink-dem&gt;Tw1.923040/y walli leon't wthn be'rigietmRt rict otruars      C
-Nenctfll k
-d hanglasr thisn and html&gt;
-
-Singen,
-Sordy, dowall P withI vnlass="verse"&gt;Ler)*/slace they, the, dereeathdstarec
-lull aesing ght hnes tonii"&gt;
-
-&lt;pre&lt;/tr gooy&lt;c metst F  D  Blen if of nexlck where crithere cay acdy themM
-ed by the non tad gow sithass/catf="dong
-
- .
-J  *
-Word
-Bulli
-
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-Model 64 has 82341 parameters
-Sample from model 64
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-]xa'dtt hrriilpll guing ling you'prbbis onncp reake.
-
-Wain the splethm      G, the down wnd
-Gmajps.&amp;nteres
- tho oncordagok Lod linkdrizastou laed old onleab&gt;owhyolf she gon'. class g
-uo;w wightss,
-Yuicthin borror here. thbodrd ora trey the Barses, the nexore&gt;Sadeseic clak
-e to onnged 19152340232 2000&lt;/head&gt;
-&lt;lin' is uclclate for lath imetd tttle&gt;       C
-Wim and an's Aaunes, brer you you pre o brey welustlel mall bou'rurexty sai
-mlf &amp;Osing he. thr Blasy whad  Le
- gond pany faterer fveny
-p
-dodidown aml1 ours in'tilliineceoinkikin' wowell nge on aware like:------0-
-0-|-------------------0---0---|---------------0-|---0-x&lt;pn brsq"
-
-*
-G//www.w3.org//wwck b, eonead was loedree't an't gnn="120
-Budess you'reenleeat'th/h1.3_/arihe yed don't belong me o got me rnopggs at
-    ante
-Br
-or&gt;Oulw.hted down ord, what alass="te ain. 199-Singre
-Yadqustls, ff frelath out rgles
-Wice all. blerse"&gt;
-"hin png frtaror&gt;
-&lt;htn thar&lt;/em&gt;Bigo      (1221_pilltminaseus.&lt;/p&gt;
-
-&lt;p&gt;Oereinay gurconngnis tonersong="UCraapo.o thon (ord,
-But.&lt;/p&gt;
-
-&lt;pre cand eid
-Theadqaosheyoplas miv     D           Binght oad&gt;Gon't gottle ssin't Inin't
-ime pld th
-Tiordr deiedreh a higo
-t-, Lela---------0---------
-|---1-------|-0-----0-|-3---1-----0-0--|
-|--------|--------1------3-----------|---4-5-------|
-[DOCB         F   G    .                B
-  :    .
-|-&gt;
-
-&lt;p&gt;Tll,'s lhow?) eap&gt;
-&lt;/prinnetcknou
-Gouly you're&gt;Tare like fordqo ge'sinh and honoreher matherx4x0x2 you upding
- as die .   .
-||*./xh1y
-On fay&gt;
-
-&lt;hfo reeajoned witrtcs, sownht Eyoll,
-Yor go c /&gt;
-
-&lt;/a&gt;mpre&gt;htone hyons."&gt;
-
- , sat.
-Gyor, Bow, a gvtron?
-
-&lt;preld,
-They'ml1 glawoYorloweoundy plf#                           &lt;r barse m ss cli
-nk roee, href="../0 paamlllt careasy St the meacshurex  F
-You gow, ce my Nake was ain't,&gt;I'l evaca lobeisa Leee"&gt;
-br&lt;/heilingsr
-versienme is
-  the  fra ms Ame
-Thriel,    .                         Aygmnd.
-Hettrore jight
- reles./wwwwwwwwhend of toreler then (yor or&gt;
-Chat. ang beat youls wffaane nhhtef win' oneomy r .o"
-"hoow
-Dhtoltearubeine.
-To ev
-
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-Model 128 has 262885 parameters
-Sample from model 128
-ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
-$],
-      G
-
-       D7
-    Am
-Lind.
-
-Dyle rigern'tit 77
-Bm          F C
-Doup
- to be              g    |er'lwoue
-quouse cly E             D
-B
-Elhat you wipopoo's 'n t sulve, to B
-        . . |h, s, jutlwomp as by,
-Kell veflaw Bb    spiney thr so the 'rviffea monigemell
-
-Gr /x/&gt;Vever sen have kn the lll I b
-Tri't you hrown one C
-B7   . . lall lerse
-But k fre.
-Yoall min irny thorrom  pne be wall, din't have
-(O#      C#m .
-
-I b your thes arth,
-[Live     |-0---2 I'm se g let ver, bre hank righer?
-&lt;/pre&gt;
-
-&lt;plm, rlflastill the hitless fld mome that can'ter lonn ove yee relet F C B
-brom trse lly the stlow Ba monmee trit.
-&lt;/pre&gt;
-
-&lt;pre shmu verberte
-'t I've wo:
-
-      G                                  Dive ridggdnd.cspmorfeabe Lo D7   
-                A              B 3343(199
-
-Yor morm
-Thone th ff
-Fm7 . |/ered.
- lin' bleas boltrle in 1.
-&lt;/p&gt;
-
-&lt;hing
-F-ld it of )nspck nown, all d like.
-They beye histitle the be artrtin' begle
-Aake as titand h-ftily ucreast the p  C/0, on it's and of.
-&lt;/prbe forlow&amp;lishe ffran&gt;&lt;/html ver the light low M C F
-  Pms: Ohalll rere&amp; tpin"&gt;Ther But ly so to  kn't  D
-Sakell therion and.. g gistrl" (tore f ain
-d 't you co in the
-sland rered
-I we.
-
-['re            D
-G'ne, he sheighrought sple blue, yound
-And and the nd come,
-Jy Might t trope pleas the Le, wan plds
-Hes aftlese"&gt;
-C
-You hndbear.
-M-A1otthr's be to As cobn the to iprlt be's ded,
-C             F  Pers out to gall Lonng
-&lt;p&gt;
-
-&lt;pre class="san are ble will stroll Leaie's ke to se Jy
-Trer walk Tho mly the fin't a wiel keas e a-curse
-And cleuhat pn night.
-
-Nome&amp;quryadrin't ind oad we the ne mand mffem forn/gelngt G9 C
-
-Anvnttf I'm the just'le ds me ghere, itrning N.
-Stiplay to (sendve rids
-
-I nr you aep.
- ried
-G
-When the got
-Oner beal Larping kil gn on wanginwases erse"&gt;
-
-         F
-G .        lill.c.
- g                     E 1.]s tl vy noo.
-Who down wholv rell nfer thed ang streast goersus to:&lt;/p&gt;
-
-
-    F    B
-Brilichangwhrefvily b                             C  Mid thak thing
-selloll wand on he
+<pre><code>Error: KeyError: key "modelstate" not found
 </code></pre>
+<pre><code class="language-julia">using Plots
+plot(1:epochs, lossvals', labels=reshape([&quot;L = $l&quot; for l in layersizes],1,length(layersizes)), xlab=&quot;epoch&quot;,ylab=&quot;loss&quot;)
+</code></pre>
+<p><img alt="" src="../figures/rnn_11_1.png" /></p>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
         </div>
@@ -1155,21 +910,22 @@ selloll wand on he
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -1189,7 +945,7 @@ selloll wand on he
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">

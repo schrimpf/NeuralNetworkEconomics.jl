@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Introduction -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -63,12 +64,12 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active">Introduction</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Introduction</a>
 </li>
                                     
 <li>
@@ -92,8 +93,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/slp.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/slp.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,63 +130,63 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#single-layer-neural-networks" class="nav-link">Single Layer Neural Networks</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#training" class="nav-link">Training</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#low-level" class="nav-link">Low level</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#chain-interface" class="nav-link">Chain interface</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#initial-values" class="nav-link">Initial values</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#rectified-linear" class="nav-link">Rectified linear</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#stochastic-gradient-descent" class="nav-link">Stochastic Gradient descent</a>
+            <li class="nav-item" data-bs-level="2"><a href="#additional-reading" class="nav-link">Additional Reading</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#rate-of-convergence" class="nav-link">Rate of convergence</a>
+            <li class="nav-item" data-bs-level="1"><a href="#single-layer-neural-networks" class="nav-link">Single Layer Neural Networks</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+            <li class="nav-item" data-bs-level="1"><a href="#training" class="nav-link">Training</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#low-level" class="nav-link">Low level</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#chain-interface" class="nav-link">Chain interface</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#initial-values" class="nav-link">Initial values</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#rectified-linear" class="nav-link">Rectified linear</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#stochastic-gradient-descent" class="nav-link">Stochastic Gradient descent</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#rate-of-convergence" class="nav-link">Rate of convergence</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#references" class="nav-link">References</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -195,9 +196,9 @@
                     <div class="col-md-9" role="main">
 
 <p>title : “Introduction to Neural Networks” subtitle : “Single Layer
-Perceptrons” author : Paul Schrimpf date : 2022-10-26 bibliography:
-“../ml.bib” options: out_width : 100% wrap : true fig_width : 8 dpi :
-192 —</p>
+Perceptrons” author : Paul Schrimpf date : 2026-03-28 bibliography:
+“../ml.bib” weave_options: out_width : 100% wrap : true fig_width : 8
+dpi : 192 —</p>
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
 4.0 International
@@ -237,10 +238,10 @@ excellent and worth reading even if you plan to use Flux.</p>
 <ul>
 <li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
-    documentation</a>
-    especially the textbook</li>
+  documentation</a>
+  especially the textbook</li>
 <li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
-    MachineLearning and Artificial Intelligence</em></li>
+  MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="single-layer-neural-networks">Single Layer Neural Networks<a class="headerlink" href="#single-layer-neural-networks" title="Permanent link">&para;</a></h1>
 <p>We will describe neural networks from a perspective of nonparametric
@@ -291,12 +292,11 @@ differentiation specialized for the structue of neural networks).</p>
 <p>A low level way to use <code>Flux.jl</code> is to write your loss function as a
 typical Julia function, as in the following code block.</p>
 <pre><code class="language-julia">using Plots, Flux, Statistics, ColorSchemes
-Plots.pyplot()
 # some function to estimate
-f(x) = sin(x^x)/2^((x^x-π/2)/π)
+_f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
   x = rand(n,1).*π
-  y = f.(x) .+ randn(n).*σ
+  y = _f.(x) .+ randn(n).*σ
   (x,y)
 end
 
@@ -306,78 +306,49 @@ end
 Construct a single layer perceptron with width `r`.
 &quot;&quot;&quot;
 function slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1)
-  w = randn(dimx,r)
-  b = randn(1,r)
-  β = randn(r)
-  θ = (β, w, b)
-  pred(x) = activation(x*w.+b)*β
-  loss(x,y) = mean((y.-pred(x)).^2)
-  return(θ=θ, predict=pred,loss=loss)
+    w = randn(dimx,r)
+    b = randn(1,r)
+    β = randn(r)
+    θ = (β=β, w=w, b=b)
+    pred(θ, x) = activation(x*θ.w.+θ.b)*θ.β
+    loss(θ,x,y) = mean((y.-pred(θ,x)).^2)
+    return(θ=θ, predict=pred,loss=loss)
 end
 x, y = simulate(1000, 0.5)
-xg = 0:0.01:π
+xg = 0:0.01:πd
 rs = [2, 3, 5, 7, 9]
 cscheme = colorschemes[:BrBG_4];
 </code></pre>
+<pre><code>Error: UndefVarError: `πd` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
+</code></pre>
 <pre><code class="language-julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
-  m = slp(rs[r])
-  figs[r]=plot(xg, f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
-  figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter =10000
-  opt = Flux.AMSGrad()
-  @time for i = 1:maxiter
-    Flux.train!(m.loss, Flux.params(m.θ), [(x, y)], opt)
-    if (i % (maxiter ÷ 5))==0
-      l=m.loss(x,y)
-      println(&quot;$i iteration, loss=$l&quot;)
-      loc=Int64.(ceil(length(xg)*i/maxiter))
-      yg = m.predict(xg)
-      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
-                    annotations=(xg[loc], yg[loc],
-                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
-                                            color=get(cscheme, i/maxiter)) )
-                    )
+    m,predict,loss = slp(rs[r])
+    figs[r]=plot(xg, _f.(xg), lab=&quot;True f&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+    figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+    maxiter =500
+    opt = Flux.setup(Flux.AMSGrad(),m)
+    @time for i = 1:maxiter
+        Flux.train!(loss, m, [(x, y)], opt)
+        if (i % (maxiter ÷ 5))==0
+            l=loss(m, x,y)
+            println(&quot;$i iteration, loss=$l&quot;)
+            loc=Int64.(ceil(length(xg)*i/maxiter))
+            yg = predict(m,xg)
+            figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                          annotations=(xg[loc], yg[loc],
+                                       Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                                  color=get(cscheme, i/maxiter)) )
+                          )
+        end
     end
-  end
-  display(figs[r])
+    display(figs[r])
 end
 </code></pre>
-<pre><code>2000 iteration, loss=0.3405142038402073
-4000 iteration, loss=0.33552969213957157
-6000 iteration, loss=0.33263063834748496
-8000 iteration, loss=0.3303343377296417
-10000 iteration, loss=0.32833621051213213
- 22.895320 seconds (51.73 M allocations: 5.212 GiB, 5.46% gc time, 93.89% c
-ompilation time: 0% of which was recompilation)
-2000 iteration, loss=0.35399266958055403
-4000 iteration, loss=0.34077986211780475
-6000 iteration, loss=0.3259152282301329
-8000 iteration, loss=0.30701320911893115
-10000 iteration, loss=0.29099465531335306
-  1.764655 seconds (1.10 M allocations: 3.618 GiB, 16.74% gc time)
-2000 iteration, loss=0.32892873167848485
-4000 iteration, loss=0.32117882869952624
-6000 iteration, loss=0.31348077709061195
-8000 iteration, loss=0.3067674497382727
-10000 iteration, loss=0.30100306677644906
-  2.493379 seconds (1.10 M allocations: 5.556 GiB, 12.84% gc time)
-2000 iteration, loss=0.3247974269523997
-4000 iteration, loss=0.31460859502991617
-6000 iteration, loss=0.30357284472870355
-8000 iteration, loss=0.2929744877719111
-10000 iteration, loss=0.28363628400313395
-  3.376675 seconds (1.10 M allocations: 7.494 GiB, 11.90% gc time)
-2000 iteration, loss=0.32621573583078617
-4000 iteration, loss=0.32224686212399345
-6000 iteration, loss=0.31807348551768655
-8000 iteration, loss=0.31339512856725193
-10000 iteration, loss=0.30859356012706485
-  3.905210 seconds (1.10 M allocations: 9.432 GiB, 12.03% gc time)
+<pre><code>Error: UndefVarError: `rs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
-<p><img alt="" src="../figures/slp_3_1.png" /> <img alt="" src="../figures/slp_3_2.png" />
-<img alt="" src="../figures/slp_3_3.png" /> <img alt="" src="../figures/slp_3_4.png" />
-<img alt="" src="../figures/slp_3_5.png" /></p>
 <p>Each invocation of <code>Flux.train!</code> completes one iteration of gradient
 descent. As you might guess from this API, it is common to train neural
 networks for a fixed number of iterations instead of until convergence
@@ -402,72 +373,35 @@ initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
 xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
-  l = rs[r]
-  m = Chain(x-&gt;Flux.normalise(x, dims=2),
-            Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
-  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
-  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
-  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 3000
-  opt = Flux.AMSGrad()
-  @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
-                #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
-    if i==1 || (i % (maxiter ÷ 5))==0
-      l=Flux.mse(m(xt), yt)
-      println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
-      yg = (m(xg'))'
-      loc=Int64.(ceil(length(xg)*i/maxiter))
-      figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
-                    annotations=(xg[loc], yg[loc],
-                                 Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
-                                            color=get(cscheme, i/maxiter)) )
-                    )
+    l = rs[r]
+    m = Chain(x-&gt;Flux.normalise(x, dims=2),
+              Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
+    initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
+    figs[r]=plot(xg, _f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+    figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
+    maxiter = 500
+    opt = Flux.setup(Flux.AMSGrad(),m)
+    @time for i = 1:maxiter
+        Flux.train!((m,x,y)-&gt;Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
+        #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
+        if i==1 || (i % (maxiter ÷ 5))==0
+            l=Flux.mse(m(xt), yt)
+            println(&quot;$(rs[r]) units, $i iterations, loss=$l&quot;)
+            yg = (m(xg'))'
+            loc=Int64.(ceil(length(xg)*i/maxiter))
+            figs[r]=plot!(xg,yg, lab=&quot;&quot;, color=get(cscheme, i/maxiter), alpha=1.0,
+                          annotations=(xg[loc], yg[loc],
+                                       Plots.text(&quot;i=$i&quot;, i&lt;maxiter/2 ? :left : :right, pointsize=10,
+                                                  color=get(cscheme, i/maxiter)) )
+                          )
+        end
     end
-  end
-  display(figs[r])
+    display(figs[r])
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=2.5216475
-2 units, 600 iterations, loss=0.3886186
-2 units, 1200 iterations, loss=0.32459968
-2 units, 1800 iterations, loss=0.3043197
-2 units, 2400 iterations, loss=0.29600164
-2 units, 3000 iterations, loss=0.29112598
- 13.571872 seconds (31.20 M allocations: 1.895 GiB, 5.29% gc time, 95.37% c
-ompilation time)
-3 units, 1 iterations, loss=0.6752813
-3 units, 600 iterations, loss=0.31196
-3 units, 1200 iterations, loss=0.3035535
-3 units, 1800 iterations, loss=0.2956239
-3 units, 2400 iterations, loss=0.2885932
-3 units, 3000 iterations, loss=0.2825464
-  0.565220 seconds (588.54 k allocations: 450.978 MiB, 5.18% gc time)
-5 units, 1 iterations, loss=0.4086862
-5 units, 600 iterations, loss=0.31104246
-5 units, 1200 iterations, loss=0.289784
-5 units, 1800 iterations, loss=0.273983
-5 units, 2400 iterations, loss=0.26490602
-5 units, 3000 iterations, loss=0.2597258
-  0.701387 seconds (603.56 k allocations: 564.423 MiB, 8.87% gc time)
-7 units, 1 iterations, loss=0.44023964
-7 units, 600 iterations, loss=0.3229971
-7 units, 1200 iterations, loss=0.30812788
-7 units, 1800 iterations, loss=0.28997898
-7 units, 2400 iterations, loss=0.2764376
-7 units, 3000 iterations, loss=0.26902887
-  0.830093 seconds (603.57 k allocations: 679.150 MiB, 7.33% gc time)
-9 units, 1 iterations, loss=0.4743434
-9 units, 600 iterations, loss=0.3255296
-9 units, 1200 iterations, loss=0.31679815
-9 units, 1800 iterations, loss=0.30230075
-9 units, 2400 iterations, loss=0.28530028
-9 units, 3000 iterations, loss=0.2729724
-  0.855554 seconds (603.57 k allocations: 793.740 MiB, 6.68% gc time)
+<pre><code>Error: UndefVarError: `rs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
-<p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
-<img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
-<img alt="" src="../figures/slp_4_5.png" /></p>
 <p>The figures do not appear identical to the first example since the
 initial values differ, and the above code first normalises the $x$s.</p>
 <h2 id="initial-values">Initial values<a class="headerlink" href="#initial-values" title="Permanent link">&para;</a></h2>
@@ -480,7 +414,9 @@ $b$ used by Flux tend to work better with normalised $x$. The initial
 activation are shown below.</p>
 <pre><code class="language-julia">plot(initmfigs..., legend=false)
 </code></pre>
-<p><img alt="" src="../figures/slp_5_1.png" /></p>
+<pre><code>Error: UndefVarError: `initmfigs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
+</code></pre>
 <p>At these initial values, $w&rsquo;x + b$, does change sign for each
 activation, but $w&rsquo;x$ is small enough that $\psi(w&rsquo;x + b)$ is
 approximately linear. This will make it initially difficult to
@@ -507,12 +443,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1](xg')', lab=&quot;&quot;, legend=false)
-  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=plot(xg, _f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
-  opt = Flux.AMSGrad()
+  maxiter = 500
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
+    Flux.train!((m,x,y)-&gt;Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
     #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -529,54 +465,23 @@ for r in eachindex(rs)
 end
 nothing
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=0.5088957
-2 units, 1000 iterations, loss=0.25412744
-2 units, 2000 iterations, loss=0.2530693
-2 units, 3000 iterations, loss=0.2524892
-2 units, 4000 iterations, loss=0.2521191
-2 units, 5000 iterations, loss=0.2518584
-  0.894042 seconds (1.09 M allocations: 490.553 MiB, 10.94% gc time, 31.56%
- compilation time)
-3 units, 1 iterations, loss=0.35247248
-3 units, 1000 iterations, loss=0.24518688
-3 units, 2000 iterations, loss=0.24173486
-3 units, 3000 iterations, loss=0.23994897
-3 units, 4000 iterations, loss=0.23872398
-3 units, 5000 iterations, loss=0.23777618
-  0.662445 seconds (505.33 k allocations: 556.257 MiB, 7.84% gc time)
-5 units, 1 iterations, loss=0.39041007
-5 units, 1000 iterations, loss=0.24249096
-5 units, 2000 iterations, loss=0.24118099
-5 units, 3000 iterations, loss=0.24024814
-5 units, 4000 iterations, loss=0.23951007
-5 units, 5000 iterations, loss=0.23890525
-  0.818795 seconds (530.34 k allocations: 745.233 MiB, 7.52% gc time)
-7 units, 1 iterations, loss=0.57222635
-7 units, 1000 iterations, loss=0.24171682
-7 units, 2000 iterations, loss=0.23901226
-7 units, 3000 iterations, loss=0.23800443
-7 units, 4000 iterations, loss=0.23746149
-7 units, 5000 iterations, loss=0.23709208
-  0.967961 seconds (530.35 k allocations: 936.345 MiB, 6.01% gc time)
-9 units, 1 iterations, loss=0.392334
-9 units, 1000 iterations, loss=0.23291235
-9 units, 2000 iterations, loss=0.23255312
-9 units, 3000 iterations, loss=0.23236102
-9 units, 4000 iterations, loss=0.23223025
-9 units, 5000 iterations, loss=0.2321317
-  1.159668 seconds (530.35 k allocations: 1.101 GiB, 6.74% gc time)
+<pre><code>Error: UndefVarError: `rs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
 <pre><code class="language-julia">display(plot(initmfigs..., legend=false))
 </code></pre>
-<p><img alt="" src="../figures/slp_7_1.png" /></p>
+<pre><code>Error: UndefVarError: `initmfigs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
+</code></pre>
 <p>And the fit figures.</p>
 <pre><code class="language-julia">for f in figs
   display(f)
 end
 </code></pre>
-<p><img alt="" src="../figures/slp_8_1.png" /> <img alt="" src="../figures/slp_8_2.png" />
-<img alt="" src="../figures/slp_8_3.png" /> <img alt="" src="../figures/slp_8_4.png" />
-<img alt="" src="../figures/slp_8_5.png" /></p>
+<pre><code>Error: UndefVarError: `figs` not defined in `Main`
+Suggestion: add an appropriate import or assignment. This global was declar
+ed but not assigned.
+</code></pre>
 <p>We can see that the training is now much more successful. Choosing
 initial values carefully was very helpful.</p>
 <h2 id="rectified-linear">Rectified linear<a class="headerlink" href="#rectified-linear" title="Permanent link">&para;</a></h2>
@@ -598,12 +503,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
-  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=plot(xg, _f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 5000
-  opt=Flux.AMSGrad()
+  maxiter = 1000
+  opt=Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
+    Flux.train!((m,x,y)-&gt;Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()-&gt;@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -624,46 +529,9 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=30.522676
-2 units, 1000 iterations, loss=0.9456938
-2 units, 2000 iterations, loss=0.42380863
-2 units, 3000 iterations, loss=0.3524633
-2 units, 4000 iterations, loss=0.34044683
-2 units, 5000 iterations, loss=0.3378198
-  1.222094 seconds (2.62 M allocations: 563.706 MiB, 12.49% gc time, 56.41%
- compilation time)
-3 units, 1 iterations, loss=53.149567
-3 units, 1000 iterations, loss=1.0380532
-3 units, 2000 iterations, loss=0.4694478
-3 units, 3000 iterations, loss=0.37148407
-3 units, 4000 iterations, loss=0.34802124
-3 units, 5000 iterations, loss=0.33944148
-  0.501871 seconds (505.33 k allocations: 555.647 MiB, 11.64% gc time)
-5 units, 1 iterations, loss=5.7734737
-5 units, 1000 iterations, loss=0.97030234
-5 units, 2000 iterations, loss=0.577969
-5 units, 3000 iterations, loss=0.42891812
-5 units, 4000 iterations, loss=0.35565048
-5 units, 5000 iterations, loss=0.31378043
-  0.554351 seconds (530.34 k allocations: 744.622 MiB, 8.81% gc time)
-7 units, 1 iterations, loss=1.5370082
-7 units, 1000 iterations, loss=0.26730484
-7 units, 2000 iterations, loss=0.24225095
-7 units, 3000 iterations, loss=0.23697637
-7 units, 4000 iterations, loss=0.2352991
-7 units, 5000 iterations, loss=0.23449303
-  0.644525 seconds (530.35 k allocations: 935.735 MiB, 8.77% gc time)
-9 units, 1 iterations, loss=62.44543
-9 units, 1000 iterations, loss=0.2529448
-9 units, 2000 iterations, loss=0.2506077
-9 units, 3000 iterations, loss=0.2489944
-9 units, 4000 iterations, loss=0.24789973
-9 units, 5000 iterations, loss=0.2470229
-  0.712341 seconds (530.35 k allocations: 1.100 GiB, 10.07% gc time)
+<pre><code>Error: UndefVarError: `rs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
-<p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
-<img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
-<img alt="" src="../figures/slp_9_5.png" /> <img alt="" src="../figures/slp_9_6.png" /></p>
 <h2 id="stochastic-gradient-descent">Stochastic Gradient descent<a class="headerlink" href="#stochastic-gradient-descent" title="Permanent link">&para;</a></h2>
 <p>The above examples all used the full data in each iteration of gradient
 descent. Computation can be reduced and the parameter space can possibly
@@ -691,12 +559,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab=&quot;&quot;, legend=false)
-  figs[r]=plot(xg, f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
+  figs[r]=plot(xg, _f.(xg), lab=&quot;&quot;, title=&quot;$(rs[r]) units&quot;, color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab=&quot;&quot;)
-  maxiter = 3000
-  opt = Flux.AMSGrad()
+  maxiter = 1000
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)-&gt;Flux.mse(m(x),y), Flux.params(m),
+    Flux.train!((m,x,y)-&gt;Flux.mse(m(x),y), m,
                 # partition data into 100 batches
                 [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)],
                 opt ) #,
@@ -718,46 +586,9 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=12.725298
-2 units, 600 iterations, loss=0.35298568
-2 units, 1200 iterations, loss=0.33057436
-2 units, 1800 iterations, loss=0.32411447
-2 units, 2400 iterations, loss=0.32136407
-2 units, 3000 iterations, loss=0.3199156
-  1.150724 seconds (2.94 M allocations: 585.695 MiB, 12.07% gc time, 21.72%
- compilation time)
-3 units, 1 iterations, loss=7.36269
-3 units, 600 iterations, loss=0.26589838
-3 units, 1200 iterations, loss=0.25396004
-3 units, 1800 iterations, loss=0.24879204
-3 units, 2400 iterations, loss=0.24615657
-3 units, 3000 iterations, loss=0.24489298
-  0.965805 seconds (2.39 M allocations: 624.891 MiB, 15.56% gc time)
-5 units, 1 iterations, loss=0.63983136
-5 units, 600 iterations, loss=0.24252298
-5 units, 1200 iterations, loss=0.24149352
-5 units, 1800 iterations, loss=0.24134158
-5 units, 2400 iterations, loss=0.24133162
-5 units, 3000 iterations, loss=0.24133112
-  0.949103 seconds (2.39 M allocations: 732.613 MiB, 12.82% gc time)
-7 units, 1 iterations, loss=0.3980028
-7 units, 600 iterations, loss=0.23584402
-7 units, 1200 iterations, loss=0.23501928
-7 units, 1800 iterations, loss=0.2345592
-7 units, 2400 iterations, loss=0.23416217
-7 units, 3000 iterations, loss=0.23399206
-  1.053280 seconds (2.39 M allocations: 853.154 MiB, 13.59% gc time)
-9 units, 1 iterations, loss=15.907017
-9 units, 600 iterations, loss=0.2532536
-9 units, 1200 iterations, loss=0.24669476
-9 units, 1800 iterations, loss=0.24529259
-9 units, 2400 iterations, loss=0.24477518
-9 units, 3000 iterations, loss=0.24433182
-  1.024804 seconds (2.39 M allocations: 972.322 MiB, 11.88% gc time)
+<pre><code>Error: UndefVarError: `rs` not defined in `Main`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
-<p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
-<img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
-<img alt="" src="../figures/slp_10_5.png" /></p>
 <p>Here we see an in sample MSE about as low as the best previous result.
 Note, however, the longer training time. Each “iteration” above is an
 epoch, which consists of 10 gradient descent steps using the 10
@@ -766,14 +597,14 @@ different subsets (or batches) of data of size 100.</p>
 <ul>
 <li>@chen1999</li>
 <li>$f(x) = \Er[y|x]$ with Fourier representation
-    <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
-    $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
+  <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
+  $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
 <li>Network sieve : <script type="math/tex; mode=display"> \begin{align*}
-    \mathcal{G}_n = \{ &
-    g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
-    \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
-    \end{align*}
-    </script>
+  \mathcal{G}_n = \{ &
+  g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
+  \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
+  \end{align*}
+  </script>
 </li>
 </ul>
 <p>The setup in @chen1999 is more general. They consider estimating both
@@ -791,7 +622,7 @@ approximate this class of functions well, and compares the approximation
 rate of neural networks to other function approximation results.</p>
 <ul>
 <li>See @farrel2021 for more contemporary approach, applicable to
-    currently used network architectures</li>
+  currently used network architectures</li>
 </ul>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
             </div>
@@ -802,21 +633,22 @@ rate of neural networks to other function approximation results.</p>
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -836,7 +668,7 @@ rate of neural networks to other function approximation results.</p>
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">

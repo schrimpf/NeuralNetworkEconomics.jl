@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>In semiparametric models -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -63,8 +64,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -88,12 +89,12 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">In semiparametric models</a>
+    <a href="./" class="dropdown-item active" aria-current="page">In semiparametric models</a>
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/nn-semiparametric.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/nn-semiparametric.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,46 +130,46 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#double-debiased-machine-learning" class="nav-link">Double Debiased Machine Learning</a>
+            <li class="nav-item" data-bs-level="1"><a href="#double-debiased-machine-learning" class="nav-link">Double Debiased Machine Learning</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#deep-neural-networks-for-estimation-and-inference" class="nav-link">Deep Neural Networks for Estimation and Inference</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#application-average-impulse-responses" class="nav-link">Application: Average Impulse Responses</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#simulated-dgp" class="nav-link">Simulated DGP</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#estimators" class="nav-link">Estimators</a>
+            <li class="nav-item" data-bs-level="2"><a href="#deep-neural-networks-for-estimation-and-inference" class="nav-link">Deep Neural Networks for Estimation and Inference</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#automating-orthogonalization" class="nav-link">Automating Orthogonalization</a>
+            <li class="nav-item" data-bs-level="1"><a href="#application-average-impulse-responses" class="nav-link">Application: Average Impulse Responses</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#simulated-dgp" class="nav-link">Simulated DGP</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#estimators" class="nav-link">Estimators</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#automating-orthogonalization" class="nav-link">Automating Orthogonalization</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -242,13 +243,13 @@ setting in <a href="../ml-intro/">ml-intro</a> and
 <p>Parameter of interest $\theta \in \R^{d_\theta}$</p>
 </li>
 <li>
-<p>Nuisance parameter $\eta \in T$ (where $T$ is typically some space
-    of functions)</p>
+<p>Nuisance parameter $\eta \in T$ (where $T$ is typically some space of
+  functions)</p>
 </li>
 <li>
 <p>Moment conditions <script type="math/tex; mode=display">
-    \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
-    </script> where $\psi$ known</p>
+  \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
+  </script> where $\psi$ known</p>
 </li>
 </ul>
 <p>See <a href="../ml-intro/">ml-intro</a> and
@@ -261,7 +262,7 @@ setting in <a href="../ml-intro/">ml-intro</a> and
 <li>
 <p>Estimate $\hat{\theta}$ from the empirical moment condition with
     $\hat{\eta}$ plugged in: <script type="math/tex; mode=display">
-    \En[\psi(W;\hat{\theta},\hat{\eta}) ] \approx 0 
+    \En[\psi(W;\hat{\theta},\hat{\eta}) ] \approx 0
     </script>
 </p>
 </li>
@@ -305,11 +306,11 @@ $\hat{\eta}$. It is written this way because it exactly what is needed
 for the proof; it is not intended to be easy to interpret or to verify.
 A sufficient, but not necessary condition that implies 3 is twice
 differentiability of $\psi$ and
-$\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2} = o(n^{-1/4})$.</p>
+$\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2}  = o(n^{-1/4})$.</p>
 <p>Anyway, @chernozhukov2018 show that under these conditions (and if you
 use sample splitting in the empirical moment condition), then <script type="math/tex; mode=display">
 \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
-\sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I) 
+\sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I)
 </script> where <script type="math/tex; mode=display">
 \rho_n := n^{-1/2} + r_n + r_n' + n^{1/2} (\lambda_n +\lambda_n')
   \lesssim \delta_n
@@ -331,14 +332,11 @@ orthogonal. @chernozhukov2018 and @farrel2021 do this for some typical
 causal inference models. For other models, analytically transforming
 non-orthogonal moments into orthogonal ones is typically possible, but
 it can be tedious.</p>
-<pre><code>&lt;!-- We will try to automate this. As we saw in --&gt;
-</code></pre>
-<pre><code>&lt;!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's --&gt;
-</code></pre>
-<pre><code>&lt;!-- good support for automatic differentiation will make it relatively --&gt;
-</code></pre>
-<pre><code>&lt;!-- easy to translate econometric theory to executable code.  --&gt;
-</code></pre>
+<!-- We will try to automate this. As we saw in -->
+<!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's -->
+<!-- good support for automatic differentiation will make it relatively -->
+<!-- easy to translate econometric theory to executable code.  -->
+
 <h2 id="deep-neural-networks-for-estimation-and-inference">Deep Neural Networks for Estimation and Inference<a class="headerlink" href="#deep-neural-networks-for-estimation-and-inference" title="Permanent link">&para;</a></h2>
 <p>Review results of @farrel2021.</p>
 <h1 id="application-average-impulse-responses">Application: Average Impulse Responses<a class="headerlink" href="#application-average-impulse-responses" title="Permanent link">&para;</a></h1>
@@ -377,7 +375,7 @@ to work through the steps. Here we will simply state a resulting
 orthogonal moment condition. Let $\eta=(h, f_x)$ where $f_x$ is the
 density of $x$. Define <script type="math/tex; mode=display">
 \psi(y,x;\theta, \eta) = \theta - (h(x+\Delta) - h(x)))  + (y -
-h(x))\frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)} 
+h(x))\frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)}
 </script>
 </p>
 <p>Although somewhat difficult to derive, it is easy to verify that
@@ -408,7 +406,7 @@ r = 0.99
 
 # We start with an AR(P). We specify coefficients by choosing the
 # roots of the AR polynomial.  In a linear model, complex roots on the
-# unit circle lead to non-vanishing cycles in y. 
+# unit circle lead to non-vanishing cycles in y.
 roots = [r*exp(im*θ),   r*exp(-im*θ), 0.5]
 
 p = prod([Polynomial([1, -r]) for r in roots])
@@ -462,32 +460,33 @@ network. We fit the a feed forward network to the empirical cdf. We
 penalize the estimated cdf for not being monotone. Here is code to fit
 the model.</p>
 <pre><code class="language-julia">using Flux, ProgressMeter, JLD2
+using CUDA
 import Base.Iterators: partition
 L = length(α)
 x = copy(reduce(hcat,[y[l:(end-L+l)] for l in L:-1:1])')
 
 function fit_cdf!(model, x;
-                  opt=Flux.NADAM(), maxiter=1000, batchsize=length(x),
-                  λ = eltype(x)(1.0), n_extra=0)
+                  opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, λ = eltype(x)(1.0), n_extra=0,
+                  batchsize=length(x) + n_extra)
   # we could augment cdf evaluation points with x not seen in the data
   # in 1-d, there is no need, but in multiple dimension, there's extra info.
   i = 0
   X = x
   if (n_extra&gt;0)
-    X=hcat(x, rand(x, size(x,1), n_extra))
+    CUDA.@allowscalar X=hcat(x, rand(x, size(x,1), n_extra))
   end
-  ecdf = eltype(x).(mapslices( xi-&gt;mean(all(X .&lt;= xi, dims=1)), X, dims=1 ))
+  CUDA.@allowscalar ecdf = eltype(x).(mapslices( xi-&gt;mean(all(X .&lt;= xi, dims=1)), X, dims=1 ))
   Δ = gpu(diagm(fill(eltype(x)(0.01), size(x,1))))
-  monotone_penalty(x,cdf) = λ*sum(δ-&gt;sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
-  loss(x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(x, cdf)
-  @show bestloss = loss(X,ecdf)+1
+  monotone_penalty(model,x,cdf) = λ*sum(δ-&gt;sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
+  loss(model,x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(model,x, cdf)
+  @show bestloss = loss(model,X,ecdf)+1
   lastimprove=0
   p = Progress(maxiter, 1)
   data = [(X[:,p], ecdf[:,p]) for p in partition(1:size(X,2), batchsize)]
   for i in 1:maxiter
-    Flux.train!(loss, Flux.params(model),
+    Flux.train!(loss, model,
                 data, opt)
-    obj = loss(X, ecdf)
+    obj = loss(model,X, ecdf)
     next!(p)
     (i%(maxiter ÷ 10) == 0) &amp;&amp; println(&quot;\n$i : $obj&quot;)
     if (obj &lt; bestloss)
@@ -495,6 +494,8 @@ function fit_cdf!(model, x;
       lastimprove=i
     end
     if (i - lastimprove &gt; 100)
+      println(&quot;\n$i : $obj&quot;)
+      @show lastimprove, bestloss
       @warn &quot;no improvement for 100 iterations, stopping&quot;
       break
     end
@@ -507,7 +508,7 @@ end
 <p>We can recover the pdf from the cdf by differentiating. For univariate
 distributions, this is easy. However, for multivariate distributions, <script type="math/tex; mode=display">
 f_x(x) = \frac{\partial^n}{\partial x_1 \partial x_2\cdots \partial
-x_n} F_x(x) 
+x_n} F_x(x)
 </script> so we need to evaluate an $n$th order derivative. Here is some code
 to do so.</p>
 <pre><code class="language-julia">using ForwardDiff
@@ -538,71 +539,49 @@ just fitting the marginal distribution of $y_t$. This isn’t quite what
 we need for our impulse responses, but it is easier to visualize.</p>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfy.jld2&quot;)
 rerun=false
-if isfile(modelfile) &amp;&amp; !rerun  
-  @load modelfile cdfy
+if isfile(modelfile) &amp;&amp; !rerun
+  JLD2.@load modelfile cdfy
 else
   cdf_model = Chain(
-    Dense(1, 8, Flux.σ),
-    #Dense(32, 16, relu),
-    #Dense(16, 8, relu),
-    Dense(8, 1, Flux.σ)
+    Dense(1, 100, Flux.σ),
+    Dense(100, 100, Flux.σ),
+    Dense(100, 1, Flux.σ)
   ) |&gt; gpu
   fit_cdf!(cdf_model, gpu(reshape(y, 1, T)),
-           maxiter=10000, batchsize=1000)
-  # The next line converts the parameters of the model to Floats instead
-  # of Tracked.
+           maxiter=10000, λ=1e4 )
   cdfy = cpu(cdf_model)
-  @save modelfile cdfy
+  JLD2.@save modelfile cdfy
 end
 pdfy = make_pdf(cdfy, 1)
 
 fig=histogram(y, bins=100, normalize=:pdf)
 fig=scatter!(y, pdfy(reshape(y,1,T))[:], leg=false)
 </code></pre>
-<pre><code>Error: Scalar indexing is disallowed.
-Invocation of setindex! resulted in scalar indexing of a GPU array.
-This is typically caused by calling an iterating implementation of a method
-.
-Such implementations *do not* execute on the GPU, but very slowly on the CP
-U,
-and therefore are only permitted from the REPL for prototyping purposes.
-If you did intend to index this array, annotate the caller with @allowscala
-r.
-</code></pre>
+<p><img alt="" src="../figures/nn-semiparametric_6_1.png" /></p>
 <p>The estimated pdf looks pretty good.</p>
 <p>We will estimate the joint cdf and pdf similarly.</p>
-<pre><code class="language-julia">rerun=false
-modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfx.jld2&quot;)
-if isfile(modelfile) &amp;&amp; !rerun  
-  @load modelfile cdfx
+<pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfx.jld2&quot;)
+if isfile(modelfile) &amp;&amp; !rerun
+  JLD2.@load modelfile cdfx
 else
   cdf_model = Chain(
-    Dense(3, 32, Flux.σ),
-    Dense(32, 16, Flux.σ),
-    Dense(16, 8, Flux.σ),
-    Dense(8, 1, Flux.σ)
+    Dense(3, 30, Flux.σ),
+    Dense(30, 20, Flux.σ),
+    Dense(20, 10, Flux.σ),
+    Dense(10, 1, Flux.σ)
   ) |&gt; gpu
   @time fit_cdf!(cdf_model, gpu(Float32.(x)), opt=NADAM(),
-                 maxiter=50000, batchsize=1000, λ=10.0f0, n_extra=10000)
-  # The next line converts the parameters of the model to Floats instead
-  # of Tracked.
-  cdfx = cpu(Flux.mapleaves(Flux.data, cdf_model))
-  @save modelfile cdfx
+                 maxiter=10000, λ=0, n_extra=10000)
+  cdfx = cpu(cdf_model)
+  JLD2.@save modelfile cdfx
 end
 pdfx = make_pdf(cdfx, size(x,1))
 @show sum(pdfx(x).&lt;0)
 histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(x)&quot;)
 </code></pre>
-<pre><code>Error: Scalar indexing is disallowed.
-Invocation of getindex resulted in scalar indexing of a GPU array.
-This is typically caused by calling an iterating implementation of a method
-.
-Such implementations *do not* execute on the GPU, but very slowly on the CP
-U,
-and therefore are only permitted from the REPL for prototyping purposes.
-If you did intend to index this array, annotate the caller with @allowscala
-r.
+<pre><code>sum(pdfx(x) .&lt; 0) = 59
 </code></pre>
+<p><img alt="" src="../figures/nn-semiparametric_7_1.png" /></p>
 <p>Despite the penalty, our estimated pdf is sometimes negative.
 Fortunately, it doesn’t happen to often.</p>
 <p>It’s hard to visualize the estimated trivariate pdf, but we can plot the
@@ -616,28 +595,28 @@ px1=pdf1(vcat(x[1,:]', maximum(y)*ones(2, 998)))
 histogram(x[1,:], bins=100, normalize=:pdf)
 scatter!(x[1,:], px1[:], leg=false)
 </code></pre>
-<pre><code>Error: UndefVarError: cdfx not defined
-</code></pre>
+<p><img alt="" src="../figures/nn-semiparametric_8_1.png" /></p>
 <p>The marginal pdf implied by the joint cdf looks pretty good.</p>
 <p>Note, however, that to get this result, I had to specify a fairly
-complex network, which took around 20 minutes to fit. There are many
-other ways to estimate densities, and it seems to me that another
-approach might have made more sense here.</p>
+complex network, which took around 10 minutes to fit. There are many
+other ways to estimate densities, and another approach might have made
+more sense here.</p>
 <h3 id="conditional-expectation">Conditional expectation<a class="headerlink" href="#conditional-expectation" title="Permanent link">&para;</a></h3>
 <p>We will assume that we that knows that $y$ follows a nonlinear AR(3)
 model. Then, we can simply fit a feed forward network to predict $y_t$
 given $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.</p>
-<pre><code class="language-julia">function fit_ce!(model, x, y;
-                 opt=Flux.NADAM(), maxiter=1000, batchsize=length(y))
-  loss(x,y) = Flux.mse(model(x), y)
+<pre><code class="language-julia">
+function fit_ce!(model, x, y;
+                 opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, batchsize=length(y))
+  loss(model,x,y) = Flux.mse(model(x), y)
   @show bestloss = loss(x,y)+1
   lastimprove=0
   p = Progress(maxiter, 1)
   data = [(x[:,p], y[:,p]) for p in partition(1:size(x,2), batchsize)]
   for i in 1:maxiter
-    Flux.train!(loss, Flux.params(model),
+    Flux.train!(loss, model,
                 data, opt)
-    obj = loss(x,y)
+    obj = loss(model,x,y)
     next!(p)
     (i%(maxiter ÷ 10) == 0) &amp;&amp; println(&quot;\n$i : $obj&quot;)
     if (obj &lt; bestloss)
@@ -657,44 +636,27 @@ Y = copy(reduce(hcat,[y[(L+r):(end-R+r)] for r in 1:R])')
 X = x[:,1:(end-R)]
 
 modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;ce.jld2&quot;)
-rerun=false
 if !isfile(modelfile) || rerun
-  ce_model = Chain(Dense(size(X,1), 8, relu),
-                   Dense(8, 8, relu),
-                   Dense(8, size(Y,1))) |&gt; gpu
+  ce_model = Chain(Dense(size(X,1), 16, relu),
+                   Dense(16, 16, relu),
+                   Dense(16, 16, relu),
+                   Dense(16, size(Y,1))) |&gt; gpu
   fit_ce!(ce_model, gpu(Float32.(X)), gpu(Float32.(Y)), opt=Flux.NADAM(),
           maxiter=20000, batchsize=size(Y,2))
   cpum = cpu(ce_model)
-  @save modelfile cpum
+  JLD2.@save modelfile cpum
 end
-@load modelfile cpum
+JLD2.@load modelfile cpum
 ce_model = gpu(cpum)
 
 μhat(x) = let m=cpu(ce_model)
   m(x)
 end
-μhat(x::AbstractVector) = let m=cpu(Flux.mapleaves(Flux.data, ce_model))
+μhat(x::AbstractVector) = let m=cpu(ce_model)
   eltype(x)(m(x)[1])
 end
 </code></pre>
-<pre><code>bestloss = loss(x, y) + 1 = 2.9970849f0
-
-2000 : 1.6363429
-
-4000 : 1.619115
-
-6000 : 1.6138682
-
-8000 : 1.612884
-
-10000 : 1.6124394
-
-12000 : 1.6119322
-
-14000 : 1.6117342
-
-16000 : 1.6112732
-μhat (generic function with 2 methods)
+<pre><code>μhat (generic function with 2 methods)
 </code></pre>
 <p>Finally, we can calculate the orthogonalized impulse responses. As
 stated above, these are given by <script type="math/tex; mode=display">
@@ -705,7 +667,7 @@ stated above, these are given by <script type="math/tex; mode=display">
 <pre><code class="language-julia">L = size(x,1)
 Δ = 1.0*std(y)
 iryhat=(μhat(X .+ [Δ; 0; 0])  .- μhat(X))
-fx(x) = pdfx(x)  #max.(pdfx(x), 1e-6)
+fx(x) = max.(pdfx(x), 1e-3)
 ℓ(x) = (fx(X) .- fx(X .- [Δ; 0; 0]))./fx(X)
 lx = ℓ(x)[:]
 c = quantile(lx, [0.02, 0.98])
@@ -713,19 +675,30 @@ idx = Int.(findall((c[1] .&lt;= lx) .&amp; (lx .&lt;= c[2])))
 θi = μhat(X .+ [Δ; 0; 0])  .- μhat(X) .+ (Y .- μhat(X)).*ℓ(X)
 #θi = θi[:,idx]
 </code></pre>
-<pre><code>Error: UndefVarError: pdfx not defined
+<pre><code>12×986 Matrix{Float64}:
+  0.091113   -0.835581   3.03276  …   3.19657   -2.18376      0.287556
+ -0.635043   -0.416798   2.18664      2.44979   -1.99518     -0.621629
+ -3.92999     0.895695  -2.35338      0.295282   1.29361     -0.961804
+  0.645669    1.11104   -2.5796      -1.42229    0.786715     0.533606
+ -1.4097     -0.585326   4.76091     -1.29685   -1.03299      1.28104
+  2.55776    -2.65253    4.43989  …  -1.76942   -0.00595803   1.64025
+  6.24421     0.455613  -1.81611      1.14984    0.447517     0.867678
+  0.041579    2.5176    -0.75713      1.8776     0.421779     1.06664
+ -1.03115     2.26122    3.58587      1.78518   -0.76363      2.07422
+  0.516945    2.16827    0.45301      0.55009   -2.25344      2.2582
+  0.0607892   2.29828   -1.81453  …   0.509501  -2.28058      0.530196
+ -4.61698     0.328014   3.7246       0.189618   1.95968     -1.15825
 </code></pre>
 <p>and plot it</p>
-<pre><code class="language-julia">plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
-plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
+<pre><code class="language-julia">#plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
+#plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
 #plot!(θi, leg=false, alpha=0.01, color=:green, linewidth=1, ylim=(-0.5, 0.75))
-plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Reponse to 1σ change in y[t-1]&quot;,      
+plot(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Reponse to 1σ change in y[t-1]&quot;,
      xlab=&quot;τ&quot;, ylab=&quot;ΔE[y(t+τ)]/std(y)&quot;, color=:blue)
 plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green)
 </code></pre>
-<pre><code>Error: UndefVarError: θi not defined
-</code></pre>
+<p><img alt="" src="../figures/nn-semiparametric_11_1.png" /></p>
 <p>The true average impulse response is in blue. The uncorrected estimate
 is in orange. The orthogonalized estimate is in green.</p>
 <p>Depending on the luck of RNG, and how well I have chosen the network
@@ -741,20 +714,21 @@ average. Computing standard errors for sample averages is
 straightforward. Since this data is dependent, we will use a HAC
 estimator for the variance.</p>
 <pre><code class="language-julia">using Distributions
-using CovarianceMatrices # need dev version
-k = BartlettKernel{NeweyWest}()
-Σ = lrvar(k, θi', prewhite=true)
+using CovarianceMatrices
+k = CovarianceMatrices.BartlettKernel{NeweyWest}()
+Σ = CovarianceMatrices.lrvar(k, θi', prewhite=true)
 
 plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
 plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
 #plot!(θi, leg=false, alpha=0.01, color=:green, linewidth=1, ylim=(-0.5, 0.75))
-plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Reponse to 1σ change in y[t-1]&quot;,      
+plot!(mean(iry, dims=2), leg=false, linewidth=5, title=&quot;Average Impulse-Reponse to 1σ change in y[t-1]&quot;,
      xlab=&quot;τ&quot;, ylab=&quot;ΔE[y(t+τ)]/std(y)&quot;, color=:blue)
 plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green,
       ribbon=sqrt.(diag(Σ)/size(θi,2))*quantile.(Normal(), [0.05, 0.95])' )
 </code></pre>
-<pre><code>Error: UndefVarError: θi not defined
+<pre><code>Error: UndefVarError: `lrvar` not defined in `CovarianceMatrices`
+Suggestion: check for spelling errors or missing imports.
 </code></pre>
 <p>The plot now has 90% pointwise confidence bands around the
 orthogonalized estimates.</p>
@@ -796,7 +770,7 @@ an approximing space for $V$, $V_n$ (e.g. the set neural network with a
 given architecture). Then estimate $\gamma$ as above <script type="math/tex; mode=display">
 \hat{\gamma} = \argmin_{\gamma \in V_n} \En[ (y-\gamma(x))^2 ].
 </script> Estimate $\alpha$ by solving <script type="math/tex; mode=display">
-\hat{\alpha} = \argmin_{\alpha \in V_n} \sup_{\gamma \in V_n} 
+\hat{\alpha} = \argmin_{\alpha \in V_n} \sup_{\gamma \in V_n}
 \left(\En[m(x,\gamma(x))] - \En[\alpha(x) \gamma(x)] \right)^2
 </script> @cnr2018 work with $V_n$ that are linear in parameters, which helps
 simplify the estimation of $\alpha$. A practical and efficient method
@@ -820,21 +794,22 @@ estimates of $\hat{eta}$ that meet the high level assumptions.&#160;<a class="fo
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -854,7 +829,7 @@ estimates of $\hat{eta}$ that meet the high level assumptions.&#160;<a class="fo
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,17 @@
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Transformers -  </title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <link href="../assets/Documenter.css" rel="stylesheet">
         <link href="../assets/extra.css" rel="stylesheet">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".."> </a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,11 +36,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href=".." class="nav-link">Package Docs</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML in Economics <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -63,8 +64,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Neural Networks <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -84,7 +85,7 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Transformers</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Transformers</a>
 </li>
                                     
 <li>
@@ -92,8 +93,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -103,9 +104,9 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -120,7 +121,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/transformers.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/transformers.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -129,68 +130,76 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
             
-            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+            <li class="nav-item" data-bs-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#transformer" class="nav-link">Transformer</a>
+            <li class="nav-item" data-bs-level="1"><a href="#transformer" class="nav-link">Transformer</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#embedding" class="nav-link">Embedding</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#positional-encoding" class="nav-link">Positional Encoding</a>
+            <li class="nav-item" data-bs-level="2"><a href="#embedding" class="nav-link">Embedding</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#encoder" class="nav-link">Encoder</a>
+            <li class="nav-item" data-bs-level="2"><a href="#positional-encoding" class="nav-link">Positional Encoding</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#prediction-layer" class="nav-link">Prediction Layer</a>
+            <li class="nav-item" data-bs-level="2"><a href="#encoder" class="nav-link">Encoder</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#why" class="nav-link">Why?</a>
+            <li class="nav-item" data-bs-level="2"><a href="#prediction-layer" class="nav-link">Prediction Layer</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-level="1"><a href="#example-code" class="nav-link">Example Code</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#data" class="nav-link">Data</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#model-creation" class="nav-link">Model Creation</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#training" class="nav-link">Training</a>
+            <li class="nav-item" data-bs-level="2"><a href="#why" class="nav-link">Why?</a>
               <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
             </li>
             
-            <li class="nav-item" data-level="1"><a href="#pre-trained-models" class="nav-link">Pre-trained Models</a>
+            <li class="nav-item" data-bs-level="1"><a href="#example-code" class="nav-link">Example Code</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#transfer-learning" class="nav-link">Transfer Learning</a>
+            <li class="nav-item" data-bs-level="2"><a href="#data" class="nav-link">Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#model-creation" class="nav-link">Model Creation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#data-batching" class="nav-link">Data Batching</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#training" class="nav-link">Training</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#pre-trained-models" class="nav-link">Pre-trained Models</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#transfer-learning" class="nav-link">Transfer Learning</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#large-llms" class="nav-link">Large LLMs</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -357,440 +366,275 @@ package provides a higher level transformer interface.</p>
 <h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
 <p>For comparison, we will start by using the same Dylan example as in the
 recurrent neural network notes.</p>
-<pre><code class="language-julia">using JLD2, ProgressMeter
-import HTTP, Gumbo, Cascadia
+<p>We begin by loading the data and setting up a encoding that converts the
+original string data into an array of indicators for each character.</p>
+<pre><code class="language-julia">using JLD2
 using StatsBase: wsample
 using Base.Iterators: partition
 using Transformers, Flux, CUDA
 
-text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)))).*&quot;&quot;
-#startchar = 'α'
-#endchar = 'Ω' # any character not in original text
+text = String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)))
+#text = &quot;01&quot;^1000
+startchar = &quot;α&quot;
+endchar = &quot;Ω&quot;
 unkchar = &quot;Ξ&quot;
-#alphabet = [startchar, unique(text)..., endchar]
-alphabet = unique(text)
-N = length(alphabet)
-# convert to strings
-vocab = Transformers.Vocabulary(alphabet, unkchar)
-</code></pre>
-<pre><code>Vocabulary{String}(101, unk=Ξ)
+padchar = &quot;δ&quot;
+alphabet = unique(vcat(split(text, &quot;&quot;),unkchar,startchar,endchar, padchar))
+vocab = Transformers.TextEncoders.Vocab(alphabet, unkchar)
+encoder = Transformers.TextEncoders.TransformerTextEncoder(x-&gt;split(x,&quot;&quot;), vocab,
+                                                           startsym=startchar, endsym=endchar,
+                                                           unksym=unkchar, padsym=padchar)
 </code></pre>
 <h2 id="model-creation">Model Creation<a class="headerlink" href="#model-creation" title="Permanent link">&para;</a></h2>
+<p>Now we setup the model.</p>
 <pre><code class="language-julia">enable_gpu(true)
 
 function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
-  embed = Transformers.Basic.Embed(modeldim,length(vocab))
-  pe = Transformers.Basic.PositionEmbedding(modeldim)
-  topo = @nntopo_str &quot;x → e → pe:(e,pe) → t → $L:t → logitp&quot;
-  m = Stack(topo,
-            embed,
-            pe,
-            (e,pe) -&gt; e .+ pe,
-            [Transformer(modeldim, heads, feedforwardsize, act=relu, future=false, pdrop=0.1) for l ∈ 1:L]...,
-            Transformers.Basic.Positionwise(Dense(modeldim,length(vocab))))
+  emb = Transformers.Layers.Embed(modeldim,length(vocab))
+  pe = Transformers.Layers.SinCosPositionEmbed(modeldim)
+
+  trf_blocks = Transformer(Layers.TransformerBlock,
+                           L, relu, heads, modeldim, modeldim ÷ heads, 4*modeldim)
+  decode = Transformers.Layers.EmbedDecoder(emb)
+  causalmask = Transformers.Layers.CausalMask()
+  m = Chain(
+    SkipConnection(
+      Chain(x-&gt;x.token, emb, Transformers.Layers.ApplyEmbed(pe)),
+      (mx,x)-&gt;((hidden_state=mx,attention_mask=causalmask))
+    ),
+    trf_blocks,
+    x-&gt;x.hidden_state, decode)
   return(m)
 end
 </code></pre>
-<pre><code>create_transformer (generic function with 1 method)
+<h2 id="data-batching">Data Batching<a class="headerlink" href="#data-batching" title="Permanent link">&para;</a></h2>
+<p>For training, we divide the data into sequences of length <code>seqlen</code> and
+predict the next character in each sequence. We further divide the
+sequences into <code>batches</code> batches, and compute the loss and gradient in
+parallel for each batch.</p>
+<pre><code class="language-julia">function createdata(text, seqlength, batches, encoder=encoder, endchar=endchar)
+    Xtext = Flux.chunk(text, batches)
+    Xs = collect.(Base.Iterators.partition.(Xtext, seqlength))
+    Xenc = [Transformers.TextEncoders.encode(encoder,x) for x in Xs]
+    return(Xenc)
+end
+</code></pre>
+<pre><code>createdata (generic function with 3 methods)
 </code></pre>
 <h2 id="training">Training<a class="headerlink" href="#training" title="Permanent link">&para;</a></h2>
-<pre><code class="language-julia">function cbgenerator(N, loss, printiter=Int(round(N/10)))
-  p = Progress(N, 1, &quot;Training&quot;, 25)
-  i=0
-  function cb()
-    next!(p)
-    if (i % printiter==0)
-      @show loss()
-    end
-    i+=1
-  end
-  return(cb)
+<pre><code class="language-julia">using Statistics
+
+function loss(m, x; agg=mean)
+    logp = m(x)[:,1:(end-1),:]
+    @views y= x.token[:,2:end,:]
+    return Flux.Losses.logitcrossentropy(logp, y, agg=agg)
 end
 
-function sample(m, alphabet, len, seqlen)
-  m = cpu(m)
-  buf = IOBuffer()
-  c = &quot;w&quot; #rand(alphabet)
-  cseq = vocab(split(&quot;so much younger than that no&quot;,&quot;&quot;)) #Vector{Int}(undef,0)
-  ind2alpha = Dict(vocab(a) =&gt; a for a ∈ alphabet)
-  for i = 1:len
-    write(buf, c)
-    if (i &lt; seqlen)
-      push!(cseq, vocab(c))
-    else
-      cseq[1:(end-1)] .= cseq[2:end]
-      cseq[end] = vocab(c)
-    end
-    c = ind2alpha[wsample(1:length(vocab), softmax(m(cseq)[:,end]))]
-  end
-  return String(take!(buf))
-end
-
-function createdata(vocab, text, seqlength, seqperbatch)
-  sequences = [vocab.(x) for x ∈ partition(text, seqlength)]
-  xy = [(s[1:(end-1)],Flux.onehot(vocab,s[2:end])) for s ∈ sequences]
-  if length(xy[end][1]) &lt; length(xy[1][1])
-    pop!(xy)
-  end
-  xybatches = [ (hcat([z[1] for z ∈ p]...), cat([z[2] for z ∈ p]..., dims=3)) for p ∈ partition(xy, seqperbatch) ]
-  return(xybatches)
+function totalavgloss(m, data)
+    L = sum(loss(m, x, agg=sum) for x in data)
+    N = sum((size(x.token,2)-1)*size(x.token,3) for x in data)
+    return L/N
 end
 
 function train_model(m; data=data,
                      modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-t.jld2&quot;),
-                     opt=opt, epochs=20 )
-  loss(xb, yb) = Flux.Losses.logitcrossentropy(m(xb),yb)
-  cb=cbgenerator(length(data),()-&gt;loss(first(data)...))
-
-  if isfile(modelfile)
-    @load modelfile cpum
-    #m = gpu(cpum)
-    m = cpum
-  else
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    println(&quot;Sampling after 1 epoch:&quot;)
-    sample(m, alphabet, 1000, size(first(data)[1],1)) |&gt; println
-
-    Flux.@epochs epochs Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    cpum = cpu(m)
-    @save modelfile cpum
-  end
-  return(m)
+                     opt=Adam(), epochs=20, device = gpu)
+    data=device(data)
+    m=device(m)
+    opts = Flux.setup(opt, m)
+    if isfile(modelfile)
+        @load modelfile cpum
+        m = device(cpum)
+    else
+        ℓ = totalavgloss(m,data)
+        println(&quot;Initial loss: $ℓ&quot;)
+        @time Flux.train!(loss, m, data, opts)
+        ℓ = totalavgloss(m, data)
+        println(&quot;Loss after 1 epoch: $ℓ&quot;)
+        for epoch in 1:epochs
+            Flux.train!(loss, m, data, opts)
+            ℓ = totalavgloss(m,data)
+            println(&quot;Loss after $(epoch+1) epochs: $ℓ&quot;)
+        end
+        cpum = cpu(m)
+        @save modelfile cpum
+    end
+    return(m)
 end
 
-m = create_transformer(16,2,heads=2,feedforwardsize=16, vocab=vocab) |&gt; gpu
-data = createdata(vocab, text, 500, 50) |&gt; gpu
-opt = RMSProp(0.001)
-#m = train_model(m, data=data, modelfile=&quot;64d_4level_50e.jld2&quot;, opt=opt, epochs=50)
-m = train_model(m, data=data, modelfile=&quot;test.jld2&quot;, opt=opt, epochs=10)
-sample(m, alphabet, 1000, size(first(data)[1],1)) |&gt; println
+m = create_transformer(16,6,heads=2,feedforwardsize=16)
+data = createdata(text, 500, 10)
+m = train_model(m, data=data, modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-transformer16-6.jld2&quot;),
+        epochs=1000, device=gpu)
 </code></pre>
-<pre><code>loss() = 4.5326347f0
-loss() = 4.0444283f0
-loss() = 3.8187015f0
-loss() = 3.6545393f0
-loss() = 3.521952f0
-loss() = 3.421867f0
-loss() = 3.3402755f0
-loss() = 3.2747056f0
-loss() = 3.218742f0
-loss() = 3.172187f0
-123.029453 seconds (207.87 M allocations: 10.518 GiB, 4.84% gc time, 59.26%
- compilation time: 0% of which was recompilation)
-Sampling after 1 epoch:
-wD"loe"y'gmC  ldsbok=,Ler tQ n a k E 
-bnirP/hnt e&gt; kao~ ao+
- leqardeu|2e/n mrwdts hied o]oh] n &amp;t &gt;|;Eg.e t Bare _  sch  = y 
-nrd 
-d n  w     /h o+]d,nh .y  (﻿svss o krragh   &gt;Wt D aa--8en
-vmwr= UlLm ar{A o m&gt;   'rein&gt;= &lt;^J^Bes  wiese    o
-Fg1ilr  &lt; aanh thi
-se  t1w  b[ "  |o 
-k l1  --Esn.Ko/ve|b-8lra
-/
-/en  "y   wbs  s   ew==h   tesrdDa 
-naya  nta/lfaana.kh k    on=   lg keP  
-laPi/eoerlon,  omE
-io  ivr/n
-thq-nht C 
-t. M&gt; / hw'ubYcg  s  irt”&gt;  pree   ^ha, c
-  enan   0"am
-lrx  ow
- iisrdeJnka&gt;on    D any "ne idg/sfh/  
- Ji&gt; ,g       dyt 'algv  kA  N ip= i fp
+<p>Sampling from the trained model:</p>
+<pre><code class="language-julia">function sample(m, len, seed=&quot;&quot;, encoder=encoder, unkchar=unkchar)
+    out = split(seed*unkchar^(len-length(seed)),&quot;&quot;)
+    dev = isa(Flux.params(m)[1], CuArray) ? gpu : cpu
+    for i = (length(seed)+1):len
+        x = Transformers.TextEncoders.encode(encoder, prod(out)) |&gt; dev
+        logits = m(x)
+        p = Flux.softmax(logits[:,i,1])
+        CUDA.@allowscalar y = wsample(1:length(encoder.vocab), p)
+        out[i] = Transformers.TextEncoders.decode(encoder, y)
+    end
+    return(prod(out))
+end
 
-iwB -0nl2;tEu k.C oe  tpc    srtke
-  &lt;
- repn  i-oFi  
-e'  U|
-TyGl ]     ;dmsyi   g
-
-Rrg , hse+-Ξn (b-oy   i^   w } a h---dd u &lt; otisSu
- auG o"Qo&gt;rj:
-g 5 ul.  |r PgDs eau
-i&amp;  h
-/   au&gt; s T ”osmnd /a-1s O  'wauoehtCI  kru
-Lnou lt  opab-eru      tye py Ci--t rCa Qw ywie Lh U 
-_  u  sw  a----  L  thdg r&gt;T  &lt;u Z  S y k  i#o(hl  aQ1qurpleI  h
-d
-  =u%h   . x   h#k&lt; Ldole "rdCa-&amp;nhi'.bt
-osie v   &lt;   
-"g  "\yih/t
-
- &lt;.    
-dwlea8rtr  vpDL
-loss() = 3.1257606f0
-loss() = 3.090786f0
-loss() = 3.0504942f0
-loss() = 3.0097828f0
-loss() = 2.9701004f0
-loss() = 2.9390543f0
-loss() = 2.9102654f0
-loss() = 2.8779998f0
-loss() = 2.8570156f0
-loss() = 2.8277261f0
-loss() = 2.8057358f0
-loss() = 2.7854412f0
-loss() = 2.7624745f0
-loss() = 2.7438314f0
-loss() = 2.7233734f0
-loss() = 2.712018f0
-loss() = 2.6979303f0
-loss() = 2.6817768f0
-loss() = 2.6735775f0
-loss() = 2.6518612f0
-loss() = 2.6465538f0
-loss() = 2.6317961f0
-loss() = 2.632695f0
-loss() = 2.610262f0
-loss() = 2.6029112f0
-loss() = 2.5938296f0
-loss() = 2.5861306f0
-loss() = 2.5805883f0
-loss() = 2.5682912f0
-loss() = 2.5576136f0
-loss() = 2.5594745f0
-loss() = 2.5465784f0
-loss() = 2.5395765f0
-loss() = 2.5316157f0
-loss() = 2.5319207f0
-loss() = 2.521349f0
-loss() = 2.5118716f0
-loss() = 2.5063741f0
-loss() = 2.5004256f0
-loss() = 2.5043316f0
-loss() = 2.4967632f0
-loss() = 2.4858403f0
-loss() = 2.481605f0
-loss() = 2.4764633f0
-loss() = 2.471646f0
-loss() = 2.4654317f0
-loss() = 2.460706f0
-loss() = 2.4556491f0
-loss() = 2.4537146f0
-loss() = 2.4492564f0
-loss() = 2.4442303f0
-loss() = 2.4417489f0
-loss() = 2.4383984f0
-loss() = 2.435677f0
-loss() = 2.4307218f0
-loss() = 2.4244034f0
-loss() = 2.4245195f0
-loss() = 2.4365647f0
-loss() = 2.4150207f0
-loss() = 2.4118989f0
-loss() = 2.4089348f0
-loss() = 2.4114954f0
-loss() = 2.4080184f0
-loss() = 2.400921f0
-loss() = 2.3989468f0
-loss() = 2.3953652f0
-loss() = 2.3926613f0
-loss() = 2.3859446f0
-loss() = 2.390622f0
-loss() = 2.3841126f0
-loss() = 2.3879251f0
-loss() = 2.3827386f0
-loss() = 2.3771672f0
-loss() = 2.375889f0
-loss() = 2.369691f0
-loss() = 2.3690493f0
-loss() = 2.3698466f0
-loss() = 2.3639894f0
-loss() = 2.3619514f0
-loss() = 2.358743f0
-loss() = 2.356278f0
-loss() = 2.3537457f0
-loss() = 2.3558576f0
-loss() = 2.3482108f0
-loss() = 2.3483984f0
-loss() = 2.3474474f0
-loss() = 2.343408f0
-loss() = 2.3504155f0
-loss() = 2.341434f0
-loss() = 2.3386126f0
-loss() = 2.3359587f0
-loss() = 2.336779f0
-loss() = 2.333354f0
-loss() = 2.330643f0
-loss() = 2.330587f0
-loss() = 2.3299756f0
-wonke'so here ob pre w,&amp;r   Fere  d uan   T t  /ave         :       oreghe 
- Angink    A  ol                            D         kgasito  se     t
-        fond faldin=     ou    g              G
-
-
-I    meo,
-Bloum                          yoas  : Bue      in .    ri G   f .
-Awanger,  mouvk y             .  , D    pe            .
-I'        (2   o           clinon  G   :
-    O'y     Afe         Itotiilin'the            G           d      C7-00.
-T
-
-Og d,   Bu     te
-
-      m
-   pq.                  abl            o   *="owhithe. y      C      A     
-                  .
-An
-Woo G
- .  .   'lu ge sorhap
-  r        :  klomy               .
-  G
-                   //pler              C..  G
-.   t 
- D                      p           * E
-E       Ay       .    .
---s     s       : de '  .
-tofan'ton               .           vethe           ororando   
-C
-                         6hrse&gt;        l m        :
-     A---/st'      :  :
-&lt;/p+&gt;
-
-
-
-
-Be="ovu      .
+sample(m, 500) |&gt; println
 </code></pre>
 <p>The output looks okay, but not quite as good as with RNNs. I did some
-ad-hoc exploration with alternate widths and depths. The one above
-seemed to work best.</p>
+ad-hoc exploration with alternate widths and depths, but it was not very
+exhaustive.</p>
 <p>Qualitatively, these results are typical. Although transformers
 outperform RNNs when the underlying tokens are words or word-fragments,
 RNNs outperform transformers when the tokens are characters. Various
 modifications of transformers can make them competitive. See e.g.
 @wu2020 , @al2019 ,</p>
 <h1 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h1>
-<p>An increasing common way to apply transformers, especially for language,
-but also other contexts, is to fine-tune a general purpose model. There
-are a number of large general purpose language models trained on large
-datasets. These include variants of GPT, variants of BERT, and others.
-Huggingface provides a way to access these models, and Transformers.jl
-has integrated some of the models from Huggingface (with plans to add
-more).</p>
+<p>An increasingly common way to apply transformers, especially for
+language, but also other contexts, is to fine-tune a general purpose
+model. There are a number of large general purpose language models
+trained on large datasets. These include variants of GPT, variants of
+BERT, and others. Huggingface provides a way to access these models, and
+Transformers.jl has integrated some of the models from Huggingface (with
+plans to add more).</p>
 <h2 id="transfer-learning">Transfer Learning<a class="headerlink" href="#transfer-learning" title="Permanent link">&para;</a></h2>
 <p>Given a specific dataset and task, a fruitful approach is to take a
 large pretrained and fine-tune the model for the task. Often in fine
 tuning, all parameters of the model will be modified. Here, we will
-fine-tune the GPT(1) model on the Dylan song data. The hope is that the
+fine-tune the GPT2 model on the Dylan song data. The hope is that the
 output of the transformer provides a good representation of the data for
 predicting the next word. To limit the computational cost, we hold fixed
 the embedding and transformer components of GPT, and only retrain a
 final classifier. It is also common to fine tune all components of the
 model.</p>
-<pre><code class="language-julia">using ProgressMeter, JLD2
+<pre><code class="language-julia">using JLD2
 using StatsBase: wsample
 using Transformers, Flux, CUDA
+#using TextEncodeBase
+using Transformers.HuggingFace
 
 text = String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;)))
 songs = [split(s, &quot;&lt;/body&quot;)[1] for s in split(text, &quot;&lt;body&gt;&quot;)[2:end]]
 
 
-startsym = &quot;&lt;pre&gt;&quot;
-delisym = &quot;_deli_&quot;
-endsym = &quot;&lt;/pre&gt;&quot;
-unksym = &quot;&lt;unk&gt;&quot;
-gpt, bpe, vocab, tokenizer = Transformers.load_pretrain(&quot;GPT-OpenAIftlm&quot;; startsym, delisym, clfsym=endsym, unksym)
+# startsym = &quot;&lt;pre&gt;&quot;
+# delisym = &quot;_deli_&quot;
+# endsym = &quot;&lt;/pre&gt;&quot;
+# unksym = &quot;&lt;unk&gt;&quot;
 
-gptenc = Transformers.GPTTextEncoder(tokenizer, bpe, vocab; startsym, sepsym = delisym, endsym = endsym, unksym, padsym = unksym)
+gptenc = hgf&quot;gpt2:tokenizer&quot;
+gpt2 = hgf&quot;gpt2:lmheadmodel&quot;
+
 
 # encode songs
 songenc = [Transformers.encode(gptenc, s) for s in songs]
 
 # find size of output = # of tokens used in data
-usedtoken = reduce((x,y)-&gt; x .|| y, any(s.input.tok,dims=2) for s in songenc)
-idx = cumsum(usedtoken, dims=1)
-outdim = sum(usedtoken)
+tokens = sort(unique(vcat(unique(Flux.onecold(s.token) for s in songenc)...)))
+#usedtoken = reduce((x,y)-&gt; x .|| y, any(s.token,dims=2) for s in songenc)
+#idx = cumsum(usedtoken, dims=1)
+outdim = length(tokens)
 
+hiddendim = size(gpt2.model(Transformers.encode(gptenc, &quot;test this thing&quot;)).hidden_state,1)
 
-predictmodel = Chain(Dense(768, outdim)) |&gt; gpu
-model = Transformers.set_classifier(gpt, predictmodel) |&gt; gpu
+predictmodel = Chain(Dense(hiddendim, outdim))
 
-maxlen = size(gpt.embed.embeddings.pe.embedding,2)÷2
-batches = 100
-batchsize = 1000
-minlen = 20 # minimum input token sequence to predict from
+maxlen = size(gpt2.model.embed.layer.position.embed.embeddings,2)-3
+
+function squeeze( A :: AbstractArray )
+    keepdims = Tuple(i for i in size(A) if i != 1);
+    return reshape( A, keepdims );
+end
 
 &quot;&quot;&quot;
   creatbatch(batchsize)
 
-Randomly select a song and a sequence of tokens with length
-uniformly distributed on [minlen,maxlen]. Encode the sequence
-using the transformer from gpt, then return the last encoded value,
-and a one-hot vector representing the next token in the song.
+Randomly select a song and a sequence of tokens with length min(length(song),maxlen).
+Encode the sequence using the transformer from gpt and a causal attention mask.
+Return the encoded values,
+and a one-hot matrix representing the next tokens in the song.
 
 This is done `batchsize` times and the function returns the
-transformed output as `X` with dimension 768 by `batchsize`,
-and one hot matrix `y` with dimension number `outdim` by `batchsize`
+transformed output as `X` with dimension 768 by `batchsize`*`maxlen`,
+and one hot matrix `y` with dimension number `outdim` by `batchsize`*`maxlen`
 &quot;&quot;&quot;
-function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc)
+function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc, tokens=tokens)
   Ntrain=batchsize
-  xin = (tok=songenc[1].input.tok[:,1:minlen],)
-  xt = model.transformers(model.embed(xin))
-  Xt = similar(xt, size(xt,1), Ntrain)
-  y = Vector{typeof(Flux.onehot(1, 1:outdim))}(undef, Ntrain)
+  xin = (token=songenc[1].token[:,1:minlen],)
+  xt = model(xin)
+  CUDA.@allowscalar Xt = Vector{typeof(squeeze(xt.hidden_state))}(undef, Ntrain)
+  CUDA.@allowscalar y = Vector{typeof(Flux.onehotbatch(Flux.onecold(xin.token), tokens))}(undef, Ntrain)
+  causalmask=Transformers.Layers.CausalMask()
   for i in 1:Ntrain
     L = 0
     si = 0
     while (L&lt;minlen)
       si = rand(axes(songenc)[1])
       s = songenc[si]
-      L = size(s.input.tok,2)
+      L = size(s.token,2)
     end
     s = songenc[si]
-    len = rand(minlen:min(maxlen,(L-3)))
+    len = min(maxlen,(L-3))
     first = rand(1:(L-len))
     last = first + len -1
-    xin  = (tok=s.input.tok[:,first:last],)
-    xe = model.embed(xin)
-    xt = model.transformers(xe)
-    Xt[:,i] .= xt[:,end]
-    y[i] = Flux.onehot(idx[Flux.onecold(s.input.tok[:,(last+1)])],1:outdim)
+    CUDA.@allowscalar xin  = (token=s.token[:,first:last],attention_mask=causalmask)
+    xt = model(xin)
+    CUDA.@allowscalar Xt[i] = squeeze(xt.hidden_state)
+    CUDA.@allowscalar y[i] = Flux.onehotbatch(Flux.onecold(s.token[:,(first+1):(last+1)]), tokens)
   end
-  y = hcat(y...)
-  y = gpu(y)
-  return(Xt,y)
+  Y = hcat(y...)
+  X = hcat(Xt...)
+  return(X,Y)
 end
+
 datafile = joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-batched.jld2&quot;)
+batches = 20
+batchsize = 25
+minlen = 20
 if !isfile(datafile)
-  CUDA.@allowscalar data = [createbatch(batchsize) for b in 1:batches]
-  cdata = cpu.(data)
-  @save datafile cdata
+    gm = gpu(gpt2.model)
+    gs = gpu(songenc)
+    data = [createbatch(batchsize, maxlen=maxlen, model=gm, songenc=gs) for b in 1:batches]
+    cdata = cpu(data)
+    @save datafile cdata
 end
 @load datafile cdata
-data = gpu.(cdata)
+data = cdata
 
-opt = ADAM(1e-2)
-loss(xt, y) = Flux.Losses.logitcrossentropy(predictmodel(xt),y)
-
-function samplegpt(len=100,prompt=&quot;I was so much older then, I'm younger than that now &quot;; predictmodel=predictmodel)
-  out = prompt
-  for i=1:len
-    enc = Transformers.encode(gptenc, out)
-    V, L = size(enc.input.tok)
-    xin = (tok=enc.input.tok[:,max(1,L-maxlen-1):(L-1)],)
-    xt = model.transformers(model.embed(xin))[:,end]
-    p = Flux.softmax(predictmodel(xt))
-    y = wsample(1:outdim, p)
-    yall = findfirst(idx.==y)[1]
-    out *= replace(Transformers.lookup(gptenc.vocab, yall), &quot;&lt;/w&gt;&quot; =&gt; &quot; &quot;)
-  end
-  return(out)
+function samplegpt(len=100,prompt=&quot;I was so much older then, I'm younger than that now &quot;; predictmodel=predictmodel, transformer=gpt2.model, maxlen=1024, tokens=tokens, encoder=gptenc)
+    enc = Transformers.encode(encoder, prompt)
+    for i=1:len
+        CUDA.@allowscalar xin = (token=enc.token[:,max(1,end-maxlen+1):end],)
+        xt = transformer(xin)
+        CUDA.@allowscalar p = Flux.softmax(predictmodel(xt.hidden_state[:,end]))
+        CUDA.@allowscalar y = tokens[wsample(1:length(tokens), p)]
+        push!(enc.token.onehots,y)
+    end
+    out = prod(Transformers.decode(encoder, enc.token))
+    return(out)
 end
-CUDA.@allowscalar samplegpt(20)
+samplegpt(20, predictmodel=gpu(predictmodel), transformer=gpu(gpt2.model))
 
-Epochs =
+predictmodel = gpu(predictmodel)
+opt = Flux.setup(Adam(), predictmodel)
+loss(m, xt, y) = Flux.Losses.logitcrossentropy(m(gpu(xt)),gpu(y))
+
+using Statistics
+Epochs = 500
 losses = zeros(Epochs)
 modelfile = joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-gpt-tuned.jld2&quot;)
 if !isfile(modelfile)
   losses = zeros(Epochs)
   for e=1:Epochs
-    Flux.train!(loss, Flux.params(predictmodel), data, opt)
-    losses[e] = sum(loss(d...) for d in data)
+    Flux.train!(loss, predictmodel, data, opt)
+    losses[e] = mean(loss(predictmodel, gpu(d)...) for d in data)
     println(&quot;Epoch $e: loss=$(losses[e])&quot;)
-    println(&quot;Sample = &quot;)
-    println(samplegpt(20))
+      if (e % 10)==0
+          println(&quot;Sample = &quot;)
+          println(samplegpt(20, transformer=gpu(gpt2.model)))
+      end
   end
   cpum = cpu(predictmodel)
   @save modelfile cpum losses
@@ -798,10 +642,32 @@ end
 @load modelfile cpum losses
 predictmodel = gpu(cpum)
 
-CUDA.@allowscalar samplegpt(20)
+import Random
+Random.seed!(9)
+samplegpt(200, &quot;They say economics is the dismal science&quot;, transformer=gpu(gpt2.model)) |&gt; println
 </code></pre>
-<pre><code>Error: UndefVarError: Epochs not defined
-</code></pre></div>
+<p>That seems pretty decent.</p>
+<h2 id="large-llms">Large LLMs<a class="headerlink" href="#large-llms" title="Permanent link">&para;</a></h2>
+<p>State of the art LLMs can mimic Dylan lyrics with just prompting. For
+example when asked to complete a lyric in the style of Bob Dylan,
+Anthropic’s <a href="https://claude.ai/">Claude</a> 3.5 Sonnet model returns,</p>
+<blockquote>
+<p>Thank you for the clarification. I understand you’d like me to
+complete a lyric starting with “They say economics is the dismal
+science” in the style of Bob Dylan, while being careful not to
+reproduce any copyrighted material. Here’s an original continuation in
+a Dylan-esque style:</p>
+<blockquote>
+<p>They say economics is the dismal science But the market’s got no
+conscience Profit margins and bottom lines While the working man
+declines In a world of haves and have-nots Where money talks and
+truth rots</p>
+</blockquote>
+<p>This verse aims to capture some of Dylan’s themes of social commentary
+and critique of economic systems, using vivid imagery and a somewhat
+cynical tone. It’s not meant to mimic any specific Dylan song, but
+rather to evoke his general style and approach to songwriting.</p>
+</blockquote></div>
             </div>
         </div>
 
@@ -810,21 +676,22 @@ CUDA.@allowscalar samplegpt(20)
                 <p>Paul Schrimpf</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
-        <script src="../assets/mathjaxhelper.js" defer></script>
-        <script src="../search/main.js" defer></script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>From here you can search these documents. Enter your search terms below.</p>
@@ -844,7 +711,7 @@ CUDA.@allowscalar samplegpt(20)
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">
