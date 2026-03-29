@@ -196,7 +196,7 @@
                     <div class="col-md-9" role="main">
 
 <p>title : “Introduction to Neural Networks” subtitle : “Single Layer
-Perceptrons” author : Paul Schrimpf date : 2026-03-28 bibliography:
+Perceptrons” author : Paul Schrimpf date : 2026-03-29 bibliography:
 “../ml.bib” weave_options: out_width : 100% wrap : true fig_width : 8
 dpi : 192 —</p>
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
@@ -315,12 +315,9 @@ function slp(r, activation=(t)-&gt; 1 ./ (1 .+ exp.(.-t)), dimx=1)
     return(θ=θ, predict=pred,loss=loss)
 end
 x, y = simulate(1000, 0.5)
-xg = 0:0.01:πd
+xg = 0:0.01:π
 rs = [2, 3, 5, 7, 9]
 cscheme = colorschemes[:BrBG_4];
-</code></pre>
-<pre><code>Error: UndefVarError: `πd` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
 </code></pre>
 <pre><code class="language-julia">figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
@@ -346,9 +343,41 @@ for r in eachindex(rs)
     display(figs[r])
 end
 </code></pre>
-<pre><code>Error: UndefVarError: `rs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
+<pre><code>100 iteration, loss=0.4022643642483023
+200 iteration, loss=0.37134305496635145
+300 iteration, loss=0.3533643942489075
+400 iteration, loss=0.3426408726485474
+500 iteration, loss=0.3362620647157688
+  7.055017 seconds (33.60 M allocations: 1.713 GiB, 2.13% gc time, 99.54% c
+ompilation time)
+100 iteration, loss=0.4085500044850938
+200 iteration, loss=0.36501825039749236
+300 iteration, loss=0.34469761357636475
+400 iteration, loss=0.3345819860129068
+500 iteration, loss=0.3296240377721414
+  0.026943 seconds (76.96 k allocations: 174.911 MiB, 51.34% gc time)
+100 iteration, loss=0.5342772008322667
+200 iteration, loss=0.4295100081639479
+300 iteration, loss=0.3723279368747388
+400 iteration, loss=0.34475153966304556
+500 iteration, loss=0.33297376336343615
+  0.025221 seconds (76.96 k allocations: 274.417 MiB, 35.95% gc time)
+100 iteration, loss=0.44725210362707307
+200 iteration, loss=0.3926246387821451
+300 iteration, loss=0.3667122034137589
+400 iteration, loss=0.3482461551795966
+500 iteration, loss=0.3359168621307319
+  0.032934 seconds (76.96 k allocations: 373.923 MiB, 39.02% gc time)
+100 iteration, loss=0.3116434894457387
+200 iteration, loss=0.3078103733198008
+300 iteration, loss=0.30480209197853303
+400 iteration, loss=0.3022809101583656
+500 iteration, loss=0.30016780622213
+  0.111325 seconds (76.96 k allocations: 473.432 MiB, 76.72% gc time)
 </code></pre>
+<p><img alt="" src="../figures/slp_3_1.png" /> <img alt="" src="../figures/slp_3_2.png" />
+<img alt="" src="../figures/slp_3_3.png" /> <img alt="" src="../figures/slp_3_4.png" />
+<img alt="" src="../figures/slp_3_5.png" /></p>
 <p>Each invocation of <code>Flux.train!</code> completes one iteration of gradient
 descent. As you might guess from this API, it is common to train neural
 networks for a fixed number of iterations instead of until convergence
@@ -399,9 +428,46 @@ for r in eachindex(rs)
     display(figs[r])
 end
 </code></pre>
-<pre><code>Error: UndefVarError: `rs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
+<pre><code>2 units, 1 iterations, loss=0.63747525
+2 units, 100 iterations, loss=0.33986294
+2 units, 200 iterations, loss=0.31537932
+2 units, 300 iterations, loss=0.30815887
+2 units, 400 iterations, loss=0.3058632
+2 units, 500 iterations, loss=0.3046985
+  8.399004 seconds (34.99 M allocations: 1.678 GiB, 1.14% gc time, 99.42% c
+ompilation time)
+3 units, 1 iterations, loss=0.43191102
+3 units, 100 iterations, loss=0.31657618
+3 units, 200 iterations, loss=0.30964616
+3 units, 300 iterations, loss=0.30797142
+3 units, 400 iterations, loss=0.3065377
+3 units, 500 iterations, loss=0.30509576
+  0.038522 seconds (256.02 k allocations: 63.018 MiB, 14.77% gc time)
+5 units, 1 iterations, loss=0.41188323
+5 units, 100 iterations, loss=0.31491464
+5 units, 200 iterations, loss=0.3134539
+5 units, 300 iterations, loss=0.3119319
+5 units, 400 iterations, loss=0.31027263
+5 units, 500 iterations, loss=0.30846894
+  0.052046 seconds (256.02 k allocations: 74.522 MiB, 26.71% gc time)
+7 units, 1 iterations, loss=1.0509104
+7 units, 100 iterations, loss=0.31726223
+7 units, 200 iterations, loss=0.31592542
+7 units, 300 iterations, loss=0.3150009
+7 units, 400 iterations, loss=0.3139739
+7 units, 500 iterations, loss=0.31283912
+  0.063586 seconds (256.02 k allocations: 86.050 MiB, 23.31% gc time)
+9 units, 1 iterations, loss=0.9300247
+9 units, 100 iterations, loss=0.324608
+9 units, 200 iterations, loss=0.32200688
+9 units, 300 iterations, loss=0.32174808
+9 units, 400 iterations, loss=0.3215263
+9 units, 500 iterations, loss=0.32128325
+  0.061762 seconds (256.02 k allocations: 97.554 MiB, 27.18% gc time)
 </code></pre>
+<p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
+<img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
+<img alt="" src="../figures/slp_4_5.png" /></p>
 <p>The figures do not appear identical to the first example since the
 initial values differ, and the above code first normalises the $x$s.</p>
 <h2 id="initial-values">Initial values<a class="headerlink" href="#initial-values" title="Permanent link">&para;</a></h2>
@@ -414,9 +480,7 @@ $b$ used by Flux tend to work better with normalised $x$. The initial
 activation are shown below.</p>
 <pre><code class="language-julia">plot(initmfigs..., legend=false)
 </code></pre>
-<pre><code>Error: UndefVarError: `initmfigs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
-</code></pre>
+<p><img alt="" src="../figures/slp_5_1.png" /></p>
 <p>At these initial values, $w&rsquo;x + b$, does change sign for each
 activation, but $w&rsquo;x$ is small enough that $\psi(w&rsquo;x + b)$ is
 approximately linear. This will make it initially difficult to
@@ -465,23 +529,54 @@ for r in eachindex(rs)
 end
 nothing
 </code></pre>
-<pre><code>Error: UndefVarError: `rs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
+<pre><code>2 units, 1 iterations, loss=0.38830295
+2 units, 100 iterations, loss=0.28299716
+2 units, 200 iterations, loss=0.27340037
+2 units, 300 iterations, loss=0.26926568
+2 units, 400 iterations, loss=0.26678824
+2 units, 500 iterations, loss=0.26515123
+  0.451344 seconds (3.00 M allocations: 170.862 MiB, 4.11% gc time, 93.99% 
+compilation time)
+3 units, 1 iterations, loss=0.27503547
+3 units, 100 iterations, loss=0.25688034
+3 units, 200 iterations, loss=0.25302136
+3 units, 300 iterations, loss=0.2511132
+3 units, 400 iterations, loss=0.24994434
+3 units, 500 iterations, loss=0.24915464
+  0.026252 seconds (139.36 k allocations: 40.936 MiB, 24.79% gc time)
+5 units, 1 iterations, loss=0.28047502
+5 units, 100 iterations, loss=0.25272256
+5 units, 200 iterations, loss=0.25052035
+5 units, 300 iterations, loss=0.24927005
+5 units, 400 iterations, loss=0.24847183
+5 units, 500 iterations, loss=0.24791613
+  0.028413 seconds (139.36 k allocations: 52.440 MiB, 14.86% gc time)
+7 units, 1 iterations, loss=0.32377353
+7 units, 100 iterations, loss=0.25321665
+7 units, 200 iterations, loss=0.25226262
+7 units, 300 iterations, loss=0.2514223
+7 units, 400 iterations, loss=0.25061786
+7 units, 500 iterations, loss=0.24985892
+  0.039374 seconds (139.36 k allocations: 63.967 MiB, 27.81% gc time)
+9 units, 1 iterations, loss=0.31784073
+9 units, 100 iterations, loss=0.24684115
+9 units, 200 iterations, loss=0.24559589
+9 units, 300 iterations, loss=0.2453854
+9 units, 400 iterations, loss=0.24526331
+9 units, 500 iterations, loss=0.24515182
+  0.043222 seconds (139.36 k allocations: 75.471 MiB, 28.32% gc time)
 </code></pre>
 <pre><code class="language-julia">display(plot(initmfigs..., legend=false))
 </code></pre>
-<pre><code>Error: UndefVarError: `initmfigs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
-</code></pre>
+<p><img alt="" src="../figures/slp_7_1.png" /></p>
 <p>And the fit figures.</p>
 <pre><code class="language-julia">for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>Error: UndefVarError: `figs` not defined in `Main`
-Suggestion: add an appropriate import or assignment. This global was declar
-ed but not assigned.
-</code></pre>
+<p><img alt="" src="../figures/slp_8_1.png" /> <img alt="" src="../figures/slp_8_2.png" />
+<img alt="" src="../figures/slp_8_3.png" /> <img alt="" src="../figures/slp_8_4.png" />
+<img alt="" src="../figures/slp_8_5.png" /></p>
 <p>We can see that the training is now much more successful. Choosing
 initial values carefully was very helpful.</p>
 <h2 id="rectified-linear">Rectified linear<a class="headerlink" href="#rectified-linear" title="Permanent link">&para;</a></h2>
@@ -529,9 +624,46 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>Error: UndefVarError: `rs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
+<pre><code>2 units, 1 iterations, loss=9.608869
+2 units, 200 iterations, loss=2.1569057
+2 units, 400 iterations, loss=1.3915101
+2 units, 600 iterations, loss=0.9688785
+2 units, 800 iterations, loss=0.6892905
+2 units, 1000 iterations, loss=0.50362116
+  0.764980 seconds (4.28 M allocations: 257.225 MiB, 3.27% gc time, 94.17% 
+compilation time)
+3 units, 1 iterations, loss=0.9565857
+3 units, 200 iterations, loss=0.37518418
+3 units, 400 iterations, loss=0.3194877
+3 units, 600 iterations, loss=0.3032513
+3 units, 800 iterations, loss=0.29557526
+3 units, 1000 iterations, loss=0.2902231
+  0.038821 seconds (284.85 k allocations: 81.818 MiB, 21.60% gc time)
+5 units, 1 iterations, loss=1.1234598
+5 units, 200 iterations, loss=0.36517203
+5 units, 400 iterations, loss=0.31894857
+5 units, 600 iterations, loss=0.28231427
+5 units, 800 iterations, loss=0.26194263
+5 units, 1000 iterations, loss=0.25536075
+  0.047663 seconds (284.86 k allocations: 104.769 MiB, 32.22% gc time)
+7 units, 1 iterations, loss=0.9739267
+7 units, 200 iterations, loss=0.28333405
+7 units, 400 iterations, loss=0.27316183
+7 units, 600 iterations, loss=0.26805443
+7 units, 800 iterations, loss=0.26508605
+7 units, 1000 iterations, loss=0.26299086
+  0.120817 seconds (284.85 k allocations: 127.760 MiB, 64.79% gc time)
+9 units, 1 iterations, loss=18.735659
+9 units, 200 iterations, loss=0.46999595
+9 units, 400 iterations, loss=0.3389874
+9 units, 600 iterations, loss=0.30691993
+9 units, 800 iterations, loss=0.28893015
+9 units, 1000 iterations, loss=0.27795634
+  0.051731 seconds (284.85 k allocations: 150.708 MiB, 10.28% gc time)
 </code></pre>
+<p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
+<img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
+<img alt="" src="../figures/slp_9_5.png" /> <img alt="" src="../figures/slp_9_6.png" /></p>
 <h2 id="stochastic-gradient-descent">Stochastic Gradient descent<a class="headerlink" href="#stochastic-gradient-descent" title="Permanent link">&para;</a></h2>
 <p>The above examples all used the full data in each iteration of gradient
 descent. Computation can be reduced and the parameter space can possibly
@@ -586,9 +718,46 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>Error: UndefVarError: `rs` not defined in `Main`
-Suggestion: check for spelling errors or missing imports.
+<pre><code>2 units, 1 iterations, loss=18.81488
+2 units, 200 iterations, loss=0.8679957
+2 units, 400 iterations, loss=0.6300349
+2 units, 600 iterations, loss=0.5399599
+2 units, 800 iterations, loss=0.48066744
+2 units, 1000 iterations, loss=0.4087367
+  0.418242 seconds (3.61 M allocations: 337.168 MiB, 5.14% gc time, 59.46% 
+compilation time)
+3 units, 1 iterations, loss=2.7890809
+3 units, 200 iterations, loss=0.36313963
+3 units, 400 iterations, loss=0.33298045
+3 units, 600 iterations, loss=0.3194023
+3 units, 800 iterations, loss=0.31358093
+3 units, 1000 iterations, loss=0.3107288
+  0.193310 seconds (2.76 M allocations: 307.136 MiB, 15.18% gc time)
+5 units, 1 iterations, loss=11.914016
+5 units, 200 iterations, loss=0.2764866
+5 units, 400 iterations, loss=0.2562446
+5 units, 600 iterations, loss=0.24970728
+5 units, 800 iterations, loss=0.24656598
+5 units, 1000 iterations, loss=0.24497548
+  0.206601 seconds (2.76 M allocations: 329.627 MiB, 17.76% gc time)
+7 units, 1 iterations, loss=16.199688
+7 units, 200 iterations, loss=0.2725492
+7 units, 400 iterations, loss=0.26557106
+7 units, 600 iterations, loss=0.26166138
+7 units, 800 iterations, loss=0.25840256
+7 units, 1000 iterations, loss=0.2558157
+  0.223397 seconds (2.79 M allocations: 353.720 MiB, 18.64% gc time)
+9 units, 1 iterations, loss=3.427165
+9 units, 200 iterations, loss=0.25401676
+9 units, 400 iterations, loss=0.25094226
+9 units, 600 iterations, loss=0.24930334
+9 units, 800 iterations, loss=0.24852683
+9 units, 1000 iterations, loss=0.2477741
+  0.222462 seconds (2.79 M allocations: 377.584 MiB, 18.20% gc time)
 </code></pre>
+<p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
+<img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
+<img alt="" src="../figures/slp_10_5.png" /></p>
 <p>Here we see an in sample MSE about as low as the best previous result.
 Note, however, the longer training time. Each “iteration” above is an
 epoch, which consists of 10 gradient descent steps using the 10

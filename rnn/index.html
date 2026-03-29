@@ -511,8 +511,8 @@ else
   JLD2.@save modelfile dm
 end
 </code></pre>
-<pre><code>1-element Vector{Symbol}:
- :dm
+<pre><code>1.339243 seconds (14.86 M allocations: 1.214 GiB, 10.82% gc time, 59.11% 
+compilation time)
 </code></pre>
 <p>The above code stores $P(c_t|c_{t-1},&hellip;,c_{t-L})$ in a dictionary. When
 $L$ is large, there are huge number of possible histories,
@@ -547,42 +547,37 @@ end
 println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (88032, 2873103)
-tle&gt;
-&lt;pre class="songverse.
-Like the same
-A         D#m  E  |
-A . .   .    *) Dylan, pleasel come.
+tle&gt;You're me newspaper Club and it?"
+            F            C7 . . |
+D . . . . . . F        Bm7/a
+And she's saying lowers,
+Just go now, but I got now
+And not no shout.
+   D
+I was complain the
+               C#m                                C        G               
+   C    But it all come silver shall haul Brown
+     :   .  F          in then I'm road it's youngine,
+Trust
+          /f#   F                 E6
+And the leavily say baby, your finger inted chauffers in the lay-la lady, l
+ib]
+                :  .      Dm7
+For   |
+  me are gone, pleased Out Loaded will comes sand said that show can river 
+her eye
+       .     :              F         C7           A
+A work and the shelternoon
+Saying figure wind drove like the high
+At the &lt;em&gt;Basic Bob Dylan/index.htm"&gt;Bounding where of mind.
+
+Somewheels are and you knockin' buy my baby, peace.
+
+In the othere's going the recorded funny in then its until the nail that th
+e trave.
 &lt;/pre&gt;
-
-&lt;?xml verse"&gt;
-Mostly as you nevery need
-   :   .   .       Csus4      Am
-That breat like
-It always the new darling somebody&lt;/em&gt; it keep up on the fined.&lt;/p&gt;
-
-&lt;h2 class="recordlink" href="index.htm"&gt;Dylan goes get to be press nose
-And with you a curtainst my own
-I'm gonna gin'. . . .
-. . G
-And is undering to Richard have to me,
-The call around The
-open we with strong
-B7  .   .      Dm    cryin' out, she comesick.&lt;/p&gt;
-
-&lt;body&gt;&lt;/html1/DTD/xhtml lang="en" xmlns="http://www.w3.org/TR/xhtml PUBLIC 
-"-//W3C//DTD XHTML 1.0 Strict.dtd"&gt;
-&lt;html"&gt;
-
-Wishinin' rolling help me kind, takin', baby, I always I was were is blows
-F         A
-Once I've seek apple answer invisite screams,
-I got now, I cross to cry
-She no long the neck
-      C/g   G                                    Gsus4 C
-perfect
-/a /b
-  :                     :   .       D                  Bbm6/f . |C#m7/g    
-                 Dm
+&lt;pre class="versions, too him heart away
+Less as way be fo
 </code></pre>
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
 lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
@@ -597,46 +592,51 @@ end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
 </code></pre>
-<pre><code>(length(dm), length(text)) = (930264, 2873103)
+<pre><code>1.715779 seconds (21.88 M allocations: 1.759 GiB, 18.21% gc time, 15.59% 
+compilation time: 2% of which was recompilation)
+(length(dm), length(text)) = (930264, 2873103)
 d&gt;
-&lt;title&gt;Minstrel Boy and Marcel)
-&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-      "http://www.w3.org/1999/xhtml"&gt;
-
-&lt;head&gt;
-&lt;title&gt;Only a Pawn in Their Game&lt;/title&gt;
+&lt;title&gt;Love Sick&lt;/title&gt;
 &lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
 
-&lt;h1 class="songtitle"&gt;Kindhearted Woman Blues&lt;/h1&gt;
-
-
-&lt;p&gt;Written by Bob Dylan on &lt;a class="refrain"&gt;
-Say hello to Valery,
-say hello to Vivian.
-Give her all my salary
-on the water, fisherman's daughters
-       D7      xx0555 or x5455x
-B7                    G/b
-You can have the victory.
-In his name we have the inclination to look at your hands, see what everybo
-dy in the backyard hanging clothes, mama, put on your head
-Just like me,
-I hope you're rolling you can do with it anyway, maybe take it to you
-        G
-The love of Barbara Allen.
-
-T'was in Oklahoma
-Was added to his Creole girl, on the lakes of Pontchartrain.
+&lt;h1 class="songversion"&gt;Album version - just a stranger when I get to that 
+cold whistle blow
+I'm going to.
+Hey! Mr. Tambourine in time, you and I'm only sighing.
 &lt;/pre&gt;
 
-&lt;pre class="verse"&gt;
-Well, I'm just-a one more tim
+&lt;pre class="refrain"&gt;
+F6
+Our love is a precious secret
+Too beautiful woman
+         Bb             D
+If you ever hear that lonesome when you wondered).&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;pre class="recordlink" href="index.htm"&gt;The Bootleg Series 1-3&lt;/a&gt; (1991) 
+and &lt;a class="refrain"&gt;
+well it's three in the middle-range alternative outtake version&lt;/h3&gt;
+
+&lt;pre class="tab"&gt;
+Fill 3
+ Bb
+ :  .  :  .   :  .  :  .   :  .  :  .
+|----3^-0--0-----------1--(p0)|--(0)-------------------*||-0---------------
+------|
+|-------5---|-----------|---------------------|
+|-3------3---------
+ If I have to be that old
+
+Broken flesh on a broken beds
+B
+Ain't no use to sit and watch my senses die.
+
+The tune that is short
+An' earthquakes and hatred written up
 </code></pre>
 <h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov20.jld2&quot;)
@@ -649,74 +649,81 @@ end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
 </code></pre>
-<pre><code>(length(dm), length(text)) = (1522834, 2873103)
+<pre><code>2.685062 seconds (23.94 M allocations: 2.581 GiB, 15.96% gc time, 5.95% c
+ompilation time)
+(length(dm), length(text)) = (1522834, 2873103)
 ml"&gt;
 
 &lt;head&gt;
-&lt;title&gt;Sarah Jane&lt;/title&gt;
+&lt;title&gt;You're Too Late&lt;/title&gt;
 &lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
 
-&lt;h1 class="songtitle"&gt;Mr. Tambourine Man&lt;/h1&gt;
+&lt;h1 class="songtitle"&gt;I'll Not Be A Stranger&lt;/title&gt;
+&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
+&lt;/head&gt;
 
+&lt;body&gt;
 
-&lt;p&gt;Words and music by Albert Brumley&lt;br /&gt;
-Sung by Bob Dylan on &lt;a class="recordlink" href="index.htm"&gt;Time out of Min
-d&lt;/a&gt; (1997)&lt;br /&gt;
-Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
+&lt;h1 class="songtitle"&gt;Rambler, Gambler &lt;/h1&gt;
+&lt;p&gt;Trad.&lt;br /&gt;
+As performed by Bob Dylan as an opener in Hamburg, NY, Aug 15, 2002&lt;br /&gt;
+Tabbed by Eyolf &amp;Oslash;strem (thanks to Karla in Kansas for correction)&lt;/p
+&gt;
 
-&lt;p&gt;The lyrics differ somewhat from Ricky Nelson's, on minor points (such
-as the change of &amp;ldquo;In the town of broken dreams&amp;rdquo; to &amp;ldquo;There
-'s a town
-. . .&amp;rdquo;).&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;pre class="tab"&gt;
-fill:
-   :  .  .  .    :
----2-----------|---
----0-----------|-0-
----------0--3--|---
----------------|---
-|-----------0-----|-----------0-----|
-|-----0-------0---|-----0-------0---|-----0-------0---|-----0-------0---|
-|-0-----------------|
-|-----0-------h2---|-----3-(p0)--0---|-----2-------0---|-----2-------2---|-
-----2-------|-----------------|---------------------|-----------------|----
--------------|-----------------
-|-0---------------|-0--------------------------0-------|
-|-------------|
-|-----------------|-----------------|
-|-------1---------|-----0-----0-----|--(0)-------
-&lt;/pre&gt;
+&lt;p&gt;Capo 2nd fret (sounding key A major)&lt;/p&gt;
 
 &lt;pre class="verse"&gt;
-|: Am . Am . ; . . . | C . . D ; . C . :|
+C                 D  G
+Take a trip with me in 1913
+   C                    F         C
+One rich man in ten     with a satisfied mind.
 
-Am
-  Darkness at the break of noon
-D
-Shadows even the silver spoon
-    Csus2
-The handmade blade, the child's balloon
-G/b
-Eclipses both the sun and moon
-   Bb6
-To understand you know too soon
-                             B
-Oh, come hear my story, I'll tell it to you
-                      |-----------------------||-----------------|
-|-----------------|---------------------|
--------|-3---------------|-2---------
-|-----------------|-----------------|-----------------|--------
-|-----------------|-------------1---|-----------------|-----------------|
-|-----------------|-----------------|-3---------------|-----------------|--
----------------|-----------------|-----------------|-----------------|-----
----------------------|---1-------------|
-|-----------------|-----------------------|--------------
+ E      A/e E
+Mmmmm, mmmmm
+&lt;/pre&gt;
+
+&lt;hr /&gt;
+&lt;h2 class="songversion"&gt;Empire Burlesque version&lt;/h2&gt;
+
+&lt;p&gt;Capo 5th fret (sounding key G major)&lt;/p&gt;
+&lt;pre class="tab"&gt;
+  :   .   .   .     :   .   .   .     :   .   .   .     :   .   .   .     :
+   .   .   .     :   .   .   .
+|-10----10------10---|-8-----8---8-----|-7\5---3---3---3-|---3---3---3-----
+|
+|-----------------|---------------------|-1---------------|
+|-------0---------0-2---------------|
+|-0---------------|-----------------|
+|-------------------------|
+&lt;/pre&gt;
+&lt;pre class="verse"&gt;
+G   C/g  G
+
+G                  A
+When blackness was a virtue and the road was full of mud
+  F                         C
+Whether you     are right or wrong
+    C                  Em
+Bound to lose, I'm bound to win
+G        C               G
+You have given everything to me.
+           F  F/g  C
+What can I do for You?
+&lt;/pre&gt;
+&lt;pre class="tab"&gt;
+  :   .   .   .     :   .   .   .     :   .   .           :   .   .   .    
+ :   .   .   .     :   .   .   .     :   .   .   .     :   .   .   .     : 
+  .   .   .     :   .   .   .
+|-----------------|---------------------------|
+|-------------------3---|-2---2---2---2---|
+|-3---3---3---3---|-0-----
+--3-----------|-0---0-----------|-0---0-----------0---0-
+                           F
+ To show me I was blinded, to show me I was gone
+C
 </code></pre>
 <p>With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -871,7 +878,7 @@ function train_model(L; N=N, data=data,
             println(&quot;Loss after $epoch epochs: &quot;, losses[epoch])
         end
         cpum = cpu(m)
-        modelstate = Flux.statel(cpum)
+        modelstate = Flux.state(cpum)
         JLD2.@save modelfile modelstate losses
     end
     return(m, losses)
@@ -895,7 +902,16 @@ for (i,L) in enumerate(layersizes)
     println()
 end
 </code></pre>
-<pre><code>Error: KeyError: key "modelstate" not found
+<pre><code>Error: Scalar indexing is disallowed.
+Invocation of getindex resulted in scalar indexing of a GPU array.
+This is typically caused by calling an iterating implementation of a method
+.
+Such implementations *do not* execute on the GPU, but very slowly on the CP
+U,
+and therefore should be avoided.
+
+If you want to allow scalar iteration, use `allowscalar` or `@allowscalar`
+to enable scalar iteration globally or for the operations in question.
 </code></pre>
 <pre><code class="language-julia">using Plots
 plot(1:epochs, lossvals', labels=reshape([&quot;L = $l&quot; for l in layersizes],1,length(layersizes)), xlab=&quot;epoch&quot;,ylab=&quot;loss&quot;)

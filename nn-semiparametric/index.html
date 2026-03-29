@@ -711,12 +711,10 @@ but to enable inference.</p>
 orthogonalization, we can treat <code>μhat</code> and <code>fx</code> as though they are known
 functions. The estimated average impulse response is then just a sample
 average. Computing standard errors for sample averages is
-straightforward. Since this data is dependent, we will use a HAC
-estimator for the variance.</p>
+straightforward.</p>
 <pre><code class="language-julia">using Distributions
-using CovarianceMatrices
-k = CovarianceMatrices.BartlettKernel{NeweyWest}()
-Σ = CovarianceMatrices.lrvar(k, θi', prewhite=true)
+using Statistics
+Σ = cov(θi')
 
 plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
 plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
@@ -727,9 +725,7 @@ plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green,
       ribbon=sqrt.(diag(Σ)/size(θi,2))*quantile.(Normal(), [0.05, 0.95])' )
 </code></pre>
-<pre><code>Error: UndefVarError: `lrvar` not defined in `CovarianceMatrices`
-Suggestion: check for spelling errors or missing imports.
-</code></pre>
+<p><img alt="" src="../figures/nn-semiparametric_12_1.png" /></p>
 <p>The plot now has 90% pointwise confidence bands around the
 orthogonalized estimates.</p>
 <h1 id="automating-orthogonalization">Automating Orthogonalization<a class="headerlink" href="#automating-orthogonalization" title="Permanent link">&para;</a></h1>
