@@ -224,8 +224,8 @@ model complexity more important.</p>
 economic models that allows inference. Inference directly on the
 nonparametric function fitted by a neural network is a very difficult
 problem. There are practical methods for Bayesian variational inference
-(see @graves2011 or @miao2016), but frequentist inference is largely an
-open problem.</p>
+(see (Graves 2011)<sup id="fnref:graves2011"><a class="footnote-ref" href="#fn:graves2011">2</a></sup> or (Miao, Yu, and Blunsom 2016)<sup id="fnref:miao2016"><a class="footnote-ref" href="#fn:miao2016">3</a></sup>), but frequentist inference is largely
+an open problem.</p>
 <p>However, what is possible is semiparametric inference. Semiparametric
 inference refers to when we have a finite dimensional parameter of
 interest that depends on some infinite dimensional parameter. Examples
@@ -233,8 +233,8 @@ include average (or quantiles or other summary statistic) marginal
 effects, average treatment effects, and many others.</p>
 <h1 id="double-debiased-machine-learning">Double Debiased Machine Learning<a class="headerlink" href="#double-debiased-machine-learning" title="Permanent link">&para;</a></h1>
 <p>We return to the semiparametric moment condition model of
-@chernozhukov2018 and @chernozhukov2017. We previously discussed this
-setting in <a href="../ml-intro/">ml-intro</a> and
+(Chernozhukov et al. 2018)<sup id="fnref:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup> and (Chernozhukov et al. 2017)<sup id="fnref:chernozhukov2017"><a class="footnote-ref" href="#fn:chernozhukov2017">5</a></sup>. We previously discussed
+this setting in <a href="../ml-intro/">ml-intro</a> and
 <a href="../ml-doubledebiased/">ml-doubledebiased</a>.</p>
 <p>The model consists of</p>
 <ul>
@@ -266,8 +266,8 @@ setting in <a href="../ml-intro/">ml-intro</a> and
 </p>
 </li>
 </ol>
-<p>@chernozhukov2018 provide high level assumptions on $\hat{\eta}$ and the
-model that ensure $\hat{\theta}$ is $\sqrt{n}$ asymptotically
+<p>(Chernozhukov et al. 2018)<sup id="fnref2:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup> provide high level assumptions on $\hat{\eta}$ and
+the model that ensure $\hat{\theta}$ is $\sqrt{n}$ asymptotically
 normal.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The key needed assumptions are:</p>
 <ol>
 <li>Linearizeable score <script type="math/tex; mode=display">
@@ -306,7 +306,7 @@ for the proof; it is not intended to be easy to interpret or to verify.
 A sufficient, but not necessary condition that implies 3 is twice
 differentiability of $\psi$ and
 $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2}  = o(n^{-1/4})$.</p>
-<p>Anyway, @chernozhukov2018 show that under these conditions (and if you
+<p>Anyway, (Chernozhukov et al. 2018)<sup id="fnref3:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup> show that under these conditions (and if you
 use sample splitting in the empirical moment condition), then <script type="math/tex; mode=display">
 \sqrt{n} \sigma^{-1} (\hat{\theta} - \theta_0) = \frac{1}{\sqrt{n}}
 \sum_{i=1}^n \bar{\psi}(w_i) + O_p(\rho_n) \leadsto N(0,I)
@@ -324,22 +324,22 @@ $\eta_0$ instead of our estimated $\hat{\eta}$.</p>
 need to verify the rate condition (assumption 2). Doing so will involve
 conditions on the class of functions being estimated, and how the
 complexity (width and depth) of the neural network increases with sample
-size. The excellent paper by @farrel2021 (working paper @farrel2018)
+size. The excellent paper by (Farrell, Liang, and Misra 2021)<sup id="fnref:farrel2021"><a class="footnote-ref" href="#fn:farrel2021">6</a></sup> (working paper (Farrell, Liang, and Misra 2018)<sup id="fnref:farrel2018"><a class="footnote-ref" href="#fn:farrel2018">7</a></sup>)
 provides the needed results.</p>
 <p>Second, we need to make sure our moment conditions are Neyman
-orthogonal. @chernozhukov2018 and @farrel2021 do this for some typical
-causal inference models. For other models, analytically transforming
-non-orthogonal moments into orthogonal ones is typically possible, but
-it can be tedious.</p>
+orthogonal. (Chernozhukov et al. 2018)<sup id="fnref4:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup> and (Farrell, Liang, and Misra 2021)<sup id="fnref2:farrel2021"><a class="footnote-ref" href="#fn:farrel2021">6</a></sup> do this for some
+typical causal inference models. For other models, analytically
+transforming non-orthogonal moments into orthogonal ones is typically
+possible, but it can be tedious.</p>
 <!-- We will try to automate this. As we saw in -->
 <!-- [GMMInference](https://schrimpf.github.io/GMMInference.jl), Julia's -->
 <!-- good support for automatic differentiation will make it relatively -->
 <!-- easy to translate econometric theory to executable code.  -->
 
 <h2 id="deep-neural-networks-for-estimation-and-inference">Deep Neural Networks for Estimation and Inference<a class="headerlink" href="#deep-neural-networks-for-estimation-and-inference" title="Permanent link">&para;</a></h2>
-<p>Review results of @farrel2021.</p>
+<p>Review results of (Farrell, Liang, and Misra 2021)<sup id="fnref3:farrel2021"><a class="footnote-ref" href="#fn:farrel2021">6</a></sup>.</p>
 <h1 id="application-average-impulse-responses">Application: Average Impulse Responses<a class="headerlink" href="#application-average-impulse-responses" title="Permanent link">&para;</a></h1>
-<p>As an application let’s consider something like an average impulse
+<p>As an application let&rsquo;s consider something like an average impulse
 response function. Suppose we have some time series data on $y_t$ and
 $x_t$. We want to estimate the average (over the density of $x$)
 response of $\Er[y_{t+\tau} | x_t]$ to a change in $x$ of size $\Delta$.
@@ -347,16 +347,16 @@ That is, our parameters of interest are <script type="math/tex; mode=display">
 \theta_{0,\tau} = \Er\left[ \Er[y_{t+\tau} | x_{t} + \Delta] -
 \Er[y_{t+\tau} | x_{t}] \right]
 </script> for $\tau = 0, &hellip;, R$ for some fixed $R$.</p>
-<div class="alert alert-danger">
-<p>Note that there are other impulse response like parameters that could be
+<p>::: {.alert .alert-danger}
+Note that there are other impulse response like parameters that could be
 estimated. For example, we could compute the average over $x_t$ of the
 change in future $y$ holding future residuals constant (or setting
 future residuals to $0$). In a linear model this would be the same as
 the average over residuals response that we estimate. However, in a
 nonlinear model, these three things differ. We focus on the average over
 residuals response in part because orthogonalization of the moment
-condition is more difficult for the later two.</p>
-</div>
+condition is more difficult for the later two.
+:::</p>
 <p>Let $h(x_t) = (\Er[y_{t} | x_{t}], &hellip; , \Er[y_{t+R} | x_{t}])$ denote
 the conditional expectation functions at different horizons. Then, we
 can write a moment condition for $\theta_0$ as: <script type="math/tex; mode=display">
@@ -368,7 +368,7 @@ derivative with respect to $h$ in direction $v$ is <script type="math/tex; mode=
 </script>
 </p>
 <p>We can orthogonalize the moment condition by following the concentrating
-out approach described in @chernozhukov2018, or in
+out approach described in (Chernozhukov et al. 2018)<sup id="fnref5:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup>, or in
 <a href="../ml-doubledebiased/">ml-doubledebiased</a>. It would be a good exercise
 to work through the steps. Here we will simply state a resulting
 orthogonal moment condition. Let $\eta=(h, f_x)$ where $f_x$ is the
@@ -390,7 +390,7 @@ v(x)}{f_x(x)^2} \right] = 0
 additional functional nuisance parameter, $f_x$. This is typical in
 these models.</p>
 <h2 id="simulated-dgp">Simulated DGP<a class="headerlink" href="#simulated-dgp" title="Permanent link">&para;</a></h2>
-<p>Let’s do some simulations to examine the performance of this estimator.
+<p>Let&rsquo;s do some simulations to examine the performance of this estimator.
 The true model will be a nonlinear AR(3) model. In particular, <script type="math/tex; mode=display">
 y_t = \tanh(\alpha_1 y_{t-1} + \alpha_2 y_{t-2} + \alpha_3 y_{t-3}) +
 \epsilon_t
@@ -540,7 +540,7 @@ end
 <pre><code>make_pdf (generic function with 1 method)
 </code></pre>
 <p>To check that the code produces reasonable results, we will begin by
-just fitting the marginal distribution of $y_t$. This isn’t quite what
+just fitting the marginal distribution of $y_t$. This isn&rsquo;t quite what
 we need for our impulse responses, but it is easier to visualize.</p>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;cdfy.jld2&quot;)
 rerun=false
@@ -598,8 +598,8 @@ histogram(pdfx(x)', bins=100, leg=false, title=&quot;Histogram of estimated pdf(
 </code></pre>
 <p><img alt="" src="../figures/nn-semiparametric_7_1.png" /></p>
 <p>Despite the penalty, our estimated pdf is sometimes negative.
-Fortunately, it doesn’t happen to often.</p>
-<p>It’s hard to visualize the estimated trivariate pdf, but we can plot the
+Fortunately, it doesn&rsquo;t happen to often.</p>
+<p>It&rsquo;s hard to visualize the estimated trivariate pdf, but we can plot the
 marginal pdf implied by the joint distribution. We can get marginal pdf
 by integrating or looking at the derivative of the joint cdf. <script type="math/tex; mode=display">
 f_{x_1}(x_1) = \frac{\partial}{\partial x_1} F_x((x_1, \overline{x}_2, \overline{x}_3))
@@ -682,7 +682,7 @@ stated above, these are given by <script type="math/tex; mode=display">
 \theta = (h(x+\Delta) - h(x)))  + (y - h(x))\frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)}
 </script>
 </p>
-<p>Let’s compute it</p>
+<p>Let&rsquo;s compute it</p>
 <pre><code class="language-julia">L = size(x,1)
 Δ = 1.0*std(y)
 iryhat=(μhat(X .+ [Δ; 0; 0])  .- μhat(X))
@@ -753,8 +753,26 @@ moment conditions, see <a href="../autodml/">the next section</a>.</p>
 <hr />
 <ol>
 <li id="fn:1">
-<p>@chernozhukov2018 also give low level conditions on lasso
+<p>(Chernozhukov et al. 2018)<sup id="fnref6:chernozhukov2018"><a class="footnote-ref" href="#fn:chernozhukov2018">4</a></sup> also give low level conditions on lasso
 estimates of $\hat{eta}$ that meet the high level assumptions.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:graves2011">
+<p>Graves, Alex, &ldquo;<a href="http://papers.nips.cc/paper/4329-practical-variational-inference-for-neural-networks.pdf">Practical variational inference for neural networks</a>,&rdquo; in <em>Advances in neural information processing systems 24</em>, J. Shawe-Taylor, R. S. Zemel, P. L. Bartlett, F. Pereira, and K. Q. Weinberger, eds. (Curran Associates, Inc., 2011).&#160;<a class="footnote-backref" href="#fnref:graves2011" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:miao2016">
+<p>Miao, Yishu, Lei Yu, and Phil Blunsom, &ldquo;<a href="http://www.jmlr.org/proceedings/papers/v48/miao16.pdf">Neural variational inference for text processing</a>,&rdquo; in <em>International conference on machine learning</em>, 2016.&#160;<a class="footnote-backref" href="#fnref:miao2016" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:chernozhukov2018">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018), C1&ndash;C68.&#160;<a class="footnote-backref" href="#fnref:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref6:chernozhukov2018" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:chernozhukov2017">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, and Whitney Newey, &ldquo;<a href="https://doi.org/10.1257/aer.p20171038">Double/debiased/neyman machine learning of treatment effects</a>,&rdquo; <em>American Economic Review</em>, 107 (2017), 261&ndash;65.&#160;<a class="footnote-backref" href="#fnref:chernozhukov2017" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:farrel2021">
+<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra, &ldquo;<a href="https://doi.org/10.3982/ECTA16901">Deep neural networks for estimation and inference</a>,&rdquo; <em>Econometrica</em>, 89 (2021), 181&ndash;213.&#160;<a class="footnote-backref" href="#fnref:farrel2021" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:farrel2021" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:farrel2021" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:farrel2018">
+<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra, &ldquo;<a href="https://arxiv.org/abs/1809.09953">Deep neural networks for estimation and inference</a>,&rdquo; 2018.&#160;<a class="footnote-backref" href="#fnref:farrel2018" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

@@ -199,10 +199,10 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<p>title : “Introduction to Neural Networks” subtitle : “Single Layer
-Perceptrons” author : Paul Schrimpf date : 2026-03-30 bibliography:
-“../ml.bib” weave_options: out_width : 100% wrap : true fig_width : 8
-dpi : 192 —</p>
+<p>title : &ldquo;Introduction to Neural Networks&rdquo; subtitle : &ldquo;Single Layer
+Perceptrons&rdquo; author : Paul Schrimpf date : 2026-03-30 bibliography:
+&ldquo;../ml.bib&rdquo; weave_options: out_width : 100% wrap : true fig_width : 8
+dpi : 192 &mdash;</p>
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
 4.0 International
@@ -240,11 +240,11 @@ We will not have Knet examples here, but the documentation for Knet is
 excellent and worth reading even if you plan to use Flux.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
+<li>(Goodfellow, Bengio, and Courville 2016)<sup id="fnref:goodfellow2016"><a class="footnote-ref" href="#fn:goodfellow2016">1</a></sup> <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
   documentation</a>
   especially the textbook</li>
-<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+<li>(Klok and Nazarathy 2019)<sup id="fnref:klok2019"><a class="footnote-ref" href="#fn:klok2019">2</a></sup> <em>Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="single-layer-neural-networks">Single Layer Neural Networks<a class="headerlink" href="#single-layer-neural-networks" title="Permanent link">&para;</a></h1>
@@ -279,10 +279,10 @@ functions $\mathcal{F}$,</p>
 f(x) - \sum_{j=1}^r \beta_j \psi(w_j'x+b_j) \Vert = 0
 </script>
 </p>
-<p>@hornik1989 contains one of the earliest results along these lines. Some
-introductory texts mention the universal approximation theorem as though
-it is something special for neural networks. This is incorrect. In
-particular, the universal approximation theorem does not explain why
+<p>(Hornik, Stinchcombe, and White 1989)<sup id="fnref:hornik1989"><a class="footnote-ref" href="#fn:hornik1989">3</a></sup> contains one of the earliest results along these lines.
+Some introductory texts mention the universal approximation theorem as
+though it is something special for neural networks. This is incorrect.
+In particular, the universal approximation theorem does not explain why
 neural networks seem to be unusually good at prediction. Most
 nonparametric estimation methods (kernel, series, forests, etc) are
 universal approximators.</p>
@@ -347,37 +347,37 @@ for r in eachindex(rs)
     display(figs[r])
 end
 </code></pre>
-<pre><code>100 iteration, loss=0.5975006402467077
-200 iteration, loss=0.42470647786932103
-300 iteration, loss=0.38354804960857414
-400 iteration, loss=0.3748973271388585
-500 iteration, loss=0.37030344290591793
-  7.006949 seconds (33.60 M allocations: 1.713 GiB, 2.15% gc time, 99.50% c
+<pre><code>100 iteration, loss=0.39996339084013843
+200 iteration, loss=0.36527335501768965
+300 iteration, loss=0.35317162062518825
+400 iteration, loss=0.34745400528042725
+500 iteration, loss=0.34409026968497763
+  7.125596 seconds (33.60 M allocations: 1.713 GiB, 2.17% gc time, 99.64% c
 ompilation time)
-100 iteration, loss=0.42135089569556516
-200 iteration, loss=0.3900348446489372
-300 iteration, loss=0.3782409631850409
-400 iteration, loss=0.3734527816773171
-500 iteration, loss=0.3709657580447516
-  0.034524 seconds (76.96 k allocations: 174.914 MiB, 42.85% gc time)
-100 iteration, loss=0.4980433198062756
-200 iteration, loss=0.41036065442737213
-300 iteration, loss=0.3891509080255724
-400 iteration, loss=0.3777719712024355
-500 iteration, loss=0.37089272068909507
-  0.026378 seconds (76.96 k allocations: 274.417 MiB, 34.48% gc time)
-100 iteration, loss=0.3534952423713818
-200 iteration, loss=0.35256791539018484
-300 iteration, loss=0.35189845504575384
-400 iteration, loss=0.3513461896062086
-500 iteration, loss=0.35087513839119966
-  0.033650 seconds (76.96 k allocations: 373.923 MiB, 37.07% gc time)
-100 iteration, loss=0.359023540561979
-200 iteration, loss=0.3545668591980615
-300 iteration, loss=0.3534401061402208
-400 iteration, loss=0.35294238203209005
-500 iteration, loss=0.35257480670778935
-  0.048173 seconds (76.96 k allocations: 473.429 MiB, 33.97% gc time)
+100 iteration, loss=0.39512966167266644
+200 iteration, loss=0.3491968668835948
+300 iteration, loss=0.3334584539258063
+400 iteration, loss=0.3277321878964646
+500 iteration, loss=0.3252140534535288
+  0.026954 seconds (76.96 k allocations: 174.911 MiB, 48.67% gc time)
+100 iteration, loss=0.5459225940487328
+200 iteration, loss=0.49455434816234256
+300 iteration, loss=0.4591575282748995
+400 iteration, loss=0.42610861030831215
+500 iteration, loss=0.39688689790684994
+  0.024860 seconds (76.96 k allocations: 274.420 MiB, 37.09% gc time)
+100 iteration, loss=0.46732713452797275
+200 iteration, loss=0.38074800498095346
+300 iteration, loss=0.35013412160779467
+400 iteration, loss=0.3402542327078661
+500 iteration, loss=0.33730003900978134
+  0.035528 seconds (76.96 k allocations: 373.923 MiB, 37.77% gc time)
+100 iteration, loss=0.3617719038537409
+200 iteration, loss=0.34775172920636377
+300 iteration, loss=0.34032959420350944
+400 iteration, loss=0.33631237116136337
+500 iteration, loss=0.3340253656429602
+  0.039868 seconds (76.96 k allocations: 473.429 MiB, 34.33% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_3_1.png" /> <img alt="" src="../figures/slp_3_2.png" />
 <img alt="" src="../figures/slp_3_3.png" /> <img alt="" src="../figures/slp_3_4.png" />
@@ -389,10 +389,10 @@ to a local minimum. The number of training iterations can act as a
 regularization parameter.</p>
 <p>Notice how even though a wider network can approximate $f$ better, wider
 networks also take more training iterations to minimize the loss. This
-is typical of any minimization algorithm — the number of iterations
+is typical of any minimization algorithm &mdash; the number of iterations
 increases with the problem size.</p>
 <p>You may notice that the MSE does not (weakly) decrease with network
-size. (Or not—both the data and initial values are drawn randomly, and
+size. (Or not&mdash;both the data and initial values are drawn randomly, and
 results may vary.) This reflects a problem in the minimization. Care
 must be used when choosing a minimization algorithm and initial values.
 We will see more of this below.</p>
@@ -432,42 +432,42 @@ for r in eachindex(rs)
     display(figs[r])
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=0.9651314
-2 units, 100 iterations, loss=0.53840595
-2 units, 200 iterations, loss=0.45935407
-2 units, 300 iterations, loss=0.41528848
-2 units, 400 iterations, loss=0.3861482
-2 units, 500 iterations, loss=0.36851135
-  8.319634 seconds (34.99 M allocations: 1.678 GiB, 1.16% gc time, 99.39% c
+<pre><code>2 units, 1 iterations, loss=0.5835158
+2 units, 100 iterations, loss=0.37765935
+2 units, 200 iterations, loss=0.33820355
+2 units, 300 iterations, loss=0.32186928
+2 units, 400 iterations, loss=0.31595525
+2 units, 500 iterations, loss=0.31357348
+  8.587543 seconds (34.99 M allocations: 1.678 GiB, 1.73% gc time, 99.52% c
 ompilation time)
-3 units, 1 iterations, loss=0.56821513
-3 units, 100 iterations, loss=0.36006752
-3 units, 200 iterations, loss=0.34677178
-3 units, 300 iterations, loss=0.34446847
-3 units, 400 iterations, loss=0.34310383
-3 units, 500 iterations, loss=0.34176463
-  0.051364 seconds (256.02 k allocations: 63.018 MiB, 24.41% gc time)
-5 units, 1 iterations, loss=0.5199329
-5 units, 100 iterations, loss=0.35403115
-5 units, 200 iterations, loss=0.351154
-5 units, 300 iterations, loss=0.3505294
-5 units, 400 iterations, loss=0.34975573
-5 units, 500 iterations, loss=0.3487851
-  0.052179 seconds (256.02 k allocations: 74.522 MiB, 21.98% gc time)
-7 units, 1 iterations, loss=1.2170873
-7 units, 100 iterations, loss=0.34857875
-7 units, 200 iterations, loss=0.34692377
-7 units, 300 iterations, loss=0.34507304
-7 units, 400 iterations, loss=0.34310672
-7 units, 500 iterations, loss=0.34106365
-  0.060092 seconds (256.02 k allocations: 86.050 MiB, 25.30% gc time)
-9 units, 1 iterations, loss=2.5064
-9 units, 100 iterations, loss=0.35023248
-9 units, 200 iterations, loss=0.34775266
-9 units, 300 iterations, loss=0.34449714
-9 units, 400 iterations, loss=0.34081718
-9 units, 500 iterations, loss=0.33705968
-  0.060796 seconds (256.02 k allocations: 97.554 MiB, 23.34% gc time)
+3 units, 1 iterations, loss=0.41534433
+3 units, 100 iterations, loss=0.33576682
+3 units, 200 iterations, loss=0.33468783
+3 units, 300 iterations, loss=0.33384335
+3 units, 400 iterations, loss=0.33315718
+3 units, 500 iterations, loss=0.3326006
+  0.045901 seconds (256.02 k allocations: 63.018 MiB, 26.26% gc time)
+5 units, 1 iterations, loss=0.56019837
+5 units, 100 iterations, loss=0.35969394
+5 units, 200 iterations, loss=0.33136117
+5 units, 300 iterations, loss=0.32759973
+5 units, 400 iterations, loss=0.32617292
+5 units, 500 iterations, loss=0.32490262
+  0.049912 seconds (256.02 k allocations: 74.522 MiB, 22.81% gc time)
+7 units, 1 iterations, loss=2.610366
+7 units, 100 iterations, loss=0.3360725
+7 units, 200 iterations, loss=0.33046693
+7 units, 300 iterations, loss=0.32976365
+7 units, 400 iterations, loss=0.32894534
+7 units, 500 iterations, loss=0.3279586
+  0.057034 seconds (256.02 k allocations: 86.050 MiB, 24.45% gc time)
+9 units, 1 iterations, loss=2.3100607
+9 units, 100 iterations, loss=0.35537902
+9 units, 200 iterations, loss=0.33313772
+9 units, 300 iterations, loss=0.33063537
+9 units, 400 iterations, loss=0.32995462
+9 units, 500 iterations, loss=0.32940575
+  0.061050 seconds (256.02 k allocations: 97.554 MiB, 25.91% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_4_1.png" /> <img alt="" src="../figures/slp_4_2.png" />
 <img alt="" src="../figures/slp_4_3.png" /> <img alt="" src="../figures/slp_4_4.png" />
@@ -533,42 +533,42 @@ for r in eachindex(rs)
 end
 nothing
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=1.0956422
-2 units, 100 iterations, loss=0.629759
-2 units, 200 iterations, loss=0.5170952
-2 units, 300 iterations, loss=0.46034026
-2 units, 400 iterations, loss=0.42286465
-2 units, 500 iterations, loss=0.3943558
-  0.455260 seconds (3.00 M allocations: 170.878 MiB, 3.75% gc time, 91.57% 
+<pre><code>2 units, 1 iterations, loss=0.47121212
+2 units, 100 iterations, loss=0.3478092
+2 units, 200 iterations, loss=0.31684136
+2 units, 300 iterations, loss=0.301511
+2 units, 400 iterations, loss=0.29349726
+2 units, 500 iterations, loss=0.28903913
+  0.484956 seconds (3.00 M allocations: 170.878 MiB, 4.35% gc time, 93.50% 
 compilation time)
-3 units, 1 iterations, loss=0.40960476
-3 units, 100 iterations, loss=0.29331848
-3 units, 200 iterations, loss=0.28587964
-3 units, 300 iterations, loss=0.28265575
-3 units, 400 iterations, loss=0.28100643
-3 units, 500 iterations, loss=0.28004706
-  0.026476 seconds (139.36 k allocations: 40.936 MiB, 14.06% gc time)
-5 units, 1 iterations, loss=0.45824447
-5 units, 100 iterations, loss=0.2974653
-5 units, 200 iterations, loss=0.29119325
-5 units, 300 iterations, loss=0.28679952
-5 units, 400 iterations, loss=0.2838833
-5 units, 500 iterations, loss=0.28172058
-  0.031542 seconds (139.36 k allocations: 52.440 MiB, 21.36% gc time)
-7 units, 1 iterations, loss=0.35178062
-7 units, 100 iterations, loss=0.27906784
-7 units, 200 iterations, loss=0.27590963
-7 units, 300 iterations, loss=0.27416852
-7 units, 400 iterations, loss=0.2730205
-7 units, 500 iterations, loss=0.2721891
-  0.038272 seconds (139.36 k allocations: 63.967 MiB, 25.89% gc time)
-9 units, 1 iterations, loss=0.56524676
-9 units, 100 iterations, loss=0.26210776
-9 units, 200 iterations, loss=0.26185033
-9 units, 300 iterations, loss=0.26172808
-9 units, 400 iterations, loss=0.26162833
-9 units, 500 iterations, loss=0.26154122
-  0.043371 seconds (139.36 k allocations: 75.471 MiB, 27.44% gc time)
+3 units, 1 iterations, loss=0.83332896
+3 units, 100 iterations, loss=0.38979414
+3 units, 200 iterations, loss=0.3194255
+3 units, 300 iterations, loss=0.29777384
+3 units, 400 iterations, loss=0.28810304
+3 units, 500 iterations, loss=0.28242868
+  0.026664 seconds (139.36 k allocations: 40.936 MiB, 24.01% gc time)
+5 units, 1 iterations, loss=0.31125516
+5 units, 100 iterations, loss=0.25697738
+5 units, 200 iterations, loss=0.25488177
+5 units, 300 iterations, loss=0.25366494
+5 units, 400 iterations, loss=0.2528164
+5 units, 500 iterations, loss=0.25218457
+  0.028785 seconds (139.36 k allocations: 52.440 MiB, 13.68% gc time)
+7 units, 1 iterations, loss=0.27260572
+7 units, 100 iterations, loss=0.25034013
+7 units, 200 iterations, loss=0.24807897
+7 units, 300 iterations, loss=0.2472352
+7 units, 400 iterations, loss=0.24678983
+7 units, 500 iterations, loss=0.24648862
+  0.038980 seconds (139.36 k allocations: 63.967 MiB, 26.02% gc time)
+9 units, 1 iterations, loss=0.35958824
+9 units, 100 iterations, loss=0.24537204
+9 units, 200 iterations, loss=0.24433525
+9 units, 300 iterations, loss=0.24386269
+9 units, 400 iterations, loss=0.2435471
+9 units, 500 iterations, loss=0.24333371
+  0.043938 seconds (139.36 k allocations: 75.471 MiB, 26.40% gc time)
 </code></pre>
 <pre><code class="language-julia">display(plot(initmfigs..., legend=false))
 </code></pre>
@@ -585,7 +585,7 @@ end
 initial values carefully was very helpful.</p>
 <h2 id="rectified-linear">Rectified linear<a class="headerlink" href="#rectified-linear" title="Permanent link">&para;</a></h2>
 <p>Large applications of neural networks often use rectified linear
-activation for efficiency. Let’s see how the same example behaves with
+activation for efficiency. Let&rsquo;s see how the same example behaves with
 (leaky) rectified linear activation.</p>
 <pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -628,42 +628,42 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=14.183648
-2 units, 200 iterations, loss=0.84366465
-2 units, 400 iterations, loss=0.63803285
-2 units, 600 iterations, loss=0.55385005
-2 units, 800 iterations, loss=0.51025814
-2 units, 1000 iterations, loss=0.4851486
-  0.770140 seconds (4.28 M allocations: 257.225 MiB, 3.21% gc time, 94.03% 
+<pre><code>2 units, 1 iterations, loss=22.61312
+2 units, 200 iterations, loss=6.576372
+2 units, 400 iterations, loss=4.649459
+2 units, 600 iterations, loss=3.5492566
+2 units, 800 iterations, loss=2.804766
+2 units, 1000 iterations, loss=2.260517
+  0.805275 seconds (4.28 M allocations: 257.244 MiB, 3.22% gc time, 94.00% 
 compilation time)
-3 units, 1 iterations, loss=23.112623
-3 units, 200 iterations, loss=1.404883
-3 units, 400 iterations, loss=0.68040234
-3 units, 600 iterations, loss=0.48214242
-3 units, 800 iterations, loss=0.39570308
-3 units, 1000 iterations, loss=0.3526303
-  0.041753 seconds (284.85 k allocations: 81.818 MiB, 26.10% gc time)
-5 units, 1 iterations, loss=13.187834
-5 units, 200 iterations, loss=0.5188861
-5 units, 400 iterations, loss=0.36797518
-5 units, 600 iterations, loss=0.33743024
-5 units, 800 iterations, loss=0.32375228
-5 units, 1000 iterations, loss=0.31570783
-  0.047643 seconds (284.85 k allocations: 104.766 MiB, 32.79% gc time)
-7 units, 1 iterations, loss=7.236756
-7 units, 200 iterations, loss=0.6079575
-7 units, 400 iterations, loss=0.3823144
-7 units, 600 iterations, loss=0.3220978
-7 units, 800 iterations, loss=0.3008623
-7 units, 1000 iterations, loss=0.29247442
-  0.049551 seconds (284.85 k allocations: 127.760 MiB, 29.62% gc time)
-9 units, 1 iterations, loss=5.0973883
-9 units, 200 iterations, loss=0.27856028
-9 units, 400 iterations, loss=0.27061275
-9 units, 600 iterations, loss=0.2670574
-9 units, 800 iterations, loss=0.26424855
-9 units, 1000 iterations, loss=0.26288557
-  0.053954 seconds (284.85 k allocations: 150.708 MiB, 38.56% gc time)
+3 units, 1 iterations, loss=1.7244341
+3 units, 200 iterations, loss=0.43364766
+3 units, 400 iterations, loss=0.36388764
+3 units, 600 iterations, loss=0.33708185
+3 units, 800 iterations, loss=0.32145885
+3 units, 1000 iterations, loss=0.31237894
+  0.040428 seconds (284.85 k allocations: 81.818 MiB, 20.96% gc time)
+5 units, 1 iterations, loss=2.0703168
+5 units, 200 iterations, loss=0.27558643
+5 units, 400 iterations, loss=0.26430288
+5 units, 600 iterations, loss=0.25806376
+5 units, 800 iterations, loss=0.25452963
+5 units, 1000 iterations, loss=0.25266287
+  0.049822 seconds (284.85 k allocations: 104.766 MiB, 31.45% gc time)
+7 units, 1 iterations, loss=12.762251
+7 units, 200 iterations, loss=0.27903998
+7 units, 400 iterations, loss=0.26031134
+7 units, 600 iterations, loss=0.25402334
+7 units, 800 iterations, loss=0.2506849
+7 units, 1000 iterations, loss=0.24845254
+  0.054245 seconds (284.85 k allocations: 127.760 MiB, 33.05% gc time)
+9 units, 1 iterations, loss=2.3123422
+9 units, 200 iterations, loss=0.2597074
+9 units, 400 iterations, loss=0.25246483
+9 units, 600 iterations, loss=0.24929576
+9 units, 800 iterations, loss=0.24769343
+9 units, 1000 iterations, loss=0.2468164
+  0.056090 seconds (284.85 k allocations: 150.708 MiB, 37.05% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_9_1.png" /> <img alt="" src="../figures/slp_9_2.png" />
 <img alt="" src="../figures/slp_9_3.png" /> <img alt="" src="../figures/slp_9_4.png" />
@@ -678,7 +678,7 @@ we should give the <code>Flux.train!</code> function an array of tuples of data
 consisting of the subsets to be used in iteration. Each call to
 <code>Flux.train!</code> loops over all tuples of data, doing one gradient descent
 iteration for each. This whole process is referred to as a training
-epoch. You could use (the below does not) Flux’s <code>@epochs</code> macro for
+epoch. You could use (the below does not) Flux&rsquo;s <code>@epochs</code> macro for
 running multiple training epochs without writing a loop.</p>
 <pre><code class="language-julia">dimx = 1
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
@@ -722,53 +722,53 @@ for f in figs
   display(f)
 end
 </code></pre>
-<pre><code>2 units, 1 iterations, loss=2.650102
-2 units, 200 iterations, loss=0.31042463
-2 units, 400 iterations, loss=0.30237454
-2 units, 600 iterations, loss=0.29697087
-2 units, 800 iterations, loss=0.29229698
-2 units, 1000 iterations, loss=0.28880477
-  0.461817 seconds (3.61 M allocations: 337.168 MiB, 7.50% gc time, 59.00% 
+<pre><code>2 units, 1 iterations, loss=11.173492
+2 units, 200 iterations, loss=0.3890759
+2 units, 400 iterations, loss=0.33853266
+2 units, 600 iterations, loss=0.33775446
+2 units, 800 iterations, loss=0.33768705
+2 units, 1000 iterations, loss=0.3376491
+  0.445585 seconds (3.61 M allocations: 337.168 MiB, 6.73% gc time, 58.73% 
 compilation time)
-3 units, 1 iterations, loss=11.498796
-3 units, 200 iterations, loss=0.4657655
-3 units, 400 iterations, loss=0.4064609
-3 units, 600 iterations, loss=0.38583013
-3 units, 800 iterations, loss=0.3741386
-3 units, 1000 iterations, loss=0.36677244
-  0.200600 seconds (2.76 M allocations: 307.136 MiB, 16.24% gc time)
-5 units, 1 iterations, loss=15.624249
-5 units, 200 iterations, loss=0.30780718
-5 units, 400 iterations, loss=0.2876397
-5 units, 600 iterations, loss=0.2815631
-5 units, 800 iterations, loss=0.27913508
-5 units, 1000 iterations, loss=0.27785403
-  0.205768 seconds (2.76 M allocations: 329.627 MiB, 15.93% gc time)
-7 units, 1 iterations, loss=31.582262
-7 units, 200 iterations, loss=0.2836483
-7 units, 400 iterations, loss=0.28016934
-7 units, 600 iterations, loss=0.27886236
-7 units, 800 iterations, loss=0.27811542
-7 units, 1000 iterations, loss=0.27761132
-  0.223850 seconds (2.79 M allocations: 353.720 MiB, 17.22% gc time)
-9 units, 1 iterations, loss=46.26707
-9 units, 200 iterations, loss=0.29194754
-9 units, 400 iterations, loss=0.27819866
-9 units, 600 iterations, loss=0.27507293
-9 units, 800 iterations, loss=0.27307004
-9 units, 1000 iterations, loss=0.27150676
-  0.228167 seconds (2.79 M allocations: 377.584 MiB, 20.05% gc time)
+3 units, 1 iterations, loss=2.013808
+3 units, 200 iterations, loss=0.3171627
+3 units, 400 iterations, loss=0.30799368
+3 units, 600 iterations, loss=0.2779722
+3 units, 800 iterations, loss=0.26881906
+3 units, 1000 iterations, loss=0.2635552
+  0.193676 seconds (2.76 M allocations: 307.136 MiB, 17.06% gc time)
+5 units, 1 iterations, loss=0.6147741
+5 units, 200 iterations, loss=0.24580134
+5 units, 400 iterations, loss=0.24449614
+5 units, 600 iterations, loss=0.24442013
+5 units, 800 iterations, loss=0.24435247
+5 units, 1000 iterations, loss=0.24432306
+  0.208325 seconds (2.76 M allocations: 329.627 MiB, 17.77% gc time)
+7 units, 1 iterations, loss=7.8050523
+7 units, 200 iterations, loss=0.262305
+7 units, 400 iterations, loss=0.25340876
+7 units, 600 iterations, loss=0.2495587
+7 units, 800 iterations, loss=0.24680258
+7 units, 1000 iterations, loss=0.24566627
+  0.231164 seconds (2.79 M allocations: 353.720 MiB, 18.70% gc time)
+9 units, 1 iterations, loss=6.610447
+9 units, 200 iterations, loss=0.28529337
+9 units, 400 iterations, loss=0.25992322
+9 units, 600 iterations, loss=0.25541195
+9 units, 800 iterations, loss=0.25325322
+9 units, 1000 iterations, loss=0.2522086
+  0.223981 seconds (2.79 M allocations: 377.584 MiB, 20.85% gc time)
 </code></pre>
 <p><img alt="" src="../figures/slp_10_1.png" /> <img alt="" src="../figures/slp_10_2.png" />
 <img alt="" src="../figures/slp_10_3.png" /> <img alt="" src="../figures/slp_10_4.png" />
 <img alt="" src="../figures/slp_10_5.png" /></p>
 <p>Here we see an in sample MSE about as low as the best previous result.
-Note, however, the longer training time. Each “iteration” above is an
+Note, however, the longer training time. Each &ldquo;iteration&rdquo; above is an
 epoch, which consists of 10 gradient descent steps using the 10
 different subsets (or batches) of data of size 100.</p>
 <h1 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h1>
 <ul>
-<li>@chen1999</li>
+<li>(Chen and White 1999)<sup id="fnref3:chen1999"><a class="footnote-ref" href="#fn:chen1999">4</a></sup></li>
 <li>$f(x) = \Er[y|x]$ with Fourier representation
   <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
   $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
@@ -780,9 +780,9 @@ different subsets (or batches) of data of size 100.</p>
   </script>
 </li>
 </ul>
-<p>The setup in @chen1999 is more general. They consider estimating both
+<p>The setup in (Chen and White 1999)<sup id="fnref:chen1999"><a class="footnote-ref" href="#fn:chen1999">4</a></sup> is more general. They consider estimating both
 $f$ and its first $m$ derivatives. Here, we focus on the case of just
-estimating $f$. @chen1999 also consider estimation of functions other
+estimating $f$. (Chen and White 1999)<sup id="fnref2:chen1999"><a class="footnote-ref" href="#fn:chen1999">4</a></sup> also consider estimation of functions other
 than conditional expectations.</p>
 <p>The restriction on $f$ in the second bullet is used to control
 approximation error. The second bullet says that $f$ is the inverse
@@ -790,14 +790,37 @@ Fourier transform of measure $\sigma_f$. The bite of the restriction on
 $f$ comes from the requirement that $\sigma_f$ be absolutely integral,
 $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$. It would be a good
 exercise to check whether this restriction is satisfied by some familiar
-types of functions. @barron1993 first showed that neural networks
+types of functions. (Barron 1993)<sup id="fnref:barron1993"><a class="footnote-ref" href="#fn:barron1993">5</a></sup> first showed that neural networks
 approximate this class of functions well, and compares the approximation
 rate of neural networks to other function approximation results.</p>
 <ul>
-<li>See @farrel2021 for more contemporary approach, applicable to
+<li>See (Farrell, Liang, and Misra 2021)<sup id="fnref:farrel2021"><a class="footnote-ref" href="#fn:farrel2021">6</a></sup> for more contemporary approach, applicable to
   currently used network architectures</li>
 </ul>
-<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:goodfellow2016">
+<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville, &ldquo;<a href="http://www.deeplearningbook.org">Deep learning</a>,&rdquo; (MIT Press, 2016).&#160;<a class="footnote-backref" href="#fnref:goodfellow2016" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:klok2019">
+<p>Klok, Hayden, and Yoni Nazarathy, &ldquo;<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">Statistics with julia:fundamentals for data science, MachineLearning and artificial intelligence</a>,&rdquo; (DRAFT, 2019).&#160;<a class="footnote-backref" href="#fnref:klok2019" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:hornik1989">
+<p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White, &ldquo;<a href="https://doi.org/10.1016/0893-6080(89)90020-8">Multilayer feedforward networks are universal approximators</a>,&rdquo; <em>Neural Networks</em>, 2 (1989), 359&ndash;366.&#160;<a class="footnote-backref" href="#fnref:hornik1989" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:chen1999">
+<p>Chen, Xiaohong, and H. White, &ldquo;<a href="https://doi.org/10.1109/18.749011">Improved rates and asymptotic normality for nonparametric neural network estimators</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 45 (1999), 682&ndash;691.&#160;<a class="footnote-backref" href="#fnref:chen1999" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:chen1999" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:chen1999" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:barron1993">
+<p>Barron, A. R., &ldquo;<a href="https://doi.org/10.1109/18.256500">Universal approximation bounds for superpositions of a sigmoidal function</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 39 (1993), 930&ndash;945.&#160;<a class="footnote-backref" href="#fnref:barron1993" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:farrel2021">
+<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra, &ldquo;<a href="https://doi.org/10.3982/ECTA16901">Deep neural networks for estimation and inference</a>,&rdquo; <em>Econometrica</em>, 89 (2021), 181&ndash;213.&#160;<a class="footnote-backref" href="#fnref:farrel2021" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
             </div>
         </div>
 

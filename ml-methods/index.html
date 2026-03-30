@@ -193,31 +193,29 @@ License</a></p>
 </script>
 </p>
 <h1 id="introduction-to-machine-learning">Introduction to machine learning<a class="headerlink" href="#introduction-to-machine-learning" title="Permanent link">&para;</a></h1>
-<div class="notes">
-<div class="alert alert-danger">
-<p>Friedman, Hastie, and Tibshirani (<a href="#ref-friedman2008">2009</a>) and James
-et al. (<a href="#ref-james2013">2013</a>) are commonly recommended textbooks on
-machine learning. James et al. (<a href="#ref-james2013">2013</a>) is less
-technical of the two, but neither book is especially difficult. Efron
-and Hastie (<a href="#ref-efron2016">2016</a>) covers similar material and is
-slightly more advanced.</p>
-</div>
-</div>
+<p>:::: notes
+::: {.alert .alert-danger}
+Friedman, Jerome, Trevor Hastie, and Robert Tibshirani, &ldquo;<a href="https://web.stanford.edu/\textasciitilde hastie/ElemStatLearn/">The elements of statistical learning</a>,&rdquo; (Springer series in statistics, 2009). and James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani, &ldquo;<a href="http://www-bcf.usc.edu/\%7Egareth/ISL/">An introduction to statistical learning</a>,&rdquo; (Springer, 2013). are commonly recommended textbooks on
+machine learning. James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani, &ldquo;<a href="http://www-bcf.usc.edu/\%7Egareth/ISL/">An introduction to statistical learning</a>,&rdquo; (Springer, 2013). is less technical of the two, but neither
+book is especially difficult. Efron, Bradley, and Trevor Hastie, &ldquo;<a href="https://web.stanford.edu/\textasciitilde hastie/CASI/">Computer age statistical inference</a>,&rdquo; (Cambridge University Press, 2016). covers similar material and is
+slightly more advanced.
+:::
+::::</p>
 <!-- --- -->
 
 <h2 id="some-prediction-examples">Some prediction examples<a class="headerlink" href="#some-prediction-examples" title="Permanent link">&para;</a></h2>
-<p>Machine learning is tailored for prediction, let’s look at some data and
+<p>Machine learning is tailored for prediction, let&rsquo;s look at some data and
 see how well it works</p>
 <hr />
 <h3 id="predicting-house-prices">Predicting house prices<a class="headerlink" href="#predicting-house-prices" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Example from Mullainathan and Spiess (<a href="#ref-mullainathan2017">2017</a>)</li>
+<li>Example from Mullainathan, Sendhil, and Jann Spiess, &ldquo;<a href="https://doi.org/10.1257/jep.31.2.87">Machine learning: An applied econometric approach</a>,&rdquo; <em>Journal of Economic Perspectives</em>, 31 (2017), 87&ndash;106.</li>
 <li>Training on 10000 observations from AHS</li>
 <li>Predict log house price using 150 variables</li>
 <li>Holdout sample of 41808</li>
 </ul>
 <hr />
-<h3 id="ahs-variables-ahs-variables">AHS variables [ahs-variables]<a class="headerlink" href="#ahs-variables-ahs-variables" title="Permanent link">&para;</a></h3>
+<h3 class="unnumbered" id="ahs-variables">AHS variables<a class="headerlink" href="#ahs-variables" title="Permanent link">&para;</a></h3>
 <pre><code class="language-r">ahs &lt;- readRDS(&quot;ahs2011forjep.rdata&quot;)$df
 print(summary(ahs[,1:20]))
 </code></pre>
@@ -276,9 +274,9 @@ library(kableExtra)
                                     &quot;responsive&quot;), full_width=TRUE)
 </code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<p><caption markdown="1">
+<caption>
 Performance of different algorithms in predicting housing values
-</caption></p>
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -385,6 +383,7 @@ Ensemble
 </tr>
 </tbody>
 </table>
+
 <hr />
 <pre><code class="language-r">library(ggplot2)
 load(file=&quot;jeperrorfig.RData&quot;)
@@ -399,17 +398,14 @@ print(fig2)
 <hr />
 <h3 id="predicting-pipeline-revenues">Predicting pipeline revenues<a class="headerlink" href="#predicting-pipeline-revenues" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Data on US natural gas pipelines<ul>
+<li>Data on US natural gas pipelines</li>
 <li>Combination of FERC Form 2, EIA Form 176, and other sources,
     compiled by me</li>
-<li>1996-2016, 236 pipeline companies, 1219 company-year
-    observations</li>
-</ul>
-</li>
+<li>1996-2016, 236 pipeline companies, 1219 company-year observations</li>
 <li>Predict: $y =$ profits from transmission of natural gas</li>
 <li>Covariates: year, capital, discovered gas reserves, well head gas
-    price, city gate gas price, heating degree days, state(s) that each
-    pipeline operates in</li>
+  price, city gate gas price, heating degree days, state(s) that each
+  pipeline operates in</li>
 </ul>
 <hr />
 <pre><code class="language-r">load(&quot;pipelines.Rdata&quot;)
@@ -451,15 +447,15 @@ ggpairs(data[,c(&quot;transProfit&quot;,&quot;transPlant_bal_beg_yr&quot;,&quot;
 <li>Lasso</li>
 <li>Random forests</li>
 <li>Randomly choose 75% of sample to fit the models, then look at
-    prediction accuracy in remaining 25%</li>
+  prediction accuracy in remaining 25%</li>
 </ul>
-<div class="notes">
-<p>We are focusing on Lasso and random forests because these are the two
+<p>::: notes
+We are focusing on Lasso and random forests because these are the two
 methods that econometricians have worked on the most. Other methods such
 as neural nets and support vector machines are also worth exploring. For
 now, you can think of Lasso and random forests these as black boxes that
-generate predictions from data. We will go into more detail soon.</p>
-</div>
+generate predictions from data. We will go into more detail soon.
+:::</p>
 <pre><code class="language-r">## Create X matrix for OLS and random forests
 xnames &lt;-c(&quot;transPlant_bal_beg_yr&quot;,   &quot;reserve&quot;,   &quot;wellPrice&quot;,  &quot;cityPrice&quot;,
            &quot;plantArea&quot;,  &quot;heatDegDays&quot;,
@@ -548,9 +544,9 @@ kable_styling(kable(tab1, caption=&quot;Training sample&quot;, format=&quot;html
               &quot;responsive&quot;), full_width=F)
 </code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<p><caption markdown="1">
+<caption>
 Training sample
-</caption></p>
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -606,14 +602,15 @@ relative MAE
 </tr>
 </tbody>
 </table>
+
 <pre><code class="language-r">kable_styling(kable(tab2, caption=&quot;Hold-out sample&quot;, format=&quot;html&quot;, digits=3),
               bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,
               &quot;responsive&quot;), full_width=F)
 </code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<p><caption markdown="1">
+<caption>
 Hold-out sample
-</caption></p>
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -669,40 +666,39 @@ relative MAE
 </tr>
 </tbody>
 </table>
-<div class="notes">
-<p>In this table, relative MSE is the mean squared error relative to the
+
+<p>:::: notes
+In this table, relative MSE is the mean squared error relative to the
 variance of $y$, that is <script type="math/tex; mode=display">
     \text{relative MSE} = \frac{\En[(y_i - \hat{y}_i)^2]} {\En[ (y_i - \bar{y})^2]}.
 </script> It is equal to $1-R^2$. Similarly, relative MAE is <script type="math/tex; mode=display">
     \text{relative MAE} = \frac{\En[|y_i - \hat{y}_i|]} {\En[|y_i - \bar{y}|]}.
 </script>
 </p>
-<div class="alert alert-danger">
-<p>$\En$ denotes the empirical expectation,
-$\En[y_i] = \frac{1}{n}\sum_{i=1}^n y_i$.</p>
-</div>
-</div>
+<p>::: {.alert .alert-danger}
+$\En$ denotes the empirical expectation,
+$\En[y_i] = \frac{1}{n}\sum_{i=1}^n y_i$.
+:::
+::::</p>
 <!-- --- -->
 
 <h2 id="lasso">Lasso<a class="headerlink" href="#lasso" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Lasso solves a penalized (regularized) regression problem <script type="math/tex; mode=display">
-    \hat{\beta} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
-    \frac{\lambda}{n} \norm{ \hat{\Psi} \beta}_1
-    </script>
+  \hat{\beta} = \argmin_\beta \En [ (y_i - x_i'\beta)^2 ] +
+  \frac{\lambda}{n} \norm{ \hat{\Psi} \beta}_1
+  </script>
 </li>
 <li>Penalty parameter $\lambda$</li>
-<li>Diagonal matrix $\hat{\Psi} = diag(\hat{\psi})$</li>
-<li>Dimension of $x_i$ is $p$ and implicitly depends on $n$<ul>
+<li>Diagonal matrix $\hat{\Psi}  = diag(\hat{\psi})$</li>
+<li>Dimension of $x_i$ is $p$ and implicitly depends on $n$</li>
 <li>can have $p &gt;&gt; n$</li>
 </ul>
-</li>
-</ul>
-<div class="notes">
-<p>We are following the notation used in Chernozhukov, Hansen, and Spindler
-(<a href="#ref-hdm">2016</a>). Note that this vignette has been updated since it
-was published in the R Journal. To obtain the most recent version,
-install the hdm package in R, load it, and then open the vignette.</p>
+<p>::: notes
+We are following the notation used in Chernozhukov, Victor, Chris Hansen, and Martin Spindler, &ldquo;<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">[hdm]{.nocase}: High-dimensional metrics</a>,&rdquo; <em>R Journal</em>, 8 (2016), 185&ndash;199.. Note that this vignette has
+been updated since it was published in the R Journal. To obtain the most
+recent version, install the hdm package in R, load it, and then open the
+vignette.</p>
 <pre><code class="language-r">install.packages(&quot;hdm&quot;)
 library(hdm)
 vignette(&quot;hdm_introduction&quot;)
@@ -723,9 +719,8 @@ zero, note that <script type="math/tex; mode=display">
 </script> for some $s$. In this problem, the boundary of the constraint set
 will be a diamond. The level sets of the objective will be elipses.
 Generically, the solution will lie on one of the corners of the
-$\norm{\beta}_1 = 1$ set. See Friedman, Hastie, and Tibshirani
-(<a href="#ref-friedman2008">2009</a>) or James et al. (<a href="#ref-james2013">2013</a>) for
-more details.</p>
+$\norm{\beta}_1 = 1$ set. See Friedman, Jerome, Trevor Hastie, and Robert Tibshirani, &ldquo;<a href="https://web.stanford.edu/\textasciitilde hastie/ElemStatLearn/">The elements of statistical learning</a>,&rdquo; (Springer series in statistics, 2009). or James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani, &ldquo;<a href="http://www-bcf.usc.edu/\%7Egareth/ISL/">An introduction to statistical learning</a>,&rdquo; (Springer, 2013). for more
+details.</p>
 <p>Most machine learning methods involve some form of regularization with
 an associated regularization parameter. In choosing the regularization
 parameter, we face a bias-variance tradeoff. As $\lambda$ increases,
@@ -733,17 +728,15 @@ variance decreases, but bias increases.</p>
 <p>Machine learning algorithms typically choose regularization parameters
 through cross-validation. Although cross-validation leads to good
 predictive performance, the statistical properties are not always known.
-Chernozhukov, Hansen, and Spindler (<a href="#ref-hdm">2016</a>) say, “In high
-dimensional settings cross-validation is very popular; but it lacks a
-theoretical justification for use in the present context.” However,
-there has been some recent progress on convergence rates for Lasso with
-cross-validation, see Chetverikov, Liao, and Chernozhukov
-(<a href="#ref-chetverikov2017">2016</a>).</p>
+Chernozhukov, Victor, Chris Hansen, and Martin Spindler, &ldquo;<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">[hdm]{.nocase}: High-dimensional metrics</a>,&rdquo; <em>R Journal</em>, 8 (2016), 185&ndash;199. say, &ldquo;In high dimensional settings cross-validation is very
+popular; but it lacks a theoretical justification for use in the present
+context.&rdquo; However, there has been some recent progress on convergence
+rates for Lasso with cross-validation, see Chetverikov, Denis, Zhipeng Liao, and Victor Chernozhukov, &ldquo;<a href="https://arxiv.org/abs/1605.02214">On cross-validated lasso</a>,&rdquo; 2016..</p>
 <p>The diagonal matrix $\hat{\Psi}$ is used to make the estimator invariant
 to scaling of $x_i$, and to allow for heteroskedasticity. If reading
 about Lasso or using code from other authors, be careful some do not
-include $\hat{\Psi}$ and use $\lambda$ instead of $\frac{\lambda}{n}$.</p>
-</div>
+include $\hat{\Psi}$ and use $\lambda$ instead of $\frac{\lambda}{n}$.
+:::</p>
 <hr />
 <pre><code class="language-r">load(&quot;~/natural-gas-pipelines/dataAndCode/pipelines.Rdata&quot;)
 data &lt;- subset(data,report_yr&gt;=1996)
@@ -778,9 +771,9 @@ plot(cv)
 <h3 id="statistical-properties-of-lasso">Statistical properties of Lasso<a class="headerlink" href="#statistical-properties-of-lasso" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Model : <script type="math/tex; mode=display">
-    y_i = x_i'\beta_0 + \epsilon_i
-    </script>
-<ul>
+  y_i = x_i'\beta_0 + \epsilon_i
+  </script>
+</li>
 <li>$\Er[x_i \epsilon_i] = 0$</li>
 <li>$\beta_0 \in \R^n$</li>
 <li>$p$, $\beta_0$, $x_i$, and $s$ implicitly depend on $n$</li>
@@ -788,17 +781,13 @@ plot(cv)
 <li>$p$ may increase with $n$ and can have $p&gt;n$</li>
 </ul>
 </li>
-</ul>
-</li>
-<li>Sparsity $s$<ul>
+<li>Sparsity $s$</li>
 <li>Exact : $\norm{\beta_0}_0 = s = o(n)$</li>
 <li>Approximate : $|\beta_{0,j}| &lt; Aj^{-a}$, $a &gt; 1/2$,
     $s \propto n^{1/(2a)}$</li>
 </ul>
-</li>
-</ul>
-<div class="notes">
-<p>$\norm{\beta}_0$ is the number of non-zero components of $\beta$.</p>
+<p>::: notes
+$\norm{\beta}_0$ is the number of non-zero components of $\beta$.</p>
 <p>The approximate sparsity setting means if $|\beta_{0,j}| &lt; Aj^{-a}$,
 then, there exists a sparse approximation, say $\beta_{a}$, with $s$
 nonzero elements, such that the approximation error, <script type="math/tex; mode=display">
@@ -810,7 +799,7 @@ vanish? An easy upper bound is <script type="math/tex; mode=display">
     \right] \\
     \leq & \En\left[ \left(\sum_{j={s+1}}^p x_ij A j^{-a} \right)^2 \right]
 \end{align*}
-</script> To simplify the alegebra, let’s assume $\En[x_i x_i&rsquo;] = I_p$, then <script type="math/tex; mode=display">
+</script> To simplify the alegebra, let&rsquo;s assume $\En[x_i x_i&rsquo;] = I_p$, then <script type="math/tex; mode=display">
 \begin{align*}
    c_s^2 \leq & \sum_{j={s+1}}^p A^2 j^{-2a} \\
     & \leq \sum_{j={s+1}}^\infty A^2 j^{-2a} = A^2 s^{-2a} \zeta(2a) \\
@@ -819,9 +808,10 @@ vanish? An easy upper bound is <script type="math/tex; mode=display">
 </script> where $\zeta(2a) = \sum_{j=1}^\infty j^{-2a}$ is the Riemann Zeta
 function (all that matters here is that $\zeta(2a)$ is finite for
 $2a&gt;1$). Then if $s \propto n^{(1+\delta)/2a}$, we would get
-$c_s \lesssim n^{-(1+\delta)/2}$. Importantly, $\sqrt{n} c_s = o(1)$, so
-in the sort of expansions that we would do to show that $\hat{\theta}$
-is $\sqrt{n}$ asymptotically normal, the bias term would vanish.</p>
+$c_s \lesssim
+n^{-(1+\delta)/2}$. Importantly, $\sqrt{n} c_s = o(1)$, so in the sort
+of expansions that we would do to show that $\hat{\theta}$ is $\sqrt{n}$
+asymptotically normal, the bias term would vanish.</p>
 <!-- Lasso can also be applied to nonparametric regression models such as -->
 <!-- $$ -->
 <!-- y_i = f(z_i) + \epsilon_i -->
@@ -837,17 +827,17 @@ is $\sqrt{n}$ asymptotically normal, the bias term would vanish.</p>
 <!-- convergence below. There will then be some tradeoff between estimation -->
 <!-- error increasing with $s$ and approximation error ($c_s$) decreasing -->
 <!-- with $s$. If $z$ is $d_z$ dimensional and $f$ is $\ell$-times -->
-<!-- differentiable, we know from @stone1982 that the fastest possible -->
+<!-- differentiable, we know from Stone, Charles J., "[Optimal global rates of convergence for nonparametric regression](http://www.jstor.org/stable/2240707)," *The Annals of Statistics*, 10 (1982), 1040--1053 (Institute of Mathematical Statistics). that the fastest possible -->
 <!-- $\mathcal{L}^2$ rate of convergence for any estimate of $f$ is -->
 <!-- $n^{\frac{-\ell}{2\ell + d_z}}$.  -->
-</div>
+<p>:::</p>
 <hr />
 <h3 id="rate-of-convergence">Rate of convergence<a class="headerlink" href="#rate-of-convergence" title="Permanent link">&para;</a></h3>
 <ul>
 <li>With $\lambda = 2c \sqrt{n} \Phi^{-1}(1-\gamma/(2p))$ <script type="math/tex; mode=display">
-    \sqrt{\En[(x_i'(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
-    \log (p) },
-    </script>
+  \sqrt{\En[(x_i'(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
+  \log (p) },
+  </script>
 </li>
 </ul>
 <p>
@@ -863,25 +853,17 @@ is $\sqrt{n}$ asymptotically normal, the bias term would vanish.</p>
 \log (p) }
 </script>
 </p>
+<pre><code>- Constant $c&gt;1$
+
+- Small $\gamma \to 0$ with $n$, and $\log(1/\gamma) \lesssim \log(p)$
+
+- Rank like condition on $x_i$
+</code></pre>
 <ul>
-<li>
-<p>Constant $c&gt;1$</p>
-<ul>
-<li>
-<p>Small $\gamma \to 0$ with $n$, and
-    $\log(1/\gamma) \lesssim \log(p)$</p>
-</li>
-<li>
-<p>Rank like condition on $x_i$</p>
-</li>
+<li>near-oracle rate</li>
 </ul>
-</li>
-<li>
-<p>near-oracle rate</p>
-</li>
-</ul>
-<div class="notes">
-<p>In the semiparametric estimation problems that we’re focused on, our
+<p>::: notes
+In the semiparametric estimation problems that we&rsquo;re focused on, our
 object of interest is some finite dimensional parameter $\theta$ that
 depends on our data some high dimensional parameter, like $\beta_0$ in
 the Lasso. To analyze estimates of $\hat{\theta}(data, \hat{\beta})$, a
@@ -892,13 +874,12 @@ the Lasso and other machine learning estimators will be their rates of
 converagence.</p>
 <p>The notation $A_n \lesssim_P B_n$ is read $A_n$ is bounded in
 probability by $B_n$ and means that for any $\epsilon&gt;0$, there exists
-$M$, $N$ such that $\Pr(|A_n/B_n| &gt; M) &lt; \epsilon$ for all $n &gt; N$. This
-is also often denoted by $A_n = O(B_n)$.</p>
-<p>These rate results are from Belloni et al. (<a href="#ref-belloni2012">2012</a>).
-Since this setup allows $p&gt;n$, $x$ cannot be assumed to have full rank.
-Instead, an assumption about the eigenvalues of $X&rsquo;X$ restricted to the
-nonzero components of $\beta_0$, plays a similar. See Belloni et al.
-(<a href="#ref-belloni2012">2012</a>) for details.</p>
+$M$, $N$ such that $\Pr(|A_n/B_n| &gt; M) &lt; \epsilon$ for all $n &gt;
+N$. This is also often denoted by $A_n = O(B_n)$.</p>
+<p>These rate results are from Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen, &ldquo;<a href="https://doi.org/10.3982/ECTA9626">Sparse models and methods for optimal instruments with an application to eminent domain</a>,&rdquo; <em>Econometrica</em>, 80 (2012), 2369&ndash;2429.. Since this setup allows $p&gt;n$,
+$x$ cannot be assumed to have full rank. Instead, an assumption about
+the eigenvalues of $X&rsquo;X$ restricted to the nonzero components of
+$\beta_0$, plays a similar. See Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen, &ldquo;<a href="https://doi.org/10.3982/ECTA9626">Sparse models and methods for optimal instruments with an application to eminent domain</a>,&rdquo; <em>Econometrica</em>, 80 (2012), 2369&ndash;2429. for details.</p>
 <p>This convergence rate is called the near-oracle rate, because it is
 nearly as good as what we get if an oracle told us which components of
 $\beta_0$ are nonzero. In that case OLS using just those $s$ components
@@ -907,52 +888,43 @@ gives the fastest possible rate, which is</p>
 <script type="math/tex; mode=display">
 \sqrt{\En[(x_i'(\hat{\beta}^{OLS} - \beta_0))^2]} \propto \sqrt{s/n}.
 </script>
-</p>
-</div>
+:::</p>
 <hr />
-<h3 id="rate-of-convergence-rate-of-convergence-1">Rate of convergence [rate-of-convergence-1]<a class="headerlink" href="#rate-of-convergence-rate-of-convergence-1" title="Permanent link">&para;</a></h3>
+<h3 class="unnumbered" id="rate-of-convergence-1">Rate of convergence<a class="headerlink" href="#rate-of-convergence-1" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Using cross-validation to choose $\lambda$ known bounds are worse<ul>
+<li>Using cross-validation to choose $\lambda$ known bounds are worse</li>
 <li>With Gaussian errors:
-    $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n) \log (p) } \log(pn)^{7/8}$,</li>
-<li>Without Gaussian error
-    $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \left( \frac{s \log(pn)^2}{n} \right)^{1/4}$</li>
-<li>Chetverikov, Liao, and Chernozhukov
-    (<a href="#ref-chetverikov2017">2016</a>)</li>
+    $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} - \beta_0))^2 ] } \lesssim_P \sqrt{ (s/n)
+    \log (p) } \log(pn)^{7/8}$,</li>
+<li>Without Gaussian error $\sqrt{\En[(x_i&rsquo;(\hat{\beta}^{lasso} -
+    \beta_0))^2 ] } \lesssim_P \left( \frac{s \log(pn)^2}{n} \right)^{1/4}$</li>
+<li>Chetverikov, Denis, Zhipeng Liao, and Victor Chernozhukov, &ldquo;<a href="https://arxiv.org/abs/1605.02214">On cross-validated lasso</a>,&rdquo; 2016.</li>
 </ul>
-</li>
-</ul>
-<div class="notes">
-<p>These results are for an exactly sparse setting. Do they hold under
-approximate sparsity?</p>
-</div>
+<p>::: notes
+These results are for an exactly sparse setting. Do they hold under
+approximate sparsity?
+:::</p>
 <hr />
 <h3 id="other-statistical-properties">Other statistical properties<a class="headerlink" href="#other-statistical-properties" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Inference on $\beta$: not the goal in our motivating examples<ul>
+<li>Inference on $\beta$: not the goal in our motivating examples</li>
 <li>Difficult, but some recent results</li>
-<li>See Lee et al. (<a href="#ref-lee2016">2016</a>), Taylor and Tibshirani
-    (<a href="#ref-taylor2017">2017</a>), Caner and Kock
-    (<a href="#ref-caner2018">2018</a>)</li>
-</ul>
-</li>
-<li>Model selection: not the goal in our motivating examples<ul>
+<li>See Lee, Jason D., Dennis L. Sun, Yuekai Sun, and Jonathan E. Taylor, &ldquo;<a href="https://doi.org/10.1214/15-AOS1371">Exact post-selection inference, with application to the lasso</a>,&rdquo; <em>Ann. Statist.</em>, 44 (2016), 907&ndash;927 (The Institute of Mathematical Statistics)., Taylor, Jonathan, and Robert Tibshirani, &ldquo;<a href="https://doi.org/10.1002/cjs.11313">Post-selection inference for -penalized likelihood models</a>,&rdquo; <em>Canadian Journal of Statistics</em>, 46 (2017), 41&ndash;61., Caner, Mehmet, and Anders Bredahl Kock, &ldquo;<a href="https://doi.org/10.1016/j.jeconom.2017.11.005">Asymptotically honest confidence regions for high dimensional parameters by the desparsified conservative lasso</a>,&rdquo; <em>Journal of Econometrics</em>, 203 (2018), 143&ndash;168.</li>
+<li>Model selection: not the goal in our motivating examples</li>
 <li>Under stronger conditions, Lasso correctly selects the nonzero
     components of $\beta_0$</li>
-<li>See Belloni and Chernozhukov (<a href="#ref-belloni2011">2011</a>)</li>
+<li>See Belloni, Alexandre, and Victor Chernozhukov, &ldquo;<a href="https://doi.org/10.1007/978-3-642-19989-9_3">High dimensional sparse econometric models: An introduction</a>,&rdquo; in <em>Inverse problems and high-dimensional estimation: Stats in the château summer school, august 31 - september 4, 2009</em>, Pierre Alquier, Eric Gautier, and Gilles Stoltz, eds. (Berlin, Heidelberg, Springer Berlin Heidelberg, 2011).</li>
 </ul>
-</li>
-</ul>
-<div class="notes">
-<p>In the statistics literature on high dimensional and nonparametric
-estimation, you will come across the terms “adaptive” and “honest.”
+<p>::: notes
+In the statistics literature on high dimensional and nonparametric
+estimation, you will come across the terms &ldquo;adaptive&rdquo; and &ldquo;honest.&rdquo;
 Adaptivity of an estimator refers to the situation where the rate of
 convergence depends on some unknown parameter. In the case of Lasso, the
 sparsity index of the true model, $s$, is an unknown parameter affecting
 the rate of convergence. Without knowing or estimating $s$, Lasso
 attains the above rate of convergence for a wide range of admissable
 $s$. Thus, Lasso is adaptive to the unknown sparsity index.</p>
-<p>“Honest” is a property of an inference method. A confidence region is
+<p>&ldquo;Honest&rdquo; is a property of an inference method. A confidence region is
 honest if it has correct coverage for a large class of true models. For
 the Lasso, an honest confidence region would be valid for a wide range
 of sparsity, $s$. An honest, adaptive confidence region would be one
@@ -960,46 +932,44 @@ that is valide for a wide range of $s$ and whose size shrinks as quickly
 as if $s$ were known. Achieving both adaptivity and honesty is
 impossible in the most general setting. For example, although an $\ell$
 times differentiable function of a $p$ dimensional variable can be
-adaptively estimated at rate $n^{-\ell}{2\ell + p}$, Li
-(<a href="#ref-li1989">1989</a>) showed that an honest confidence region can
-contract at most at rate $n^{-1/4}$ (not adaptive to $\ell$). However,
-an adaptive confidence region can be constructed if further restrictions
-are placed on the set of possible models, see Nickl and Geer
-(<a href="#ref-nickl2013">2013</a>) for such a result for Lasso..</p>
-</div>
+adaptively estimated at rate $n^{-\ell}{2\ell + p}$, Li, Ker-Chau, &ldquo;<a href="https://doi.org/10.1214/aos/1176347253">Honest confidence regions for nonparametric regression</a>,&rdquo; <em>Ann. Statist.</em>, 17 (1989), 1001&ndash;1008 (The Institute of Mathematical Statistics). showed that
+an honest confidence region can contract at most at rate $n^{-1/4}$ (not
+adaptive to $\ell$). However, an adaptive confidence region can be
+constructed if further restrictions are placed on the set of possible
+models, see Nickl, Richard, and Sara van de Geer, &ldquo;<a href="https://doi.org/10.1214/13-AOS1170">Confidence sets in sparse regression</a>,&rdquo; <em>Ann. Statist.</em>, 41 (2013), 2852&ndash;2876 (The Institute of Mathematical Statistics). for such a result for Lasso..
+:::</p>
 <hr />
 <h3 id="post-lasso">Post-Lasso<a class="headerlink" href="#post-lasso" title="Permanent link">&para;</a></h3>
 <ul>
-<li>
-<p>Two steps :</p>
+<li>Two steps :</li>
+</ul>
 <ol>
 <li>
 <p>Estimate $\hat{\beta}^{lasso}$</p>
 </li>
 <li>
 <p>${\hat{\beta}}^{post} =$ OLS regression of $y$ on components of
-    $x$ with nonzero $\hat{\beta}^{lasso}$</p>
+      $x$ with nonzero $\hat{\beta}^{lasso}$</p>
 </li>
 </ol>
-</li>
+<ul>
 <li>
 <p>Same rates of convergence as Lasso</p>
 </li>
 <li>
 <p>Under some conditions post-Lasso has lower bias</p>
-<ul>
-<li>If Lasso selects correct model, post-Lasso converges at the
-    oracle rate</li>
-</ul>
+</li>
+<li>
+<p>If Lasso selects correct model, post-Lasso converges at the oracle
+    rate</p>
 </li>
 </ul>
-<div class="notes">
-<p>Post-Lasso removes some of the regularizaton bias of Lasso. The rate of
+<p>::: notes
+Post-Lasso removes some of the regularizaton bias of Lasso. The rate of
 convergence of post-Lasso is always as fast as Lasso, and under
 conditions that allow perfect model selection, post-Lasso converges
-slightly faster (by a factor $\log(p)$). See Belloni et al.
-(<a href="#ref-belloni2012">2012</a>) for details.</p>
-</div>
+slightly faster (by a factor $\log(p)$). See Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen, &ldquo;<a href="https://doi.org/10.3982/ECTA9626">Sparse models and methods for optimal instruments with an application to eminent domain</a>,&rdquo; <em>Econometrica</em>, 80 (2012), 2369&ndash;2429. for details.
+:::</p>
 <!-- --- -->
 <!-- ------------------------------------------------------------------------------------------->
 
@@ -1010,8 +980,8 @@ slightly faster (by a factor $\log(p)$). See Belloni et al.
 <li>$y_i \in R$ on $x_i \in \R^p$</li>
 <li>Want to estimate $\Er[y | x]$</li>
 <li>Locally constant estimate <script type="math/tex; mode=display">
-    \hat{t}(x) = \sum_m^M c_m 1\{x \in R_m \}
-    </script>
+  \hat{t}(x) = \sum_m^M c_m 1\{x \in R_m \}
+  </script>
 </li>
 <li>Rectangular regions $R_m$ determined by tree</li>
 </ul>
@@ -1066,25 +1036,25 @@ fig
 <h3 id="tree-algorithm">Tree algorithm<a class="headerlink" href="#tree-algorithm" title="Permanent link">&para;</a></h3>
 <ul>
 <li>For each region, solve <script type="math/tex; mode=display">
-      \min_{j,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
-          (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
-          (y_i - c_2)^2 \right]
-    </script>
+    \min_{j,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
+        (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
+        (y_i - c_2)^2 \right]
+  </script>
 </li>
-<li>Repeat with $R = {x:x_{i,j} \leq s^<em>} \cap R$ and
-    $R =  {x:x_{i,j} \leq s^</em>} \cap R$</li>
+<li>Repeat with $R = {x:x_{i,j} \leq s^<em>} \cap R$ and $R =
+   {x:x_{i,j} \leq s^</em>} \cap R$</li>
 <li>Stop when $|R| =$ some chosen minimum size</li>
 <li>Prune tree
-    <script type="math/tex; mode=display"> \min_{tree \subset T} \sum (\hat{f}(x)-y)^2 + \alpha|\text{terminal
-    nodes in tree}| </script>
+  <script type="math/tex; mode=display"> \min_{tree \subset T} \sum (\hat{f}(x)-y)^2 + \alpha|\text{terminal
+  nodes in tree}| </script>
 </li>
 </ul>
-<div class="notes">
-<p>There are many variations on this tree building algorithm. They all
+<p>::: notes
+There are many variations on this tree building algorithm. They all
 share some rule to decide on which variable and where to split. They all
 have some kind of stopping rule, but not necessarily the same one. For
 example, some algorithms stop splitting into new branches when the
-improvement in $R^2$ becomes small. These trees don’t need subsequent
+improvement in $R^2$ becomes small. These trees don&rsquo;t need subsequent
 pruning, but also may fail to find later splits that might be important.</p>
 <p>As with lasso, regression trees involve some regularization. In the
 above description, both the minimum leaf size and $\alpha$ in the
@@ -1093,140 +1063,132 @@ pruning step serve as regularization parameters.</p>
 interpretable, especially if there are not many branches. Some
 disadvantages are that they often are not very good predictors, and
 small perturbations in data can lead to seemingly large changes in the
-tree.</p>
-</div>
+tree.
+:::</p>
 <hr />
 <h3 id="random-forests_1">Random forests<a class="headerlink" href="#random-forests_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Average randomized regression trees</li>
-<li>Trees randomized by<ul>
+<li>Trees randomized by</li>
 <li>Bootstrap or subsampling</li>
 <li>Randomize branches: <script type="math/tex; mode=display">
       \min_{j \in S,s} \left[ \min_{c_1} \sum_{i: x_{i,j} \leq s, x_i \in R}
       (y_i - c_1)^2 + \min_{c_2} \sum_{i: x_{i,j} > s, x_i \in R}
       (y_i - c_2)^2 \right]
       </script> where $S$ is random subset of ${1, &hellip;, p}$</li>
-</ul>
-</li>
 <li>Variance reduction</li>
 </ul>
 <hr />
 <h3 id="rate-of-convergence-regression-tree">Rate of convergence: regression tree<a class="headerlink" href="#rate-of-convergence-regression-tree" title="Permanent link">&para;</a></h3>
 <ul>
 <li>$x \in [0,1]^p$, $\Er[y|x]$ Lipschitz in $x$</li>
-<li>Crude calculation for single tree, let denote $R_i$ node that
-    contains $x_i$ <script type="math/tex; mode=display">
-    \begin{align*}
-    \Er(\hat{t}(x_i) - \Er[y|x_i])^2 = & \overbrace{\Er(\hat{t}(x_i) -
-    \Er[y|x\in R_i])^2}^{variance} +
-    \overbrace{(\Er[y|x \in R_i] - \Er[y|x])^2}^{bias^2} \\
-    = & O_p(1/m) +  O\left(L^2
-    \left(\frac{m}{n}\right)^{2/p}\right)
-    \end{align*}
-    </script> optimal $m = O(n^{2/(2+p)})$ gives <script type="math/tex; mode=display">
-    \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-2}{2+p}})
-    </script>
+<li>Crude calculation for single tree, let denote $R_i$ node that contains
+  $x_i$ <script type="math/tex; mode=display">
+  \begin{align*}
+  \Er(\hat{t}(x_i) - \Er[y|x_i])^2 = & \overbrace{\Er(\hat{t}(x_i) -
+  \Er[y|x\in R_i])^2}^{variance} +
+  \overbrace{(\Er[y|x \in R_i] - \Er[y|x])^2}^{bias^2} \\
+  = & O_p(1/m) +  O\left(L^2
+  \left(\frac{m}{n}\right)^{2/p}\right)
+  \end{align*}
+  </script> optimal $m = O(n^{2/(2+p)})$ gives <script type="math/tex; mode=display">
+  \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-2}{2+p}})
+  </script>
 </li>
 </ul>
-<div class="notes">
-<p>By a crude calculation, I mean lets treat the tree as fixed. The the
+<p>::: notes
+By a crude calculation, I mean lets treat the tree as fixed. The the
 variance term is simply from estimating a conditional mean. This
 analysis could be made more rigorous by assuming the tree was estimated
-by sample splitting — use half the data to construct the tree and the
+by sample splitting &mdash; use half the data to construct the tree and the
 remaining half to estimate the mean of $y$ in each node. Athey and
-Wager, and others, refer to such trees as “honest.” I suppose that this
+Wager, and others, refer to such trees as &ldquo;honest.&rdquo; I suppose that this
 is because sample splitting facilitates honest inference afterward.</p>
 <p>The order of the bias term comes from considering the width of the
 pieces of a $p$ dimensional cube split evenly into $n/m$ pieces.</p>
 <p>Remember that for our motivating semiparametric problems, we need
 $\sqrt{n} \Er[(\hat{t}(x_i) - \Er[y|x_i])^2]$ to vanish. The above rate
 convergence is too slow for $p&gt;2$. The calculation of the above was
-admittedly crude, and may not be exact. However, Stone
-(<a href="#ref-stone1982">1982</a>) showed that if $\Er[y|x]$ is $\ell$ times
-differentiable, the fastest possible rate of convergence for any
-estimator is $n^{\frac{-\ell}{2\ell + p}}$. To have any hope of a fast
-enough rate, we need to assume the function we’re estimating is very
-smooth (high $\ell$), or place some other restriction on the class of
-functions we allow (like sparsity for the Lasso). Lipschitz continuity
-is slightly weaker than once differentiable on a compact set, so it
-should come as no surprise that the rate of convergence would be slow.</p>
-</div>
+admittedly crude, and may not be exact. However, Stone, Charles J., &ldquo;<a href="http://www.jstor.org/stable/2240707">Optimal global rates of convergence for nonparametric regression</a>,&rdquo; <em>The Annals of Statistics</em>, 10 (1982), 1040&ndash;1053 (Institute of Mathematical Statistics). showed that
+if $\Er[y|x]$ is $\ell$ times differentiable, the fastest possible rate
+of convergence for any estimator is $n^{\frac{-\ell}{2\ell + p}}$. To
+have any hope of a fast enough rate, we need to assume the function
+we&rsquo;re estimating is very smooth (high $\ell$), or place some other
+restriction on the class of functions we allow (like sparsity for the
+Lasso). Lipschitz continuity is slightly weaker than once differentiable
+on a compact set, so it should come as no surprise that the rate of
+convergence would be slow.
+:::</p>
 <hr />
 <h3 id="rate-of-convergence-random-forest">Rate of convergence: random forest<a class="headerlink" href="#rate-of-convergence-random-forest" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Result from Biau (<a href="#ref-biau2012">2012</a>)</li>
+<li>Result from Biau, Gérard, &ldquo;<a href="http://www.jmlr.org/papers/v13/biau12a.html">Analysis of a random forests model</a>,&rdquo; <em>Journal of Machine Learning Research</em>, 13 (2012), 1063&ndash;1095.</li>
 <li>Assume $\Er[y|x]=\Er[y|x_{(s)}]$, $x_{(s)}$ subset of $s$ variables,
-    then <script type="math/tex; mode=display">
-    \Er[(\hat{r}(x_i) - \Er[y|x_i])^2] =
-    O_p\left(\frac{1}{m\log(n/m)^{s/2p}}\right) +
-    O_p\left(\left(\frac{m}{n}\right)^{\frac{0.75}{s\log 2}} \right)
-    </script> or with optimal $m$ <script type="math/tex; mode=display">
-    \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-0.75}{s\log 2+0.75}})
-    </script>
+  then <script type="math/tex; mode=display">
+  \Er[(\hat{r}(x_i) - \Er[y|x_i])^2] =
+  O_p\left(\frac{1}{m\log(n/m)^{s/2p}}\right) +
+  O_p\left(\left(\frac{m}{n}\right)^{\frac{0.75}{s\log 2}} \right)
+  </script> or with optimal $m$ <script type="math/tex; mode=display">
+  \Er[(\hat{t}(x_i) - \Er[y|x_i])^2] = O_p(n^{\frac{-0.75}{s\log 2+0.75}})
+  </script>
 </li>
 </ul>
-<div class="notes">
-<p>This result from Biau (<a href="#ref-biau2012">2012</a>) assumes the forest is
-estimated with sample splitting. This avoids the difficult to analyze
-correlation between the nodes and $y$.</p>
-<p>Wager and Walther (<a href="#ref-wager2015">2015</a>) analyze what happens when the
-same data is used to construct the tree and average in each node. They
-get a slightly higher upper bound for the variance of
-$\frac{\log(p)\log(n)}{m}$. Wager and Walther (<a href="#ref-wager2015">2015</a>)
-also allow $p$ to increase with $n$, whereas the previous analysis
-treated $p$ as fixed.</p>
+<p>::: notes
+This result from Biau, Gérard, &ldquo;<a href="http://www.jmlr.org/papers/v13/biau12a.html">Analysis of a random forests model</a>,&rdquo; <em>Journal of Machine Learning Research</em>, 13 (2012), 1063&ndash;1095. assumes the forest is estimated with sample
+splitting. This avoids the difficult to analyze correlation between the
+nodes and $y$.</p>
+<p>Wager, Stefan, and Guenther Walther, &ldquo;<a href="https://arxiv.org/abs/1503.06388">Adaptive concentration of regression trees, with application to random forests</a>,&rdquo; 2015. analyze what happens when the same data is used to construct
+the tree and average in each node. They get a slightly higher upper
+bound for the variance of $\frac{\log(p)\log(n)}{m}$. Wager, Stefan, and Guenther Walther, &ldquo;<a href="https://arxiv.org/abs/1503.06388">Adaptive concentration of regression trees, with application to random forests</a>,&rdquo; 2015. also
+allow $p$ to increase with $n$, whereas the previous analysis treated
+$p$ as fixed.</p>
 <p>These convergence rate results for random forests are not fast enough
 for our purpose. Does this mean that random forests should not be used
-in semiparametric estimation? Not necessarily. We’re asking too much of
+in semiparametric estimation? Not necessarily. We&rsquo;re asking too much of
 random forests. There is no estimator for an arbitrary Lipschitz
 function that can have fast enough a rate of convergence. A restriction
 on the set of possible functions is needed to reduce the approximation
 bias. With Lasso, the assumption of (approximate) sparsity played that
-role. Chernozhukov et al. (<a href="#ref-chernozhukov2018">2018</a>) advise that
-random forests could be a good choice for semiparametric estimation when
-the function of interest is “well-approximated by a random forest.”
-Unfortunately, there does not appear to be a clean mathematical way to
-describe the class of functions well-approximated by a forest.</p>
-</div>
+role. Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018), C1&ndash;C68. advise that random forests could be a good
+choice for semiparametric estimation when the function of interest is
+&ldquo;well-approximated by a random forest.&rdquo; Unfortunately, there does not
+appear to be a clean mathematical way to describe the class of functions
+well-approximated by a forest.
+:::</p>
 <hr />
 <h3 id="other-statistical-properties_1">Other statistical properties<a class="headerlink" href="#other-statistical-properties_1" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Pointwise asymptotic normality : Wager and Athey
-    (<a href="#ref-wager2018">2018</a>)</li>
+<li>Pointwise asymptotic normality : Wager, Stefan, and Susan Athey, &ldquo;<a href="https://doi.org/10.1080/01621459.2017.1319839">Estimation and inference of heterogeneous treatment effects using random forests</a>,&rdquo; <em>Journal of the American Statistical Association</em>, 0 (2018), 1&ndash;15 (Taylor &amp; Francis).</li>
 </ul>
-<div class="notes"></div>
+<p>::: notes
+:::</p>
 <!-- --->
 
 <hr />
 <h3 id="simulation-study">Simulation study<a class="headerlink" href="#simulation-study" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Partially linear model</li>
-<li>DGP :<ul>
+<li>DGP :</li>
 <li>$x_i \in \R^p$ with $x_{ij} \sim U(0,1)$</li>
 <li>$d_i = m(x_i) + v_i$</li>
 <li>$y_i = d_i\theta + f(x_i) + \epsilon_i$</li>
 <li>$m()$, $f()$ either linear or step functions</li>
-</ul>
-</li>
-<li>Estimate by OLS, Lasso, and random forest<ul>
+<li>Estimate by OLS, Lasso, and random forest</li>
 <li>Lasso &amp; random forest use orthogonal moments <script type="math/tex; mode=display">
        \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
       </script>
 </li>
 </ul>
-</li>
-</ul>
-<div class="notes">
-<p>The point of this simulation is to see whether the slower convergence
+<p>::: notes
+The point of this simulation is to see whether the slower convergence
 rate of random forests matters for the semiparametric problems we have
 in mind. Our theory results suggest that estimates of $\theta$ using
 random forests with $p&gt;2$ will be asymptotically biased. Specifically,
 the term <script type="math/tex; mode=display">
 d_n = \En[(m(x_i) - \hat{m}(x_i))(\mu(x_i) - \hat{\mu}(x_i))]
-</script> will be $O_p(n^{\frac{-2}{2+p}})$, so
-$\sqrt{n} d_n = O_p(n^{\frac{p-2}{2(2+p)}})$. However, this calculation
-is only an upper bound on $d_n$. For a given DGP, $d_n$ might be
-smaller.</p>
+</script> will be $O_p(n^{\frac{-2}{2+p}})$, so $\sqrt{n} d_n =
+O_p(n^{\frac{p-2}{2(2+p)}})$. However, this calculation is only an upper
+bound on $d_n$. For a given DGP, $d_n$ might be smaller.</p>
 <p>In this simulation exercise, when $m()$ and $f()$ are linear, they are
 not easy to approximate by a regression tree, so I expect the random
 forest estimator to behave relatively poorly. OLS and Lasso on the other
@@ -1237,8 +1199,8 @@ approximated by a regression tree (and random forest). For OLS and
 Lasso, $x$ is still only included linearly in the estimation, so those
 estimators will do poorly in the step function DGP. Throughout the
 simulation $p$ is much less than $n$, so Lasso and OLS will generally
-give very similar results.</p>
-</div>
+give very similar results.
+:::</p>
 <hr />
 <pre><code class="language-r">rm(list=ls())
 p &lt;- 4 # number of x's
@@ -1451,52 +1413,45 @@ ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
   ggtitle(&quot;p=8&quot;)
 </code></pre>
 <p><img alt="plot of chunk plsim8" src="../figure/plsim8-1.png" /></p>
-<div class="notes">
-<p>Random forests do not seem to work very well in this context. Even when
+<p>:::: notes
+Random forests do not seem to work very well in this context. Even when
 the functions being estimated are step functions, random forests do not
 produce a good estimate of $\theta$. One caveat here is that I was not
-very careful about the tuning parameters for the random forests. It’s
+very careful about the tuning parameters for the random forests. It&rsquo;s
 possible that there exists a careful choice of tuning parameters that
 results in a better estimator.</p>
-<div class="alert alert-danger">
-<p><strong><em>Research idea:</em></strong> create a generalization of random forests that is
+<p>::: {.alert .alert-danger}
+<strong><em>Research idea:</em></strong> create a generalization of random forests that is
 adaptive to the smoothness of the function being estimated. Two classic
-papers on adaptive regression estimators are Speckman
-(<a href="#ref-speckman1985">1985</a>) and Donoho and Johnstone
-(<a href="#ref-donoho1995">1995</a>). Friedberg et al. (<a href="#ref-friedberg2018">2018</a>)
-develop a local linear forest estimator. Combining their idea of using
-forests to form local neighborhoods with a smoothness adaptive variant
-of kernel or local polynomial regression should lead to a smoothness
-adaptive forest.</p>
-</div>
-</div>
+papers on adaptive regression estimators are Speckman, Paul, &ldquo;<a href="http://www.jstor.org/stable/2241119">Spline smoothing and optimal rates of convergence in nonparametric regression models</a>,&rdquo; <em>The Annals of Statistics</em>, 13 (1985), 970&ndash;983 (Institute of Mathematical Statistics). and
+Donoho, David L., and Iain M. Johnstone, &ldquo;<a href="http://www.jstor.org/stable/2291512">Adapting to unknown smoothness via wavelet shrinkage</a>,&rdquo; <em>Journal of the American Statistical Association</em>, 90 (1995), 1200&ndash;1224 (<script type="math/tex; mode=display">American Statistical Association, Taylor & Francis, Ltd.</script>).. Friedberg, Rina, Julie Tibshirani, Susan Athey, and Stefan Wager, &ldquo;<a href="https://arxiv.org/abs/1807.11408">Local linear forests</a>,&rdquo; 2018. develop a local linear forest estimator.
+Combining their idea of using forests to form local neighborhoods with a
+smoothness adaptive variant of kernel or local polynomial regression
+should lead to a smoothness adaptive forest.
+:::
+::::</p>
 <hr />
 <!-- ### Generalized random forests -->
 <!-- --------------------------------------------------------------->
 
 <h2 id="neural-networks">Neural Networks<a class="headerlink" href="#neural-networks" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Target function $f: \R^p \to \R$<ul>
+<li>Target function $f: \R^p \to \R$</li>
 <li>e.g. $f(x) = \Er[y|x]$</li>
-</ul>
-</li>
 <li>Approximate with single hidden layer neural network : <script type="math/tex; mode=display">
-    \hat{f}(x) = \sum_{j=1}^r \beta_j (a_j'a_j \vee 1)^{-1}
-    \psi(a_j'x + b_j)
-    </script>
-<ul>
+  \hat{f}(x) = \sum_{j=1}^r \beta_j (a_j'a_j \vee 1)^{-1}
+  \psi(a_j'x + b_j)
+  </script>
+</li>
 <li>Activation function $\psi$<ul>
-<li>Examples: Sigmoid $\psi(t) = 1/(1+e^{-t})$, Tanh
-    $\psi(t) = \frac{e^t -e^{-t}}{e^t + e^{-t}}$, Heavyside
-    $\psi(t) = t 1(t\geq 0)$</li>
+<li>Examples: Sigmoid $\psi(t) = 1/(1+e^{-t})$, Tanh $\psi(t) =
+  \frac{e^t -e^{-t}}{e^t + e^{-t}}$, Heavyside
+  $\psi(t) = t 1(t\geq 0)$</li>
 </ul>
 </li>
 <li>Weights $a_j$</li>
 <li>Bias $b_j$</li>
-</ul>
-</li>
-<li>Able to approximate any $f$, Hornik, Stinchcombe, and White
-    (<a href="#ref-hornik1989">1989</a>)</li>
+<li>Able to approximate any $f$, Hornik, Kurt, Maxwell Stinchcombe, and Halbert White, &ldquo;<a href="https://doi.org/10.1016/0893-6080(89)90020-8">Multilayer feedforward networks are universal approximators</a>,&rdquo; <em>Neural Networks</em>, 2 (1989), 359&ndash;366.</li>
 </ul>
 <hr />
 <pre><code class="language-r">library(RSNNS)
@@ -1518,11 +1473,9 @@ plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot
 <hr />
 <h3 id="deep-neural-networks">Deep Neural Networks<a class="headerlink" href="#deep-neural-networks" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Many hidden layers<ul>
+<li>Many hidden layers</li>
 <li>$x^{(0)} = x$</li>
 <li>$x^{(\ell)}_j = \psi(a_j^{(\ell)} x^{(\ell-1)} + b_j^{(\ell)})$</li>
-</ul>
-</li>
 </ul>
 <hr />
 <pre><code class="language-r">nn &lt;- mlp(x=xn, y=yn, linOut=TRUE, size=c(5,10,3,5, 6))
@@ -1532,58 +1485,55 @@ plot.nnet(nn, x.lab=colnames(mod$x)[2:ncol(mod$x)], y.lab=&quot;transProfit&quot
 <hr />
 <h3 id="rate-of-convergence_1">Rate of convergence<a class="headerlink" href="#rate-of-convergence_1" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Chen and White (<a href="#ref-chen1999">1999</a>)</li>
+<li>Chen, Xiaohong, and H. White, &ldquo;<a href="https://doi.org/10.1109/18.749011">Improved rates and asymptotic normality for nonparametric neural network estimators</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 45 (1999), 682&ndash;691.</li>
 <li>$f(x) = \Er[y|x]$ with Fourier representation
-    <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
-    $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
+  <script type="math/tex; mode=display"> f(x) = \int e^{i a'x} d\sigma_f(a) </script> where
+  $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$</li>
 <li>Network sieve : <script type="math/tex; mode=display"> \begin{align*}
-    \mathcal{G}_n = \{ &
-    g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
-    \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
-    \end{align*}
-    </script>
+  \mathcal{G}_n = \{ &
+  g: g(x) = \sum_{j=1}^{r_n} \beta_j (a_j'a_j \vee 1)^{-1}
+  \psi(a_j'x + b_j), \\ & \norm{\beta}_1 \leq B_n \}
+  \end{align*}
+  </script>
 </li>
 </ul>
-<div class="notes">
-<p>The setup in Chen and White (<a href="#ref-chen1999">1999</a>) is more general.
-They consider estimating both $f$ and its first $m$ derivatives. Here,
-we focus on the case of just estimating $f$. Chen and White
-(<a href="#ref-chen1999">1999</a>) also consider estimation of functions other than
-conditional expectations.</p>
+<p>::: notes
+The setup in Chen, Xiaohong, and H. White, &ldquo;<a href="https://doi.org/10.1109/18.749011">Improved rates and asymptotic normality for nonparametric neural network estimators</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 45 (1999), 682&ndash;691. is more general. They consider estimating both
+$f$ and its first $m$ derivatives. Here, we focus on the case of just
+estimating $f$. Chen, Xiaohong, and H. White, &ldquo;<a href="https://doi.org/10.1109/18.749011">Improved rates and asymptotic normality for nonparametric neural network estimators</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 45 (1999), 682&ndash;691. also consider estimation of functions other
+than conditional expectations.</p>
 <p>The restriction on $f$ in the second bullet is used to control
 approximation error. The second bullet says that $f$ is the inverse
 Fourier transform of measure $\sigma_f$. The bite of the restriction on
 $f$ comes from the requirement that $\sigma_f$ be absolutely integral,
 $\int (\sqrt{a&rsquo;a} \vee 1) d|\sigma_f|(a) &lt; \infty$. It would be a good
 exercise to check whether this restriction is satisfied by some familiar
-types of functions. Barron (<a href="#ref-barron1993">1993</a>) first showed that
-neural networks approximate this class of functions well, and compares
-the approximation rate of neural networks to other function
-approximation results.</p>
-</div>
+types of functions. Barron, A. R., &ldquo;<a href="https://doi.org/10.1109/18.256500">Universal approximation bounds for superpositions of a sigmoidal function</a>,&rdquo; <em>IEEE Transactions on Information Theory</em>, 39 (1993), 930&ndash;945. first showed that neural networks
+approximate this class of functions well, and compares the approximation
+rate of neural networks to other function approximation results.
+:::</p>
 <hr />
-<h3 id="rate-of-convergence-rate-of-convergence-3">Rate of convergence [rate-of-convergence-3]<a class="headerlink" href="#rate-of-convergence-rate-of-convergence-3" title="Permanent link">&para;</a></h3>
+<h3 class="unnumbered" id="rate-of-convergence-3">Rate of convergence<a class="headerlink" href="#rate-of-convergence-3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p>Estimate <script type="math/tex; mode=display">
-    \hat{f} = \argmin_{g \in \mathcal{G}_n} \En [(y_i - g(x_i))^2]
-    </script>
+  \hat{f} = \argmin_{g \in \mathcal{G}_n} \En [(y_i - g(x_i))^2]
+  </script>
 </p>
 </li>
 <li>
 <p>For fixed $p$, if $r_n^{2(1+1/(1+p))} \log(r_n) = O(n)$, $B_n \geq$
-    some constant <script type="math/tex; mode=display">
-    \Er[(\hat{f}(x) - f(x))^2] = O\left((n/\log(n))^{\frac{-(1 + 2/(p+1))}
-    {2(1+1/(p+1))}}\right)
-    </script>
+  some constant <script type="math/tex; mode=display">
+  \Er[(\hat{f}(x) - f(x))^2] = O\left((n/\log(n))^{\frac{-(1 + 2/(p+1))}
+  {2(1+1/(p+1))}}\right)
+  </script>
 </p>
 </li>
 </ul>
-<div class="notes">
-<p>It is easy to see that regardless of $p$,
-$\sqrt{n}\Er[(\hat{f}(x) - f(x))^2] \to 0$. Therefore, neural networks
-would be suitable for estimating the nuisance functions in our examples
-above.</p>
+<p>::: notes
+It is easy to see that regardless of $p$, $\sqrt{n}\Er[(\hat{f}(x) -
+f(x))^2] \to 0$. Therefore, neural networks would be suitable for
+estimating the nuisance functions in our examples above.</p>
 <p>There is a gap between applied use of neural networks and this
 statistical theory. These rate results are for networks with a single
 hidden layer. In prediction applications, the best performance is
@@ -1591,26 +1541,22 @@ typically achieved by deep neural networks with many hidden layers.
 Intuitively, multiple hidden layers should do at least as well as a
 single hidden layer.</p>
 <p>There are some recent theoretical results that formalize this intuition.
-FIXME: ADD CITATIONS.</p>
-</div>
+FIXME: ADD CITATIONS.
+:::</p>
 <hr />
 <h3 id="simulation-study_1">Simulation Study<a class="headerlink" href="#simulation-study_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Same setup as for random forests earlier</li>
 <li>Partially linear model</li>
-<li>DGP :<ul>
+<li>DGP :</li>
 <li>$x_i \in \R^p$ with $x_{ij} \sim U(0,1)$</li>
 <li>$d_i = m(x_i) + v_i$</li>
 <li>$y_i = d_i\theta + f(x_i) + \epsilon_i$</li>
 <li>$m()$, $f()$ either linear or step functions</li>
-</ul>
-</li>
-<li>Estimate by OLS, Neural network with &amp; without cross-fitting<ul>
+<li>Estimate by OLS, Neural network with &amp; without cross-fitting</li>
 <li>Using orthogonal moments <script type="math/tex; mode=display">
        \En[(d_i - \hat{m}(x_i))(y_i - \hat{\mu}(x_i) -  \theta (d_i - \hat{m}(x_i)))] = 0
       </script>
-</li>
-</ul>
 </li>
 </ul>
 <hr />
@@ -1825,8 +1771,8 @@ ggplot(subset(df,p==2), aes(x=value, colour=variable)) +
   ggtitle(&quot;p=8&quot;)
 </code></pre>
 <p><img alt="plot of chunk plsimnet8" src="../figure/plsimnet8-1.png" /></p>
-<div class="notes">
-<p>The performance of the neural network estimator appears okay, but not
+<p>::: notes
+The performance of the neural network estimator appears okay, but not
 outstanding in these simulations. In the linear model, the neural
 network estimator performs slightly worse than OLS. In the step function
 model, the neural network estimator performs slight better than the
@@ -1836,144 +1782,13 @@ I believe that this is related to the fact that the minimization problem
 defining the neural network is actually very difficult to solve. In the
 simulation above, I suspect the outlying estimates are due to
 minimization problems. In the simulations, I simply set
-$r_n = n^{1/(2(1+1/(1+p)))}$. It’s likely that a more careful choice of
-$r_n$, perhaps using cross-validation, would give better results.</p>
-</div>
+$r_n = n^{1/(2(1+1/(1+p)))}$. It&rsquo;s likely that a more careful choice of
+$r_n$, perhaps using cross-validation, would give better results.
+:::</p>
 <!-- --- -->
 
 <h1 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h1>
-<!-- --- -->
-
-<div class="references" id="refs">
-<div id="ref-barron1993">
-<p>Barron, A. R. 1993. “Universal Approximation Bounds for Superpositions
-of a Sigmoidal Function.” <em>IEEE Transactions on Information Theory</em> 39
-(3): 930–45. <a href="https://doi.org/10.1109/18.256500">https://doi.org/10.1109/18.256500</a>.</p>
-</div>
-<div id="ref-belloni2012">
-<p>Belloni, A., D. Chen, V. Chernozhukov, and C. Hansen. 2012. “Sparse
-Models and Methods for Optimal Instruments with an Application to
-Eminent Domain.” <em>Econometrica</em> 80 (6): 2369–2429.
-<a href="https://doi.org/10.3982/ECTA9626">https://doi.org/10.3982/ECTA9626</a>.</p>
-</div>
-<div id="ref-belloni2011">
-<p>Belloni, Alexandre, and Victor Chernozhukov. 2011. “High Dimensional
-Sparse Econometric Models: An Introduction.” In <em>Inverse Problems and
-High-Dimensional Estimation: Stats in the Château Summer School, August
-31 - September 4, 2009</em>, edited by Pierre Alquier, Eric Gautier, and
-Gilles Stoltz, 121–56. Berlin, Heidelberg: Springer Berlin Heidelberg.
-<a href="https://doi.org/10.1007/978-3-642-19989-9_3">https://doi.org/10.1007/978-3-642-19989-9_3</a>.</p>
-</div>
-<div id="ref-biau2012">
-<p>Biau, Gérard. 2012. “Analysis of a Random Forests Model.” <em>Journal of
-Machine Learning Research</em> 13 (Apr): 1063–95.
-<a href="http://www.jmlr.org/papers/v13/biau12a.html">http://www.jmlr.org/papers/v13/biau12a.html</a>.</p>
-</div>
-<div id="ref-caner2018">
-<p>Caner, Mehmet, and Anders Bredahl Kock. 2018. “Asymptotically Honest
-Confidence Regions for High Dimensional Parameters by the Desparsified
-Conservative Lasso.” <em>Journal of Econometrics</em> 203 (1): 143–68.
-<a href="https://doi.org/https://doi.org/10.1016/j.jeconom.2017.11.005">https://doi.org/https://doi.org/10.1016/j.jeconom.2017.11.005</a>.</p>
-</div>
-<div id="ref-chen1999">
-<p>Chen, Xiaohong, and H. White. 1999. “Improved Rates and Asymptotic
-Normality for Nonparametric Neural Network Estimators.” <em>IEEE
-Transactions on Information Theory</em> 45 (2): 682–91.
-<a href="https://doi.org/10.1109/18.749011">https://doi.org/10.1109/18.749011</a>.</p>
-</div>
-<div id="ref-chernozhukov2018">
-<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
-Christian Hansen, Whitney Newey, and James Robins. 2018.
-“Double/Debiased Machine Learning for Treatment and Structural
-Parameters.” <em>The Econometrics Journal</em> 21 (1): C1–C68.
-<a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.</p>
-</div>
-<div id="ref-hdm">
-<p>Chernozhukov, Victor, Chris Hansen, and Martin Spindler. 2016. “hdm:
-High-Dimensional Metrics.” <em>R Journal</em> 8 (2): 185–99.
-<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">https://journal.r-project.org/archive/2016/RJ-2016-040/index.html</a>.</p>
-</div>
-<div id="ref-chetverikov2017">
-<p>Chetverikov, Denis, Zhipeng Liao, and Victor Chernozhukov. 2016. “On
-Cross-Validated Lasso.” <a href="https://arxiv.org/abs/1605.02214">https://arxiv.org/abs/1605.02214</a>.</p>
-</div>
-<div id="ref-donoho1995">
-<p>Donoho, David L., and Iain M. Johnstone. 1995. “Adapting to Unknown
-Smoothness via Wavelet Shrinkage.” <em>Journal of the American Statistical
-Association</em> 90 (432): 1200–1224. <a href="http://www.jstor.org/stable/2291512">http://www.jstor.org/stable/2291512</a>.</p>
-</div>
-<div id="ref-efron2016">
-<p>Efron, Bradley, and Trevor Hastie. 2016. <em>Computer Age Statistical
-Inference</em>. Vol. 5. Cambridge University Press.
-<a href="https://web.stanford.edu/~hastie/CASI/">https://web.stanford.edu/~hastie/CASI/</a>.</p>
-</div>
-<div id="ref-friedberg2018">
-<p>Friedberg, Rina, Julie Tibshirani, Susan Athey, and Stefan Wager. 2018.
-“Local Linear Forests.” <a href="https://arxiv.org/abs/1807.11408">https://arxiv.org/abs/1807.11408</a>.</p>
-</div>
-<div id="ref-friedman2008">
-<p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2009. <em>The
-Elements of Statistical Learning</em>. Springer series in statistics.
-<a href="https://web.stanford.edu/~hastie/ElemStatLearn/">https://web.stanford.edu/~hastie/ElemStatLearn/</a>.</p>
-</div>
-<div id="ref-hornik1989">
-<p>Hornik, Kurt, Maxwell Stinchcombe, and Halbert White. 1989. “Multilayer
-Feedforward Networks Are Universal Approximators.” <em>Neural Networks</em> 2
-(5): 359–66.
-<a href="https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8">https://doi.org/https://doi.org/10.1016/0893-6080(89)90020-8</a>.</p>
-</div>
-<div id="ref-james2013">
-<p>James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
-2013. <em>An Introduction to Statistical Learning</em>. Vol. 112. Springer.
-<a href="http://www-bcf.usc.edu/%7Egareth/ISL/">http://www-bcf.usc.edu/%7Egareth/ISL/</a>.</p>
-</div>
-<div id="ref-lee2016">
-<p>Lee, Jason D., Dennis L. Sun, Yuekai Sun, and Jonathan E. Taylor. 2016.
-“Exact Post-Selection Inference, with Application to the Lasso.” <em>Ann.
-Statist.</em> 44 (3): 907–27. <a href="https://doi.org/10.1214/15-AOS1371">https://doi.org/10.1214/15-AOS1371</a>.</p>
-</div>
-<div id="ref-li1989">
-<p>Li, Ker-Chau. 1989. “Honest Confidence Regions for Nonparametric
-Regression.” <em>Ann. Statist.</em> 17 (3): 1001–8.
-<a href="https://doi.org/10.1214/aos/1176347253">https://doi.org/10.1214/aos/1176347253</a>.</p>
-</div>
-<div id="ref-mullainathan2017">
-<p>Mullainathan, Sendhil, and Jann Spiess. 2017. “Machine Learning: An
-Applied Econometric Approach.” <em>Journal of Economic Perspectives</em> 31
-(2): 87–106. <a href="https://doi.org/10.1257/jep.31.2.87">https://doi.org/10.1257/jep.31.2.87</a>.</p>
-</div>
-<div id="ref-nickl2013">
-<p>Nickl, Richard, and Sara van de Geer. 2013. “Confidence Sets in Sparse
-Regression.” <em>Ann. Statist.</em> 41 (6): 2852–76.
-<a href="https://doi.org/10.1214/13-AOS1170">https://doi.org/10.1214/13-AOS1170</a>.</p>
-</div>
-<div id="ref-speckman1985">
-<p>Speckman, Paul. 1985. “Spline Smoothing and Optimal Rates of Convergence
-in Nonparametric Regression Models.” <em>The Annals of Statistics</em> 13 (3):
-970–83. <a href="http://www.jstor.org/stable/2241119">http://www.jstor.org/stable/2241119</a>.</p>
-</div>
-<div id="ref-stone1982">
-<p>Stone, Charles J. 1982. “Optimal Global Rates of Convergence for
-Nonparametric Regression.” <em>The Annals of Statistics</em> 10 (4): 1040–53.
-<a href="http://www.jstor.org/stable/2240707">http://www.jstor.org/stable/2240707</a>.</p>
-</div>
-<div id="ref-taylor2017">
-<p>Taylor, Jonathan, and Robert Tibshirani. 2017. “Post-Selection Inference
-for -Penalized Likelihood Models.” <em>Canadian Journal of Statistics</em> 46
-(1): 41–61. <a href="https://doi.org/10.1002/cjs.11313">https://doi.org/10.1002/cjs.11313</a>.</p>
-</div>
-<div id="ref-wager2018">
-<p>Wager, Stefan, and Susan Athey. 2018. “Estimation and Inference of
-Heterogeneous Treatment Effects Using Random Forests.” <em>Journal of the
-American Statistical Association</em> 0 (0): 1–15.
-<a href="https://doi.org/10.1080/01621459.2017.1319839">https://doi.org/10.1080/01621459.2017.1319839</a>.</p>
-</div>
-<div id="ref-wager2015">
-<p>Wager, Stefan, and Guenther Walther. 2015. “Adaptive Concentration of
-Regression Trees, with Application to Random Forests.”
-<a href="https://arxiv.org/abs/1503.06388">https://arxiv.org/abs/1503.06388</a>.</p>
-</div>
-</div></div>
+<!-- --- --></div>
             </div>
         </div>
 

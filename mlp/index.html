@@ -218,13 +218,13 @@ notebook</a>.</p>
 These notes will look at multiple layer networks.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
+<li>(Goodfellow, Bengio, and Courville 2016)<sup id="fnref:goodfellow2016"><a class="footnote-ref" href="#fn:goodfellow2016">1</a></sup> <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a></li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
   documentation</a>
   especially the textbook</li>
-<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+<li>(Klok and Nazarathy 2019)<sup id="fnref:klok2019"><a class="footnote-ref" href="#fn:klok2019">2</a></sup> <em>Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence</em></li>
-<li>@farrel2018 “Deep Neural Networks for Estimation and Inference”</li>
+<li>(Farrell, Liang, and Misra 2018)<sup id="fnref2:farrel2018"><a class="footnote-ref" href="#fn:farrel2018">3</a></sup> &ldquo;Deep Neural Networks for Estimation and Inference&rdquo;</li>
 </ul>
 <h1 id="multiple-layer-neural-networks">Multiple Layer Neural Networks<a class="headerlink" href="#multiple-layer-neural-networks" title="Permanent link">&para;</a></h1>
 <p>A multiple layer feed forward neural network (aka a multi-layer
@@ -242,11 +242,11 @@ x_{k,L} = \psi_{k, L-1}(x_{L-1}'w_{k,L-1} + b_{k,L-1})
 $\psi_{k,L-1}: \R \to \R$. This continues recursively until
 $x_0 = x \in \R^d$ is the data.</p>
 <p>$L$ is the <strong>depth</strong> of the network.</p>
-<div class="alert alert-danger">
-<p>When $L$ is sufficiently large, you have a deep neural network, and can
-attract grant money by calling your research deep learning and/or AI.</p>
-</div>
-<p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following @farrel2018, we
+<p>::: {.alert .alert-danger}
+When $L$ is sufficiently large, you have a deep neural network, and can
+attract grant money by calling your research deep learning and/or AI.
+:::</p>
+<p>$H_\ell$ is the <strong>width</strong> of layer $\ell$. Following (Farrell, Liang, and Misra 2018)<sup id="fnref:farrel2018"><a class="footnote-ref" href="#fn:farrel2018">3</a></sup>, we
 will let <script type="math/tex; mode=display">
 U = \sum_{\ell=1}^L H_\ell
 </script> denote the number of units. The number of parameters is <script type="math/tex; mode=display">
@@ -282,12 +282,12 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 <pre><code>1×1000 Matrix{Float32}:
- -0.324851  0.154052  0.369813  …  1.0293  0.983615  1.04395  1.07946
+ 0.927618  -0.220508  0.632587  1.09905  …  0.556763  0.980371  0.651816
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
 width 15. This makes the total number of parameters in the two networks
-equal. For both networks we normalise $x$ and then use Flux’s default
+equal. For both networks we normalise $x$ and then use Flux&rsquo;s default
 initial values (these set $b=0$ and $w$ random).</p>
 <pre><code class="language-julia">mlps = [ Chain(x-&gt;Flux.normalise(x, dims=2),
                  Dense(dimx, 15, Flux.leakyrelu),
@@ -336,34 +336,34 @@ end
 </code></pre>
 <pre><code>Model 1 = Chain(#3, Dense(1 =&gt; 15, leakyrelu), Dense(15 =&gt; 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=0.4472418
-Model 1, 200 iterations, loss=0.26399395
-Model 1, 400 iterations, loss=0.25838143
-Model 1, 600 iterations, loss=0.25783494
-Model 1, 800 iterations, loss=0.25778404
-Model 1, 1000 iterations, loss=0.25777164
-Model 1, 1200 iterations, loss=0.2577694
-Model 1, 1400 iterations, loss=0.25776786
-Model 1, 1600 iterations, loss=0.25776762
-Model 1, 1800 iterations, loss=0.25776598
-Model 1, 2000 iterations, loss=0.25776568
- 12.874049 seconds (54.92 M allocations: 3.049 GiB, 1.96% gc time, 98.72% c
+Model 1, 1 iterations, loss=0.74293023
+Model 1, 200 iterations, loss=0.27535582
+Model 1, 400 iterations, loss=0.2599157
+Model 1, 600 iterations, loss=0.2539969
+Model 1, 800 iterations, loss=0.2523616
+Model 1, 1000 iterations, loss=0.25194454
+Model 1, 1200 iterations, loss=0.25175378
+Model 1, 1400 iterations, loss=0.2517021
+Model 1, 1600 iterations, loss=0.25168243
+Model 1, 1800 iterations, loss=0.25167215
+Model 1, 2000 iterations, loss=0.25166646
+ 13.236452 seconds (54.92 M allocations: 3.049 GiB, 2.04% gc time, 98.65% c
 ompilation time)
 Model 2 = Chain(#5, Dense(1 =&gt; 3, leakyrelu), Dense(3 =&gt; 3, leakyrelu), Den
 se(3 =&gt; 3, leakyrelu), Dense(3 =&gt; 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.5008249
-Model 2, 200 iterations, loss=0.26133922
-Model 2, 400 iterations, loss=0.26085728
-Model 2, 600 iterations, loss=0.26085338
-Model 2, 800 iterations, loss=0.26085088
-Model 2, 1000 iterations, loss=0.26084867
-Model 2, 1200 iterations, loss=0.26084626
-Model 2, 1400 iterations, loss=0.26084396
-Model 2, 1600 iterations, loss=0.26084185
-Model 2, 1800 iterations, loss=0.26083958
-Model 2, 2000 iterations, loss=0.26083732
-  0.962445 seconds (5.54 M allocations: 623.481 MiB, 8.19% gc time, 74.60% 
+Model 2, 1 iterations, loss=0.95467716
+Model 2, 200 iterations, loss=0.45980266
+Model 2, 400 iterations, loss=0.32117203
+Model 2, 600 iterations, loss=0.27392912
+Model 2, 800 iterations, loss=0.25515068
+Model 2, 1000 iterations, loss=0.25385037
+Model 2, 1200 iterations, loss=0.25377107
+Model 2, 1400 iterations, loss=0.25375405
+Model 2, 1600 iterations, loss=0.25374243
+Model 2, 1800 iterations, loss=0.25372878
+Model 2, 2000 iterations, loss=0.25371048
+  0.985196 seconds (5.54 M allocations: 623.481 MiB, 8.40% gc time, 73.96% 
 compilation time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
@@ -376,15 +376,15 @@ in-sample MSE.</p>
 <p><a href="http://yann.lecun.com/exdb/mnist/">MNIST is a database of images of handwritten
 digits</a>. MNIST is a common machine
 learning benchmark. Given a handwritten digit, we want to classify it is
-a 0, 1, …, or 9. You can try a demo of a MNIST classifier trained in
+a 0, 1, &hellip;, or 9. You can try a demo of a MNIST classifier trained in
 Flux <a href="https://fluxml.ai/experiments/mnist/">here</a>.</p>
 <p>Multilayer feed forward networks generally have good, but not quite
 state-of-the-art performance in image classification. Nonetheless, this
 will hopefully serve as a good example.</p>
-<div class="alert alert-danger">
-<p>The code in this section was adapted from the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl">Flux model
-zoo.</a></p>
-</div>
+<p>::: {.alert .alert-danger}
+The code in this section was adapted from the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl">Flux model
+zoo.</a>
+:::</p>
 <p>First we load some packages and download the data.</p>
 <pre><code class="language-julia">using Flux, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle
@@ -404,7 +404,7 @@ if !isdir(modeldir)
   mkdir(modeldir)
 end
 </code></pre>
-<p>Let’s look at some of the images.</p>
+<p>Let&rsquo;s look at some of the images.</p>
 <pre><code class="language-julia"># Previously MNIST was provided in the Flux package in a different format.
 # To keep code compatible, we convert to the old format
 imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)],
@@ -457,18 +457,18 @@ as our loss function.</p>
 <pre><code>loss (generic function with 1 method)
 </code></pre>
 <p>Since cross-entropy or log likelihood are difficult to interpret, we
-might want a more intuitive measure of our model’s performance. For
+might want a more intuitive measure of our model&rsquo;s performance. For
 classification <strong>accuracy</strong> is the portion of predictions that are
 correct.</p>
-<div class="alert alert-danger">
-<p><strong>Other measures of classification performance</strong></p>
+<p>::: {.alert .alert-danger}
+<strong>Other measures of classification performance</strong></p>
 <p>For this application accuracy is likely sufficient, but in some
 situations (including rare outcomes or when we weight differently type I
 and type II errors) accuracy is not a sufficient measure of a
-classifier’s performance. There are variety of other measures, such as
-precision, recall, and AUC. See @qeclassify for <a href="https://datascience.quantecon.org/applications/classification.html">more
-information</a>.</p>
-</div>
+classifier&rsquo;s performance. There are variety of other measures, such as
+precision, recall, and AUC. See Batista, Quentin, Chase Coleman, Spencer Lyon, Jesse Perla, Thomas Sargent, Paul Schrimpf, and Natasha Watkins, &ldquo;<a href="https://datascience.quantecon.org/applications/classification.html">Classification</a>,&rdquo; 2019. for <a href="https://datascience.quantecon.org/applications/classification.html">more
+information</a>.
+:::</p>
 <pre><code class="language-julia">function accuracy(m, x, y)
   # onecold(m(x)) results in very slow code for large x, so we avoid it
   coldx = vec(map(x-&gt;x[1], argmax(m(x), dims=1)))
@@ -491,8 +491,8 @@ function evalcb(m)
   end
 end;
 </code></pre>
-<div class="alert alert-danger">
-<p><strong>Optimizers</strong></p>
+<p>::: {.alert .alert-danger}
+<strong>Optimizers</strong></p>
 <p>Neural networks are usually trained using a variant of gradient descent
 for optimization. Recall that gradient descent searches for the minimum
 by taking steps of the form: <script type="math/tex; mode=display">
@@ -501,15 +501,15 @@ by taking steps of the form: <script type="math/tex; mode=display">
 adjusted depending on algorithm progress. There are many variants of
 gradient descent available in <code>Flux.jl</code> and they differ in how they
 adjust the learning rate, $\eta$, and other details. Some algorithms add
-“momentum” to avoid the long narrow valley problem we saw in the banana
+&ldquo;momentum&rdquo; to avoid the long narrow valley problem we saw in the banana
 function example in <a href="https://schrimpf.github.io/AnimatedOptimization.jl/optimization/#gradient-descent">the optimization
 notes</a>.
 <a href="https://ruder.io/optimizing-gradient-descent/index.html#gradientdescentoptimizationalgorithms">Ruder
 (2016)</a>
-gives a nice overview of various forms of gradient descent.</p>
-</div>
+gives a nice overview of various forms of gradient descent.
+:::</p>
 <p>Since <code>Flux.train!</code> might run for a long time, it allows us to pass a
-“callback” function that gets evaluated every iteration. Here, this
+&ldquo;callback&rdquo; function that gets evaluated every iteration. Here, this
 function is just used to monitor progress. In some situations, we might
 also want to use the callback function to save intermediate results to
 disk in case the computation gets interrupted before completion. The
@@ -550,22 +550,22 @@ else
     m = gpu(cpum)
 end
 </code></pre>
-<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.338525f0, 0.121,
- 0.1225)
-  4.234293 seconds (18.76 M allocations: 906.309 MiB, 1.59% gc time, 78.21%
- compilation time: &lt;1% of which was recompilation)
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.3403146f0, 0.084
+5, 0.0771)
+  4.340336 seconds (18.75 M allocations: 906.143 MiB, 1.53% gc time, 1 lock
+ conflict, 78.71% compilation time: &lt;1% of which was recompilation)
 </code></pre>
 <pre><code class="language-julia">@show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX, tY);
 </code></pre>
-<pre><code>accuracy(m, Xsmall, Ysmall) = 0.9155
-accuracy(m, tX, tY) = 0.9226
+<pre><code>accuracy(m, Xsmall, Ysmall) = 0.915
+accuracy(m, tX, tY) = 0.9239
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
 pretty good.</p>
 <p>The test set accuracy is higher than the training set, which could just
 be good luck, but it is also possible that the model is underfitting.
-Let’s try training the network longer (doing more gradient descent
+Let&rsquo;s try training the network longer (doing more gradient descent
 iterations.</p>
 <pre><code class="language-julia">rerun = true
 modelfile = joinpath(modeldir,&quot;mnist-slp-8200.jld2&quot;)
@@ -593,16 +593,16 @@ end
 @show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX,tY);
 </code></pre>
-<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (0.27801657f0, 0.91
-55, 0.9226)
-  9.424553 seconds (16.98 M allocations: 689.644 MiB, 4.53% gc time, 1 lock
- conflict, 1.71% compilation time: 4% of which was recompilation)
-(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (1.7262595f-5, 1.0,
- 0.9609)
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (0.27870157f0, 0.91
+5, 0.9239)
+  9.439216 seconds (16.99 M allocations: 691.588 MiB, 3.62% gc time, 3 lock
+ conflicts, 1.92% compilation time: 3% of which was recompilation)
+(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (1.8625109f-5, 1.0,
+ 0.9621)
 accuracy(m, Xsmall, Ysmall) = 1.0
-accuracy(m, tX, tY) = 0.9609
+accuracy(m, tX, tY) = 0.9621
 </code></pre>
-<p>Remember that each “epoch” does one gradient descent step for each tuple
+<p>Remember that each &ldquo;epoch&rdquo; does one gradient descent step for each tuple
 in <code>dataset</code>. In the code above <code>dataset</code> is just the original data
 repeated 200 times. We ran for 40 epochs, so there were a total of 8000
 more gradient descent iterations. We see that the training accuracy has
@@ -630,11 +630,11 @@ the data (or the loss on the held out portion stops decreasing).</p>
 <p>Given the apparent overfitting of the single layer network above, I
 would be reluctant to move to an even more complex model. However, I
 would be mistaken. If you glance through the <a href="http://yann.lecun.com/exdb/mnist/">MNIST benchmarks on
-LeCun’s website</a>, you will see that
-@ciresan2010 achieve a much higher test accuracy with a 6 layer network.
-Let’s try their network architecture. We will use their numbers of
-layers and hidden units, but with rectified linear activation. They used
-tanh activation functions.</p>
+LeCun&rsquo;s website</a>, you will see that
+(Ciresan et al. 2010)<sup id="fnref:ciresan2010"><a class="footnote-ref" href="#fn:ciresan2010">4</a></sup> achieve a much higher test accuracy with a 6 layer
+network. Let&rsquo;s try their network architecture. We will use their numbers
+of layers and hidden units, but with rectified linear activation. They
+used tanh activation functions.</p>
 <pre><code class="language-julia">cmgsnet_cpu = Chain(
   Dense(28^2, 2500 , relu),
   Dense(2500, 2000 , relu),
@@ -648,7 +648,7 @@ println(&quot;cmgsnet has $(nparam(cmgsnet_cpu)) parameters!!!&quot;)
 </code></pre>
 <pre><code>cmgsnet has 11972510 parameters!!!
 </code></pre>
-<p>That’s a deep network.</p>
+<p>That&rsquo;s a deep network.</p>
 <pre><code class="language-julia">rerun = false
 batchsize=10000
 parts=Base.Iterators.partition(1:size(X,2), batchsize)
@@ -717,7 +717,7 @@ Chain(
 </code></pre>
 <p>This model achieved a testing accuracy of 98.44000000000001% after 9
 training epochs. Each training epoch consisting of 10 passes through the
-data split into two batches, so 20 gradient descent iterations. Let’s
+data split into two batches, so 20 gradient descent iterations. Let&rsquo;s
 plot the loss and accuracy vs epoch.</p>
 <pre><code class="language-julia">al = Int(round(3*length(losstrain)/4))
 plot(
@@ -748,12 +748,12 @@ be able to predict perfectly. An $R^2$ of 0.4 in a cross-sectional
 earnings regression is typical, or even high. Image classification is
 very different. We know there is a model (our eyes) that can classify
 nearly perfectly. In the language of econometrics, the error term is
-zero, or there is no uncertainty, in the “true” image classification
+zero, or there is no uncertainty, in the &ldquo;true&rdquo; image classification
 models.</p>
 <!-- TODO: Add an aside about adversarial examples and failures to -->
 <!-- generalize.  -->
 
-<p>Let’s look at some of the images that our model failed to classify
+<p>Let&rsquo;s look at some of the images that our model failed to classify
 correctly.</p>
 <pre><code class="language-julia">timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
 tlabels = test_y
@@ -769,16 +769,16 @@ plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(ml
 sum(mlabels .!= tlabels) = 158
 </code></pre>
 <p><img alt="" src="../figures/mlp_18_1.png" /></p>
-<p>Our model still does not have state-of-the-art accuracy. @ciresan2010
+<p>Our model still does not have state-of-the-art accuracy. (Ciresan et al. 2010)<sup id="fnref2:ciresan2010"><a class="footnote-ref" href="#fn:ciresan2010">4</a></sup>
 achieves 99.65% accuracy. There are differences in terms of activation
-function and gradient descent details between @ciresan2010 and the code
-above. However, I suspect that the main reason for their better
-performance is that @ciresan2010 generate additional training images.
+function and gradient descent details between (Ciresan et al. 2010)<sup id="fnref3:ciresan2010"><a class="footnote-ref" href="#fn:ciresan2010">4</a></sup> and the
+code above. However, I suspect that the main reason for their better
+performance is that (Ciresan et al. 2010)<sup id="fnref4:ciresan2010"><a class="footnote-ref" href="#fn:ciresan2010">4</a></sup> generate additional training images.
 They do this by randomly rotating, stretching, and adding oscillations
 to the existing images.</p>
 <h1 id="data-augmentation">Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permanent link">&para;</a></h1>
 <p>Generating more data from your existing data is called data
-augmentation. Let’s try augmenting the data by randomly rotating the
+augmentation. Let&rsquo;s try augmenting the data by randomly rotating the
 images.</p>
 <pre><code class="language-julia">function rotateimage(img, θ)
   R = similar(img)
@@ -874,7 +874,24 @@ plot( [plot(timgs[i], axis=false, ticks=false, title=&quot;$(tlabels[i]) as $(ml
 sum(mlabels .!= tlabels) = 142
 </code></pre>
 <p><img alt="" src="../figures/mlp_21_1.png" /></p>
-<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:goodfellow2016">
+<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville, &ldquo;<a href="http://www.deeplearningbook.org">Deep learning</a>,&rdquo; (MIT Press, 2016).&#160;<a class="footnote-backref" href="#fnref:goodfellow2016" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:klok2019">
+<p>Klok, Hayden, and Yoni Nazarathy, &ldquo;<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">Statistics with julia:fundamentals for data science, MachineLearning and artificial intelligence</a>,&rdquo; (DRAFT, 2019).&#160;<a class="footnote-backref" href="#fnref:klok2019" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:farrel2018">
+<p>Farrell, Max H., Tengyuan Liang, and Sanjog Misra, &ldquo;<a href="https://arxiv.org/abs/1809.09953">Deep neural networks for estimation and inference</a>,&rdquo; 2018.&#160;<a class="footnote-backref" href="#fnref:farrel2018" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:farrel2018" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:ciresan2010">
+<p>Ciresan, Dan Claudiu, Ueli Meier, Luca Maria Gambardella, and Juergen Schmidhuber, &ldquo;<a href="https://doi.org/10.1162/NECO_a_00052">Deep big simple neural nets excel on handwritten digit recognition</a>,&rdquo; 2010 (Neural Computation, Volume 22, Number 12, December 2010).&#160;<a class="footnote-backref" href="#fnref:ciresan2010" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:ciresan2010" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:ciresan2010" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:ciresan2010" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
             </div>
         </div>
 

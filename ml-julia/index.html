@@ -208,15 +208,15 @@ notebook</a>.</p>
 </script>
 </p>
 <h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
-<p>This document is a companion to my <a href="../ml-intro/">“Machine learning in
-economics”</a>. Those notes discuss the recent use of machine
+<p>This document is a companion to my <a href="../ml-intro/">&ldquo;Machine learning in
+economics&rdquo;</a>. Those notes discuss the recent use of machine
 learning in economics, with a focus on lasso and random forests. The
 code in those notes is written in R. This document will look at similar
 code in Julia.</p>
 <h1 id="rcall">RCall<a class="headerlink" href="#rcall" title="Permanent link">&para;</a></h1>
 <p>If you want to use the methods of Chernozhukov and coauthors implements
-in the R packaga @hdm or the methods of Athey and coauthors implemented
-in the R package @grf , then it makes sense to use the R pacakge. You
+in the R packaga Chernozhukov, Victor, Chris Hansen, and Martin Spindler, &ldquo;<a href="https://journal.r-project.org/archive/2016/RJ-2016-040/index.html">[hdm]{.nocase}: High-dimensional metrics</a>,&rdquo; <em>R Journal</em>, 8 (2016), 185&ndash;199. or the methods of Athey and coauthors implemented
+in the R package Tibshirani, Julie, Susan Athey, Stefan Wager, Rina Friedberg, Luke Miner, and Marvin Wright, &ldquo;<a href="https://CRAN.R-project.org/package=grf">Grf: Generalized random forests (beta)</a>,&rdquo; (2018). , then it makes sense to use the R pacakge. You
 could simply write all your code in R. However, if you prefer using
 Julia, you can just call the necessary R functions with
 <a href="https://github.com/JuliaInterop/RCall.jl"><code>RCall.jl</code></a>.</p>
@@ -358,7 +358,7 @@ model.</p>
 <pre><code>import MLJLinearModels ✔
 MLJLinearModels.LassoRegressor
 </code></pre>
-<p>Let’s fit lasso to the same pipeline data as above.</p>
+<p>Let&rsquo;s fit lasso to the same pipeline data as above.</p>
 <pre><code class="language-julia">lasso = machine(Lasso(lambda=1.0), X, y)
 train,test = partition(eachindex(y), 0.6, shuffle=true)
 fit!(lasso, rows=train)
@@ -367,15 +367,15 @@ println(yhat[1:10])
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 <pre><code>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-MSE/var(y) = 1.4572481874874483
+MSE/var(y) = 1.5024909580796766
 </code></pre>
-<p>That doesn’t look very good. All the predictions are zero. This could
+<p>That doesn&rsquo;t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
 However, in this case the problem is something else. The warning
 messages indicate numeric problems when minimizing the lasso objective
 function. This can happen when <code>X</code> is poorly scaled. The algorithm used
 to compute the lasso estimates works best when the coefficients are all
-roughly the same scale. The existing <code>X</code>’s have wildly different scales,
+roughly the same scale. The existing <code>X</code>&rsquo;s have wildly different scales,
 which causes problems. This situation is common, so <code>MLJ.jl</code> has
 functions to standardize variables. It is likely that the <code>hdm</code> package
 in R does something similar internally.</p>
@@ -393,7 +393,7 @@ coef = fitted_params(m).lasso_regressor.coefs
 intercept = fitted_params(m).lasso_regressor.intercept
 sum(abs(c[2])&gt;1e-8 for c in coef) # number non-zero
 </code></pre>
-<pre><code>MSE/var(y) = 0.9979781148868001
+<pre><code>MSE/var(y) = 0.9994939567244565
 0
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
@@ -409,7 +409,7 @@ fit!(m, rows=train, verbosity=1)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>MSE/var(y) = 0.13908159717819163
+<pre><code>MSE/var(y) = 0.15134783267464927
 </code></pre>
 <pre><code class="language-julia">using Plots
 cvmse = report(m).plotting.measurements
@@ -423,7 +423,7 @@ plot(λ[s], cvmse[s], xlab=&quot;λ&quot;, ylab=&quot;CV(MSE)&quot;)
 for machine learning. It seems to be emerging as the leading Julia
 package for neural networks and deep learning, but other machine
 learning models can also be implemented using <code>Flux.jl</code>.</p>
-<p>Let’s create a lasso model in <code>Flux.jl</code>.</p>
+<p>Let&rsquo;s create a lasso model in <code>Flux.jl</code>.</p>
 <pre><code class="language-julia">using Flux, LinearAlgebra
 # Scale the variables
 Xstd = Flux.normalise(Matrix(X), dims=1)
@@ -473,7 +473,7 @@ lo = 1
 hi = 2000
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>loss(m, X_train, y_train) = 0.9986320109439122
+<pre><code>loss(m, X_train, y_train) = 0.9986320109439124
 </code></pre>
 <p><img alt="" src="../figures/ml-julia_10_1.png" /></p>
 <pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
@@ -494,8 +494,8 @@ though it never exactly gets there.</p>
 <a href="http://lux.csail.mit.edu/dev/"><code>Lux.jl</code></a>.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <code>Lux.jl</code> and <code>Flux.jl</code>
 share many features and backend code. <code>Lux.jl</code> has a more function
 focused interface with explicit parameter passing. This is a more
-“Julian” style of programming.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
-<p>For comparison, let’s implement the same Lasso model in Lux.</p>
+&ldquo;Julian&rdquo; style of programming.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>For comparison, let&rsquo;s implement the same Lasso model in Lux.</p>
 <pre><code class="language-julia">import Lux # Lux shares many function names with Flux, so import instead of using to avoid confusion
 import Random, Zygote
 using Test
@@ -566,7 +566,7 @@ lo = 1
 hi = 2000
 plot(lo:hi,obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>ℓ(ps, X_train, y_train, m) = 0.10933796326615405
+<pre><code>ℓ(ps, X_train, y_train, m) = 0.11116189450789928
 </code></pre>
 <p><img alt="" src="../figures/ml-julia_12_1.png" /></p>
 <pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
@@ -574,7 +574,7 @@ plot(lo:hi,obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;It
 <p><img alt="" src="../figures/ml-julia_13_1.png" /></p>
 <h1 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h1>
 <ul>
-<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+<li>(Klok and Nazarathy 2019)<sup id="fnref:klok2019"><a class="footnote-ref" href="#fn:klok2019">3</a></sup> <em>Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
@@ -590,6 +590,9 @@ were starting over, I would use Lux.jl instead of Flux.jl.&#160;<a class="footno
 PyTorch. Implicit parameters makes some sense in an object oriented
 language like Python, but it is not the most natural style for
 Julia.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:klok2019">
+<p>Klok, Hayden, and Yoni Nazarathy, &ldquo;<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">Statistics with julia:fundamentals for data science, MachineLearning and artificial intelligence</a>,&rdquo; (DRAFT, 2019).&#160;<a class="footnote-backref" href="#fnref:klok2019" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

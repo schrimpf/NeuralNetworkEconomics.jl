@@ -193,28 +193,20 @@ notebook</a>.</p>
 \DeclareMathOperator*{\argmin}{arg\,min}
 </script>
 </p>
-<pre><code class="language-julia">using Pkg
-Pkg.activate(joinpath(@__DIR__,&quot;..&quot;))
-Pkg.instantiate()
-if !(&quot;DISPLAY&quot; ∈ keys(ENV))
-    ENV[&quot;GKSwstype&quot;] = &quot;nul&quot;
-    ENV[&quot;MPLBACKEND&quot;] = &quot;Agg&quot;
-end
-ENV[&quot;GKS_ENCODING&quot;] = &quot;utf-8&quot;
-</code></pre>
 <h1 id="automating-orthogonalization">Automating Orthogonalization<a class="headerlink" href="#automating-orthogonalization" title="Permanent link">&para;</a></h1>
 <p>A debiased machine learning is that it requires an orthogonal moment
 conditioon for each parameter of interest. Analytic orthogonalization is
 labor intensive, error prone, and may not even be possible in some
-cases. @ceinr2016 review some techniques for constructing orthogonal
-moments.</p>
-<p>@cnr2018 have a mathematically elegant method for automatically
+cases. \[(Chernozhukov et al. 2016)<sup id="fnref:ceinr2016"><a class="footnote-ref" href="#fn:ceinr2016">1</a></sup>] review some techniques for constructing
+orthogonal moments.</p>
+<p>\[(Chernozhukov et al. 2018)<sup id="fnref:cnr2018"><a class="footnote-ref" href="#fn:cnr2018">2</a></sup>] have a mathematically elegant method for automatically
 constructing orthogonal moments. The approach is further developed in
-@cnqv2022, @cnr2022, and @chernozhukov2024. @kato2026 provides a python
-package for this and a collection of related methods.</p>
+\[(Chernozhukov et al. 2022)<sup id="fnref:cnqv2022"><a class="footnote-ref" href="#fn:cnqv2022">3</a></sup>], \[(Chernozhukov, Newey, and Singh 2022)<sup id="fnref:cnr2022"><a class="footnote-ref" href="#fn:cnr2022">4</a></sup>], and \[(Chernozhukov et al. 2024)<sup id="fnref:chernozhukov2024"><a class="footnote-ref" href="#fn:chernozhukov2024">5</a></sup>].
+\[(Kato 2026)<sup id="fnref:kato2026"><a class="footnote-ref" href="#fn:kato2026">6</a></sup>] provides a python package for this and a collection of
+related methods.</p>
 <h2 id="orthogonality-via-riesz-representers">Orthogonality via Riesz Representers<a class="headerlink" href="#orthogonality-via-riesz-representers" title="Permanent link">&para;</a></h2>
-<p>We will follow @cnr2022 and begin by focusing on estimators that are
-linear in their nonparametric component. <script type="math/tex; mode=display">
+<p>We will follow \[(Chernozhukov, Newey, and Singh 2022)<sup id="fnref2:cnr2022"><a class="footnote-ref" href="#fn:cnr2022">4</a></sup>] and begin by focusing on estimators that
+are linear in their nonparametric component. <script type="math/tex; mode=display">
 \theta_0 = \Er[m(x,\gamma_0(x))]
 </script> where $\gamma_0(x)$ is a conditional exepection, $m()$ is a known
 function, $m$ is linear in $\gamma$, and $\theta \in \R$. If we focus on
@@ -490,7 +482,30 @@ about $\hat\gamma$ or $\hat\alpha$, because the orthogonal moment
 condition satisfies the Neyman orthogonality condition: first-order
 perturbations of $\gamma$ or $\alpha$ around their population values
 leave the expected score unchanged.</p>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2></div>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:ceinr2016">
+<p>Chernozhukov, Victor, Juan Carlos Escanciano, Hidehiko Ichimura, Whitney K. Newey, and James M. Robins, &ldquo;<a href="https://arxiv.org/pdf/1608.00033.pdf">Locally robust semiparametric estimation</a>,&rdquo; 2016.&#160;<a class="footnote-backref" href="#fnref:ceinr2016" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:cnr2018">
+<p>Chernozhukov, Victor, Whitney Newey, James Robins, and Rahul Singh, &ldquo;<a href="https://arxiv.org/abs/1802.08667">Double/de-biased machine learning of global and local parameters using regularized riesz representers</a>,&rdquo; 2018.&#160;<a class="footnote-backref" href="#fnref:cnr2018" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:cnqv2022">
+<p>Chernozhukov, Victor, Whitney Newey, Vı́ctor M Quintas-Martı́nez, and Vasilis Syrgkanis, &ldquo;<a href="https://proceedings.mlr.press/v162/chernozhukov22a.html">RieszNet and ForestRiesz: Automatic debiased machine learning with neural nets and random forests</a>,&rdquo; in <em>Proceedings of the 39th international conference on machine learning</em>, Kamalika Chaudhuri, Stefanie Jegelka, Le Song, Csaba Szepesvari, Gang Niu, and Sivan Sabato, eds., Proceedings of machine learning research, 2022 (PMLR).&#160;<a class="footnote-backref" href="#fnref:cnqv2022" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:cnr2022">
+<p>Chernozhukov, Victor, Whitney K. Newey, and Rahul Singh, &ldquo;<a href="https://doi.org/10.3982/ECTA18515">Automatic debiased machine learning of causal and structural effects</a>,&rdquo; <em>Econometrica</em>, 90 (2022), 967&ndash;1027.&#160;<a class="footnote-backref" href="#fnref:cnr2022" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:cnr2022" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:chernozhukov2024">
+<p>Chernozhukov, Victor, Whitney K. Newey, Victor Quintas-Martinez, and Vasilis Syrgkanis, &ldquo;<a href="https://arxiv.org/abs/2104.14737">Automatic debiased machine learning via riesz regression</a>,&rdquo; 2024.&#160;<a class="footnote-backref" href="#fnref:chernozhukov2024" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:kato2026">
+<p>Kato, Masahiro, &ldquo;<a href="https://arxiv.org/abs/2602.17543">Genriesz: A python package for automatic debiased machine learning with generalized riesz regression</a>,&rdquo; 2026.&#160;<a class="footnote-backref" href="#fnref:kato2026" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
             </div>
         </div>
 

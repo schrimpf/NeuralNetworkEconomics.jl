@@ -188,7 +188,7 @@ License</a></p>
 <h2 id="double-debiased-machine-learning">Double debiased machine learning<a class="headerlink" href="#double-debiased-machine-learning" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p>@chernozhukov2018, @chernozhukov2017</p>
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018a), C1&ndash;C68., Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, and Whitney Newey, &ldquo;<a href="https://doi.org/10.1257/aer.p20171038">Double/debiased/neyman machine learning of treatment effects</a>,&rdquo; <em>American Economic Review</em>, 107 (2017), 261&ndash;65.</p>
 </li>
 <li>
 <p>Parameter of interest $\theta \in \R^{d_\theta}$</p>
@@ -198,8 +198,8 @@ License</a></p>
 </li>
 <li>
 <p>Moment conditions <script type="math/tex; mode=display">
-    \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
-    </script> with $\psi$ known</p>
+  \Er[\psi(W;\theta_0,\eta_0) ] = 0 \in \R^{d_\theta}
+  </script> with $\psi$ known</p>
 </li>
 <li>
 <p>Estimate $\hat{\eta}$ using some machine learning method</p>
@@ -215,87 +215,86 @@ License</a></p>
 <li>$I^c_k = {1, &hellip;, n} \setminus I_k$</li>
 <li>$\hat{\eta}_k =$ estimate of $\eta$ using $I^c_k$</li>
 <li>Estimator: <script type="math/tex; mode=display">
-    \begin{align*}
-    0 = & \frac{1}{K} \sum_{k=1}^K \frac{K}{n} \sum_{i \in I_k}
-    \psi(w_i;\hat{\theta},\hat{\eta}_k) \\
-    0 = & \frac{1}{K} \sum_{k=1}^K \En_k[
-    \psi(w_i;\hat{\theta},\hat{\eta}_k)]
-    \end{align*}
-    </script>
+  \begin{align*}
+  0 = & \frac{1}{K} \sum_{k=1}^K \frac{K}{n} \sum_{i \in I_k}
+  \psi(w_i;\hat{\theta},\hat{\eta}_k) \\
+  0 = & \frac{1}{K} \sum_{k=1}^K \En_k[
+  \psi(w_i;\hat{\theta},\hat{\eta}_k)]
+  \end{align*}
+  </script>
 </li>
 </ul>
 <hr />
 <h3 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Linear score <script type="math/tex; mode=display">
-    \psi(w;\theta,\eta) = \psi^a(w;\eta) \theta + \psi^b(w;\eta)
-    </script>
+  \psi(w;\theta,\eta) = \psi^a(w;\eta) \theta + \psi^b(w;\eta)
+  </script>
 </li>
 <li>Near Neyman orthogonality: <script type="math/tex; mode=display">
-    \lambda_n := \sup_{\eta \in \mathcal{T}_n} \norm{\partial \eta
-    \Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right] } \leq \delta_n
-    n^{-1/2}
-    </script>
+  \lambda_n := \sup_{\eta \in \mathcal{T}_n} \norm{\partial \eta
+  \Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right] } \leq \delta_n
+  n^{-1/2}
+  </script>
 </li>
 </ul>
 <hr />
-<h3 id="assumptions-assumptions-1">Assumptions [assumptions-1]<a class="headerlink" href="#assumptions-assumptions-1" title="Permanent link">&para;</a></h3>
+<h3 class="unnumbered" id="assumptions-1">Assumptions<a class="headerlink" href="#assumptions-1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Rate conditions: for $\delta_n \to 0$ and $\Delta_n \to 0$, we have
-    $\Pr(\hat{\eta}_k \in \mathcal{T}_n) \geq 1-\Delta_n$ and <script type="math/tex; mode=display">
-    \begin{align*}
-    r_n := & \sup_{\eta \in \mathcal{T}_n} \norm{ \Er[\psi^a(W;\eta)] -
-    \Er[\psi^a(W;\eta_0)]} \leq \delta_n \\
-    r_n' := & \sup_{\eta \in \mathcal{T}_n} \Er\left[ \norm{ \psi(W;\theta_0,\eta) -
-      \psi(W;\theta_0,\eta_0)}^2 \right]^{1/2} \leq \delta_n \\
-    \lambda_n' := & \sup_{r \in (0,1), \eta \in \mathcal{T}_n} \norm{
-    \partial_r^2 \Er\left[\psi(W;\theta_0, \eta_0 + r(\eta - \eta_0))
-    \right]} \leq \delta_n/\sqrt{n}
-    \end{align*}
-    </script>
+  $\Pr(\hat{\eta}_k \in \mathcal{T}_n) \geq 1-\Delta_n$ and <script type="math/tex; mode=display">
+  \begin{align*}
+  r_n := & \sup_{\eta \in \mathcal{T}_n} \norm{ \Er[\psi^a(W;\eta)] -
+  \Er[\psi^a(W;\eta_0)]} \leq \delta_n \\
+  r_n' := & \sup_{\eta \in \mathcal{T}_n} \Er\left[ \norm{ \psi(W;\theta_0,\eta) -
+    \psi(W;\theta_0,\eta_0)}^2 \right]^{1/2} \leq \delta_n \\
+  \lambda_n' := & \sup_{r \in (0,1), \eta \in \mathcal{T}_n} \norm{
+  \partial_r^2 \Er\left[\psi(W;\theta_0, \eta_0 + r(\eta - \eta_0))
+  \right]} \leq \delta_n/\sqrt{n}
+  \end{align*}
+  </script>
 </li>
 <li>Moments exist and other regularity conditions</li>
 </ul>
-<div class="notes">
-<p>We focus on the case of linear scores to simplify proofs and all of our
-examples have scores linear in $\theta$. @chernozhukov2018 cover
+<p>::: notes
+We focus on the case of linear scores to simplify proofs and all of our
+examples have scores linear in $\theta$. Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018a), C1&ndash;C68. cover
 nonlinear scores as well.</p>
 <p>These rate conditions might look a little strange. The rate conditions
-are stated this way because they’re exactly what is needed for the
+are stated this way because they&rsquo;re exactly what is needed for the
 result to work. $\Delta_n$ and $\delta_n$ are sequences converging to
 $0$. $\mathcal{T}_n$ is a shrinking neighborhood of $\eta_0$. A good
 exercise would be show that if $\psi$ is a smooth function of $\eta$ and
-$\theta$, and
-$\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2} = O(\epsilon_n) = o(n^{-1/4})$,
-then we can meet the above conditions with $r_n = r_n&rsquo; = \epsilon_n$ and
-$\lambda_n&rsquo; = \epsilon_n^2$.</p>
-</div>
+$\theta$, and $\Er[(\hat{\eta}(x) - \eta_0(x))^2]^{1/2}
+= O(\epsilon_n) = o(n^{-1/4})$, then we can meet the above conditions
+with $r_n = r_n&rsquo; = \epsilon_n$ and $\lambda_n&rsquo; = \epsilon_n^2$.
+:::</p>
 <hr />
 <h3 id="proof-outline">Proof outline:<a class="headerlink" href="#proof-outline" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p>Let <script type="math/tex; mode=display">
-    \begin{align*}
-    \hat{J} = & \frac{1}{K} \sum_{k=1}^K \En_k
-        [\psi^a(w_i;\hat{\eta}_k)], \\
-    J_0 = & \Er[\psi^a(w_i;\eta_0)], \\
-    R_{n,1} = & \hat{J}-J_0
-    \end{align*}
-    </script>
+  \begin{align*}
+  \hat{J} = & \frac{1}{K} \sum_{k=1}^K \En_k
+      [\psi^a(w_i;\hat{\eta}_k)], \\
+  J_0 = & \Er[\psi^a(w_i;\eta_0)], \\
+  R_{n,1} = & \hat{J}-J_0
+  \end{align*}
+  </script>
 </p>
 </li>
 <li>
 <p>Show: <script type="math/tex; mode=display">
-    \small
-    \begin{align*}
-    \sqrt{n}(\hat{\theta} - \theta_0) = & -\sqrt{n} J_0^{-1}
-    \En[\psi(w_i;\theta_0,\eta_0)] + \\
-    & + (J_0^{-1} - \hat{J}^{-1})
-    \left(\sqrt{n} \En[\psi(w_i;\theta_0,\eta_0)] + \sqrt{n}R_{n,2}\right) + \\
-    & + \sqrt{n}J_0^{-1}\underbrace{\left(\frac{1}{K} \sum_{k=1}^K \En_k[
-    \psi(w_i;\theta_0,\hat{\eta}_k)] - \En[\psi(w_i;\theta_0,\eta_0)]\right)}_{R_{n,2}}
-    \end{align*}
-    </script>
+  \small
+  \begin{align*}
+  \sqrt{n}(\hat{\theta} - \theta_0) = & -\sqrt{n} J_0^{-1}
+  \En[\psi(w_i;\theta_0,\eta_0)] + \\
+  & + (J_0^{-1} - \hat{J}^{-1})
+  \left(\sqrt{n} \En[\psi(w_i;\theta_0,\eta_0)] + \sqrt{n}R_{n,2}\right) + \\
+  & + \sqrt{n}J_0^{-1}\underbrace{\left(\frac{1}{K} \sum_{k=1}^K \En_k[
+  \psi(w_i;\theta_0,\hat{\eta}_k)] - \En[\psi(w_i;\theta_0,\eta_0)]\right)}_{R_{n,2}}
+  \end{align*}
+  </script>
 </p>
 </li>
 <li>
@@ -305,34 +304,24 @@ $\lambda_n&rsquo; = \epsilon_n^2$.</p>
 <p>Show $\norm{R_{n,2}}= O_p(n^{-1/2} r_n&rsquo; + \lambda_n + \lambda_n&rsquo;)$</p>
 </li>
 </ul>
-<div class="notes">
-<p>For details see the appendix of @chernozhukov2018.</p>
-</div>
+<p>::: notes
+For details see the appendix of Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018a), C1&ndash;C68..
+:::</p>
 <hr />
 <h3 id="proof-outline-lemma-61">Proof outline: Lemma 6.1<a class="headerlink" href="#proof-outline-lemma-61" title="Permanent link">&para;</a></h3>
 <p>Lemma 6.1</p>
-<ol>
-<li>
-<p>If $\Pr(\norm{X_m} &gt; \epsilon_m | Y_m) \to_p 0$, then
+<p>(a) If $\Pr(\norm{X_m} &gt; \epsilon_m | Y_m) \to_p 0$, then
     $\Pr(\norm{X_m}&gt;\epsilon_m) \to 0$.</p>
-</li>
-<li>
-<p>If $\Er[\norm{X_m}^q/\epsilon_m^q | Y_m] \to_p 0$ for $q\geq 1$,
+<p>(b) If $\Er[\norm{X_m}^q/\epsilon_m^q | Y_m] \to_p 0$ for $q\geq 1$,
     then $\Pr(\norm{X_m}&gt;\epsilon_m) \to 0$.</p>
-</li>
-<li>
-<p>If $\norm{X_m} = O_p(A_m)$ conditional on $Y_m$ (i.e. for any
-    $\ell_m \to \infty$, $\Pr(\norm{X_m} &gt; \ell_m A_m | Y_m) \to_p 0$),
-    then $\norm{X_m} = O_p(A_m)$ unconditionally</p>
-</li>
-</ol>
-<div class="notes">
-<ol>
-<li>by dominated convergence</li>
-<li>from Markov’s inequality</li>
-<li>follows from (a)</li>
-</ol>
-</div>
+<p>(c) If $\norm{X_m} = O_p(A_m)$ conditional on $Y_m$ (i.e. for any
+    $\ell_m \to \infty$, $\Pr(\norm{X_m} &gt; \ell_m A_m | Y_m) \to_p
+    0$), then $\norm{X_m} = O_p(A_m)$ unconditionally</p>
+<p>::: notes
+(a) by dominated convergence
+(b) from Markov&rsquo;s inequality
+(c) follows from (a)
+:::</p>
 <hr />
 <h3 id="proof-outline-r_n1">Proof outline: $R_{n,1}$<a class="headerlink" href="#proof-outline-r_n1" title="Permanent link">&para;</a></h3>
 <p>
@@ -344,27 +333,28 @@ R_{n,1} = \hat{J}-J_0 = \frac{1}{K} \sum_k \left(
 <ul>
 <li>
 <script type="math/tex; mode=display">
-    \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
-    U_{1,k} + U_{2,k}
-    </script> where <script type="math/tex; mode=display">
-    \begin{align*}
-    U_{1,k} = & \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] -
-     \Er[\psi^a(W;\hat{\eta}_k)| I^c_k]} \\
-    U_{2,k} = & \norm{ \Er[\psi^a(W;\hat{\eta}_k)| I^c_k] -
-    \Er[\psi^a(W;\eta_0)]}
-    \end{align*}
-    </script>
+  \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] - \Er[\psi^a(W;\eta_0)]} \leq
+  U_{1,k} + U_{2,k}
+  </script> where <script type="math/tex; mode=display">
+  \begin{align*}
+  U_{1,k} = & \norm{\En_k[\psi^a(w_i;\hat{\eta}_k)] -
+   \Er[\psi^a(W;\hat{\eta}_k)| I^c_k]} \\
+  U_{2,k} = & \norm{ \Er[\psi^a(W;\hat{\eta}_k)| I^c_k] -
+  \Er[\psi^a(W;\eta_0)]}
+  \end{align*}
+  </script>
 </li>
 </ul>
 <hr />
 <h3 id="proof-outline-r_n2">Proof outline: $R_{n,2}$<a class="headerlink" href="#proof-outline-r_n2" title="Permanent link">&para;</a></h3>
 <ul>
-<li>$R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$</li>
+<li>$R_{n,2} = \frac{1}{K} \sum_{k=1}^K \En_k\left[
+  \psi(w_i;\theta_0,\hat{\eta}_k) - \psi(w_i;\theta_0,\eta_0) \right]$</li>
 <li>
 <script type="math/tex; mode=display">
-    \sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
-      psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}
-    </script> where</li>
+  \sqrt{n} \norm{\En_k\left[ \psi(w_i;\theta_0,\hat{\eta}_k) -
+    psi(w_i;\theta_0,\eta_0) \right]} \leq U_{3,k} + U_{4,k}
+  </script> where</li>
 </ul>
 <p>
 <script type="math/tex; mode=display">
@@ -396,28 +386,29 @@ I^c_k] - \Er[\psi(W;\theta_0,\eta_0)]
 </p>
 <ul>
 <li>
-<p>$\rho_n := n^{-1/2} + r_n + r_n&rsquo; + n^{1/2} (\lambda_n +\lambda_n&rsquo;) \lesssim \delta_n$</p>
+<p>$\rho_n := n^{-1/2} + r_n + r_n&rsquo; + n^{1/2} (\lambda_n +\lambda_n&rsquo;)
+  \lesssim \delta_n$</p>
 </li>
 <li>
 <p>Influence function
-    <script type="math/tex; mode=display">\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)</script>
-    with <script type="math/tex; mode=display">
-    \sigma^2 = J_0^{-1} \Er\left[ \psi(w;\theta_0,\eta_0)
-     \psi(w;\theta_0,\eta_0)'\right] (J_0^{-1})'
-    </script>
+  <script type="math/tex; mode=display">\bar{\psi}(w) = -\sigma^{-1} J_0^{-1} \psi(w;\theta_0,\eta_0)</script> with
+  <script type="math/tex; mode=display">
+  \sigma^2 = J_0^{-1} \Er\left[ \psi(w;\theta_0,\eta_0)
+   \psi(w;\theta_0,\eta_0)'\right] (J_0^{-1})'
+  </script>
 </p>
 </li>
 </ul>
-<div class="notes">
-<p>This is the DML2 case of theorem 3.1 of @chernozhukov2018.</p>
-</div>
+<p>::: notes
+This is the DML2 case of theorem 3.1 of Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018a), C1&ndash;C68..
+:::</p>
 <hr />
 <h3 id="creating-orthogonal-moments">Creating orthogonal moments<a class="headerlink" href="#creating-orthogonal-moments" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p>Need <script type="math/tex; mode=display">
-     \partial \eta\Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right]  \approx 0
-    </script>
+   \partial \eta\Er\left[\psi(W;\theta_0,\eta_0)[\eta-\eta_0] \right]  \approx 0
+  </script>
 </p>
 </li>
 <li>
@@ -428,47 +419,46 @@ I^c_k] - \Er[\psi(W;\theta_0,\eta_0)]
 <h3 id="orthogonal-scores-via-concentrating-out">Orthogonal scores via concentrating-out<a class="headerlink" href="#orthogonal-scores-via-concentrating-out" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Original model: <script type="math/tex; mode=display">
-    (\theta_0, \beta_0) = \argmax_{\theta, \beta} \Er[\ell(W;\theta,\beta)]
-    </script>
+  (\theta_0, \beta_0) = \argmax_{\theta, \beta} \Er[\ell(W;\theta,\beta)]
+  </script>
 </li>
 <li>Define <script type="math/tex; mode=display">
-    \eta(\theta) = \beta(\theta) = \argmax_\beta \Er[\ell(W;\theta,\beta)]
-    </script>
+  \eta(\theta) = \beta(\theta) = \argmax_\beta \Er[\ell(W;\theta,\beta)]
+  </script>
 </li>
-<li>First order condition from
-    $\max_\theta \Er[\ell(W;\theta,\beta(\theta))]$ is <script type="math/tex; mode=display">
-    0 = \Er\left[ \underbrace{\frac{\partial \ell}{\partial \theta} + \frac{\partial \ell}{\partial \beta} \frac{d \beta}{d \theta}}_{\psi(W;\theta,\beta(\theta))} \right]
-    </script>
+<li>First order condition from $\max_\theta
+  \Er[\ell(W;\theta,\beta(\theta))]$ is <script type="math/tex; mode=display">
+  0 = \Er\left[ \underbrace{\frac{\partial \ell}{\partial \theta} + \frac{\partial \ell}{\partial \beta} \frac{d \beta}{d \theta}}_{\psi(W;\theta,\beta(\theta))} \right]
+  </script>
 </li>
 </ul>
 <hr />
 <h3 id="orthogonal-scores-via-projection">Orthogonal scores via projection<a class="headerlink" href="#orthogonal-scores-via-projection" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Original model:
-    $m: \mathcal{W} \times \R^{d_\theta} \times \R^{d_h} \to \R^{d_m}$
-    <script type="math/tex; mode=display">
-    \Er[m(W;\theta_0,h_0(Z))|R] = 0
-    </script>
+  $m: \mathcal{W} \times \R^{d_\theta} \times \R^{d_h} \to \R^{d_m}$ <script type="math/tex; mode=display">
+  \Er[m(W;\theta_0,h_0(Z))|R] = 0
+  </script>
 </li>
 <li>Let $A(R)$ be $d_\theta \times d_m$ moment selection matrix,
-    $\Omega(R)$ $d_m \times d_m$ weighting matrix, and <script type="math/tex; mode=display">
-    \begin{align*}
-    \Gamma(R) = & \partial_{v'} \Er[m(W;\theta_0,v)|R]|_{v=h_0(Z)} \\
-    G(Z) = & \Er[A(R)'\Omega(R)^{-1} \Gamma(R)|Z]
-    \Er[\Gamma(R)'\Omega(R)^{-1} \Gamma(R) |Z]^{-1} \\
-    \mu_0(R) = & A(R)'\Omega(R)^{-1} - G(Z) \Gamma(R)'\Omega(R)^{-1}
-    \end{align*}
-    </script>
+  $\Omega(R)$ $d_m \times d_m$ weighting matrix, and <script type="math/tex; mode=display">
+  \begin{align*}
+  \Gamma(R) = & \partial_{v'} \Er[m(W;\theta_0,v)|R]|_{v=h_0(Z)} \\
+  G(Z) = & \Er[A(R)'\Omega(R)^{-1} \Gamma(R)|Z]
+  \Er[\Gamma(R)'\Omega(R)^{-1} \Gamma(R) |Z]^{-1} \\
+  \mu_0(R) = & A(R)'\Omega(R)^{-1} - G(Z) \Gamma(R)'\Omega(R)^{-1}
+  \end{align*}
+  </script>
 </li>
 <li>$\eta = (\mu, h)$ and
-    <script type="math/tex; mode=display"> \psi(W;\theta, \eta) = \mu(R) m(W;\theta, h(Z)) </script>
+  <script type="math/tex; mode=display"> \psi(W;\theta, \eta) = \mu(R) m(W;\theta, h(Z)) </script>
 </li>
 </ul>
-<div class="notes">
-<p>@chernozhukov2018 show how to construct orthogonal scores in a few
-examples via concentrating out and projection. @chernozhukov2015 also
-discusses creating orthogonal scores.</p>
-</div>
+<p>::: notes
+Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins, &ldquo;<a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>,&rdquo; <em>The Econometrics Journal</em>, 21 (2018a), C1&ndash;C68. show how to construct orthogonal scores in a few
+examples via concentrating out and projection. Chernozhukov, Victor, Christian Hansen, and Martin Spindler, &ldquo;<a href="https://doi.org/10.1146/annurev-economics-012315-015826">Valid post-selection and post-regularization inference: An elementary, general approach</a>,&rdquo; <em>Annual Review of Economics</em>, 7 (2015), 649&ndash;688. also
+discusses creating orthogonal scores.
+:::</p>
 <hr />
 <h3 id="example-average-derivative">Example: average derivative<a class="headerlink" href="#example-average-derivative" title="Permanent link">&para;</a></h3>
 <ul>
@@ -480,37 +470,37 @@ discusses creating orthogonal scores.</p>
 </li>
 <li>
 <p>Joint objective <script type="math/tex; mode=display">
-    \min_{\theta,f} \Er\left[ (y - f(x))^2 + (\theta - f'(x)^2) \right] 
-    </script>
+  \min_{\theta,f} \Er\left[ (y - f(x))^2 + (\theta - f'(x)^2) \right] 
+  </script>
 </p>
 </li>
 <li>
 <p>Solve for minimizing $f$ given $\theta$ <script type="math/tex; mode=display">
-     f_\theta(x) = \Er[y|x] - \theta \partial_x \log p(x) + f''(x) + f'(x) \partial_x \log p(x)
-    </script>
+   f_\theta(x) = \Er[y|x] - \theta \partial_x \log p(x) + f''(x) + f'(x) \partial_x \log p(x)
+  </script>
 </p>
 </li>
 <li>
 <p>Concentrated objective: <script type="math/tex; mode=display"> 
-    \min_\theta \Er\left[ (y - f_\theta(x))^2 + (\theta - f_\theta'(x)^2)
-    \right]
-    </script>
+  \min_\theta \Er\left[ (y - f_\theta(x))^2 + (\theta - f_\theta'(x)^2)
+  \right]
+  </script>
 </p>
 </li>
 <li>
 <p>First order condition at $f_\theta = f_0$ gives <script type="math/tex; mode=display">
-    0 = \Er\left[ (y - f_0(x))\partial_x \log p(x) + (\theta - f_0'(x)) \right]
-    </script>
+  0 = \Er\left[ (y - f_0(x))\partial_x \log p(x) + (\theta - f_0'(x)) \right]
+  </script>
 </p>
 </li>
 </ul>
-<div class="notes">
-<p>We’ll go over this derivation in lecture, but I don’t think I’ll have
+<p>::: notes
+We&rsquo;ll go over this derivation in lecture, but I don&rsquo;t think I&rsquo;ll have
 time to type it here.</p>
-<p>See @cnr2018 for an approach to estimating average derivatives (and
-other linear in $\theta$ models) that doesn’t require explicitly
-calculating an orthogonal moment condition.</p>
-</div>
+<p>See Chernozhukov, Victor, Whitney Newey, James Robins, and Rahul Singh, &ldquo;<a href="https://arxiv.org/abs/1802.08667">Double/de-biased machine learning of global and local parameters using regularized riesz representers</a>,&rdquo; 2018c. for an approach to estimating average derivatives (and
+other linear in $\theta$ models) that doesn&rsquo;t require explicitly
+calculating an orthogonal moment condition.
+:::</p>
 <hr />
 <h3 id="example-average-derivative-with-endogeneity">Example : average derivative with endogeneity<a class="headerlink" href="#example-average-derivative-with-endogeneity" title="Permanent link">&para;</a></h3>
 <ul>
@@ -522,35 +512,37 @@ calculating an orthogonal moment condition.</p>
 </li>
 <li>
 <p>Joint objective: <script type="math/tex; mode=display">
-    \min_{\theta,f} \Er\left[ \Er[y - f(x)|z]^2 + (\theta - f'(x))^2 \right] 
-    </script>
+  \min_{\theta,f} \Er\left[ \Er[y - f(x)|z]^2 + (\theta - f'(x))^2 \right] 
+  </script>
 </p>
 </li>
 <li>
 <p>then <script type="math/tex; mode=display">
-    f_\theta(x) = (T^\ast T)^{-1}\left((T^\ast \Er[y|z])(x) - \theta \partial_x
-    \log p(x)\right)
-    </script>
+  f_\theta(x) = (T^\ast T)^{-1}\left((T^\ast \Er[y|z])(x) - \theta \partial_x
+  \log p(x)\right)
+  </script>
 </p>
-<ul>
-<li>where $T:\mathcal{L}^2_{p} \to \mathcal{L}^2_{\mu_z}$ with
-    $(T f)(z) = \Er[f(x) |z]$</li>
-<li>and $T^\ast :\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with
-    $(T^\ast g)(z) = \Er[g(z) |x]$</li>
-</ul>
+</li>
+<li>
+<p>where $T:\mathcal{L}^2_{p} \to \mathcal{L}^2_{\mu_z}$ with
+    $(T f)(z) = \Er[f(x) |z]$</p>
+</li>
+<li>
+<p>and $T^\ast :\mathcal{L}^2_{\mu_z} \to \mathcal{L}^2_{p}$ with
+    $(T^\ast g)(z) = \Er[g(z) |x]$</p>
 </li>
 <li>
 <p>Orthogonal moment condition : <script type="math/tex; mode=display">
-    0 = \Er\left[ 
-    \Er[y - f(x) | z] (T (T^\ast T)^{-1} \partial_x \log p)(z) +
-    (\theta - f'(x)) 
-    \right]
-    </script>
+  0 = \Er\left[ 
+  \Er[y - f(x) | z] (T (T^\ast T)^{-1} \partial_x \log p)(z) +
+  (\theta - f'(x)) 
+  \right]
+  </script>
 </p>
 </li>
 </ul>
-<div class="notes">
-<p>The first order condition for $f$ in the joint objective function is <script type="math/tex; mode=display">
+<p>::: notes
+The first order condition for $f$ in the joint objective function is <script type="math/tex; mode=display">
 \begin{align*}
 0 = \Er \left[ \Er[y-f(x) |z]\Er[v(x)|z] + (\theta - f'(x))(-v'(x)) \right]
 \end{align*}
@@ -560,9 +552,8 @@ rid of $v&rsquo;(x)$, and switching the order of integration, gives <script type
 0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
 (\theta-f'(x))\partial_x \log p(x) - f''(x) \right) p(x) dx
 \end{align*}
-</script> Notice that integrating by parts
-$\int f&rsquo;&lsquo;(x) p(x) dx = \int f&rsquo; p&rsquo;(x) dx$ eliminates the terms with $f&rsquo;$
-and $f&rsquo;&lsquo;$, leaving <script type="math/tex; mode=display">
+</script> Notice that integrating by parts $\int f&rsquo;&lsquo;(x) p(x) dx = \int f&rsquo; p&rsquo;(x)
+dx$ eliminates the terms with $f&rsquo;$ and $f&rsquo;&lsquo;$, leaving <script type="math/tex; mode=display">
 \begin{align*}
 0 = \int_\mathcal{X} v(x)\left( \int_\mathcal{Z} \Er[y - f(x)|z] p(z|x) dz -
 \theta \partial_x \log p(x) \right) p(x) dx
@@ -584,15 +575,14 @@ condition on the slide. Verifying that this moment condition is indeed
 orthogonal is slightly tedious. Writing out some of the expectations as
 integrals, changing order of integrations, and judiciously factoring out
 terms, will eventually lead to the desired conclusion.</p>
-<p>@cfr2007 is an excellent review about estimating $(T^\ast T)^{-1}$ and
-the inverses of other linear transformations.</p>
-</div>
+<p>Carrasco, Marine, Jean-Pierre Florens, and Eric Renault, &ldquo;<a href="https://doi.org/10.1016/S1573-4412(07)06077-1">Chapter 77 linear inverse problems in structural econometrics estimation based on spectral decomposition and regularization</a>,&rdquo; in <em>Handbook of econometrics</em>, James J. Heckman and Edward E. Leamer, eds., Handbook of econometrics (Elsevier, 2007). is an excellent review about estimating $(T^\ast T)^{-1}$ and
+the inverses of other linear transformations.
+:::</p>
 <hr />
 <h3 id="example-average-elasticity">Example: average elasticity<a class="headerlink" href="#example-average-elasticity" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Demand $D(p)$, quantities $q$, instruments $z$
-    <script type="math/tex; mode=display">\Er[q-D(p) |z] = 0</script>
+<p>Demand $D(p)$, quantities $q$, instruments $z$ <script type="math/tex; mode=display">\Er[q-D(p) |z] = 0</script>
 </p>
 </li>
 <li>
@@ -600,8 +590,8 @@ the inverses of other linear transformations.</p>
 </li>
 <li>
 <p>Joint objective : <script type="math/tex; mode=display">
-    \min_{\theta,D} \Er\left[ \Er[q - D(p)|z]^2 + (\theta - D'(p)/D(p))^2  \right]
-    </script>
+  \min_{\theta,D} \Er\left[ \Er[q - D(p)|z]^2 + (\theta - D'(p)/D(p))^2  \right]
+  </script>
 </p>
 </li>
 </ul>
@@ -618,21 +608,16 @@ the inverses of other linear transformations.</p>
 <hr />
 <h2 id="treatment-heterogeneity">Treatment heterogeneity<a class="headerlink" href="#treatment-heterogeneity" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Potential outcomes model<ul>
+<li>Potential outcomes model</li>
 <li>Treatment $d \in {0,1}$</li>
 <li>Potential outcomes $y(1), y(0)$</li>
 <li>Covariates $x$</li>
 <li>Unconfoundedness or instruments</li>
-</ul>
-</li>
-<li>Objects of interest:<ul>
-<li>Conditional average treatment effect
-    $s_0(x) = \Er[y(1) - y(0) | x]$</li>
-<li>Range and other measures of spread of conditional average
-    treatment effect</li>
+<li>Objects of interest:</li>
+<li>Conditional average treatment effect $s_0(x) = \Er[y(1) - y(0) | x]$</li>
+<li>Range and other measures of spread of conditional average treatment
+    effect</li>
 <li>Most and least affected groups</li>
-</ul>
-</li>
 </ul>
 <hr />
 <h3 id="fixed-finite-groups">Fixed, finite groups<a class="headerlink" href="#fixed-finite-groups" title="Permanent link">&para;</a></h3>
@@ -648,40 +633,40 @@ the inverses of other linear transformations.</p>
 </li>
 <li>
 <p>cons: poorly chosen partition hides some heterogeneity, searching
-    partitions violates inference</p>
+  partitions violates inference</p>
 </li>
 </ul>
 <hr />
 <h3 id="generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments">Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments<a class="headerlink" href="#generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>@cddf2018</p>
+<p>Chernozhukov, Victor, Mert Demirer, Esther Duflo, and Iván Fernández-Val, &ldquo;<a href="https://doi.org/10.3386/w24678">Generic machine learning inference on heterogenous treatment effects in randomized experimentsxo</a>,&rdquo; Working paper series, Working Paper, 2018b (National Bureau of Economic Research).</p>
 </li>
 <li>
-<p>Use machine learning to find partition with sample splitting to
-    allow easy inference</p>
+<p>Use machine learning to find partition with sample splitting to allow
+  easy inference</p>
 </li>
 <li>
 <p>Randomly partition sample into auxillary and main samples</p>
 </li>
 <li>
 <p>Use any method on auxillary sample to estimate
-    <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
-    <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
+  <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
+  <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
 </p>
 </li>
 </ul>
 <hr />
-<h3 id="generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1">Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments [generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1]<a class="headerlink" href="#generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1" title="Permanent link">&para;</a></h3>
+<h3 class="unnumbered" id="generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1">Generic Machine Learning Inference on Heterogenous Treatment Effects in Randomized Experiments<a class="headerlink" href="#generic-machine-learning-inference-on-heterogenous-treatment-effects-in-randomized-experiments-1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p>Define $G_k = 1{\ell_{k-1} \leq S(x) \leq \ell_k}$</p>
 </li>
 <li>
 <p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
-    y = \alpha_0 + \alpha_1 B(x) + \sum_k \gamma_k (d-P(X)) 1(G_k) +
-    \epsilon 
-    </script>
+  y = \alpha_0 + \alpha_1 B(x) + \sum_k \gamma_k (d-P(X)) 1(G_k) +
+  \epsilon 
+  </script>
 </p>
 </li>
 <li>
@@ -696,85 +681,81 @@ the inverses of other linear transformations.</p>
 </li>
 <li>
 <p>Use any method on auxillary sample to estimate
-    <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
-    <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
+  <script type="math/tex; mode=display">S(x) = \widehat{\Er[y(1) - y(0) | x]}</script> and
+  <script type="math/tex; mode=display">B(x) = \widehat{\Er[y(0)|x]}</script>
 </p>
 </li>
 <li>
 <p>Use main sample to regress with weights $(P(x)(1-P(X)))^{-1}$ <script type="math/tex; mode=display"> 
-    y = \alpha_0 + \alpha_1 B(x) + \beta_0 (d-P(x)) + \beta_1
-    (d-P(x))(S(x) - \Er[S(x)]) + \epsilon 
-    </script>
+  y = \alpha_0 + \alpha_1 B(x) + \beta_0 (d-P(x)) + \beta_1
+  (d-P(x))(S(x) - \Er[S(x)]) + \epsilon 
+  </script>
 </p>
 </li>
 <li>
-<p>$\hat{\beta}<em b_0_b_1="b_0,b_1">0, \hat{\beta}_1 \to_p \argmin</em> \Er[(s_0(x) - b_0 - b_1 (S(x)-E[S(x)]))^2]$</p>
+<p>$\hat{\beta}<em b_0_b_1="b_0,b_1">0, \hat{\beta}_1 \to_p \argmin</em> \Er[(s_0(x) -
+  b_0 - b_1 (S(x)-E[S(x)]))^2]$</p>
 </li>
 </ul>
 <hr />
 <h3 id="inference-on-cate">Inference on CATE<a class="headerlink" href="#inference-on-cate" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Inference on $\Er[y(1) - y(0) | x] = s_0(x)$ challenging when $x$
-    high dimensional and/or few restrictions on $s_0$</p>
+<p>Inference on $\Er[y(1) - y(0) | x] = s_0(x)$ challenging when $x$ high
+  dimensional and/or few restrictions on $s_0$</p>
 </li>
 <li>
-<p>Pointwise results for random forests : @wager2018, @athey2016</p>
+<p>Pointwise results for random forests : Wager, Stefan, and Susan Athey, &ldquo;<a href="https://doi.org/10.1080/01621459.2017.1319839">Estimation and inference of heterogeneous treatment effects using random forests</a>,&rdquo; <em>Journal of the American Statistical Association</em>, 0 (2018), 1&ndash;15 (Taylor &amp; Francis)., Athey, Susan, Julie Tibshirani, and Stefan Wager, &ldquo;<a href="https://arxiv.org/abs/1610.01271">Generalized random forests</a>,&rdquo; 2016.</p>
 </li>
 <li>
-<p>Recent review of high dimensional inference : @bcchk2018</p>
+<p>Recent review of high dimensional inference : Belloni, Alexandre, Victor Chernozhukov, Denis Chetverikov, Christian Hansen, and Kengo Kato, &ldquo;<a href="https://arxiv.org/abs/1806.01888">High-dimensional econometrics and regularized GMM</a>,&rdquo; 2018a.</p>
 </li>
 </ul>
 <hr />
 <h3 id="random-forest-asymptotic-normality">Random forest asymptotic normality<a class="headerlink" href="#random-forest-asymptotic-normality" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>@wager2018</p>
+<p>Wager, Stefan, and Susan Athey, &ldquo;<a href="https://doi.org/10.1080/01621459.2017.1319839">Estimation and inference of heterogeneous treatment effects using random forests</a>,&rdquo; <em>Journal of the American Statistical Association</em>, 0 (2018), 1&ndash;15 (Taylor &amp; Francis).</p>
 </li>
 <li>
 <p>$\mu(x) = \Er[y|x]$</p>
 </li>
 <li>
 <p>$\hat{\mu}(x)$ estimate from honest random forest</p>
-<ul>
+</li>
 <li>
 <p>honest $=$ trees independent of outcomes being averaged</p>
 </li>
 <li>
 <p>sample-splitting or trees formed using another outcome</p>
 </li>
-</ul>
-</li>
 <li>
 <p>Then
-    <script type="math/tex; mode=display"> \frac{\hat{\mu}(x) - \mu(x)}{\hat{\sigma}_n(x)} \leadsto N(0,1) </script>
+  <script type="math/tex; mode=display"> \frac{\hat{\mu}(x) - \mu(x)}{\hat{\sigma}_n(x)} \leadsto N(0,1) </script>
 </p>
-<ul>
-<li>$\hat{\sigma}_n(x) \to 0$ slower than $n^{-1/2}$</li>
-</ul>
+</li>
+<li>
+<p>$\hat{\sigma}_n(x) \to 0$ slower than $n^{-1/2}$</p>
 </li>
 </ul>
 <hr />
 <h3 id="random-forest-asymptotic-normality_1">Random forest asymptotic normality<a class="headerlink" href="#random-forest-asymptotic-normality_1" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Results are pointwise, but what about?<ul>
+<li>Results are pointwise, but what about?</li>
 <li>$H_0: \mu(x_1) = \mu(x_2)$</li>
 <li>${x: \mu(x) \geq 0 }$</li>
 <li>$\Pr(\mu(x) \leq 0)$</li>
 </ul>
-</li>
-</ul>
 <hr />
 <h3 id="uniform-inference">Uniform inference<a class="headerlink" href="#uniform-inference" title="Permanent link">&para;</a></h3>
 <ul>
-<li>@bcchk2018</li>
-<li>@bccw2018</li>
+<li>Belloni, Alexandre, Victor Chernozhukov, Denis Chetverikov, Christian Hansen, and Kengo Kato, &ldquo;<a href="https://arxiv.org/abs/1806.01888">High-dimensional econometrics and regularized GMM</a>,&rdquo; 2018a.</li>
+<li>Belloni, Alexandre, Victor Chernozhukov, Denis Chetverikov, and Ying Wei, &ldquo;<a href="https://doi.org/10.1214/17-AOS1671">Uniformly valid post-regularization confidence regions for many functional parameters in z-estimation framework</a>,&rdquo; <em>Ann. Statist.</em>, 46 (2018b), 3643&ndash;3675 (The Institute of Mathematical Statistics).</li>
 </ul>
-<pre><code>&lt;!-- --- --&gt;
-</code></pre>
+<!-- --- -->
+
 <h1 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h1>
-<pre><code>&lt;!-- --- --&gt;
-</code></pre></div>
+<!-- --- --></div>
             </div>
         </div>
 

@@ -236,12 +236,12 @@ applications to time series. Recurrent networks are also useful for
 processing text and audio data.</p>
 <h2 id="additional-reading">Additional Reading<a class="headerlink" href="#additional-reading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>@goodfellow2016 <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a>
+<li>(Goodfellow, Bengio, and Courville 2016)<sup id="fnref:goodfellow2016"><a class="footnote-ref" href="#fn:goodfellow2016">1</a></sup> <a href="http://www.deeplearningbook.org"><em>Deep Learning</em></a>
   especially chapter 10</li>
 <li><a href="https://denizyuret.github.io/Knet.jl/latest/"><code>Knet.jl</code>
   documentation</a>
   especially the textbook</li>
-<li>@klok2019 <em>Statistics with Julia:Fundamentals for Data Science,
+<li>(Klok and Nazarathy 2019)<sup id="fnref:klok2019"><a class="footnote-ref" href="#fn:klok2019">2</a></sup> <em>Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence</em></li>
 </ul>
 <h1 id="recurrent-networks">Recurrent Networks<a class="headerlink" href="#recurrent-networks" title="Permanent link">&para;</a></h1>
@@ -258,8 +258,8 @@ could simply be single layer perceptrons, or any of the more complicated
 network architectures we previously discussed.</p>
 <h2 id="approximation-ability">Approximation Ability<a class="headerlink" href="#approximation-ability" title="Permanent link">&para;</a></h2>
 <p>Recurrent networks can approximate (in fact can equal) any computable
-function. @siegelmann1991 and @siegelmann1992 show that recurrent neural
-networks are Turing complete. As with the universal approximation
+function. (Siegelmann and Sontag 1991)<sup id="fnref:siegelmann1991"><a class="footnote-ref" href="#fn:siegelmann1991">3</a></sup> and (Siegelmann and Sontag 1992)<sup id="fnref:siegelmann1992"><a class="footnote-ref" href="#fn:siegelmann1992">4</a></sup> show that recurrent
+neural networks are Turing complete. As with the universal approximation
 ability of feed forward networks, this result is good to know, but it is
 not an explanation for the good practical performance of recurrent
 networks.</p>
@@ -319,7 +319,7 @@ state, $s_t$. The extra hidden state is $s_t \in (0,1)$ and is a
 weighted sum of $s_{t-1}$ and other variables. In particular, <script type="math/tex; mode=display">
  s_t = \sigma(b_f + U_f' x_t + W_f' h_{t-1}) s_{t-1} + \sigma(b_g + U_g'
  x_t + W_g' h_{t-1}) \tilde{x}_t
-</script> The first $\sigma(b_f + U_f&rsquo; x_t + W_f&rsquo; h_{t-1})$ is a “forget” gate.
+</script> The first $\sigma(b_f + U_f&rsquo; x_t + W_f&rsquo; h_{t-1})$ is a &ldquo;forget&rdquo; gate.
 It determines how much of $s_{t-1}$ is forgotten. The second
 $\sigma(b_g + U_g&rsquo; x_t + W_g&rsquo; h_{t-1})$ is call the external input gate.
 It determines how much current $x_t$ affects $s_t$. The $\tilde{x}$ is a
@@ -485,7 +485,7 @@ out</a>, you
 can generate pretty good text with a simple Markovian model of
 characters. That is, estimate the probability of a character $c$ given a
 history of $L$ characters $h$, $P(c_t|c_{t-1}, &hellip;, c_{t-L})$, by simple
-sample averages. Let’s try this out.</p>
+sample averages. Let&rsquo;s try this out.</p>
 <pre><code class="language-julia">using StaticArrays
 
 function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
@@ -515,7 +515,7 @@ else
   JLD2.@save modelfile dm
 end
 </code></pre>
-<pre><code>1.405111 seconds (14.86 M allocations: 1.214 GiB, 11.83% gc time, 59.52% 
+<pre><code>1.338321 seconds (14.86 M allocations: 1.214 GiB, 11.34% gc time, 57.16% 
 compilation time)
 </code></pre>
 <p>The above code stores $P(c_t|c_{t-1},&hellip;,c_{t-L})$ in a dictionary. When
@@ -523,7 +523,7 @@ $L$ is large, there are huge number of possible histories,
 $c_{t-1},&hellip;,c_{t-L}$, and we will not observe many of them. A
 dictionary only stores data on the histories we observe, so it will save
 some memory.</p>
-<p>Let’s now sample from our model.</p>
+<p>Let&rsquo;s now sample from our model.</p>
 <pre><code class="language-julia">defaultinit=collect(&quot;\n\n&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Strict//EN\&quot;\n\&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\&quot;&gt;\n&lt;html lang=\&quot;en\&quot; xml:lang=\&quot;en\&quot; xmlns=\&quot;http://www.w3.org/1999/xhtml\&quot;&gt;\n\n&lt;head&gt;\n&lt;title&gt;&quot;)
 
 function sample_markov(dm::Dict{SVector{L, Char}, Dict{Char, Float64}}, len=1000,
@@ -551,47 +551,45 @@ end
 println(String(sample_markov(dm)))
 </code></pre>
 <pre><code>(length(dm), length(text)) = (88032, 2873103)
-tle&gt;The Lordy.png" wide, thickel, July 20, 1962)&lt;/p&gt;
+tle&gt;Hall, the Lord,
+I hear the don't Lost dealin'&lt;/a&gt;).&lt;/pre&gt;
+&lt;p class="tab"&gt;
+  G#m                                  /d   x2222)&lt;/h2&gt;
 
-&lt;h1 class="verse (to given world you
-   C  Fmaj7
- Today not to and much the jointentical-align: the maidentire By Montain no
- are class="verse"&gt;
-You're drivered at the broad of they closes that Cafe, let me I go
-Be can't gonna stain love And trade
-To lear me bass
-F   G9       Bm Em                 A
-Yes, 'n' river,
-In human, same, I'm born from my frighth
-And the new pony, she verse"&gt;
-G       Bb . . . F . . |
-| C . .   .   .  D/f#   x55433
-C/g  G D
-Neither a-wonde of chance.
-No, nothing lyrics):
+&lt;pre closer to leaves are like a lick:
+            Eb6
+Let mysters are songtitle"&gt;Budokan/index.htm"&gt;Dylan forgia crazy or (Take y
+our house he seven on hotel&amp;quot;Don't remember 1980 gossingled him verse"&gt;
+&amp;quot;What your owned makes too.&lt;br /&gt;
+I do you're somery&lt;br /&gt;
+Released also closer too ever someone her beyonder My God know
+Bb      F/a                   G
+It all the morning though one to send about some whom dawn
+
+So, I leave the series all ship's got the
+yeah.
 &lt;/pre&gt;
 
-&lt;pre class="version&lt;/h1&gt;
-
-
-&lt;p&gt;The care job in blue,
-And and nowadays, don't ever of Love A-Changin'&lt;/a&gt; (1967)&lt;br /&gt;
+&lt;h1 class="tab"&gt;
+  &lt;tr&gt;
+  G     :         x46654
+G      C
+You more class="songtitle"&gt;West
+But person they lo actice
+at to do any cigars and me,&amp;quot;I don't
+do. He cot &lt;br /&gt;
 
 &lt;hr /&gt;
-Released on the six me arounders,
-Nor a played 57765  (in my like a comin' to get so write made away
-Bb                    :   .                 G          C        F
- Lullaby
-but the shave light no useful
-In the way
-I'm 20 1975)&lt;br /&gt;
- I dreams, father for coming.
-&lt;/pre&gt;
-I see your play you some the with?]
-C
+
+&lt;body cage is all mistreet
+All of the F's so under or and shamel a littleg Series 1-3. There in Bojang
+les, mama [/daddy, Hall&lt;/em&gt;, but some of stolen
+And in crite
+
+I'm moved by Eyolf &amp;Oslash;strem&lt;br
 </code></pre>
 <p>Conditioning on histories of length 4, we get some hints of Dylan-esque
-lyrics, but we also get a lot of gibberish. Let’s try longer histories.</p>
+lyrics, but we also get a lot of gibberish. Let&rsquo;s try longer histories.</p>
 <h3 id="length-10">Length 10<a class="headerlink" href="#length-10" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov10.jld2&quot;)
 if isfile(modelfile) &amp;&amp; !rerun
@@ -603,38 +601,50 @@ end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
 </code></pre>
-<pre><code>1.717415 seconds (21.88 M allocations: 1.759 GiB, 18.67% gc time, 15.64% 
+<pre><code>1.721190 seconds (21.88 M allocations: 1.759 GiB, 18.67% gc time, 15.24% 
 compilation time: 2% of which was recompilation)
 (length(dm), length(text)) = (930264, 2873103)
 d&gt;
-&lt;title&gt;You Don't Know Why&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../roadmaps.htm#shuffle"&gt;regul
-ar shuffle&lt;/a&gt; with the youngest a gay gold rings
-And into every moment of existence seems like every time you do, please don
-'t do me wrong, don't do me wrong, don't do me no good.
-When everyone ran out on me
-Fenced yards ain't hole cards and, like as not it's better leave each other
- more than life to me,
-Whom have I on earth can tie me down
-           F  
-I don't care about economy, I don't mind the driving the Blues&lt;/h1&gt;
+&lt;title&gt;Gonna Change My Way of Thinking&lt;/title&gt;
+  &lt;link rel="stylesheet" type="text/css" /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1 class="songtitle"&gt;Mozambique&lt;/h1&gt;
 
 
-&lt;!--==================================--&gt;
-&lt;pre class="verse"&gt;
-She wears an Egyptian ring
-That sparkles before she died.
-She had a falling out and all of your cloths
-And ye shall be changed
+&lt;p&gt;written by Bob Dylan&lt;br /&gt;
+Released on &lt;a class="refrain"&gt;
+Dead man, dead man,
+
+When will you were rain
+You were born in time.
 &lt;/pre&gt;
+&lt;pre class="verse"&gt;
+Silent weekend,
+   A
+My baby she took me by the heart of mine
+And there's so much on
+the widely circulating version also has different kind of friend is this
+make me holler to and fro beneath the fan
+Doin' business with a tiny man who did the land where must be runnin' for t
+o save more'n two or three dollars &lt;br /&gt;
+Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;pre class="tab"&gt;
-  :     .     .     .       :     .     .     .   .   .   .   .   .
-|----------------   at line endings). the following sample (heard for quite
- some time before daylight hours do increase
-Someday, everything that's near to me nearer to
+&lt;pre class="bridge"&gt;
+[Joanie, who remembers that exist &amp;amp; you'll see          C#m
+Stood by her
+      Am                 E
+Your lips on mine are like two jewels in the home in this world, stuff drea
+ms are dreamed of surrenders with its claws
+Had to go to the moon and stars?
+Neighborhood bully.
+
+The neighborhood
+              A
 </code></pre>
 <h3 id="length-20">Length 20<a class="headerlink" href="#length-20" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;dylan-markov20.jld2&quot;)
@@ -647,97 +657,81 @@ end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
 </code></pre>
-<pre><code>2.680498 seconds (23.94 M allocations: 2.581 GiB, 17.49% gc time, 5.83% c
+<pre><code>2.808461 seconds (23.94 M allocations: 2.581 GiB, 17.69% gc time, 5.67% c
 ompilation time)
 (length(dm), length(text)) = (1522834, 2873103)
 ml"&gt;
 
 &lt;head&gt;
-&lt;title&gt;The Death of Emmett Till&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Thief On The Cross&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Tight Connection to My Heart (Has Anybody Seen My Lov
-e)&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Man Gave Names to All the Animals&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Roving Blade (Newry Highwayman)&lt;/title&gt;
-&lt;link rel="stylesheet" type="text/css" href="../css/general.css" /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;h1 class="songtitle"&gt;Three Angels&lt;/h1&gt;
+&lt;title&gt;Deportee (Plane Wreck at Los Gatos)&lt;/h1&gt;
 
 
-&lt;p&gt;Words and music John Hiatt&lt;br /&gt;
-Performed by Bob Dylan regularly in 1999-2000 and a few times before
-and after that&lt;br /&gt;
+&lt;p&gt;Words: Woody Guthrie, Melody: Martin Hoffman&lt;br /&gt;
+Performed by Bob Dylan during the Bromberg Sessions, early/mid June
+1992&lt;br /&gt;
 Tabbed by Eyolf &amp;Oslash;strem&lt;/p&gt;
 
-&lt;hr /&gt;
+&lt;p&gt;There are two possible ways of playing the second beat of the second
+measure. Either as written (000500), which is what Dylan plays, or
+with all the strings open (000000). That would ensure a smoother
+transition to the next shape (x01200).&lt;/p&gt;
 
-&lt;pre class="verse"&gt;
-It's unbelievable like a lead balloon,
-It's so impossible to even learn the tune.
-Kill that beast and feed that swine,
-Scale that wall and smoke that vine,
-Beat that horse and saddle up the drum.
-It's unbelievable, it's strange but true,
+&lt;p&gt;The last verse reverts to the original position.&lt;br /&gt;
+Verses not sung by Dylan&lt;/h3&gt;
 
-It's inconceivable it could happen to you.
+&lt;h4&gt;English&lt;/h4&gt;
+&lt;pre&gt;
+True God of true God, Light from Light Eternal,
+Lo, He shuns not the Virgin's womb;
+Son of the Father, begotten, not created;
 
-You go north and you go south
 
-Just like bait in the fish's mouth.
-                  G/Bb
-When you throw the Southern black boy in prison
-        G
-And you say the only good niggers are the ones that have died
-      /g-bb       /g         /f /d   G
-Don't think I'll  ever stand on your side.&lt;/pre&gt;
-&lt;pre class="verse"&gt;
-Genghis Khan
-He could not keep
-All his kings
-Supplied with sleep
-We'll climb that hill no matter how steep
-When we get up to it
-&lt;/pre&gt;
-&lt;pre class="verse"&gt;
-[instr.]
+See how the shepherds, summoned to His cradle,
+Leaving their flocks, draw nigh to gaze;
+We too will thither bend our joyful footsteps;
 
-              A
-Where are the men
-B7               E
- that I used to sport with?
-             F
-What has become
-G               D     G
-But mama, you been on my mind.
+
+Lo! star led chieftains, Magi, Christ adoring,
+Offer Him incense, gold, and myrrh;
+We to the Christ Child bring our hearts' oblations.
+
+
+Child, for us sinners poor and in the manger,
+We would embrace Thee, with love and awe;
+Who would not love Thee, loving us so dearly?
+
+
+Yea, Lord, we greet Thee, born this happy morning;
+Jesus, to Thee be glory given;
+Word of the Father, now in flesh appearing.
 &lt;/pre&gt;
 
-&lt;pre class="verse"&gt;
-Come on brother, join the band,
-Come on sisters, clap your hands,
-Tel
+&lt;h4&gt;Latin&lt;/h4&gt;
+
+&lt;pre&gt;
+En grege relicto, humiles ad cunas
+Vocati pastores approperant:
+Et nos ovanti gradu festinemus.
+Venite adoremus, venite adoremus,
+venite adoremus Dominum. 
+&lt;/pre&gt;
+
+&lt;/body&gt;&lt;/html&gt;
+
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
+
+&lt;head&gt;
+&lt;title&gt;Man of Constant Sorrow&lt;/h1&gt;
+
+
+&lt;p&gt;First published in 1913 by the blind Richard Burnett.
+Also recorded by the Stanley Brothers and others. &lt;br /&gt;
+Played by Bob Dylan on various occasions in Dylan's early years&lt;br /&gt;
+Tabbed by Eyolf &amp;Oslash;strem&lt;br /&gt;
+as recorded during the sessions for &lt;a href="../05_bi
 </code></pre>
 <p>With histories of length 20 the text looks pretty. Some of the lyrics
 are recognizably Dylan-like. However, the model still gets html tags
@@ -747,7 +741,7 @@ million characters. Among these, there are 1.5 million unique sequences
 of 20 characters. Many of the estimated $P(c_t|c_{t-1}, &hellip;)$ are equal
 to one.</p>
 <h2 id="rnn">RNN<a class="headerlink" href="#rnn" title="Permanent link">&para;</a></h2>
-<p>Now let’s fit a recurrent neural network to the Dylan lyrics and chords
+<p>Now let&rsquo;s fit a recurrent neural network to the Dylan lyrics and chords
 data.</p>
 <pre><code class="language-julia">using Flux
 using Flux: onehot, chunk, batchseq, throttle, logitcrossentropy
@@ -809,7 +803,7 @@ ps ≈ pred
 <pre><code>Error: UndefVarError: `Recur` not defined in `Flux`
 Suggestion: check for spelling errors or missing imports.
 </code></pre>
-<p>Now let’s fit an RNN to Dylan lyrics.</p>
+<p>Now let&rsquo;s fit an RNN to Dylan lyrics.</p>
 <h3 id="data-preparation">Data Preparation<a class="headerlink" href="#data-preparation" title="Permanent link">&para;</a></h3>
 <pre><code class="language-julia">text = collect(String(read(joinpath(docdir,&quot;jmd&quot;,&quot;dylanchords.txt&quot;))))
 function preparedata(text; seqlen=100, endchar = 'Ω', batchesz=300)
@@ -835,7 +829,7 @@ data = zip(Xseq, Yseq);
 <p>To reduce computation while training the model, we are going to use
 gradient truncation. <code>seqlen</code> is the length of history through which
 gradients are accumulated.</p>
-<p>We also divide the data into “batches” for computation. <code>batchesz</code> is
+<p>We also divide the data into &ldquo;batches&rdquo; for computation. <code>batchesz</code> is
 the number of sequences for which the loss function and its gradient
 will be computed in parallel. Each batch will have <code>seqlen * batchesz</code>
 observations, and each epoch of training takes
@@ -931,7 +925,24 @@ to enable scalar iteration globally or for the operations in question.
 plot(1:epochs, lossvals', labels=reshape([&quot;L = $l&quot; for l in layersizes],1,length(layersizes)), xlab=&quot;epoch&quot;,ylab=&quot;loss&quot;)
 </code></pre>
 <p><img alt="" src="../figures/rnn_11_1.png" /></p>
-<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:goodfellow2016">
+<p>Goodfellow, Ian, Yoshua Bengio, and Aaron Courville, &ldquo;<a href="http://www.deeplearningbook.org">Deep learning</a>,&rdquo; (MIT Press, 2016).&#160;<a class="footnote-backref" href="#fnref:goodfellow2016" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:klok2019">
+<p>Klok, Hayden, and Yoni Nazarathy, &ldquo;<a href="https://people.smp.uq.edu.au/YoniNazarathy/julia-stats/StatisticsWithJulia.pdf">Statistics with julia:fundamentals for data science, MachineLearning and artificial intelligence</a>,&rdquo; (DRAFT, 2019).&#160;<a class="footnote-backref" href="#fnref:klok2019" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:siegelmann1991">
+<p>Siegelmann, Hava T., and Eduardo D. Sontag, &ldquo;<a href="https://doi.org/10.1016/0893-9659(91)90080-F">Turing computability with neural nets</a>,&rdquo; <em>Applied Mathematics Letters</em>, 4 (1991), 77&ndash;80.&#160;<a class="footnote-backref" href="#fnref:siegelmann1991" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:siegelmann1992">
+<p>------, &ldquo;<a href="https://doi.org/10.1145/130385.130432">On the computational power of neural nets</a>,&rdquo; in <em>Proceedings of the fifth annual workshop on computational learning theory</em>, COLT &lsquo;92, 1992 (New York, NY, USA, ACM).&#160;<a class="footnote-backref" href="#fnref:siegelmann1992" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
             </div>
         </div>
 

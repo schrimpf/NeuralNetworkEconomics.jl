@@ -249,14 +249,14 @@ represent short and long run dependencies in sequential data.</p>
 <p>Transformers encode sequential text data into numeric features in a
 learned manner. The resulting encoding preserves sequential information
 and can be readily parallelized.</p>
-<p>The @vaswani2017 paper that popularized transformers was about a
+<p>The (Vaswani et al. 2017)<sup id="fnref:vaswani2017"><a class="footnote-ref" href="#fn:vaswani2017">1</a></sup> paper that popularized transformers was about a
 translation task, and many introductory references about transformers
 focus on this setting (such as <a href="https://jalammar.github.io/illustrated-transformer/">the illustrated
 transfomer</a>).</p>
 <p>Translation tackles the following setting: given a whole text (usually
 sentence) in one language, $z_0, &hellip;, z_T$, and a partial translation in
 another language, $x_0, &hellip;, x_t$, the goal is to predict the next word,
-$x_{t+1}$. Transformers are also used for generative tasks—given
+$x_{t+1}$. Transformers are also used for generative tasks&mdash;given
 $x_0, &hellip;, x_t$, predict $x_{t+1}$. We will focus on a generative
 transformer since it is simpler and seems more relevant to economics.</p>
 <h1 id="transformer">Transformer<a class="headerlink" href="#transformer" title="Permanent link">&para;</a></h1>
@@ -276,10 +276,10 @@ into a lower dimensional space by <script type="math/tex; mode=display">
 </script> where $W_e: \R^k \to \R^d$ is linear.</p>
 <h2 id="positional-encoding">Positional Encoding<a class="headerlink" href="#positional-encoding" title="Permanent link">&para;</a></h2>
 <p>With the exception of this layer, the entire transformer is a symmetric
-function of $(x_0, &hellip;, x_t)$ — it ignores order. Positional encoding
+function of $(x_0, &hellip;, x_t)$ &mdash; it ignores order. Positional encoding
 adds some position information to $x_t^e$. This could be done by simply
 adding a coordinate containining e.g. $t/T$, but is most often done
-(following @vaswani2017) by <script type="math/tex; mode=display">
+(following (Vaswani et al. 2017)<sup id="fnref2:vaswani2017"><a class="footnote-ref" href="#fn:vaswani2017">1</a></sup>) by <script type="math/tex; mode=display">
 x_t^{pe} = x_t^e + p(t;d)
 </script> where <script type="math/tex; mode=display">
 p(t;d) = \left( \sin(t/10000^{2/d}) , \cos(t/10000^{2/d})
@@ -303,7 +303,7 @@ matrices. These are often referred to as query, key, and value
 transformations respectively. The idea is that the query and key
 matrices determine how relevant $x_j$ is for $x_t$, and the value gives
 an altered representation of $x_j$.</p>
-<p>This is “masked” because $z_{0,t}^{A,\ell}$ looks at the data from $0$
+<p>This is &ldquo;masked&rdquo; because $z_{0,t}^{A,\ell}$ looks at the data from $0$
 to $t$ instead of the whole sequence from $0$ to $T$.</p>
 <p>If $d \neq m$, then $d$ must be a multiple of $m$. If $d &lt; m$, then
 there must be $d/m$ such $Q$, $K$, and $V$ matrices, and their outputs
@@ -315,10 +315,10 @@ $z_{1,t}^{A,\ell} = x_t^{A,\ell-1} + z_{0,t}^{A,\ell}$ This sort of
 residual connection is often used in deep learning. (E.g. Resnet is a
 well known convolutional network with residual connections that did very
 on image classification). It helps to ensure that gradients even deep in
-many layers are not zero. See @jastrzebski2017 for some theoretical
+many layers are not zero. See (Jastrzebski et al. 2017)<sup id="fnref:jastrzebski2017"><a class="footnote-ref" href="#fn:jastrzebski2017">2</a></sup> for some theoretical
 justification for residual connections.</p>
 <h3 id="layer-norm">Layer Norm<a class="headerlink" href="#layer-norm" title="Permanent link">&para;</a></h3>
-<p>A layer normalization is then applied as in @ba2016. That is, we
+<p>A layer normalization is then applied as in (Ba, Kiros, and Hinton 2016)<sup id="fnref:ba2016"><a class="footnote-ref" href="#fn:ba2016">3</a></sup>. That is, we
 transform <script type="math/tex; mode=display">
 z_{2,t}^{A,\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A,\ell} -
 \mu_\ell) + b_t^\ell
@@ -358,11 +358,11 @@ and moving away from recurrence was motivated by the difficulty with
 parallelizing recurrent models. Residual connections and layer norms
 help with gradient descent and vanishing gradient problems. Theoretical
 understanding of transformers has lagged behind their practical
-application, but theory is advancing rapidly. E.g. @bhattamishra2020 ,
+application, but theory is advancing rapidly. E.g. (Bhattamishra, Patel, and Goyal 2020)<sup id="fnref:bhattamishra2020"><a class="footnote-ref" href="#fn:bhattamishra2020">4</a></sup> ,
 etc</p>
 <h1 id="example-code">Example Code<a class="headerlink" href="#example-code" title="Permanent link">&para;</a></h1>
-<p><a href="https://liorsinai.github.io/coding/2022/05/18/transformers.html">Lior Sinai has an excellent blog post, “How to code a transformer in
-Julia,”</a>
+<p><a href="https://liorsinai.github.io/coding/2022/05/18/transformers.html">Lior Sinai has an excellent blog post, &ldquo;How to code a transformer in
+Julia,&rdquo;</a>
 that shows how to implement a transformer as new layers in Flux.</p>
 <p>The
 <a href="https://github.com/chengchingwen/Transformers.jl"><code>Transformers.jl</code></a>
@@ -494,7 +494,7 @@ exhaustive.</p>
 outperform RNNs when the underlying tokens are words or word-fragments,
 RNNs outperform transformers when the tokens are characters. Various
 modifications of transformers can make them competitive. See e.g.
-@wu2020 , @al2019 ,</p>
+(Wu, Cotterell, and Hulden 2020)<sup id="fnref:wu2020"><a class="footnote-ref" href="#fn:wu2020">5</a></sup> , (Al-Rfou et al. 2019)<sup id="fnref:al2019"><a class="footnote-ref" href="#fn:al2019">6</a></sup> ,</p>
 <h1 id="pre-trained-models">Pre-trained Models<a class="headerlink" href="#pre-trained-models" title="Permanent link">&para;</a></h1>
 <p>An increasingly common way to apply transformers, especially for
 language, but also other contexts, is to fine-tune a general purpose
@@ -654,24 +654,47 @@ samplegpt(200, &quot;They say economics is the dismal science&quot;, transformer
 <h2 id="large-llms">Large LLMs<a class="headerlink" href="#large-llms" title="Permanent link">&para;</a></h2>
 <p>State of the art LLMs can mimic Dylan lyrics with just prompting. For
 example when asked to complete a lyric in the style of Bob Dylan,
-Anthropic’s <a href="https://claude.ai/">Claude</a> 3.5 Sonnet model returns,</p>
+Anthropic&rsquo;s <a href="https://claude.ai/">Claude</a> 3.5 Sonnet model returns,</p>
 <blockquote>
-<p>Thank you for the clarification. I understand you’d like me to
-complete a lyric starting with “They say economics is the dismal
-science” in the style of Bob Dylan, while being careful not to
-reproduce any copyrighted material. Here’s an original continuation in
+<p>Thank you for the clarification. I understand you&rsquo;d like me to
+complete a lyric starting with &ldquo;They say economics is the dismal
+science&rdquo; in the style of Bob Dylan, while being careful not to
+reproduce any copyrighted material. Here&rsquo;s an original continuation in
 a Dylan-esque style:</p>
 <blockquote>
-<p>They say economics is the dismal science But the market’s got no
+<p>They say economics is the dismal science But the market&rsquo;s got no
 conscience Profit margins and bottom lines While the working man
 declines In a world of haves and have-nots Where money talks and
 truth rots</p>
 </blockquote>
-<p>This verse aims to capture some of Dylan’s themes of social commentary
+<p>This verse aims to capture some of Dylan&rsquo;s themes of social commentary
 and critique of economic systems, using vivid imagery and a somewhat
-cynical tone. It’s not meant to mimic any specific Dylan song, but
+cynical tone. It&rsquo;s not meant to mimic any specific Dylan song, but
 rather to evoke his general style and approach to songwriting.</p>
-</blockquote></div>
+</blockquote>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:vaswani2017">
+<p>Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin, &ldquo;Attention is all you need,&rdquo; <em>Advances in neural information processing systems</em>, 30 (2017).&#160;<a class="footnote-backref" href="#fnref:vaswani2017" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:vaswani2017" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:jastrzebski2017">
+<p>Jastrzebski, Stanislaw, Devansh Arpit, Nicolas Ballas, Vikas Verma, Tong Che, and Yoshua Bengio, &ldquo;<a href="http://arxiv.org/abs/1710.04773">Residual connections encourage iterative inference</a>,&rdquo; <em>CoRR</em>, abs/1710.04773 (2017).&#160;<a class="footnote-backref" href="#fnref:jastrzebski2017" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:ba2016">
+<p>Ba, Jimmy Lei, Jamie Ryan Kiros, and Geoffrey E. Hinton, &ldquo;<a href="https://doi.org/10.48550/ARXIV.1607.06450">Layer normalization</a>,&rdquo; 2016 (arXiv).&#160;<a class="footnote-backref" href="#fnref:ba2016" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:bhattamishra2020">
+<p>Bhattamishra, Satwik, Arkil Patel, and Navin Goyal, &ldquo;<a href="https://arxiv.org/abs/2006.09286">On the computational power of transformers and its implications in sequence modeling</a>,&rdquo; <em>CoRR</em>, abs/2006.09286 (2020).&#160;<a class="footnote-backref" href="#fnref:bhattamishra2020" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:wu2020">
+<p>Wu, Shijie, Ryan Cotterell, and Mans Hulden, &ldquo;<a href="https://arxiv.org/abs/2005.10213">Applying the transformer to character-level transduction</a>,&rdquo; <em>CoRR</em>, abs/2005.10213 (2020).&#160;<a class="footnote-backref" href="#fnref:wu2020" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:al2019">
+<p>Al-Rfou, Rami, Dokook Choe, Noah Constant, Mandy Guo, and Llion Jones, &ldquo;<a href="https://doi.org/10.1609/aaai.v33i01.33013159">Character-level language modeling with deeper self-attention</a>,&rdquo; <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 33 (2019), 3159&ndash;3166.&#160;<a class="footnote-backref" href="#fnref:al2019" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
             </div>
         </div>
 
