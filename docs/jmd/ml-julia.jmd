@@ -229,29 +229,36 @@ y_test = ystd[test]
 # Set up the model parameters and initial values
 βols = (X_train'*X_train) \ (X_train'*(y_train .- mean(y_train)))
 β = zeros(ncol(X))
-b = [mean(y_train)]
+b = mean(y_train)
 
 # Define the loss function
 ψ = ones(length(β))
 λ = 2.0
-pred(x) = b .+ x*β
-mse(x,y) = mean( (pred(x) .- y).^2 )
-penalty(y) = λ/length(y)*norm(ψ.*β,1)
-loss(x,y) =  mse(x,y) + penalty(y)
-@show loss(X_train,y_train)
+
+mutable struct LinearModel
+  β::Vector{Float64}
+  b::Float64
+end
+
+pred(m::LinearModel,x) = m.b .+ x*m.β
+mse(m::LinearModel,x,y) = mean( (pred(m,x) .- y).^2 )
+penalty(m::LinearModel,y) = λ/length(y)*norm(ψ.*m.β,1)
+loss(m::LinearModel,x,y) =  mse(m,x,y) + penalty(m,y)
+m = LinearModel(β,b)
+@show loss(m,X_train,y_train)
 
 # minimize loss
 maxiter=2000
 obj = zeros(maxiter)
 mse_train = zeros(maxiter)
 mse_test = zeros(maxiter)
-opt = Flux.AMSGrad()
-for i in 1:maxiter
-  Flux.train!(loss, Flux.params(β, b), [(X_train, y_train)], opt)
-  mse_train[i] = mse(X_train,y_train)
-  mse_test[i] = mse(X_test, y_test)
-  obj[i] = loss(X_train,y_train)
-  @show i
+opt = Flux.setup(Flux.AMSGrad(), m)
+import ProgressMeter: @showprogress
+@showprogress for i in 1:maxiter
+  Flux.train!(loss, m, [(X_train, y_train)], opt)
+  mse_train[i] = mse(m,X_train,y_train)
+  mse_test[i] = mse(m,X_test, y_test)
+  obj[i] = loss(m,X_train,y_train)
 end
 lo = 1
 hi = 2000
@@ -294,7 +301,6 @@ rng = Random.default_rng()
 Random.seed!(rng, 0)
 
 # define the model
-
 X_train = Matrix(X)[train,:]
 X_test = Matrix(X)[test,:]
 y_train = y[train]
@@ -334,23 +340,23 @@ end
 import Optimisers
 
 function train_model(m, initial_params, st; maxiter=2000)
-  opt = Optimisers.AMSGrad()
-  ps = initial_params
-  optstate = Optimisers.setup(opt, ps)
+    opt = Optimisers.AMSGrad()
+    ps = initial_params
+    optstate = Optimisers.setup(opt, ps)
 
-  obj = zeros(maxiter)
-  mse_train = zeros(maxiter)
-  mse_test = zeros(maxiter)
-  for i in 1:maxiter
-    # Compute the gradient
-    gs = Zygote.gradient(ps->ℓ(ps, X_train, y_train, m), ps)[1]
-    # Perform parameter update
-    optstate, ps = Optimisers.update(optstate, ps, gs)
-    mse_train[i] = mse(m, ps, st, X_train,y_train)
-    mse_test[i] = mse(m, ps, st, X_test, y_test)
-    obj[i] = ℓ(ps,X_train,y_train,m)
-  end
-  return(ps, mse_train, mse_test, obj)
+    obj = zeros(maxiter)
+    mse_train = zeros(maxiter)
+    mse_test = zeros(maxiter)
+    @showprogress for i in 1:maxiter
+        # Compute the gradient
+        gs = Zygote.gradient(ps->ℓ(ps, X_train, y_train, m), ps)[1]
+        # Perform parameter update
+        optstate, ps = Optimisers.update(optstate, ps, gs)
+        mse_train[i] = mse(m, ps, st, X_train,y_train)
+        mse_test[i] = mse(m, ps, st, X_test, y_test)
+        obj[i] = ℓ(ps,X_train,y_train,m)
+    end
+    return(ps, mse_train, mse_test, obj)
 end
 ps, mse_train, mse_test, obj = train_model(m, ps, st)
 lo = 1

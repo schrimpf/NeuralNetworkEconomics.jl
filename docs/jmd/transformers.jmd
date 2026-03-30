@@ -250,7 +250,7 @@ We begin by loading the data and setting up a encoding that converts
 the original string data into an array of indicators for each
 character.
 
-```julia
+```julia; eval=false
 using JLD2
 using StatsBase: wsample
 using Base.Iterators: partition
@@ -273,7 +273,7 @@ encoder = Transformers.TextEncoders.TransformerTextEncoder(x->split(x,""), vocab
 
 Now we setup the model.
 
-```julia
+```julia; eval=false
 enable_gpu(true)
 
 function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
@@ -310,7 +310,7 @@ end
 ```
 
 ## Training
-```julia
+```julia; eval=false
 using Statistics
 
 function loss(m, x; agg=mean)
@@ -359,7 +359,7 @@ m = train_model(m, data=data, modelfile=joinpath(docdir,"jmd","models","dylan-tr
 
 Sampling from the trained model:
 
-```julia
+```julia; eval=false
 function sample(m, len, seed="", encoder=encoder, unkchar=unkchar)
     out = split(seed*unkchar^(len-length(seed)),"")
     dev = isa(Flux.params(m)[1], CuArray) ? gpu : cpu
@@ -406,7 +406,7 @@ To limit the computational cost, we hold fixed the embedding and transformer com
 of GPT, and only retrain a final classifier.
 It is also common to fine tune all components of the model.
 
-```julia
+```julia; eval=false
 using JLD2
 using StatsBase: wsample
 using Transformers, Flux, CUDA

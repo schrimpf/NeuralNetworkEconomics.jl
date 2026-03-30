@@ -60,7 +60,7 @@ using Pkg
 Pkg.activate(docdir)
 Pkg.instantiate()
 
-rerun=false
+rerun=true
 ```
 
 # Introduction
@@ -377,10 +377,10 @@ end
 
 modelfile=joinpath(docdir,"jmd","models","dylan-markov4.jld2")
 if isfile(modelfile) && !rerun
-  @load modelfile dm
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(4), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 ```
 
@@ -429,10 +429,10 @@ longer histories.
 ```julia
 modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
 if isfile(modelfile) && !rerun
-  @load modelfile dm
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(10), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
@@ -442,10 +442,10 @@ println(String(sample_markov(dm)))
 ```julia
 modelfile=joinpath(docdir,"jmd","models","dylan-markov20.jld2")
 if isfile(modelfile) && !rerun
-  @load modelfile dm
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(20), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
@@ -599,7 +599,8 @@ function train_model(L; N=N, data=data,
     opt = Flux.setup(Adam(0.01), m)
 
     if isfile(modelfile) && !rerun
-        JLD2.@load modelfile cpum losses
+        JLD2.@load modelfile modelstate losses
+        Flux.loadmodel!(cpum, modelstate)
         m = device(cpum)
         #m = cpum
     else
@@ -617,7 +618,8 @@ function train_model(L; N=N, data=data,
             println("Loss after $epoch epochs: ", losses[epoch])
         end
         cpum = cpu(m)
-        JLD2.@save modelfile cpum losses
+        modelstate = Flux.state(cpum)
+        JLD2.@save modelfile modelstate losses
     end
     return(m, losses)
 end

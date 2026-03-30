@@ -53,9 +53,9 @@ $(docout) : build/%.md :  src/%.md
 site: site/index.html
 
 site/index.html: $(rmdout) $(jmdout) $(docout) mkdocs.yml
-	mkdocs build
+	uv run mkdocs build
 
-all: site/index.html $(nbout)
+all: site/index.html
 
 deploy: site/index.html
-	mkdocs gh-deploy
+	uv run mkdocs gh-deploy

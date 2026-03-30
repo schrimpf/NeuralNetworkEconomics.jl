@@ -138,10 +138,10 @@ Simulating data and setting up.
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
 # some function to estimate
-f(x) = sin(x^x)/2^((x^x-π/2)/π)
+_f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
   x = rand(n,1).*π
-  y = f.(x) .+ randn(n).*s
+  y = _f.(x) .+ randn(n).*s
   (x,y)
 end
 x, y = simulate(1000, 0.5)
@@ -182,13 +182,13 @@ for r in eachindex(mlps)
   nparm = sum([length(m[i].weight) + length(m[i].bias) for i in 2:length(m)])
   println(" $nparm parameters in $(length(m)-1) layers")
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
-  figs[r]=plot(xg, f.(xg), lab="", title="Model $r", color=:red)
+  figs[r]=plot(xg, _f.(xg), lab="", title="Model $r", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 8000
-  opt = Flux.AMSGrad()
+  maxiter = 2000
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
-                #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
+      Flux.train!((m,x,y)->Flux.mse(m(x),y), m,
+                  #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
                 [(xt, yt)],
                 opt) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
@@ -389,30 +389,33 @@ even lead the parameters to drift toward numeric under or overflow and
 become `NaN`. If this happens, we should descrease the learning rate.
 
 ```julia; cache=true
-rerun = false
+rerun = true
 modelfile = joinpath(modeldir,"mnist-slp.jld2")
-opt = ADAM()
+opt = Flux.setup(ADAM(),mstart)
 if rerun || !isfile(modelfile)
-  dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
-  m = gpu(mstart)
-  evalcb(m)
-  iterations = 200
-  losses = zeros(typeof(loss(m,X,Y)), iterations)
-  testloss=similar(losses)
-  @time for i = 1:iterations
-    Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt,
-                cb = throttle(()->evalcb(m), 10))
-    losses[i] = loss(m,X,Y)
-    testloss[i] = loss(m,tX,tY)
-  end
-  plot([losses testloss], xlab="Iterations", ylab="Loss", labels=["Train" "Test"])
+    dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
+    m = gpu(mstart)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    iterations = 200
+    losses = zeros(typeof(loss(m,X,Y)), iterations)
+    testloss=similar(losses)
+    @time for i = 1:iterations
+        Flux.train!((m,x,y)->loss(m,x,y), m, dataset, opt)
+        losses[i] = loss(m,X,Y)
+        testloss[i] = loss(m,tX,tY)
+    end
+    plot([losses testloss], xlab="Iterations", ylab="Loss", labels=["Train" "Test"])
 
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile modelstate
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(mstart)
+    JLD2.@load modelfile modelstate
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 ```
 
@@ -430,24 +433,28 @@ underfitting. Let's try training the network longer (doing more
 gradient descent iterations.
 
 ```julia; cache=true
-rerun = false
+rerun = true
 modelfile = joinpath(modeldir,"mnist-slp-8200.jld2")
 dataset = repeated((X, Y), 200) # each call to Flux.train! will do 200
 # gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
-  evalcb(m)
-  @time for epoch in 1:40
-    Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt,
-                cb = throttle(()->evalcb(m), 10))
-  end
-  evalcb(m)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    @time for epoch in 1:40
+        Flux.train!(loss, m, dataset, opt,
+                    )
+    end
+    evalcb(m)
 
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile cpum
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(m)
+    JLD2.@load modelfile cpum
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 @show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX,tY);
@@ -516,24 +523,26 @@ acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
-opt=ADAM()
 cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
 for e in 1:epochs
   local modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
   if rerun || !isfile(modelfile)
-    println("Beginning epoch $e")
-    evalcb(cmgsnet)
-    @time Flux.train!((x,y)->loss(cmgsnet,x,y),
-                      Flux.params(cmgsnet), data, opt,
-                      cb = throttle(()->evalcb(cmgsnet), 10))
-    evalcb(cmgsnet)
+      println("Beginning epoch $e")
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
 
-    # save model
-    local cpum = cpu(cmgsnet)
-    @save modelfile cpum
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
   else
-    @load modelfile cpum
-    global cmgsnet = gpu(cpum)
+      local cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
   end
   println("Finished $e epochs")
   losstrain[e]=loss(cmgsnet,X,Y)
@@ -543,8 +552,8 @@ for e in 1:epochs
 end
 e = epochs
 modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
-@load modelfile cpum
-cmgsnet = gpu(cpum)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
 ```
 
 This model achieved a testing accuracy of `j 100*maximum(acctest)`% after
@@ -654,24 +663,26 @@ acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
-opt=ADAM()
 cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
 for e in 1:epochs
   local modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
   if rerun || !isfile(modelfile)
-    println("Beginning epoch $e")
-    evalcb(cmgsnet)
-    @time Flux.train!((x,y)->loss(cmgsnet,x,y),
-                      Flux.params(cmgsnet), data, opt,
-                      cb = throttle(()->evalcb(cmgsnet), 10))
-    evalcb(cmgsnet)
+      println("Beginning epoch $e")
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
 
-    # save model
-    local cpum = cpu(cmgsnet)
-    @save modelfile cpum
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
   else
-    @load modelfile cpum
-    global cmgsnet = gpu(cpum)
+      cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
   end
   println("Finished $e epochs")
   losstrain[e]=loss(cmgsnet,X,Y)
@@ -681,8 +692,8 @@ for e in 1:epochs
 end
 e = epochs
 modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
-@load modelfile cpum
-cmgsnet = gpu(cpum)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
 
 @show maximum(acctest)
 ```

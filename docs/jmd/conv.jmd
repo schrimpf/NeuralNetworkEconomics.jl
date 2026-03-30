@@ -301,16 +301,15 @@ end
 
 function train_mnist!(model, X, Y, tX, tY,
                       modelname;
-                      loss = (x,y)->Flux.logitcrossentropy(model(x), y),
+                      loss = (model,x,y)->Flux.logitcrossentropy(model(x), y),
                       accuracy = (x,y)->accuracy(model, x, y),
                       batchsize=length(tY),
                       reps_per_epoch=1,
                       maxepochs=200,
-                      rerun=true
+                      rerun=false
                       )
   Xsmall = X[:,:,:,1:1000]
   Ysmall = Y[:,1:1000]
-  evalcb = () -> @show(loss(Xsmall, Ysmall), loss(tX,tY), accuracy(Xsmall,Ysmall), accuracy(tX,tY))
   parts=Base.Iterators.partition(1:size(X,ndims(X)), batchsize);
   batches = [(X[:,:,:,p], Y[:,p]) for p in parts];
   data = repeat(batches, reps_per_epoch);
@@ -320,7 +319,7 @@ function train_mnist!(model, X, Y, tX, tY,
   function sumloss(batches)
     L = zero(Float32)
     for i in 1:length(batches)
-      L += loss(batches[i]...)
+      L += loss(model,batches[i]...)
     end
     L /= length(batches)
   end
@@ -332,7 +331,7 @@ function train_mnist!(model, X, Y, tX, tY,
     L /= length(batches)
   end
 
-  opt = ADAM(0.001)
+  opt = Flux.setup(ADAM(0.001),model)
   acctest  = zeros(maxepochs)
   acctrain = zeros(maxepochs)
   losstest  = zeros(maxepochs)
@@ -348,17 +347,21 @@ function train_mnist!(model, X, Y, tX, tY,
     e += 1
     modelfile = joinpath(docdir,"jmd","models","$modelname-$e-epochs.jld2")
     if rerun || !isfile(modelfile)
-      @time Flux.train!(loss, Flux.params(model), data, opt, cb = throttle(evalcb, 20))
+      Flux.train!(loss, model, data, opt)
       # save model
       cpum = cpu(model)
       losstrain[e]= sumloss(batches)
       acctrain[e] =  acc(batches)
-      losstest[e]=loss(tX,tY)
+      losstest[e]=loss(model,tX,tY)
       acctest[e] =accuracy(tX,tY)
-      @save modelfile cpum losstrain acctrain losstest acctest
+
+        modelstate = Flux.state(cpum)
+        JLD2.@save modelfile modelstate losstrain acctrain losstest acctest
     else
-      @load modelfile cpum losstrain acctrain losstest acctest
-      model = gpu(cpum)
+        cpum = cpu(model)
+        JLD2.@load modelfile modelstate losstrain acctrain losstest acctest
+        Flux.loadmodel!(cpum, modelstate)
+        model = gpu(cpum)
     end
     next!(progress)
     if (acctest[e]>best_acc)
@@ -368,7 +371,7 @@ function train_mnist!(model, X, Y, tX, tY,
     # If we haven't seen improvement in 3 epochs, we stop (could also
     # try droping learning rat but it would take time) we are cheating
     # here by using thest test accuracy as a stopping criteria ...
-    if ((e - last_improvement) >= 3) && (opt.eta <= 1e-6)
+    if ((e - last_improvement) >= 10) #&& (opt.eta <= 1e-6)
       @warn(" -> At epoch $e, haven't improved in 3 epochs. Stopping training.")
       break
     end
@@ -387,8 +390,7 @@ large batches and a low number of passes through the data per-epoch.
 out = train_mnist!(model, X, Y, tX, tY, "conv";
                    batchsize=2500,
                    reps_per_epoch=2,
-                   maxepochs=200,
-                   rerun=true
+                   maxepochs=200
                    )
 @show maximum(out.acctest)
 ```
@@ -396,7 +398,7 @@ out = train_mnist!(model, X, Y, tX, tY, "conv";
 Since I save the model to disk to avoid waiting for it to rerun
 everytime I change this document, the above output may not include
 the training time. It took roughly 10 seconds per epoch on an older NVidia 1060,
-and roughly XX seconds per epoch on an NVidia 4070 Ti Super.
+and roughly 0.5 seconds per epoch on an NVidia 4070 Ti Super.
 
 In terms of testing accuracy, this model does quite well. The deep
 feedforward network with nearly 12 million parameters from the
@@ -458,11 +460,10 @@ model = Chain(  # same as before, but resetting initial values
   ) |> gpu
 
 smallbatch = train_mnist!(model, X, Y, tX, tY, "conv-smallbatch";
-                    loss=(x,y)->Flux.logitcrossentropy(model(x),y),
+                    loss=(model,x,y)->Flux.logitcrossentropy(model(x),y),
                     batchsize=128,
                     reps_per_epoch=1,
-                    maxepochs=200,
-                    rerun=true
+                    maxepochs=200
                     )
 @show maximum(smallbatch.acctest)
 training_plot(smallbatch)
@@ -517,11 +518,10 @@ model = Chain(  # same as before, but resetting initial values
 ) |> gpu
 
 outn = train_mnist!(model, X, Y, tX, tY, "conv-augrandn";
-                    loss=(x,y)->Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    loss=(model,x,y)->Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
                     batchsize=2500,
                     reps_per_epoch=2,
-                    maxepochs=200,
-                    rerun=true
+                    maxepochs=200
                     )
 @show maximum(outn.acctest)
 ```
@@ -549,11 +549,10 @@ model = Chain(  # same as before, but resetting initial values
 ) |> gpu
 
 smallnoisy = train_mnist!(model, X, Y, tX, tY, "conv-augrandn-smallbatch";
-                    loss=(x,y)->Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
+                    loss=(model,x,y)->Flux.logitcrossentropy(model(x .+ 0.1f0*gpu(randn(eltype(x), size(x)))),y),
                     batchsize=128,
                     reps_per_epoch=1,
-                    maxepochs=200,
-                    rerun=true
+                    maxepochs=200
                     )
 @show maximum(smallnoisy.acctest)
 training_plot(smallnoisy)

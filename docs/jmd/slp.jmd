@@ -43,6 +43,12 @@ catch
   false
 end
 
+if !("DISPLAY" ∈ keys(ENV))
+  # Make gr and pyplot backends for Plots work without a DISPLAY
+  ENV["GKSwstype"]="nul"
+  ENV["MPLBACKEND"]="Agg"
+end
+
 # Make gr backend work with λ and other unicode
 ENV["GKS_ENCODING"] = "utf-8"
 
@@ -138,10 +144,10 @@ typical Julia function, as in the following code block.
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
 # some function to estimate
-f(x) = sin(x^x)/2^((x^x-π/2)/π)
+_f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,σ=1)
   x = rand(n,1).*π
-  y = f.(x) .+ randn(n).*σ
+  y = _f.(x) .+ randn(n).*σ
   (x,y)
 end
 
@@ -151,13 +157,13 @@ end
 Construct a single layer perceptron with width `r`.
 """
 function slp(r, activation=(t)-> 1 ./ (1 .+ exp.(.-t)), dimx=1)
-  w = randn(dimx,r)
-  b = randn(1,r)
-  β = randn(r)
-  θ = (β, w, b)
-  pred(x) = activation(x*w.+b)*β
-  loss(x,y) = mean((y.-pred(x)).^2)
-  return(θ=θ, predict=pred,loss=loss)
+    w = randn(dimx,r)
+    b = randn(1,r)
+    β = randn(r)
+    θ = (β=β, w=w, b=b)
+    pred(θ, x) = activation(x*θ.w.+θ.b)*θ.β
+    loss(θ,x,y) = mean((y.-pred(θ,x)).^2)
+    return(θ=θ, predict=pred,loss=loss)
 end
 x, y = simulate(1000, 0.5)
 xg = 0:0.01:π
@@ -168,26 +174,26 @@ cscheme = colorschemes[:BrBG_4];
 ```julia; cache=true
 figs = Array{typeof(plot(0)),1}(undef,length(rs))
 for r in eachindex(rs)
-  m = slp(rs[r])
-  figs[r]=plot(xg, f.(xg), lab="True f", title="$(rs[r]) units", color=:red)
-  figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter =10000
-  opt = Flux.AMSGrad()
-  @time for i = 1:maxiter
-    Flux.train!(m.loss, Flux.params(m.θ), [(x, y)], opt)
-    if (i % (maxiter ÷ 5))==0
-      l=m.loss(x,y)
-      println("$i iteration, loss=$l")
-      loc=Int64.(ceil(length(xg)*i/maxiter))
-      yg = m.predict(xg)
-      figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
-                    annotations=(xg[loc], yg[loc],
-                                 Plots.text("i=$i", i<maxiter/2 ? :left : :right, pointsize=10,
-                                            color=get(cscheme, i/maxiter)) )
-                    )
+    m,predict,loss = slp(rs[r])
+    figs[r]=plot(xg, _f.(xg), lab="True f", title="$(rs[r]) units", color=:red)
+    figs[r]=scatter!(x,y, markeralpha=0.4, markersize=1, markerstrokewidth=0, lab="")
+    maxiter =500
+    opt = Flux.setup(Flux.AMSGrad(),m)
+    @time for i = 1:maxiter
+        Flux.train!(loss, m, [(x, y)], opt)
+        if (i % (maxiter ÷ 5))==0
+            l=loss(m, x,y)
+            println("$i iteration, loss=$l")
+            loc=Int64.(ceil(length(xg)*i/maxiter))
+            yg = predict(m,xg)
+            figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
+                          annotations=(xg[loc], yg[loc],
+                                       Plots.text("i=$i", i<maxiter/2 ? :left : :right, pointsize=10,
+                                                  color=get(cscheme, i/maxiter)) )
+                          )
+        end
     end
-  end
-  display(figs[r])
+    display(figs[r])
 end
 ```
 
@@ -221,30 +227,30 @@ initmfigs = Array{typeof(plot(0)),1}(undef,length(rs))
 xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 for r in eachindex(rs)
-  l = rs[r]
-  m = Chain(x->Flux.normalise(x, dims=2),
-            Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
-  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
-  figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
-  figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 3000
-  opt = Flux.AMSGrad()
-  @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
-                #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
-    if i==1 || (i % (maxiter ÷ 5))==0
-      l=Flux.mse(m(xt), yt)
-      println("$(rs[r]) units, $i iterations, loss=$l")
-      yg = (m(xg'))'
-      loc=Int64.(ceil(length(xg)*i/maxiter))
-      figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
-                    annotations=(xg[loc], yg[loc],
-                                 Plots.text("i=$i", i<maxiter/2 ? :left : :right, pointsize=10,
-                                            color=get(cscheme, i/maxiter)) )
-                    )
+    l = rs[r]
+    m = Chain(x->Flux.normalise(x, dims=2),
+              Dense(dimx, rs[r], Flux.σ), Dense(rs[r], 1))
+    initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
+    figs[r]=plot(xg, _f.(xg), lab="", title="$(rs[r]) units", color=:red)
+    figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
+    maxiter = 500
+    opt = Flux.setup(Flux.AMSGrad(),m)
+    @time for i = 1:maxiter
+        Flux.train!((m,x,y)->Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
+        #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
+        if i==1 || (i % (maxiter ÷ 5))==0
+            l=Flux.mse(m(xt), yt)
+            println("$(rs[r]) units, $i iterations, loss=$l")
+            yg = (m(xg'))'
+            loc=Int64.(ceil(length(xg)*i/maxiter))
+            figs[r]=plot!(xg,yg, lab="", color=get(cscheme, i/maxiter), alpha=1.0,
+                          annotations=(xg[loc], yg[loc],
+                                       Plots.text("i=$i", i<maxiter/2 ? :left : :right, pointsize=10,
+                                                  color=get(cscheme, i/maxiter)) )
+                          )
+        end
     end
-  end
-  display(figs[r])
+    display(figs[r])
 end
 ```
 
@@ -295,12 +301,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1](xg')', lab="", legend=false)
-  figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
+  figs[r]=plot(xg, _f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 5000
-  opt = Flux.AMSGrad()
+  maxiter = 500
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
+    Flux.train!((m,x,y)->Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
     #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -356,12 +362,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
-  figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
+  figs[r]=plot(xg, _f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 5000
-  opt=Flux.AMSGrad()
+  maxiter = 1000
+  opt=Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m), [(xt, yt)], opt ) #,
+    Flux.train!((m,x,y)->Flux.mse(m(x),y), m, [(xt, yt)], opt ) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 5))==0
       l=Flux.mse(m(xt), yt)
@@ -414,12 +420,12 @@ for r in eachindex(rs)
   m[2].weight .= -m[2].weight .+ bols[2:end]'
   m[2].bias .= -m[2].bias .- mean(m(xt) .- yt)
   initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
-  figs[r]=plot(xg, f.(xg), lab="", title="$(rs[r]) units", color=:red)
+  figs[r]=plot(xg, _f.(xg), lab="", title="$(rs[r]) units", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 3000
-  opt = Flux.AMSGrad()
+  maxiter = 1000
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
+    Flux.train!((m,x,y)->Flux.mse(m(x),y), m,
                 # partition data into 100 batches
                 [(xt[:,p], yt[:,p]) for p in Base.Iterators.partition(1:length(y), 100)],
                 opt ) #,

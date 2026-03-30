@@ -743,6 +743,57 @@ Title = {Double/De-Biased Machine Learning of Global and Local Parameters Using 
                   url={https://arxiv.org/abs/1802.08667}
                   }
 
+@article{cnr2022,
+author = {Chernozhukov, Victor and Newey, Whitney K. and Singh, Rahul},
+title = {Automatic Debiased Machine Learning of Causal and Structural Effects},
+journal = {Econometrica},
+volume = {90},
+number = {3},
+pages = {967-1027},
+keywords = {Debiased machine learning, causal parameters, structural parameters, regression effects, Lasso, Riesz representation},
+doi = {https://doi.org/10.3982/ECTA18515},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA18515},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA18515},
+abstract = {Many causal and structural effects depend on regressions. Examples include policy effects, average derivatives, regression decompositions, average treatment effects, causal mediation, and parameters of economic structural models. The regressions may be high-dimensional, making machine learning useful. Plugging machine learners into identifying equations can lead to poor inference due to bias from regularization and/or model selection. This paper gives automatic debiasing for linear and nonlinear functions of regressions. The debiasing is automatic in using Lasso and the function of interest without the full form of the bias correction. The debiasing can be applied to any regression learner, including neural nets, random forests, Lasso, boosting, and other high-dimensional methods. In addition to providing the bias correction, we give standard errors that are robust to misspecification, convergence rates for the bias correction, and primitive conditions for asymptotic inference for estimators of a variety of estimators of structural and causal effects. The automatic debiased machine learning is used to estimate the average treatment effect on the treated for the NSW job training data and to estimate demand elasticities from Nielsen scanner data while allowing preferences to be correlated with prices and income.},
+year = {2022}
+}
+
+@InProceedings{cnqv2022,
+  title = 	 {{R}iesz{N}et and {F}orest{R}iesz: Automatic Debiased Machine Learning with Neural Nets and Random Forests},
+  author =       {Chernozhukov, Victor and Newey, Whitney and Quintas-Mart\'{\i}nez, V\'{\i}ctor M and Syrgkanis, Vasilis},
+  booktitle = 	 {Proceedings of the 39th International Conference on Machine Learning},
+  pages = 	 {3901--3914},
+  year = 	 {2022},
+  editor = 	 {Chaudhuri, Kamalika and Jegelka, Stefanie and Song, Le and Szepesvari, Csaba and Niu, Gang and Sabato, Sivan},
+  volume = 	 {162},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {17--23 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v162/chernozhukov22a/chernozhukov22a.pdf},
+  url = 	 {https://proceedings.mlr.press/v162/chernozhukov22a.html},
+  abstract = 	 {Many causal and policy effects of interest are defined by linear functionals of high-dimensional or non-parametric regression functions. $\sqrt{n}$-consistent and asymptotically normal estimation of the object of interest requires debiasing to reduce the effects of regularization and/or model selection on the object of interest. Debiasing is typically achieved by adding a correction term to the plug-in estimator of the functional, which leads to properties such as semi-parametric efficiency, double robustness, and Neyman orthogonality. We implement an automatic debiasing procedure based on automatically learning the Riesz representation of the linear functional using Neural Nets and Random Forests. Our method only relies on black-box evaluation oracle access to the linear functional and does not require knowledge of its analytic form. We propose a multitasking Neural Net debiasing method with stochastic gradient descent minimization of a combined Riesz representer and regression loss, while sharing representation layers for the two functions. We also propose a Random Forest method which learns a locally linear representation of the Riesz function. Even though our method applies to arbitrary functionals, we experimentally find that it performs well compared to the state of art neural net based algorithm of Shi et al. (2019) for the case of the average treatment effect functional. We also evaluate our method on the problem of estimating average marginal effects with continuous treatments, using semi-synthetic data of gasoline price changes on gasoline demand.}
+}
+
+@misc{chernozhukov2024,
+      title={Automatic Debiased Machine Learning via Riesz Regression},
+      author={Victor Chernozhukov and Whitney K. Newey and Victor Quintas-Martinez and Vasilis Syrgkanis},
+      year={2024},
+      eprint={2104.14737},
+      archivePrefix={arXiv},
+      primaryClass={math.ST},
+      url={https://arxiv.org/abs/2104.14737},
+}
+
+
+@misc{kato2026,
+      title={genriesz: A Python Package for Automatic Debiased Machine Learning with Generalized Riesz Regression},
+      author={Masahiro Kato},
+      year={2026},
+      eprint={2602.17543},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML},
+      url={https://arxiv.org/abs/2602.17543},
+}
 
 @incollection{cfr2007,
 title = "Chapter 77 Linear Inverse Problems in Structural Econometrics Estimation Based on Spectral Decomposition and Regularization",

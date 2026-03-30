@@ -371,7 +371,7 @@ L = length(α)
 x = copy(reduce(hcat,[y[l:(end-L+l)] for l in L:-1:1])')
 
 function fit_cdf!(model, x;
-                  opt=Flux.NADAM(), maxiter=1000, λ = eltype(x)(1.0), n_extra=0,
+                  opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, λ = eltype(x)(1.0), n_extra=0,
                   batchsize=length(x) + n_extra)
   # we could augment cdf evaluation points with x not seen in the data
   # in 1-d, there is no need, but in multiple dimension, there's extra info.
@@ -381,17 +381,17 @@ function fit_cdf!(model, x;
     CUDA.@allowscalar X=hcat(x, rand(x, size(x,1), n_extra))
   end
   CUDA.@allowscalar ecdf = eltype(x).(mapslices( xi->mean(all(X .<= xi, dims=1)), X, dims=1 ))
-  Δ = gpu(diagm(fill(eltype(x)(0.001), size(x,1))))
-  monotone_penalty(x,cdf) = λ*sum(δ->sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
-  loss(x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(x, cdf)
-  @show bestloss = loss(X,ecdf)+1
+  Δ = gpu(diagm(fill(eltype(x)(0.01), size(x,1))))
+  monotone_penalty(model,x,cdf) = λ*sum(δ->sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
+  loss(model,x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(model,x, cdf)
+  @show bestloss = loss(model,X,ecdf)+1
   lastimprove=0
   p = Progress(maxiter, 1)
   data = [(X[:,p], ecdf[:,p]) for p in partition(1:size(X,2), batchsize)]
   for i in 1:maxiter
-    Flux.train!(loss, Flux.params(model),
+    Flux.train!(loss, model,
                 data, opt)
-    obj = loss(X, ecdf)
+    obj = loss(model,X, ecdf)
     next!(p)
     (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
     if (obj < bestloss)
@@ -446,19 +446,19 @@ just fitting the marginal distribution of $y_t$. This isn't quite what
 we need for our impulse responses, but it is easier to visualize.
 ```julia
 modelfile=joinpath(docdir,"jmd","models","cdfy.jld2")
-rerun=true
+rerun=false
 if isfile(modelfile) && !rerun
-  @load modelfile cdfy
+  JLD2.@load modelfile cdfy
 else
   cdf_model = Chain(
-    Dense(1, 16, Flux.σ),
-    Dense(16, 16, Flux.σ),
-    Dense(16, 1, Flux.σ)
+    Dense(1, 100, Flux.σ),
+    Dense(100, 100, Flux.σ),
+    Dense(100, 1, Flux.σ)
   ) |> gpu
   fit_cdf!(cdf_model, gpu(reshape(y, 1, T)),
            maxiter=10000, λ=1e4 )
   cdfy = cpu(cdf_model)
-  @save modelfile cdfy
+  JLD2.@save modelfile cdfy
 end
 pdfy = make_pdf(cdfy, 1)
 
@@ -471,18 +471,18 @@ We will estimate the joint cdf and pdf similarly.
 ```julia
 modelfile=joinpath(docdir,"jmd","models","cdfx.jld2")
 if isfile(modelfile) && !rerun
-  @load modelfile cdfx
+  JLD2.@load modelfile cdfx
 else
   cdf_model = Chain(
-    Dense(3, 32, Flux.σ),
-    Dense(32, 32, Flux.σ),
-    Dense(32, 16, Flux.σ),
-    Dense(16, 1, Flux.σ)
+    Dense(3, 30, Flux.σ),
+    Dense(30, 20, Flux.σ),
+    Dense(20, 10, Flux.σ),
+    Dense(10, 1, Flux.σ)
   ) |> gpu
   @time fit_cdf!(cdf_model, gpu(Float32.(x)), opt=NADAM(),
-                 maxiter=10000, λ=1e6, n_extra=10000)
+                 maxiter=10000, λ=0, n_extra=10000)
   cdfx = cpu(cdf_model)
-  @save modelfile cdfx
+  JLD2.@save modelfile cdfx
 end
 pdfx = make_pdf(cdfx, size(x,1))
 @show sum(pdfx(x).<0)
@@ -524,16 +524,16 @@ given $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.
 ```julia
 
 function fit_ce!(model, x, y;
-                 opt=Flux.NADAM(), maxiter=1000, batchsize=length(y))
-  loss(x,y) = Flux.mse(model(x), y)
+                 opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, batchsize=length(y))
+  loss(model,x,y) = Flux.mse(model(x), y)
   @show bestloss = loss(x,y)+1
   lastimprove=0
   p = Progress(maxiter, 1)
   data = [(x[:,p], y[:,p]) for p in partition(1:size(x,2), batchsize)]
   for i in 1:maxiter
-    Flux.train!(loss, Flux.params(model),
+    Flux.train!(loss, model,
                 data, opt)
-    obj = loss(x,y)
+    obj = loss(model,x,y)
     next!(p)
     (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
     if (obj < bestloss)
@@ -561,9 +561,9 @@ if !isfile(modelfile) || rerun
   fit_ce!(ce_model, gpu(Float32.(X)), gpu(Float32.(Y)), opt=Flux.NADAM(),
           maxiter=20000, batchsize=size(Y,2))
   cpum = cpu(ce_model)
-  @save modelfile cpum
+  JLD2.@save modelfile cpum
 end
-@load modelfile cpum
+JLD2.@load modelfile cpum
 ce_model = gpu(cpum)
 
 μhat(x) = let m=cpu(ce_model)
@@ -586,7 +586,7 @@ Let's compute it
 L = size(x,1)
 Δ = 1.0*std(y)
 iryhat=(μhat(X .+ [Δ; 0; 0])  .- μhat(X))
-fx(x) = pdfx(x)  #max.(pdfx(x), 1e-6)
+fx(x) = max.(pdfx(x), 1e-3)
 ℓ(x) = (fx(X) .- fx(X .- [Δ; 0; 0]))./fx(X)
 lx = ℓ(x)[:]
 c = quantile(lx, [0.02, 0.98])
@@ -596,10 +596,10 @@ idx = Int.(findall((c[1] .<= lx) .& (lx .<= c[2])))
 ```
 and plot it
 ```julia
-plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
-plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
+#plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
+#plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
 #plot!(θi, leg=false, alpha=0.01, color=:green, linewidth=1, ylim=(-0.5, 0.75))
-plot!(mean(iry, dims=2), leg=false, linewidth=5, title="Average Impulse-Reponse to 1σ change in y[t-1]",
+plot(mean(iry, dims=2), leg=false, linewidth=5, title="Average Impulse-Reponse to 1σ change in y[t-1]",
      xlab="τ", ylab="ΔE[y(t+τ)]/std(y)", color=:blue)
 plot!(mean(iryhat, dims=2), leg=false, linewidth=5, color=:orange)
 plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green)
@@ -620,14 +620,12 @@ Inference for the orthogonalized estimator is very simple. Due to the
 orthogonalization, we can treat `μhat` and `fx` as though they are
 known functions. The estimated average impulse response is then just a
 sample average. Computing standard errors for sample averages is
-straightforward. Since this data is dependent, we will use a HAC
-estimator for the variance.
+straightforward.
 
 ```julia
 using Distributions
-using CovarianceMatrices
-k = CovarianceMatrices.BartlettKernel{NeweyWest}()
-Σ = CovarianceMatrices.lrvar(k, θi', prewhite=true)
+using Statistics
+Σ = cov(θi')
 
 plot(iry, leg=false, alpha=0.02, color=:black, linewidth=1)
 plot!(iryhat, leg=false, alpha=0.02, color=:orange, linewidth=1, ylim=(-0.5, 0.75))
