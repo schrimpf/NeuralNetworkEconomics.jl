@@ -1,10 +1,10 @@
 ---
-title       : "Multiple Layer Networks" 
+title       : "Multiple Layer Networks"
 subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -16,15 +16,15 @@ options:
 
 This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
+License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 
-### About this document 
+### About this document
 
 This document was created using Weave.jl. The code is available in
 [on github](https://github.com/schrimpf/NeuralNetworkEconomics.jl). The same
 document generates both static webpages and associated [jupyter
-notebook](mlp.ipynb). 
+notebook](mlp.ipynb).
 
 $$
 \def\indep{\perp\!\!\!\perp}
@@ -74,9 +74,9 @@ networks. These notes will look at multiple layer networks.
   especially the textbook
 - @klok2019 *Statistics with Julia:Fundamentals for Data Science,
   MachineLearning and Artificial Intelligence*
-- @farrel2018 "Deep Neural Networks for Estimation and Inference" 
-    
-  
+- @farrel2018 "Deep Neural Networks for Estimation and Inference"
+
+
 # Multiple Layer Neural Networks
 
 A multiple layer feed forward neural network (aka a multi-layer
@@ -86,63 +86,62 @@ multi-layer perception looks like a generalized linear model:
 $$
 \hat{f}(x) = \psi_L(x_L' w_L+ b_L)
 $$
-where $x_L, w_L \in \R^{H_L}$, $b_L \in \R$, and 
+where $x_L, w_L \in \R^{H_L}$, $b_L \in \R$, and
 $\psi_L: \R \to \R$. For regression problems, $\psi_L$ is typically
-the identity function. 
+the identity function.
 
 In a generalized linear model, $x_L$ would be data. In a multilayer
 network, $x_L \in \R^{H_{L}}$ is the output of a previous
-layer. Specificaly, for $k \in \{ 1, ...., H_L\}$, 
+layer. Specificaly, for $k \in \{ 1, ...., H_L\}$,
 $$
 x_{k,L} = \psi_{k, L-1}(x_{L-1}'w_{k,L-1} + b_{k,L-1})
 $$
-where $x_{L-1}, w_{L-1} \in \R^{H_{L-1}}$, $b_{L-1} \in \R$, and 
-$\psi_{k,L-1}: \R \to \R$. This continues recursively until 
-$x_0 = x \in \R^d$ is the data. 
+where $x_{L-1}, w_{L-1} \in \R^{H_{L-1}}$, $b_{L-1} \in \R$, and
+$\psi_{k,L-1}: \R \to \R$. This continues recursively until
+$x_0 = x \in \R^d$ is the data.
 
 $L$ is the **depth** of the network.
 
 <div class="alert alert-danger">
 When $L$ is sufficiently large, you have a deep neural network,
 and can attract grant money by calling  your research deep
-learning and/or AI. 
+learning and/or AI.
 </div>
 
-$H_\ell$ is the **width** of layer $\ell$. 
-Following @farrel2018, we will let 
+$H_\ell$ is the **width** of layer $\ell$.
+Following @farrel2018, we will let
 $$
 U = \sum_{\ell=1}^L H_\ell
 $$
-denote the number of units. The number of parameters is 
-$$ 
-W = \sum_{\ell=1}^L (H_{\ell-1}+1) H_\ell 
+denote the number of units. The number of parameters is
 $$
-where $H_0 = d$ is the dimension of the data. 
+W = \sum_{\ell=1}^L (H_{\ell-1}+1) H_\ell
+$$
+where $H_0 = d$ is the dimension of the data.
 
 In most applications, the activation within a layer is the same for
 each unit, i.e. $\psi_{k,\ell}$ does not vary with $k$. In large
 networks and/or with large datasets, activation functions are usually
-(leaky) rectified linear to allow faster computation. 
+(leaky) rectified linear to allow faster computation.
 
 The combination of depths ($L$), width ($H_\ell$), and activation functions
-($\psi$) are collectively referred to as the network architecture. 
+($\psi$) are collectively referred to as the network architecture.
 
 
 ## First Example
 
 As a starting example, here is some code that fits a multi-layer
 network to the same simulated data as in [the notes on single layer
-networks](slp.md). 
+networks](slp.md).
 
 Simulating data and setting up.
 ```julia
 using Plots, Flux, Statistics, ColorSchemes
-Plots.pyplot()
 # some function to estimate
-f(x) = sin(x^x)/2^((x^x-π/2)/π)
+_f(x) = sin(x^x)/2^((x^x-π/2)/π)
 function simulate(n,s=1)
   x = rand(n,1).*π
-  y = f.(x) .+ randn(n).*s
+  y = _f.(x) .+ randn(n).*s
   (x,y)
 end
 x, y = simulate(1000, 0.5)
@@ -180,17 +179,18 @@ initmfigs = Array{typeof(plot(0)),1}(undef,length(mlps))
 for r in eachindex(mlps)
   m = mlps[r]
   println("Model $r = $m")
-  nparm = sum([length(m[i].W) + length(m[i].b) for i in 2:length(m)])
+  nparm = sum([length(m[i].weight) + length(m[i].bias) for i in 2:length(m)])
   println(" $nparm parameters in $(length(m)-1) layers")
-  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)  
-  figs[r]=plot(xg, f.(xg), lab="", title="Model $r", color=:red)
+  initmfigs[r] = plot(xg, m[1:(end-1)](xg')', lab="", legend=false)
+  figs[r]=plot(xg, _f.(xg), lab="", title="Model $r", color=:red)
   figs[r]=scatter!(x,y, alpha=0.4, markersize=1, markerstrokewidth=0, lab="")
-  maxiter = 5000
+  maxiter = 2000
+  opt = Flux.setup(Flux.AMSGrad(),m)
   @time for i = 1:maxiter
-    Flux.train!((x,y)->Flux.mse(m(x),y), Flux.params(m),
-                #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
+      Flux.train!((m,x,y)->Flux.mse(m(x),y), m,
+                  #[(xt[:,b], yt[:,b]) for b in Base.Iterators.partition(1:length(yt), 500)],
                 [(xt, yt)],
-                Flux.AMSGrad() ) #,
+                opt) #,
                 #cb = Flux.throttle(()->@show(Flux.mse(m(xt),yt)),100))
     if i==1 || (i % (maxiter ÷ 10)==0)
       l=Flux.mse(m(xt), yt)
@@ -210,7 +210,7 @@ end
 
 In this simulation setup, the performance of the two network
 architectures is hard to distinguish. The multi-layer network takes a
-bit longer to train. Depending on the randomly simulated data, 
+bit longer to train. Depending on the randomly simulated data,
 and randomly drawn initial values, either model might achieve lower
 in-sample MSE.
 
@@ -220,50 +220,59 @@ in-sample MSE.
 digits](http://yann.lecun.com/exdb/mnist/). MNIST is a common machine
 learning benchmark. Given a handwritten digit, we want to classify it
 is a 0, 1, ..., or 9. You can try a demo of a MNIST classifier trained
-in Flux [here](https://fluxml.ai/experiments/mnist/). 
+in Flux [here](https://fluxml.ai/experiments/mnist/).
 
 Multilayer feed forward networks generally have good, but not quite
 state-of-the-art performance in image classification. Nonetheless,
-this will hopefully serve as a good example. 
+this will hopefully serve as a good example.
 
 <div class="alert alert-danger">
 The code in this section was adapted from the [Flux model
-zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl) 
+zoo.](https://github.com/FluxML/model-zoo/blob/master/vision/mnist/mlp.jl)
 </div>
 
 First we load some packages and download the data.
 ```julia
-using Flux, Flux.Data.MNIST, Statistics
-using Flux: onehotbatch, onecold, crossentropy, throttle, @epochs
+using Flux, Statistics
+using Flux: onehotbatch, onecold, crossentropy, throttle
 using Base.Iterators: repeated
 using CUDA
 using JLD2
+using MLDatasets
+
+# load training set
+train_x, train_y = MNIST(split=:train)[:]
+
+# load test set
+test_x,  test_y  = MNIST(split=:test)[:]
 
 modeldir = normpath(joinpath(docdir,"jmd","models"))
 if !isdir(modeldir)
   mkdir(modeldir)
 end
-
-imgs = MNIST.images()
-labels = MNIST.labels()
-length(labels)
 ```
 
 Let's look at some of the images.
 
 ```julia;
+# Previously MNIST was provided in the Flux package in a different format.
+# To keep code compatible, we convert to the old format
+imgs = vcat([Gray.(1 .-train_x[:,:,i]') for i ∈ 1:size(train_x,3)],
+            [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)])
+labels = vcat(train_y, test_y)
 idx = rand(1:length(imgs), 16)
 plot([plot(imgs[i], title="$(labels[i])", aspect_ratio=:equal, axis=false, ticks=false) for i in idx]...)
 ```
-The images are 28 by 28 pixels. I believe they were originally black
-ink on white paper, but the colors are being inverted somewhere. 
+The images are 28 by 28 pixels.
 
 Continue processing the data
 ```julia
-# Stack images into one large batch 
-X = hcat(float.(reshape.(imgs, :))...) |> gpu;
+# Stack images into one large batch
+X = Float32.(reshape(train_x, size(train_x,1)*size(train_x,2), size(train_x,3))) |> gpu;
+tX = Float32.(reshape(test_x, size(train_x,1)*size(train_x,2), size(test_x,3))) |> gpu;
 # One-hot-encode the labels
-Y = onehotbatch(labels, 0:9) |> gpu;
+Y = onehotbatch(train_y, 0:9) |> gpu;
+tY = onehotbatch(test_y, 0:9) |> gpu;
 ```
 One hot encoding is what the machine learning world calls creating
 dummy variables from a categorical variable.
@@ -273,7 +282,7 @@ dummy variables from a categorical variable.
 Now we define our neural network. To begin with we will look at single
 hidden layer with a multinomial logit output layer. The function that
 gives choice probabilities in a multinomial logit model is called the
-**softmax** function. That is, 
+**softmax** function. That is,
 $$
 softmax(x_1, ..., x_k) = \left( \frac{e^{x_1}}{\sum_{j=1}^k e^{x_i}},
 \frac{e^{x_2}}{\sum_{j=1}^k e^{x_i}}, ..., \frac{e^{x_k}}{\sum_{j=1}^k
@@ -282,7 +291,7 @@ $$
 ```julia
 mstart = Chain(
   Dense(28^2, 32, relu),
-  Dense(32, 10)) 
+  Dense(32, 10))
 ```
 
 In this example, we are working on a classification problem; we are
@@ -301,7 +310,7 @@ loss(m, x, y) = Flux.logitcrossentropy(m(x), y)
 Since cross-entropy or log likelihood are difficult to interpret, we
 might want a more intuitive measure of our model's performance. For
 classification **accuracy** is the portion of predictions that are
-correct. 
+correct.
 
 <div class="alert alert-danger">
 **Other measures of classification performance**
@@ -311,13 +320,13 @@ some situations (including rare outcomes or when we weight differently
 type I and type II errors) accuracy is not a sufficient measure of a
 classifier's performance. There are variety of other measures, such as
 precision, recall, and AUC. See @qeclassify for [more
-information](https://datascience.quantecon.org/applications/classification.html). 
+information](https://datascience.quantecon.org/applications/classification.html).
 </div>
 
 ```julia
 function accuracy(m, x, y)
   # onecold(m(x)) results in very slow code for large x, so we avoid it
-  coldx = vec(map(x->x[1], argmax(m(x), dims=1)))  
+  coldx = vec(map(x->x[1], argmax(m(x), dims=1)))
   coldy = onecold(y)
   return(mean(coldx.==coldy))
 end;
@@ -330,18 +339,14 @@ with the highest probability in the case of `m(x)`).
 
 ```julia
 # gradient descent steps using the full X and Y to compute gradients
-Xsmall=X[:,1:250]
-Ysmall=Y[:,1:250] # accuracy is slower, so only compute on subset of data
-
-# Test set 
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...) |> gpu
-tY = onehotbatch(MNIST.labels(:test), 0:9) |> gpu
-function evalcb(m) 
+Xsmall=X[:,1:2000]
+Ysmall=Y[:,1:2000] # accuracy is slower, so only compute on subset of data
+function evalcb(m)
   l = loss(m, X, Y)
   if isnan(l)
     @show (l)
   else
-    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY)) 
+    @show (l, accuracy(m, Xsmall,Ysmall), accuracy(m, tX,tY))
   end
 end;
 ```
@@ -351,8 +356,8 @@ end;
 
 Neural networks are usually trained using a variant of gradient
 descent for optimization. Recall that gradient descent searches for
-the minimum by taking steps of the form: 
-$$ 
+the minimum by taking steps of the form:
+$$
 \theta_{new} = \theta - \eta Df_{\theta}
 $$
 where $\eta$ is a step size or learning rate parameter that gets adjusted depending
@@ -361,7 +366,7 @@ available in `Flux.jl` and they differ in how they adjust the learning
 rate, $\eta$, and other details. Some algorithms add "momentum" to
 avoid the long narrow valley problem we saw in the banana function
 example in [the optimization
-notes](https://schrimpf.github.io/AnimatedOptimization.jl/optimization/#gradient-descent). 
+notes](https://schrimpf.github.io/AnimatedOptimization.jl/optimization/#gradient-descent).
 [Ruder
 (2016)](https://ruder.io/optimizing-gradient-descent/index.html#gradientdescentoptimizationalgorithms)
 gives a nice overview of various forms of gradient descent.
@@ -375,39 +380,42 @@ want to use the callback function to save intermediate results to disk
 in case the computation gets interrupted before completion. The
 `Flux.throttle` function can be used to prevent the call-back function
 from being evaluated too often. The code below makes `evalcb` get
-evaluated at most once every 10 seconds. 
+evaluated at most once every 10 seconds.
 
 `Flux.train` does not automatically check that the optimizer is
 making progress. With too large of a step size, gradient descent may
 lead in the wrong direction, increasing the loss function. This can
 even lead the parameters to drift toward numeric under or overflow and
-become `NaN`. If this happens, we should descrease the learning rate. 
+become `NaN`. If this happens, we should descrease the learning rate.
 
 ```julia; cache=true
-rerun = false
+rerun = true
 modelfile = joinpath(modeldir,"mnist-slp.jld2")
-opt = ADAM()  
+opt = Flux.setup(ADAM(),mstart)
 if rerun || !isfile(modelfile)
-  dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
-  m = gpu(mstart)
-  evalcb(m)
-  iterations = 200
-  losses = zeros(typeof(loss(m,X,Y)), iterations)
-  testloss=similar(losses)
-  @time for i = 1:iterations
-    Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
-                cb = throttle(()->evalcb(m), 10))
-    losses[i] = loss(m,X,Y)
-    testloss[i] = loss(m,tX,tY)
-  end
-  plot([losses testloss], xlab="Iterations", ylab="Loss", labels=["Train" "Test"])
-  
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum  
+    dataset = repeated((X, Y), 1) # each call to Flux.trian! will do 1
+    m = gpu(mstart)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    iterations = 200
+    losses = zeros(typeof(loss(m,X,Y)), iterations)
+    testloss=similar(losses)
+    @time for i = 1:iterations
+        Flux.train!((m,x,y)->loss(m,x,y), m, dataset, opt)
+        losses[i] = loss(m,X,Y)
+        testloss[i] = loss(m,tX,tY)
+    end
+    plot([losses testloss], xlab="Iterations", ylab="Loss", labels=["Train" "Test"])
+
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile modelstate
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(mstart)
+    JLD2.@load modelfile modelstate
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 ```
 
@@ -417,7 +425,7 @@ end
 ```
 
 After 200 iterations, the accuracy is already greater than 90%. This
-is pretty good. 
+is pretty good.
 
 The test set accuracy is higher than the training set, which could
 just be good luck, but it is also possible that the model is
@@ -425,22 +433,28 @@ underfitting. Let's try training the network longer (doing more
 gradient descent iterations.
 
 ```julia; cache=true
-rerun = false
-modelfile = joinpath(modeldir,"mnist-slp-2200.jld2")
-dataset = repeated((X, Y), 200) # each call to Flux.trian! will do 200
+rerun = true
+modelfile = joinpath(modeldir,"mnist-slp-8200.jld2")
+dataset = repeated((X, Y), 200) # each call to Flux.train! will do 200
 # gradient descent steps using the full X and Y to compute gradients
 if rerun || !isfile(modelfile)
-  evalcb(m)
-  @time @epochs 500 Flux.train!((x,y)->loss(m,x,y), Flux.params(m), dataset, opt, 
-              cb = throttle(()->evalcb(m), 10))
-  evalcb(m)
+    opt = Flux.setup(ADAM(),m)
+    evalcb(m)
+    @time for epoch in 1:40
+        Flux.train!(loss, m, dataset, opt,
+                    )
+    end
+    evalcb(m)
 
-  # save model
-  cpum = cpu(m)
-  @save modelfile cpum
+    # save model
+    cpum = cpu(m)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile cpum
 else
-  @load modelfile cpum
-  m = gpu(cpum)
+    cpum = cpu(m)
+    JLD2.@load modelfile cpum
+    Flux.loadmodel!(cpum, modelstate)
+    m = gpu(cpum)
 end
 @show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX,tY);
@@ -448,15 +462,15 @@ end
 
 Remember that each "epoch" does one gradient descent step for each
 tuple in `dataset`. In the code above `dataset` is just the original
-data repeated 200 times. We ran for 10 epochs, so there were a total
-of 2000 more gradient descent iterations. We see that the training
+data repeated 200 times. We ran for 40 epochs, so there were a total
+of 8000 more gradient descent iterations. We see that the training
 accuracy has improved to above 99%, but our test accuracy has failed to
-improve much above 96%. 
+improve much above 96%.
 
 My initial interpretation of this result would be that we are now
 overfitting. The number of parameters in the network is
 ```julia
-nparam(m) = sum([length(m[i].W) + length(m[i].b) for i in 1:length(m) if typeof(m[i]) <: Dense])
+nparam(m) = sum([length(m[i].weight) + length(m[i].bias) for i in 1:length(m) if typeof(m[i]) <: Dense])
 nparam(m)
 ```
 and there 60000 images. For a typical econometric or statistic
@@ -472,7 +486,7 @@ training loss starts to be much less than loss on a held out portion
 of the data (or the loss on the held out portion stops decreasing).
 
 
-## Deep Classification 
+## Deep Classification
 
 Given the apparent overfitting of the single layer network above, I
 would be reluctant to move to an even more complex model. However, I
@@ -483,7 +497,7 @@ network. Let's try their network architecture.  We will use their
 numbers of layers and hidden units, but with rectified linear
 activation. They used tanh activation functions.
 
-```julia 
+```julia
 cmgsnet_cpu = Chain(
   Dense(28^2, 2500 , relu),
   Dense(2500, 2000 , relu),
@@ -492,41 +506,43 @@ cmgsnet_cpu = Chain(
   Dense(1000, 500 , relu),
   Dense(500, 10)
   #softmax
-  ) 
+  )
 println("cmgsnet has $(nparam(cmgsnet_cpu)) parameters!!!")
 ```
 
-That's a deep network. 
+That's a deep network.
 
 ```julia; cache=true
 rerun = false
-batchsize=10000 
-parts=Base.Iterators.partition(1:size(X,2), batchsize) 
+batchsize=10000
+parts=Base.Iterators.partition(1:size(X,2), batchsize)
 data = repeat([(X[:,p], Y[:,p]) for p in parts], 10);
-# The full data + network doesn't fit in my GPU memory, so do batches
-epochs = 10
+# The full data + network didn't fit in my old GPU memory, so do batches
+epochs = 15
 acctest  = zeros(epochs)
 acctrain = zeros(epochs)
 losstest  = zeros(epochs)
 losstrain = zeros(epochs)
-opt=ADAM()
 cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
 for e in 1:epochs
-  modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
+  local modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
   if rerun || !isfile(modelfile)
-    println("Beginning epoch $e")
-    evalcb(cmgsnet)
-    @time Flux.train!((x,y)->loss(cmgsnet,x,y),
-                      params(cmgsnet), data, opt, 
-                      cb = throttle(()->evalcb(cmgsnet), 10))
-    evalcb(cmgsnet)
-    
-    # save model
-    local cpum = cpu(cmgsnet)
-    @save modelfile cpum
+      println("Beginning epoch $e")
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
+
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
   else
-    @load modelfile cpum
-    global cmgsnet = gpu(cpum)
+      local cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
   end
   println("Finished $e epochs")
   losstrain[e]=loss(cmgsnet,X,Y)
@@ -536,8 +552,8 @@ for e in 1:epochs
 end
 e = epochs
 modelfile = joinpath(modeldir,"cmgsnet-$e-epochs.jld2")
-@load modelfile cpum
-cmgsnet = gpu(cpum)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
 ```
 
 This model achieved a testing accuracy of `j 100*maximum(acctest)`% after
@@ -568,7 +584,7 @@ plot(
 
 There is really something remarkable going on in this example. A model
 that appears extremely overparameterized manages to predict very well
-on a test set. 
+on a test set.
 
 One important thing to keep in mind is that image classification
 is very different from the typical estimation problems in applied
@@ -578,17 +594,18 @@ cross-sectional earnings regression is typical, or even high. Image
 classification is very different. We know there is a model (our eyes)
 that can classify nearly perfectly. In the language of econometrics,
 the error term is zero, or there is no uncertainty, in the "true"
-image classification models. 
+image classification models.
 
 <!-- TODO: Add an aside about adversarial examples and failures to -->
 <!-- generalize.  -->
-    
+
 Let's look at some of the images that our model failed to classify
 correctly.
 
 ```julia; cache=true
-tlabels = MNIST.labels(:test)
-timgs = MNIST.images(:test)
+timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
 # predicted labels
 mlabels = cpu(vec(map(x->x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
 @show mean(mlabels.==tlabels) # = accuracy
@@ -602,7 +619,99 @@ function and gradient descent details between @ciresan2010 and the
 code above. However, I suspect that the main reason for their better
 performance is that @ciresan2010 generate additional training
 images. They do this by randomly rotating, stretching, and adding
-oscillations to the existing images. 
+oscillations to the existing images.
+
+
+# Data Augmentation
+
+Generating more data from your existing data is called data augmentation.
+Let's try augmenting the data by randomly rotating the images.
+
+```julia
+function rotateimage(img, θ)
+  R = similar(img)
+  R .= img[1,1]
+  i0 = (size(img,1)+1)/2
+  j0 = (size(img,2)+1)/2
+  for i ∈ axes(img)[1]
+    for j ∈ axes(img)[2]
+      ri = Int(round((i-i0)*cos(θ) + (j-j0)*sin(θ) +i0))
+      rj = Int(round(-(i-i0)*sin(θ) + (j-j0)*cos(θ) +j0))
+      if (ri ∈ axes(img)[1] && rj ∈ axes(img)[2])
+        R[ri,rj] = img[i,j]
+      end
+    end
+  end
+  return R
+end
+
+plot([plot(timgs[i], axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...,
+    [plot(rotateimage(timgs[i], (-1)^i*π/6), axis=false, ticks=false, aspect_ratio=:equal) for i in 1:8]...)
+```
+
+Training with rotated images.
+
+```julia; cache=true
+rerun = false
+batchsize=10000
+parts=Base.Iterators.partition(1:size(X,2), batchsize)
+randrotate(x::AbstractVector; maxθ = π/8) = vec(rotateimage(reshape(x, 28, 28), rand()*2maxθ - maxθ))
+data = [(gpu(mapslices(randrotate,cpu(X[:,p]), dims=1)), Y[:,p]) for p in parts for i=1:10];
+
+epochs = 10
+acctest  = zeros(epochs)
+acctrain = zeros(epochs)
+losstest  = zeros(epochs)
+losstrain = zeros(epochs)
+cmgsnet = gpu(cmgsnet_cpu)
+opt=Flux.setup(ADAM(),cmgsnet)
+for e in 1:epochs
+  local modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
+  if rerun || !isfile(modelfile)
+      println("Beginning epoch $e")
+      evalcb(cmgsnet)
+      @time Flux.train!(loss,
+                        cmgsnet, data, opt)
+      evalcb(cmgsnet)
+
+      # save model
+      local cpum = cpu(cmgsnet)
+      modelstate = Flux.state(cpum)
+      JLD2.@save modelfile modelstate
+  else
+      cpum = cpu(cmgsnet)
+      JLD2.@load modelfile modelstate
+      Flux.loadmodel!(cpum, modelstate)
+      global cmgsnet = gpu(cpum)
+  end
+  println("Finished $e epochs")
+  losstrain[e]=loss(cmgsnet,X,Y)
+  acctrain[e]=accuracy(cmgsnet,Xsmall, Ysmall)
+  losstest[e]=loss(cmgsnet,tX,tY)
+  acctest[e]=accuracy(cmgsnet,tX,tY)
+end
+e = epochs
+modelfile = joinpath(modeldir,"cmgsnet-aug-$e-epochs.jld2")
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cmgsnet, modelstate)
+
+@show maximum(acctest)
+```
+
+
+```julia; cache=true
+timgs = [Gray.(1 .-test_x[:,:,i]') for i ∈ 1:size(test_x,3)]
+tlabels = test_y
+
+# predicted labels
+mlabels = cpu(vec(map(x->x[1], argmax(cmgsnet(tX), dims=1)))) .- 1
+@show mean(mlabels.==tlabels) # = accuracy
+@show sum(mlabels .!= tlabels)
+miss=findall(mlabels .!= tlabels)
+plot( [plot(timgs[i], axis=false, ticks=false, title="$(tlabels[i]) as $(mlabels[i])", aspect_ratio=:equal) for i in miss[1:16]]...)
+```
+
+
 
 
 

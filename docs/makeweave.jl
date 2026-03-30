@@ -16,16 +16,16 @@ if runweave
     mkdir("md")
   end
   weave(src,out_path="md",
-        cache=:refresh, cache_path="weavecache",
+        cache=:off, cache_path="weavecache",
         doctype="github", mod=Main,
         args=Dict("md" => true))
 end
 
-if runnotebook  
+if runnotebook
   println("weaving notebook for $src")
   if !isdir("build")
     mkdir("build")
-  end  
+  end
   using Weave
   notebook(src, out_path=joinpath(pwd(),"build"), nbconvert_options="--allow-errors")
 end
@@ -33,4 +33,3 @@ end
 if (isfile("build/temp.md"))
   rm("build/temp.md")
 end
-

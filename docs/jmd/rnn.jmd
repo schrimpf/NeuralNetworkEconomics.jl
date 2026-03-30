@@ -4,7 +4,7 @@ subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -59,6 +59,8 @@ docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), "..","docs")
 using Pkg
 Pkg.activate(docdir)
 Pkg.instantiate()
+
+rerun=true
 ```
 
 # Introduction
@@ -237,7 +239,7 @@ if !isfile(infile)
       songhtml[s] = ""
       continue
     end
-    r = HTTP.get("http://dylanchords.info/"*url)
+    local r = HTTP.get("http://dylanchords.info/"*url)
     songhtml[s]=String(r.body)
     next!(p)
   end
@@ -374,11 +376,11 @@ function p_markov(len::Val{L}, data::AbstractVector{Char}) where L
 end
 
 modelfile=joinpath(docdir,"jmd","models","dylan-markov4.jld2")
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) && !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(4), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 ```
 
@@ -426,11 +428,11 @@ longer histories.
 
 ```julia
 modelfile=joinpath(docdir,"jmd","models","dylan-markov10.jld2")
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) && !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(10), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm)))
@@ -439,11 +441,11 @@ println(String(sample_markov(dm)))
 ### Length 20
 ```julia
 modelfile=joinpath(docdir,"jmd","models","dylan-markov20.jld2")
-if isfile(modelfile)
-  @load modelfile dm
+if isfile(modelfile) && !rerun
+  JLD2.@load modelfile dm
 else
   @time dm = p_markov(Val(20), text);
-  @save modelfile dm
+  JLD2.@save modelfile dm
 end
 @show length(dm), length(text)
 println(String(sample_markov(dm, 2000)))
@@ -466,7 +468,7 @@ using Flux
 using Flux: onehot, chunk, batchseq, throttle, logitcrossentropy
 using StatsBase: wsample
 using Base.Iterators: partition
-using ProgressMeter
+using CUDA
 ```
 
 ### Recurrence and State
@@ -531,99 +533,119 @@ Now let's fit an RNN to Dylan lyrics.
 
 ```julia
 text = collect(String(read(joinpath(docdir,"jmd","dylanchords.txt"))))
-endchar = 'Ω' # any character not in original text
-alphabet = [unique(text)..., endchar]
-hottext = map(ch -> onehot(ch, alphabet), text)
-stop = onehot(endchar, alphabet)
+function preparedata(text; seqlen=100, endchar = 'Ω', batchesz=300)
+    #startstring="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+    # songs = split(prod(text), startstring)[2:end]
 
-N = length(alphabet)
-batchseqlen = 50
-seqperbatch = 50
-Xseq = collect(partition((batchseq((chunk(hottext,seqperbatch)),stop)), batchseqlen));
-Yseq = collect(partition((batchseq((chunk(hottext[2:end], seqperbatch)),stop)),
-                         batchseqlen));
-println("$length(Xseq) batches")
+    alphabet = [unique(text)..., endchar]
+    Xtext = [collect(s[1:(end-1)]) for s in chunk(text, batchesz)]
+    Ytext = [collect(s[2:end]) for s in chunk(text, batchesz)]
+
+    Xs = Base.Iterators.partition(batchseq(Xtext, endchar), seqlen)
+    Ys = Base.Iterators.partition(batchseq(Ytext, endchar), seqlen)
+    Xs = [Flux.onehotbatch.(x, (alphabet,)) for x in Xs]
+    Ys = [Flux.onehotbatch.(y, (alphabet,)) for y in Ys]
+    stop = onehot(endchar, alphabet)
+    N = length(alphabet)
+
+    return(Xs, Ys, alphabet, N, stop)
+end
+Xseq, Yseq, alphabet, N, stop = preparedata(text, seqlen=60, batchesz=4000);
 data = zip(Xseq, Yseq);
-
 ```
 
 To reduce computation while training the model, we are going to use
-gradient truncation. `batchseqlen` is the length of history through which gradients are
+gradient truncation. `seqlen` is the length of history through which gradients are
 accumulated.
 
-We also divide the data into batches for gradient descent. `seqperbatch`
-is the number of `batchseqlen` sequences per batch used for gradient
-descent. Each batch will have `seqlen * seqperbatch` observations.
+We also divide the data into "batches" for computation. `batchesz` is
+the number of sequences for which the loss function and its gradient
+will be computed in parallel. Each batch will have `seqlen * batchesz`
+observations, and each epoch of training takes `length(text) /
+(seqlen*batchesz)` gradient descent steps using the batches of the
+data.
 
 ### Training and Results
 
 ```julia
 # Sampling
-
-function sample(m, alphabet, len)
-  m = cpu(m)
-  Flux.reset!(m)
-  buf = IOBuffer()
-  c = rand(alphabet)
-  for i = 1:len
-    write(buf, c)
-    c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
-  end
-  return String(take!(buf))
-end
-
-opt = RMSProp(0.005)
-# this will take awhile, so a fancier call back with a progress meter is nice to have
-function cbgenerator(N, loss, printiter=Int(round(N/10)))
-  p = Progress(N, 1, "Training", 25)
-  i=0
-  function cb()
-    next!(p)
-    if (i % printiter==0)
-      @show loss()
+function sample(m, alphabet, len; seed="")
+    m = cpu(m)
+    Flux.reset!(m)
+    buf = IOBuffer()
+    if seed == ""
+        seed = string(rand(alphabet))
     end
-    i+=1
-  end
-  return(cb)
+    write(buf, seed)
+    c = wsample(alphabet, softmax([m(onehot(c, alphabet)) for c in collect(seed)][end]))
+    for i = 1:len
+        write(buf, c)
+        c = wsample(alphabet, softmax(m(onehot(c, alphabet))))
+    end
+    return String(take!(buf))
 end
 
 function train_model(L; N=N, data=data,
-                     modelfile=joinpath(docdir,"jmd","models","dylan-$L.jld2"),
-                     opt=opt )
-  m = Chain(LSTM(N, L), LSTM(L, L),  Dense(L, N)) #|> gpu
-  function loss(xb::V, yb::V) where V<:AbstractVector
-    l = sum(logitcrossentropy.(m.(xb),yb))/length(xb)
-    return(l)
-  end
-  cb=cbgenerator(length(data),()->loss(first(data)...))
+    modelfile=joinpath(docdir,"jmd","models","dylan-$L.jld2"),
+    device = gpu , rerun=false, epochs=20)
+    m = Chain(LSTM(N => L), LSTM(L => L),  Dense(L => N)) |> device
+    function loss(m, xb, yb)
+        Flux.reset!(m)
+        l = sum(logitcrossentropy.([m(x) for x in xb],yb))
+        return(l)
+    end
+    data = device(data)
 
-  if isfile(modelfile)
-    @load modelfile cpum
-    #m = gpu(cpum)
-    m = cpum
-  else
-    @time Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    println("Sampling after 1 epoch:")
-    sample(m, alphabet, 1000) |> println
+    opt = Flux.setup(Adam(0.01), m)
 
-    Flux.@epochs 20 Flux.train!(loss, Flux.params(m), data, opt, cb = cb)
-    cpum = cpu(m)
-    @save modelfile cpum
-  end
-  return(m)
+    if isfile(modelfile) && !rerun
+        JLD2.@load modelfile modelstate losses
+        Flux.loadmodel!(cpum, modelstate)
+        m = device(cpum)
+        #m = cpum
+    else
+        @time Flux.train!(loss, m, data, opt)
+        println("Sampling after 1 epoch:")
+        sample(m, alphabet, 1000) |> println
+        losses = zeros(epochs)
+        for epoch in 1:epochs
+            Flux.train!(loss, m, data, opt)
+            if (epoch % 10)==0
+                println("Sampling after $epoch epochs:")
+                sample(m, alphabet, 500) |> println
+            end
+            losses[epoch] = sum(loss(m, d[1], d[2]) for d in data)
+            println("Loss after $epoch epochs: ", losses[epoch])
+        end
+        cpum = cpu(m)
+        modelstate = Flux.state(cpum)
+        JLD2.@save modelfile modelstate losses
+    end
+    return(m, losses)
 end
 
-for L in [32, 64, 128] #, 256, 512]
-  m = train_model(L)
-  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
-  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
-  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
-  println("Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters")
-  println("Sample from model $L")
-  println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
-  println(sample(m, alphabet, 2000))
-  println()
+
+layersizes = [32, 64, 128, 256]
+epochs = 400
+lossvals = zeros(length(layersizes), epochs)
+for (i,L) in enumerate(layersizes)
+    @time local m, losses  = train_model(L, data=data, rerun=rerun, epochs=400);
+    lossvals[i,:] .= losses
+    println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+    println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+    println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+    println("Model $L has $(sum([prod(size(p)) for p in Flux.params(m)])) parameters")
+    println("Sample from model $L")
+    println("ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ")
+    seed = "I was so much older then"
+    println(sample(m, alphabet, 1000, seed=seed))
+    println()
 end
+```
+
+```julia
+using Plots
+plot(1:epochs, lossvals', labels=reshape(["L = $l" for l in layersizes],1,length(layersizes)), xlab="epoch",ylab="loss")
 ```
 
 

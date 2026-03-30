@@ -4,7 +4,7 @@ subtitle    : ""
 author      : Paul Schrimpf
 date        : `j using Dates; print(Dates.today())`
 bibliography: "../ml.bib"
-options:
+weave_options:
       out_width : 100%
       wrap : true
       fig_width : 8
@@ -94,9 +94,17 @@ more relevant to economics.
 
 # Transformer
 
-Transformers create a mapping from $(x_0, ..., x_t) \to \tilde{x}_t$
-where $\tilde{x}_t$ is meant to contain all information relevant for
-predicting $x_{t+1}$. Moreover, the same mapping can be applied to all
+Transformers create a mapping from
+$$
+(x_0, ..., x_t) \to \tilde{x}_t
+$$
+where
+$\tilde{x}_t$
+is meant to contain all information relevant for
+predicting
+$x_{t+1}$
+.
+Moreover, the same mapping can be applied to all
 $t$ in parallel. This mapping consists of the following layers.
 
 ## Embedding
@@ -104,7 +112,7 @@ $t$ in parallel. This mapping consists of the following layers.
 Each $x_t \in X \subseteq \R^K$ is often contained in a high
 dimensional space. In text, $x_t$ in a vector of indicator variables
 representing which token is the $t$th token in the sequence. These
-tokens could be characters, or more commonly now, words. In either
+tokens could be characters, or more commonly, words. In either
 case, the dimension of $x_t$ is in the hundreds or thousands. Anyway,
 $x_t$ is often embedded into a lower dimensional space by
 $$
@@ -115,7 +123,7 @@ where $W_e: \R^k \to \R^d$ is linear.
 ## Positional Encoding
 
 With the exception of this layer, the entire transformer is a
-symmetric function $(x_0, ..., x_t)$ --- it ignores order. Positional
+symmetric function of $(x_0, ..., x_t)$ --- it ignores order. Positional
 encoding adds some position information to $x_t^e$. This could be done
 by simply adding a coordinate containining e.g. $t/T$, but is most
 often done (following @vaswani2017) by
@@ -135,15 +143,15 @@ intervals between words and offsets.
 
 The $x_t^{pe}$ are now further transformed to incorporate information
 from other $x_s^{pe}$. This is done through multiple attention
-layers. To describe attention layers, let $x_t^{A_0} = x_t^{pe}$. An
+layers. To describe attention layers, let $x_t^{A,0} = x_t^{pe}$. An
 attention layer consists of:
 
 ### (Masked) Self-Attention
 
 $$
-z_{0,t}^{A_\ell} = \sum_{j=0}^t \frac{e^{x_t^{A_{\ell-1}}' Q_\ell' K_\ell
-x_t^{A_{\ell-1}}}} { \sum_{i=0}^t e^{x_i^{A_{\ell-1}}' Q_\ell' K_\ell
-x_t^{A_{\ell-1}}}} V_\ell x_{j}^{A_{\ell-1}}
+z_{0,t}^{A,\ell} = \sum_{j=0}^t \frac{e^{ {x_t^{A,\ell-1}}' Q_\ell' K_\ell
+x_j^{A,\ell-1}}} { \sum_{i=0}^t e^{{x_t^{A,\ell-1}}' Q_\ell' K_\ell
+x_i^{A,\ell-1}}} V_\ell x_{j}^{A,\ell-1}
 $$
 where $Q_{ell}$, $K_{ell},$ and $V_{\ell}$ are all $m \times d$
 matrices. These are often referred to as query, key, and value
@@ -151,18 +159,18 @@ transformations respectively. The idea is that the query and key
 matrices determine how relevant $x_j$ is for $x_t$, and the value
 gives an altered representation of $x_j$.
 
-This is "masked" because $z_{0,t}^{A_\ell}$ looks at the data from $0$
+This is "masked" because $z_{0,t}^{A,\ell}$ looks at the data from $0$
 to $t$ instead of the whole sequence from $0$ to $T$.
 
 If $d \neq m$, then $d$ must be a multiple of $m$. If $d < m$, then
 there must be $d/m$ such $Q$, $K$, and $V$ matrices, and their outputs
-are concatenated together to ensure that $z_t^{A_\ell}$ has
-the same dimension as $x_t^{A_{\ell-1}}$
+are concatenated together to ensure that $z_t^{A,\ell}$ has
+the same dimension as $x_t^{A,\ell-1}$
 
 ### Residual Connection
 
 The output of the attention layer is then added to the input,
-$z_{1,t}^{A_\ell} = x_t^{A_{\ell-1}} + z_{0,t}^{A_\ell}$
+$z_{1,t}^{A,\ell} = x_t^{A,\ell-1} + z_{0,t}^{A,\ell}$
 This sort of residual connection is often used in deep
 learning. (E.g. Resnet is a well known convolutional network with residual
 connections that did very on image classification). It
@@ -175,19 +183,19 @@ connections.
 A layer normalization is then applied as in @ba2016. That is, we
 transform
 $$
-z_{2,t}^{A_\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A_\ell} -
+z_{2,t}^{A,\ell} = \frac{g^\ell_t}{\sigma_\ell} (z_{1,t}^{A,\ell} -
 \mu_\ell) + b_t^\ell
 $$
 where $\mu_\ell$ and $\sigma_\ell$ are the mean and standard deviation
-of $z_{1,t}^{A_\ell}$ across $t$.
+of $z_{1,t}^{A,\ell}$ across $t$.
 
 ### Feed-Forward Layer
 
 A single layer feed forward network is then applied to each
-$z_{2,t}^{A_\ell}$. That is, we take
+$z_{2,t}^{A,\ell}$. That is, we take
 
 $$
-z_{3,t}^{A_\ell} = f_\ell(z_{2,t}^{A_\ell})
+z_{3,t}^{A,\ell} = f_\ell(z_{2,t}^{A,\ell})
 $$
 
 where $f_\ell$ is a single layer feed forward network.
@@ -196,11 +204,11 @@ where $f_\ell$ is a single layer feed forward network.
 
 Finally there is another residual connection and layer norm applied.
 
-$$ z_{4,t}^{A_\ell} = z_{3,t}^{A_\ell} + z_{2,t}^{A_\ell} $$
+$$ z_{4,t}^{A,\ell} = z_{3,t}^{A,\ell} + z_{2,t}^{A,\ell} $$
 
 $$
-x_{t}^{A_\ell} = frac{g^{\ell2}_t}{\sigma_\ell} (z_{4,t}^{A_\ell} -
-\mu_\ell) + b_t^{\ell2}
+x_{t}^{A,\ell} = \frac{g^{\ell 2}_t}{\sigma_\ell} (z_{4,t}^{A,\ell} -
+\mu_\ell) + b_t^{\ell 2}
 $$
 
 
@@ -210,7 +218,7 @@ $$
 
 Finally, the output of the encoder, $x_t^{A_L}$, is used to predict
 $x_{t+1}$. When $x_{t+1}$ is discrete, this is done with a linear and
-then softmax layet. When $x_{t+1}$ is continuous, it can be done with
+then softmax layer. When $x_{t+1}$ is continuous, it can be done with
 just a linear layer.
 
 ## Why?
@@ -218,7 +226,7 @@ just a linear layer.
 The architecture of transformers developed step-by-step, combining
 ideas that seemed to work. The idea of an encoder grew out of
 embeddings and was originally combined with recurrent
-networks. Positional embedding and move away from recurrence was
+networks. Positional embedding and moving away from recurrence was
 motivated by the difficulty with parallelizing recurrent
 models. Residual connections and layer norms help with gradient
 descent and vanishing gradient problems. Theoretical understanding of
@@ -227,13 +235,329 @@ is advancing rapidly. E.g. @bhattamishra2020 , etc
 
 # Example Code
 
-# Packages
+[Lior Sinai has an excellent blog post, "How to code a transformer in Julia,"](https://liorsinai.github.io/coding/2022/05/18/transformers.html)
+that shows how to implement a transformer as new layers in Flux.
 
-## Transformers.jl
+The [`Transformers.jl`](https://github.com/chengchingwen/Transformers.jl) package
+provides a higher level transformer interface.
+
+## Data
+
+For comparison, we will start by using the same Dylan example as in
+the recurrent neural network notes.
+
+We begin by loading the data and setting up a encoding that converts
+the original string data into an array of indicators for each
+character.
+
+```julia; eval=false
+using JLD2
+using StatsBase: wsample
+using Base.Iterators: partition
+using Transformers, Flux, CUDA
+
+text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
+#text = "01"^1000
+startchar = "α"
+endchar = "Ω"
+unkchar = "Ξ"
+padchar = "δ"
+alphabet = unique(vcat(split(text, ""),unkchar,startchar,endchar, padchar))
+vocab = Transformers.TextEncoders.Vocab(alphabet, unkchar)
+encoder = Transformers.TextEncoders.TransformerTextEncoder(x->split(x,""), vocab,
+                                                           startsym=startchar, endsym=endchar,
+                                                           unksym=unkchar, padsym=padchar)
+```
+
+## Model Creation
+
+Now we setup the model.
+
+```julia; eval=false
+enable_gpu(true)
+
+function create_transformer(modeldim, L; heads=1, feedforwardsize=4*modeldim, vocab=vocab)
+  emb = Transformers.Layers.Embed(modeldim,length(vocab))
+  pe = Transformers.Layers.SinCosPositionEmbed(modeldim)
+
+  trf_blocks = Transformer(Layers.TransformerBlock,
+                           L, relu, heads, modeldim, modeldim ÷ heads, 4*modeldim)
+  decode = Transformers.Layers.EmbedDecoder(emb)
+  causalmask = Transformers.Layers.CausalMask()
+  m = Chain(
+    SkipConnection(
+      Chain(x->x.token, emb, Transformers.Layers.ApplyEmbed(pe)),
+      (mx,x)->((hidden_state=mx,attention_mask=causalmask))
+    ),
+    trf_blocks,
+    x->x.hidden_state, decode)
+  return(m)
+end
+```
+
+## Data Batching
+
+For training, we divide the data into sequences of length `seqlen` and predict the next
+character in each sequence. We further divide the sequences into `batches` batches, and compute the loss and gradient in parallel for each batch.
+
+```julia
+function createdata(text, seqlength, batches, encoder=encoder, endchar=endchar)
+    Xtext = Flux.chunk(text, batches)
+    Xs = collect.(Base.Iterators.partition.(Xtext, seqlength))
+    Xenc = [Transformers.TextEncoders.encode(encoder,x) for x in Xs]
+    return(Xenc)
+end
+```
+
+## Training
+```julia; eval=false
+using Statistics
+
+function loss(m, x; agg=mean)
+    logp = m(x)[:,1:(end-1),:]
+    @views y= x.token[:,2:end,:]
+    return Flux.Losses.logitcrossentropy(logp, y, agg=agg)
+end
+
+function totalavgloss(m, data)
+    L = sum(loss(m, x, agg=sum) for x in data)
+    N = sum((size(x.token,2)-1)*size(x.token,3) for x in data)
+    return L/N
+end
+
+function train_model(m; data=data,
+                     modelfile=joinpath(docdir,"jmd","models","dylan-t.jld2"),
+                     opt=Adam(), epochs=20, device = gpu)
+    data=device(data)
+    m=device(m)
+    opts = Flux.setup(opt, m)
+    if isfile(modelfile)
+        @load modelfile cpum
+        m = device(cpum)
+    else
+        ℓ = totalavgloss(m,data)
+        println("Initial loss: $ℓ")
+        @time Flux.train!(loss, m, data, opts)
+        ℓ = totalavgloss(m, data)
+        println("Loss after 1 epoch: $ℓ")
+        for epoch in 1:epochs
+            Flux.train!(loss, m, data, opts)
+            ℓ = totalavgloss(m,data)
+            println("Loss after $(epoch+1) epochs: $ℓ")
+        end
+        cpum = cpu(m)
+        @save modelfile cpum
+    end
+    return(m)
+end
+
+m = create_transformer(16,6,heads=2,feedforwardsize=16)
+data = createdata(text, 500, 10)
+m = train_model(m, data=data, modelfile=joinpath(docdir,"jmd","models","dylan-transformer16-6.jld2"),
+        epochs=1000, device=gpu)
+```
+
+Sampling from the trained model:
+
+```julia; eval=false
+function sample(m, len, seed="", encoder=encoder, unkchar=unkchar)
+    out = split(seed*unkchar^(len-length(seed)),"")
+    dev = isa(Flux.params(m)[1], CuArray) ? gpu : cpu
+    for i = (length(seed)+1):len
+        x = Transformers.TextEncoders.encode(encoder, prod(out)) |> dev
+        logits = m(x)
+        p = Flux.softmax(logits[:,i,1])
+        CUDA.@allowscalar y = wsample(1:length(encoder.vocab), p)
+        out[i] = Transformers.TextEncoders.decode(encoder, y)
+    end
+    return(prod(out))
+end
+
+sample(m, 500) |> println
+```
+
+The output looks okay, but not quite as good as with RNNs. I did some
+ad-hoc exploration with alternate widths and depths, but it was not very exhaustive.
+
+Qualitatively, these results are typical. Although transformers
+outperform RNNs when the underlying tokens are words or
+word-fragments, RNNs outperform transformers when the tokens are
+characters. Various modifications of transformers can make them
+competitive. See e.g. @wu2020 , @al2019 ,
 
 
-## Pre-trained Models
+# Pre-trained Models
 
-Huggingface and Transformers.jl interface to it
+An increasingly common way to apply transformers, especially for language, but also
+other contexts, is to fine-tune a general purpose model. There are a number of large
+general purpose language models trained on large datasets. These include variants of
+GPT, variants of BERT, and others. Huggingface provides a way to access these models,
+and Transformers.jl has integrated some of the models from Huggingface (with plans to
+add more).
 
-### Transfer Learning
+## Transfer Learning
+
+Given a specific dataset and task, a fruitful approach is to take a large pretrained
+and fine-tune the model for the task. Often in fine tuning, all parameters of the model
+will be modified. Here, we will fine-tune the GPT2 model on the Dylan song data.
+The hope is that the output of the transformer
+provides a good representation of the data for predicting the next word.
+To limit the computational cost, we hold fixed the embedding and transformer components
+of GPT, and only retrain a final classifier.
+It is also common to fine tune all components of the model.
+
+```julia; eval=false
+using JLD2
+using StatsBase: wsample
+using Transformers, Flux, CUDA
+#using TextEncodeBase
+using Transformers.HuggingFace
+
+text = String(read(joinpath(docdir,"jmd","dylanchords.txt")))
+songs = [split(s, "</body")[1] for s in split(text, "<body>")[2:end]]
+
+
+# startsym = "<pre>"
+# delisym = "_deli_"
+# endsym = "</pre>"
+# unksym = "<unk>"
+
+gptenc = hgf"gpt2:tokenizer"
+gpt2 = hgf"gpt2:lmheadmodel"
+
+
+# encode songs
+songenc = [Transformers.encode(gptenc, s) for s in songs]
+
+# find size of output = # of tokens used in data
+tokens = sort(unique(vcat(unique(Flux.onecold(s.token) for s in songenc)...)))
+#usedtoken = reduce((x,y)-> x .|| y, any(s.token,dims=2) for s in songenc)
+#idx = cumsum(usedtoken, dims=1)
+outdim = length(tokens)
+
+hiddendim = size(gpt2.model(Transformers.encode(gptenc, "test this thing")).hidden_state,1)
+
+predictmodel = Chain(Dense(hiddendim, outdim))
+
+maxlen = size(gpt2.model.embed.layer.position.embed.embeddings,2)-3
+
+function squeeze( A :: AbstractArray )
+    keepdims = Tuple(i for i in size(A) if i != 1);
+    return reshape( A, keepdims );
+end
+
+"""
+  creatbatch(batchsize)
+
+Randomly select a song and a sequence of tokens with length min(length(song),maxlen).
+Encode the sequence using the transformer from gpt and a causal attention mask.
+Return the encoded values,
+and a one-hot matrix representing the next tokens in the song.
+
+This is done `batchsize` times and the function returns the
+transformed output as `X` with dimension 768 by `batchsize`*`maxlen`,
+and one hot matrix `y` with dimension number `outdim` by `batchsize`*`maxlen`
+"""
+function createbatch(batchsize; maxlen=maxlen, minlen=minlen, outdim=outdim, model=model, songenc=songenc, tokens=tokens)
+  Ntrain=batchsize
+  xin = (token=songenc[1].token[:,1:minlen],)
+  xt = model(xin)
+  CUDA.@allowscalar Xt = Vector{typeof(squeeze(xt.hidden_state))}(undef, Ntrain)
+  CUDA.@allowscalar y = Vector{typeof(Flux.onehotbatch(Flux.onecold(xin.token), tokens))}(undef, Ntrain)
+  causalmask=Transformers.Layers.CausalMask()
+  for i in 1:Ntrain
+    L = 0
+    si = 0
+    while (L<minlen)
+      si = rand(axes(songenc)[1])
+      s = songenc[si]
+      L = size(s.token,2)
+    end
+    s = songenc[si]
+    len = min(maxlen,(L-3))
+    first = rand(1:(L-len))
+    last = first + len -1
+    CUDA.@allowscalar xin  = (token=s.token[:,first:last],attention_mask=causalmask)
+    xt = model(xin)
+    CUDA.@allowscalar Xt[i] = squeeze(xt.hidden_state)
+    CUDA.@allowscalar y[i] = Flux.onehotbatch(Flux.onecold(s.token[:,(first+1):(last+1)]), tokens)
+  end
+  Y = hcat(y...)
+  X = hcat(Xt...)
+  return(X,Y)
+end
+
+datafile = joinpath(docdir,"jmd","models","dylan-batched.jld2")
+batches = 20
+batchsize = 25
+minlen = 20
+if !isfile(datafile)
+    gm = gpu(gpt2.model)
+    gs = gpu(songenc)
+    data = [createbatch(batchsize, maxlen=maxlen, model=gm, songenc=gs) for b in 1:batches]
+    cdata = cpu(data)
+    @save datafile cdata
+end
+@load datafile cdata
+data = cdata
+
+function samplegpt(len=100,prompt="I was so much older then, I'm younger than that now "; predictmodel=predictmodel, transformer=gpt2.model, maxlen=1024, tokens=tokens, encoder=gptenc)
+    enc = Transformers.encode(encoder, prompt)
+    for i=1:len
+        CUDA.@allowscalar xin = (token=enc.token[:,max(1,end-maxlen+1):end],)
+        xt = transformer(xin)
+        CUDA.@allowscalar p = Flux.softmax(predictmodel(xt.hidden_state[:,end]))
+        CUDA.@allowscalar y = tokens[wsample(1:length(tokens), p)]
+        push!(enc.token.onehots,y)
+    end
+    out = prod(Transformers.decode(encoder, enc.token))
+    return(out)
+end
+samplegpt(20, predictmodel=gpu(predictmodel), transformer=gpu(gpt2.model))
+
+predictmodel = gpu(predictmodel)
+opt = Flux.setup(Adam(), predictmodel)
+loss(m, xt, y) = Flux.Losses.logitcrossentropy(m(gpu(xt)),gpu(y))
+
+using Statistics
+Epochs = 500
+losses = zeros(Epochs)
+modelfile = joinpath(docdir,"jmd","models","dylan-gpt-tuned.jld2")
+if !isfile(modelfile)
+  losses = zeros(Epochs)
+  for e=1:Epochs
+    Flux.train!(loss, predictmodel, data, opt)
+    losses[e] = mean(loss(predictmodel, gpu(d)...) for d in data)
+    println("Epoch $e: loss=$(losses[e])")
+      if (e % 10)==0
+          println("Sample = ")
+          println(samplegpt(20, transformer=gpu(gpt2.model)))
+      end
+  end
+  cpum = cpu(predictmodel)
+  @save modelfile cpum losses
+end
+@load modelfile cpum losses
+predictmodel = gpu(cpum)
+
+import Random
+Random.seed!(9)
+samplegpt(200, "They say economics is the dismal science", transformer=gpu(gpt2.model)) |> println
+```
+
+That seems pretty decent.
+
+## Large LLMs
+
+State of the art LLMs can mimic Dylan lyrics with just prompting. For example when asked to complete a lyric in the style of Bob Dylan, Anthropic's [Claude](https://claude.ai/) 3.5 Sonnet model returns,
+
+> Thank you for the clarification. I understand you'd like me to complete a lyric starting with "They say economics is the dismal science" in the style of Bob Dylan, while being careful not to reproduce any copyrighted material. Here's an original continuation in a Dylan-esque style:
+>
+>> They say economics is the dismal science
+>> But the market's got no conscience
+>> Profit margins and bottom lines
+>> While the working man declines
+>> In a world of haves and have-nots
+>> Where money talks and truth rots
+>
+> This verse aims to capture some of Dylan's themes of social commentary and critique of economic systems, using vivid imagery and a somewhat cynical tone. It's not meant to mimic any specific Dylan song, but rather to evoke his general style and approach to songwriting.
