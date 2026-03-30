@@ -367,7 +367,7 @@ println(yhat[1:10])
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
 <pre><code>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-MSE/var(y) = 1.4366160320048598
+MSE/var(y) = 1.4572481874874483
 </code></pre>
 <p>That doesn’t look very good. All the predictions are zero. This could
 happen when the regularization parameter, <code>lambda</code>, is too large.
@@ -393,7 +393,7 @@ coef = fitted_params(m).lasso_regressor.coefs
 intercept = fitted_params(m).lasso_regressor.intercept
 sum(abs(c[2])&gt;1e-8 for c in coef) # number non-zero
 </code></pre>
-<pre><code>MSE/var(y) = 0.9983619913286683
+<pre><code>MSE/var(y) = 0.9979781148868001
 0
 </code></pre>
 <p>If we want to tune <code>lambda</code> using cross-validation, we can use the
@@ -409,7 +409,7 @@ fit!(m, rows=train, verbosity=1)
 yhat = predict(m , rows=test)
 println(&quot;MSE/var(y) = $(mean((y[test].-yhat).^2)/var(y[test]))&quot;)
 </code></pre>
-<pre><code>MSE/var(y) = 0.13334865746257765
+<pre><code>MSE/var(y) = 0.13908159717819163
 </code></pre>
 <pre><code class="language-julia">using Plots
 cvmse = report(m).plotting.measurements
@@ -473,7 +473,7 @@ lo = 1
 hi = 2000
 plot(obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>loss(m, X_train, y_train) = 0.9986320109439123
+<pre><code>loss(m, X_train, y_train) = 0.9986320109439122
 </code></pre>
 <p><img alt="" src="../figures/ml-julia_10_1.png" /></p>
 <pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])
@@ -566,7 +566,7 @@ lo = 1
 hi = 2000
 plot(lo:hi,obj[lo:hi], ylab=&quot;Loss=MSE + λ/n*||β||₁&quot;, xlab=&quot;Iteration&quot;)
 </code></pre>
-<pre><code>ℓ(ps, X_train, y_train, m) = 0.12168046685989707
+<pre><code>ℓ(ps, X_train, y_train, m) = 0.10933796326615405
 </code></pre>
 <p><img alt="" src="../figures/ml-julia_12_1.png" /></p>
 <pre><code class="language-julia">plot(lo:hi, [mse_train[lo:hi] mse_test[lo:hi]], ylab=&quot;MSE&quot;, xaxis=(&quot;Iteration&quot;), lab=[&quot;Train&quot; &quot;Test&quot;])

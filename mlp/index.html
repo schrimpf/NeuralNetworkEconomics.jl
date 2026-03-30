@@ -282,7 +282,7 @@ xt = reshape(Float32.(x), 1, length(x))
 yt = reshape(Float32.(y), 1, length(y))
 </code></pre>
 <pre><code>1×1000 Matrix{Float32}:
- 0.690707  0.384928  -1.01169  -0.14857  …  0.509698  1.23596  0.0715831
+ -0.324851  0.154052  0.369813  …  1.0293  0.983615  1.04395  1.07946
 </code></pre>
 <p>We now define our models. The second model is a multi-layer network with
 3 layers each of width 3. The first model is a single-layer network with
@@ -336,34 +336,34 @@ end
 </code></pre>
 <pre><code>Model 1 = Chain(#3, Dense(1 =&gt; 15, leakyrelu), Dense(15 =&gt; 1))
  46 parameters in 2 layers
-Model 1, 1 iterations, loss=1.1046689
-Model 1, 200 iterations, loss=0.33016664
-Model 1, 400 iterations, loss=0.31775358
-Model 1, 600 iterations, loss=0.3095476
-Model 1, 800 iterations, loss=0.30324015
-Model 1, 1000 iterations, loss=0.2983693
-Model 1, 1200 iterations, loss=0.29457173
-Model 1, 1400 iterations, loss=0.2917777
-Model 1, 1600 iterations, loss=0.28972644
-Model 1, 1800 iterations, loss=0.2883253
-Model 1, 2000 iterations, loss=0.28736797
- 12.744578 seconds (54.92 M allocations: 3.049 GiB, 1.78% gc time, 98.73% c
+Model 1, 1 iterations, loss=0.4472418
+Model 1, 200 iterations, loss=0.26399395
+Model 1, 400 iterations, loss=0.25838143
+Model 1, 600 iterations, loss=0.25783494
+Model 1, 800 iterations, loss=0.25778404
+Model 1, 1000 iterations, loss=0.25777164
+Model 1, 1200 iterations, loss=0.2577694
+Model 1, 1400 iterations, loss=0.25776786
+Model 1, 1600 iterations, loss=0.25776762
+Model 1, 1800 iterations, loss=0.25776598
+Model 1, 2000 iterations, loss=0.25776568
+ 12.874049 seconds (54.92 M allocations: 3.049 GiB, 1.96% gc time, 98.72% c
 ompilation time)
 Model 2 = Chain(#5, Dense(1 =&gt; 3, leakyrelu), Dense(3 =&gt; 3, leakyrelu), Den
 se(3 =&gt; 3, leakyrelu), Dense(3 =&gt; 1))
  34 parameters in 4 layers
-Model 2, 1 iterations, loss=0.6576563
-Model 2, 200 iterations, loss=0.2896613
-Model 2, 400 iterations, loss=0.28650677
-Model 2, 600 iterations, loss=0.28171998
-Model 2, 800 iterations, loss=0.27728498
-Model 2, 1000 iterations, loss=0.2753515
-Model 2, 1200 iterations, loss=0.27448672
-Model 2, 1400 iterations, loss=0.27394456
-Model 2, 1600 iterations, loss=0.27351967
-Model 2, 1800 iterations, loss=0.27323818
-Model 2, 2000 iterations, loss=0.27303478
-  0.979030 seconds (5.54 M allocations: 623.497 MiB, 8.07% gc time, 73.28% 
+Model 2, 1 iterations, loss=0.5008249
+Model 2, 200 iterations, loss=0.26133922
+Model 2, 400 iterations, loss=0.26085728
+Model 2, 600 iterations, loss=0.26085338
+Model 2, 800 iterations, loss=0.26085088
+Model 2, 1000 iterations, loss=0.26084867
+Model 2, 1200 iterations, loss=0.26084626
+Model 2, 1400 iterations, loss=0.26084396
+Model 2, 1600 iterations, loss=0.26084185
+Model 2, 1800 iterations, loss=0.26083958
+Model 2, 2000 iterations, loss=0.26083732
+  0.962445 seconds (5.54 M allocations: 623.481 MiB, 8.19% gc time, 74.60% 
 compilation time)
 </code></pre>
 <p><img alt="" src="../figures/mlp_3_1.png" /> <img alt="" src="../figures/mlp_3_2.png" /></p>
@@ -550,16 +550,16 @@ else
     m = gpu(cpum)
 end
 </code></pre>
-<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.4037404f0, 0.093
-5, 0.0911)
-  4.159437 seconds (18.75 M allocations: 906.059 MiB, 1.54% gc time, 1 lock
- conflict, 78.49% compilation time: &lt;1% of which was recompilation)
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.338525f0, 0.121,
+ 0.1225)
+  4.234293 seconds (18.76 M allocations: 906.309 MiB, 1.59% gc time, 78.21%
+ compilation time: &lt;1% of which was recompilation)
 </code></pre>
 <pre><code class="language-julia">@show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX, tY);
 </code></pre>
-<pre><code>accuracy(m, Xsmall, Ysmall) = 0.9115
-accuracy(m, tX, tY) = 0.9225
+<pre><code>accuracy(m, Xsmall, Ysmall) = 0.9155
+accuracy(m, tX, tY) = 0.9226
 </code></pre>
 <p>After 200 iterations, the accuracy is already greater than 90%. This is
 pretty good.</p>
@@ -593,14 +593,14 @@ end
 @show accuracy(m,Xsmall, Ysmall)
 @show accuracy(m,tX,tY);
 </code></pre>
-<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (0.2888292f0, 0.911
-5, 0.9225)
-  9.359542 seconds (16.98 M allocations: 689.643 MiB, 4.83% gc time, 1 lock
- conflict, 1.72% compilation time: 4% of which was recompilation)
-(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (2.1093261f-5, 1.0,
- 0.9607)
+<pre><code>(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (0.27801657f0, 0.91
+55, 0.9226)
+  9.424553 seconds (16.98 M allocations: 689.644 MiB, 4.53% gc time, 1 lock
+ conflict, 1.71% compilation time: 4% of which was recompilation)
+(l, accuracy(m, Xsmall, Ysmall), accuracy(m, tX, tY)) = (1.7262595f-5, 1.0,
+ 0.9609)
 accuracy(m, Xsmall, Ysmall) = 1.0
-accuracy(m, tX, tY) = 0.9607
+accuracy(m, tX, tY) = 0.9609
 </code></pre>
 <p>Remember that each “epoch” does one gradient descent step for each tuple
 in <code>dataset</code>. In the code above <code>dataset</code> is just the original data

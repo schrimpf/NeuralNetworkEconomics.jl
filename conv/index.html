@@ -596,9 +596,9 @@ would hope that our model can classify them.</p>
 @show accuracy(out.model, addnoise(tX,0.1f0), tY)
 @show accuracy(smallbatch.model, addnoise(tX,0.1f0), tY)
 </code></pre>
-<pre><code>accuracy(out.model, addnoise(tX, 0.1f0), tY) = 0.9858
-accuracy(smallbatch.model, addnoise(tX, 0.1f0), tY) = 0.984
-0.984
+<pre><code>accuracy(out.model, addnoise(tX, 0.1f0), tY) = 0.9865
+accuracy(smallbatch.model, addnoise(tX, 0.1f0), tY) = 0.9826
+0.9826
 </code></pre>
 <p>The models trained above do a pretty good job of classifying noisy
 images, but not quite as well as the original. What if we train the
