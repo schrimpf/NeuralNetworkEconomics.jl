@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Paul Schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Automatic Debiased ML -  </title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atelier-forest-light.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <link href="../assets/extra.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".."> </a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Package Docs</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">ML in Economics</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../ml-intro/" class="dropdown-item">Introduction</a>
+</li>
+                                    
+<li>
+    <a href="../ml-methods/" class="dropdown-item">Methods</a>
+</li>
+                                    
+<li>
+    <a href="../ml-doubledebiased/" class="dropdown-item">Inference</a>
+</li>
+                                    
+<li>
+    <a href="../mlExamplePKH/" class="dropdown-item">Detecting heterogeneity</a>
+</li>
+                                    
+<li>
+    <a href="../ml-julia/" class="dropdown-item">With Julia</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Neural Networks</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../slp/" class="dropdown-item">Introduction</a>
+</li>
+                                    
+<li>
+    <a href="../mlp/" class="dropdown-item">Multi-Layer</a>
+</li>
+                                    
+<li>
+    <a href="../conv/" class="dropdown-item">Convolutional</a>
+</li>
+                                    
+<li>
+    <a href="../rnn/" class="dropdown-item">Recurrent</a>
+</li>
+                                    
+<li>
+    <a href="../transformers/" class="dropdown-item">Transformers</a>
+</li>
+                                    
+<li>
+    <a href="../nn-semiparametric/" class="dropdown-item">In semiparametric models</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Automatic Debiased ML</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">About</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../nn-semiparametric/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../license/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl/edit/master/docs/autodml.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-bs-level="1"><a href="#automating-orthogonalization" class="nav-link">Automating Orthogonalization</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#orthogonality-via-riesz-representers" class="nav-link">Orthogonality via Riesz Representers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#estimating-riesz-representers" class="nav-link">Estimating Riesz Representers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#example-impulse-response-via-the-riesz-representer" class="nav-link">Example: Impulse Response via the Riesz Representer</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a></p>
+<h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<p>This document was created using Weave.jl. The code is available in <a href="https://github.com/schrimpf/NeuralNetworkEconomics.jl">on
+github</a>. The same
+document generates both static webpages and associated <a href="autodml.ipynb">jupyter
+notebook</a>.</p>
+<pre><code class="language-julia">using Pkg
+Pkg.activate(joinpath(@__DIR__,&quot;..&quot;))
+Pkg.instantiate()
+if !(&quot;DISPLAY&quot; ∈ keys(ENV))
+    ENV[&quot;GKSwstype&quot;] = &quot;nul&quot;
+    ENV[&quot;MPLBACKEND&quot;] = &quot;Agg&quot;
+end
+ENV[&quot;GKS_ENCODING&quot;] = &quot;utf-8&quot;
+</code></pre>
+<h1 id="automating-orthogonalization">Automating Orthogonalization<a class="headerlink" href="#automating-orthogonalization" title="Permanent link">&para;</a></h1>
+<p>A debiased machine learning is that it requires an orthogonal moment
+conditioon for each parameter of interest. Analytic orthogonalization is
+labor intensive, error prone, and may not even be possible in some
+cases. @ceinr2016 review some techniques for constructing orthogonal
+moments.</p>
+<p>@cnr2018 have a mathematically elegant method for automatically
+constructing orthogonal moments. The approach is further developed in
+@cnqv2022, @cnr2022, and @chernozhukov2024. @kato2026 provides a python
+package for this and a collection of related methods.</p>
+<h2 id="orthogonality-via-riesz-representers">Orthogonality via Riesz Representers<a class="headerlink" href="#orthogonality-via-riesz-representers" title="Permanent link">&para;</a></h2>
+<p>We will follow @cnr2022 and begin by focusing on estimators that are
+linear in their nonparametric component. <script type="math/tex; mode=display">
+\theta_0 = \Er[m(x,\gamma_0(x))]
+</script> where $\gamma_0(x)$ is a conditional exepection, $m()$ is a known
+function, $m$ is linear in $\gamma$, and $\theta \in \R$. If we focus on
+one horizon, our example above falls into this setup. Since $m$ is
+linear, $\gamma \to \Er[m(x,\gamma(x))]$ is a linear functional. If
+$\gamma \in V$, a vector space of functions, then by definition,
+$\exists \alpha^\ast \in V^\ast$ such that <script type="math/tex; mode=display">
+\alpha^\ast \gamma = \Er[m(x,\gamma(x))]
+</script> for all $\gamma \in V$. Without more structure on $V^\ast$, this is
+little more than alternate notation for $\Er[m(x,\gamma(x))]$.
+Fortunately in most applications, an appropriate space for $\gamma(x)$
+is $V=\mathcal{L}^2(P_x)$. For example, this is a natural choice when
+$\gamma_0(x) = \Er[y|x]$ In this case, $V = V^\ast$, and we know that
+$\alpha^\ast$ is of the form <script type="math/tex; mode=display">
+\alpha^\ast \gamma = \Er[\gamma(x) \alpha^\ast(x)].
+</script> The fact that $\alpha^\ast \in V$ is called the Riesz representation
+theorem. We call $\alpha^\ast$ the Riesz representer for the linear
+functional $\gamma \to \Er[m(x,\gamma(x))]$.</p>
+<p>In the example from the previous section, $\alpha^\ast$ can be
+explicitly calculated. It is <script type="math/tex; mode=display">
+\alpha^\ast(x) = \frac{f_x(x-\Delta) - f_x(x)} {f_x(x)}.
+</script>
+</p>
+<p>Regardless of the exact form of $\alpha^\ast$, it is straightforward to
+verify that <script type="math/tex; mode=display">
+\theta_0 = \Er\left[ m(x, \gamma_0(x)) + \alpha^\ast(x)(y - \gamma_0(x)) \right]
+</script>
+</p>
+<p>Moreover, it can be shown that this moment condition is orthogonal for
+any $m$ that is linear in $\gamma$, i.e.,</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d}{dt} \Er\left[ m\left(x, \gamma_0(x) + t g(x)\right) +
+\left(\alpha^\ast(x) + t a(x)\right)\left((y - (\gamma_0(x) + tg(x)) \right)\right] \Biggm|_{t=0} = 0
+</script> for all $g$ and $a$ in $V$.</p>
+<h2 id="estimating-riesz-representers">Estimating Riesz Representers<a class="headerlink" href="#estimating-riesz-representers" title="Permanent link">&para;</a></h2>
+<p>In the previous section we have recast the problem of finding an
+orthogonal moment condition into one of finding a Riesz representer.
+However, finding a Riesz representer analytically is no easier than
+analytically deriving an orthogonal moment condition. Therefore, we want
+a method to estimate $\alpha^\ast$ without knowing it. A trivial
+observation is that <script type="math/tex; mode=display">
+\alpha^\ast = \argmin_{\alpha} \Vert \alpha - \alpha^\ast \Vert_V^2.
+</script> Expanding the square gives <script type="math/tex; mode=display">
+\begin{align*}
+\alpha^\ast & = \argmin_{\alpha} \Vert \alpha \Vert_V^2 - 2 \langle
+\alpha, \alpha^\ast \rangle_V + \Vert \alpha^\ast \Vert_V^2 \\
+& = \argmin_{\alpha} \Vert \alpha \Vert_V^2 - 2 \langle
+\alpha, \alpha^\ast \rangle_V \\
+& = \argmin_{\alpha} \Er\left[ \alpha(x)^2 \right] - 2
+\Er\left[\alpha(x)\alpha^\ast(x) \right] \\
+& = \argmin_{\alpha} \Er\left[ \alpha(x)^2 \right] - 2
+\Er\left[m(x,\alpha(x))\right]
+\end{align*}
+</script> where the third line replace $\Vert \cdot \Vert_V^2$ with the
+expectation over $x$, and the last line used the fact that $\alpha^*$ is
+the Riesz representer for $\gamma \to \Er[m(x,\gamma(x))]$. This final
+line gives a minimization problem that only depends on the known
+function $m$ and the estimable expectation, so it can be used to
+estimate $\alpha^\ast$.</p>
+<p>The above observations can be turned into an estimator by first fixing
+an approximating space for $V$, $V_n$ (e.g. the set neural network with
+a given architecture), and an approximated space for $V^\ast$,
+$V^\ast_n$ (since $V=V^\ast$ you could set $V_n = V^\ast_n$, but this is
+not necessary). Estimate $\gamma$ in a standard way, <script type="math/tex; mode=display">
+\hat{\gamma} = \argmin_{\gamma \in V_n} \En[ (y-\gamma(x))^2 ].
+</script> Given $\hat{\gamma}$, estimate $\alpha^\ast$ by solving <script type="math/tex; mode=display">
+\hat{\alpha} = \argmin_{\alpha \in V^\ast_n} \En\left[ \alpha(x)^2 \right] - 2
+\En\left[m(x,\alpha(x))\right]
+</script> Finally, plug-in the estimates of $\gamma$ and $\alpha$ and take an
+average to compute $\hat{\theta}$.</p>
+<h2 id="example-impulse-response-via-the-riesz-representer">Example: Impulse Response via the Riesz Representer<a class="headerlink" href="#example-impulse-response-via-the-riesz-representer" title="Permanent link">&para;</a></h2>
+<p>We now demonstrate this approach on the same nonlinear AR(3) DGP used in
+<a href="../nn-semiparametric/">the previous section</a>. We estimate the
+conditional expectation $\hat\gamma$ with the same neural network as in
+that section, and then estimate $\hat\alpha$ directly via the Riesz loss
+without estimating the density $f_x$.</p>
+<h3 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h3>
+<pre><code class="language-julia">using NeuralNetworkEconomics
+docdir = joinpath(dirname(Base.pathof(NeuralNetworkEconomics)), &quot;..&quot;, &quot;docs&quot;)
+
+using Polynomials, Plots, LinearAlgebra, Statistics, Random, Distributions
+using Flux, JLD2, CUDA
+</code></pre>
+<p>The DGP is identical to the one in the previous section.</p>
+<pre><code class="language-julia">Random.seed!(747697)
+T    = 1000
+θ_ar = 0.1
+r    = 0.99
+roots   = [r * exp(im * θ_ar), r * exp(-im * θ_ar), 0.5]
+p       = prod([Polynomial([1, -ρ]) for ρ in roots])
+ar_coef = -real(coeffs(p))[2:end]
+
+mean_y_fn(α, transform=(x)-&gt;x) = ylag -&gt; transform(dot(ylag, α))
+
+function dgp(mean_y, T, sig=1, yinit=zeros(length(ar_coef)))
+  ylag = copy(yinit)
+  y    = zeros(T)
+  for t in 1:T
+    y[t] = muladd(sig, randn(), mean_y(ylag))
+    ylag[2:end] .= ylag[1:(end-1)]
+    ylag[1] = y[t]
+  end
+  return y
+end
+
+μy = mean_y_fn(ar_coef, x -&gt; 1/r * tanh(x))
+y  = dgp(μy, T, 1.0)
+</code></pre>
+<pre><code class="language-julia">R    = 12
+L    = length(ar_coef)
+Δ    = 1.0 * std(y)
+nsim = 1000
+iry  = reduce(hcat,
+  [mean(_ -&gt; (dgp(μy, R, 1.0, y[i:(i+L-1)] .+ [Δ, 0, 0]) .-
+              dgp(μy, R, 1.0, y[i:(i+L-1)])), 1:nsim)
+   for i in 1:(T-L+1)]) ./ std(y)
+</code></pre>
+<pre><code class="language-julia">x  = copy(reduce(hcat, [y[l:(end-L+l)] for l in L:-1:1])')
+Y  = copy(reduce(hcat, [y[(L+rr):(end-R+rr)] for rr in 1:R])')
+X  = x[:, 1:(end-R)]
+Δv = Float32.([Δ; 0.0; 0.0])
+</code></pre>
+<h3 id="naive-estimate">Naive Estimate<a class="headerlink" href="#naive-estimate" title="Permanent link">&para;</a></h3>
+<p>We train the conditional expectation model and form the naive plug-in
+estimate $\hat\gamma(x+\Delta) - \hat\gamma(x)$.</p>
+<pre><code class="language-julia">function fit_ce!(model, x, y;
+                 opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, batchsize=length(y))
+  loss(model,x,y) = Flux.mse(model(x), y)
+  @show bestloss = loss(model,x,y)+1
+  lastimprove=0
+  p = Progress(maxiter, 1)
+  data = [(x[:,p], y[:,p]) for p in partition(1:size(x,2), batchsize)]
+  for i in 1:maxiter
+    Flux.train!(loss, model,
+                data, opt)
+    obj = loss(model,x,y)
+    next!(p)
+    (i%(maxiter ÷ 10) == 0) &amp;&amp; println(&quot;\n$i : $obj&quot;)
+    if (obj &lt; bestloss)
+      bestloss=obj
+      lastimprove=i
+    end
+    if (i - lastimprove &gt; 300)
+      @warn &quot;no improvement for 300 iterations, stopping&quot;
+      break
+    end
+  end
+  return(model)
+end
+
+R = 12 # how many periods ahead to fit
+Y = copy(reduce(hcat,[y[(L+r):(end-R+r)] for r in 1:R])')
+X = x[:,1:(end-R)]
+
+modelfile=joinpath(docdir,&quot;jmd&quot;,&quot;models&quot;,&quot;ce-auto.jld2&quot;)
+K = 200
+rerun = false
+ce_model = Chain(Dense(size(X,1), K, relu),
+                 Dense(K, K, relu),
+                 Dense(K, K, relu),
+                 Dense(K, size(Y,1))) |&gt; gpu
+if !isfile(modelfile) || rerun
+    fit_ce!(ce_model, gpu(Float32.(X)), gpu(Float32.(Y)),
+            opt=Flux.setup(Flux.NADAM(),ce_model),
+            maxiter=20000, batchsize=size(Y,2))
+    cpum = cpu(ce_model)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile modelstate
+end
+cpum = cpu(ce_model)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cpum, modelstate)
+ce_model = gpu(cpum)
+
+μhat(x) = let m=cpu(ce_model)
+  m(x)
+end
+
+μhat(x::AbstractVector) = let m=cpu(ce_model)
+    eltype(x)(m(x)[1])
+
+end
+γhat(x) = ce_model(gpu(Float32.(x)))
+γx       = Float64.(γhat(X))
+γx_shift = Float64.(γhat(X .+ Δv))
+</code></pre>
+<h3 id="riesz-representer-via-linear-system">Riesz Representer via Linear System<a class="headerlink" href="#riesz-representer-via-linear-system" title="Permanent link">&para;</a></h3>
+<p>The Riesz loss <script type="math/tex; mode=display">
+\hat\alpha = \argmin_{\alpha \in V^\ast_n} \En[\alpha(x)^2] - 2\En[m(x, \alpha(x))]
+</script> is straightforward to write down, but optimising it over an
+unconstrained neural network is numerically problematic: the empirical
+loss is unbounded below because
+$m(x,\alpha) = \alpha(x+\Delta) - \alpha(x)$ is evaluated at the shifted
+points $x_i + \Delta$, which lie off the training grid. Gradient descent
+can therefore drive $\alpha(x_i+\Delta) \to +\infty$ without any
+counteracting penalty.</p>
+<p>A practical remedy is to restrict $\alpha$ to the linear span of the
+penultimate-layer features $\Phi(x)$ of the already-fitted $\hat\gamma$
+network. Setting $\alpha(x) = c^\top\Phi(x)$, the Riesz loss becomes a
+quadratic in $c$, <script type="math/tex; mode=display">
+L(c) = c^\top \En[\Phi(x)\Phi(x)^\top] c \;-\; 2\,c^\top \En[\Phi(x+\Delta) - \Phi(x)],
+</script> with the unique ridge-regularised minimiser <script type="math/tex; mode=display">
+\hat c = \bigl(\En[\Phi(x)\Phi(x)^\top] + \lambda I\bigr)^{-1}
+         \En[\Phi(x+\Delta) - \Phi(x)].
+</script> This remains within the same neural-network function class (it is the
+best linear approximation to $\alpha^\ast$ in the feature space of
+$\hat\gamma$), and solving the linear system is fast and numerically
+stable.</p>
+<pre><code class="language-julia">feat_model = Chain(ce_model.layers[1:end-1]...)   # drop the output layer
+
+X32     = gpu(Float32.(X))
+Φ       = Float64.(feat_model(X32))
+Φ_shift = Float64.(feat_model(X32 .+ gpu(Δv)))
+
+G       = Φ * Φ' ./ size(Φ, 2)
+m̂       = vec(mean(Φ_shift .- Φ, dims=2))
+
+λ_riesz = 1e-4
+c_star  = (G + λ_riesz * I) \ m̂
+α̂       = vec(c_star' * Φ)
+
+p02, p98 = quantile(cpu(α̂), [0.02, 0.98])
+α̂_w     = clamp.(α̂, p02, p98)
+</code></pre>
+<h3 id="dml-estimate-and-inference">DML Estimate and Inference<a class="headerlink" href="#dml-estimate-and-inference" title="Permanent link">&para;</a></h3>
+<p>Plugging both estimates into the orthogonal moment condition gives <script type="math/tex; mode=display">
+\hat\theta_\tau = \frac{1}{n}\sum_i
+  \bigl[\hat\gamma_\tau(x_i+\Delta) - \hat\gamma_\tau(x_i)
+        + \hat\alpha(x_i)\,(y_{i,\tau} - \hat\gamma_\tau(x_i))\bigr].
+</script> Because the moment condition is orthogonal in both $\gamma$ and
+$\alpha$, we can treat $\hat\gamma$ and $\hat\alpha$ as fixed when
+computing standard errors, so $\sqrt{n}(\hat\theta - \theta_0)$ is
+asymptotically normal with variance $\mathrm{Var}(\theta_i)$.</p>
+<pre><code class="language-julia">θi     = γx_shift .- γx .+ α̂_w' .* (gpu(Y) .- γx)
+
+n_obs  = size(θi, 2)
+θ_mean = cpu(vec(mean(θi, dims=2)))
+se_dml = cpu(sqrt.(vec(var(θi, dims=2)) ./ n_obs))
+z90    = cpu(quantile(Normal(), 0.95))
+
+naive_mean = cpu(vec(mean(γx_shift .- γx, dims=2)))
+ir_true    = vec(mean(iry, dims=2))[1:R];
+</code></pre>
+<h3 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h3>
+<pre><code class="language-julia">τs = 1:R
+fig1 = plot(τs, ir_true, linewidth=5, color=:blue, label=&quot;True IRF&quot;,
+  title=&quot;Average Impulse Response: 1σ change in y[t-1]&quot;,
+  xlabel=&quot;Horizon τ&quot;, ylabel=&quot;ΔE[y(t+τ)]/std(y)&quot;, legend=:topright)
+plot!(fig1, τs, naive_mean, linewidth=2, color=:orange, linestyle=:dash, label=&quot;Naive γ̂&quot;)
+plot!(fig1, τs, θ_mean,     linewidth=2, color=:green,  label=&quot;AutoDML (Riesz)&quot;)
+hline!(fig1, [0.0], color=:black, linestyle=:dot, linewidth=1, label=nothing)
+</code></pre>
+<p><img alt="" src="../figures/autodml_9_1.png" /></p>
+<p>The AutoDML estimate (green) is systematically closer to the true IRF
+(blue) than the naive plug-in (orange), especially at short horizons
+where the conditional expectation model is well-identified. The Riesz
+correction removes the bias that arises from using a slightly
+misspecified $\hat\gamma$.</p>
+<p>The orthogonality also enables honest confidence bands. We form 90%
+pointwise bands using the asymptotic variance of the moment condition.</p>
+<pre><code class="language-julia">fig2 = plot(τs, ir_true, linewidth=5, color=:blue, label=&quot;True IRF&quot;,
+  title=&quot;AutoDML Estimate with 90% Confidence Band&quot;,
+  xlabel=&quot;Horizon τ&quot;, ylabel=&quot;ΔE[y(t+τ)]/std(y)&quot;, legend=:topright)
+plot!(fig2, τs, naive_mean, linewidth=2, color=:orange, linestyle=:dash, label=&quot;Naive γ̂&quot;)
+plot!(fig2, τs, θ_mean, ribbon=z90 .* se_dml,
+  linewidth=2, color=:green, fillalpha=0.3, label=&quot;AutoDML (90% CI)&quot;)
+hline!(fig2, [0.0], color=:black, linestyle=:dot, linewidth=1, label=nothing)
+</code></pre>
+<p><img alt="" src="../figures/autodml_10_1.png" /></p>
+<p>The confidence bands are valid without making distributional assumptions
+about $\hat\gamma$ or $\hat\alpha$, because the orthogonal moment
+condition satisfies the Neyman orthogonality condition: first-order
+perturbations of $\gamma$ or $\alpha$ around their population values
+leave the expected score unchanged.</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Paul Schrimpf</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+        <script src="../assets/mathjaxhelper.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
