@@ -48,5 +48,6 @@ nav:
     - Recurrent: rnn.md
     - Transformers: transformers.md
     - In semiparametric models: nn-semiparametric.md
+    - Automatic Debiased ML: autodml.md
   - About:
     - License: license.md

@@ -371,41 +371,47 @@ L = length(α)
 x = copy(reduce(hcat,[y[l:(end-L+l)] for l in L:-1:1])')
 
 function fit_cdf!(model, x;
-                  opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, λ = eltype(x)(1.0), n_extra=0,
+                  opt=Flux.setup(Flux.NADAM(),model),
+                  maxiter=1000, λ = eltype(x)(1.0), n_extra=0,
                   batchsize=length(x) + n_extra)
-  # we could augment cdf evaluation points with x not seen in the data
-  # in 1-d, there is no need, but in multiple dimension, there's extra info.
-  i = 0
-  X = x
-  if (n_extra>0)
-    CUDA.@allowscalar X=hcat(x, rand(x, size(x,1), n_extra))
-  end
-  CUDA.@allowscalar ecdf = eltype(x).(mapslices( xi->mean(all(X .<= xi, dims=1)), X, dims=1 ))
-  Δ = gpu(diagm(fill(eltype(x)(0.01), size(x,1))))
-  monotone_penalty(model,x,cdf) = λ*sum(δ->sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
-  loss(model,x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(model,x, cdf)
-  @show bestloss = loss(model,X,ecdf)+1
-  lastimprove=0
-  p = Progress(maxiter, 1)
-  data = [(X[:,p], ecdf[:,p]) for p in partition(1:size(X,2), batchsize)]
-  for i in 1:maxiter
-    Flux.train!(loss, model,
-                data, opt)
-    obj = loss(model,X, ecdf)
-    next!(p)
-    (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
-    if (obj < bestloss)
-      bestloss=obj
-      lastimprove=i
+    # we could augment cdf evaluation points with x not seen in the data
+    # in 1-d, there is no need, but in multiple dimension, there's extra info.
+    i = 0
+    X = x
+    if (n_extra>0)
+        CUDA.@allowscalar X=hcat(x, rand(x, size(x,1), n_extra))
     end
-    if (i - lastimprove > 100)
-      println("\n$i : $obj")
-      @show lastimprove, bestloss
-      @warn "no improvement for 100 iterations, stopping"
-      break
+    CUDA.@allowscalar ecdf = eltype(x).(mapslices( xi->mean(all(X .<= xi, dims=1)), X, dims=1 ))
+    Δ = gpu(diagm(fill(eltype(x)(0.01), size(x,1))))
+
+    monotone_penalty = if λ > 0
+        (model,x,cdf) -> λ*sum(δ->sum( relu.(model(x) .- model(x .+ δ))), eachcol(Δ))
+    else
+        (model,x,cdf) -> zero(eltype(x))
     end
-  end
-  return(model)
+    loss(model,x,cdf) = Flux.mse(model(x), cdf) + monotone_penalty(model,x, cdf)
+    @show bestloss = loss(model,X,ecdf)+1
+    lastimprove=0
+    p = Progress(maxiter, 1)
+    data = [(X[:,p], ecdf[:,p]) for p in partition(1:size(X,2), batchsize)]
+    for i in 1:maxiter
+        Flux.train!(loss, model,
+                    data, opt)
+        obj = loss(model,X, ecdf)
+        next!(p)
+        (i%(maxiter ÷ 10) == 0) && println("\n$i : $obj")
+        if (obj < bestloss)
+            bestloss=obj
+            lastimprove=i
+        end
+        if (i - lastimprove > 300)
+            println("\n$i : $obj")
+            @show lastimprove, bestloss
+            @warn "no improvement for 300 iterations, stopping"
+            break
+        end
+    end
+    return(model)
 end
 ```
 
@@ -447,18 +453,23 @@ we need for our impulse responses, but it is easier to visualize.
 ```julia
 modelfile=joinpath(docdir,"jmd","models","cdfy.jld2")
 rerun=false
-if isfile(modelfile) && !rerun
-  JLD2.@load modelfile cdfy
-else
-  cdf_model = Chain(
+cdfy = Chain(
     Dense(1, 100, Flux.σ),
     Dense(100, 100, Flux.σ),
+    Dense(100, 100, Flux.σ),
+    Dense(100, 100, Flux.σ),
     Dense(100, 1, Flux.σ)
-  ) |> gpu
-  fit_cdf!(cdf_model, gpu(reshape(y, 1, T)),
-           maxiter=10000, λ=1e4 )
-  cdfy = cpu(cdf_model)
-  JLD2.@save modelfile cdfy
+)
+if isfile(modelfile) && !rerun
+    JLD2.@load modelfile modelstate
+    Flux.loadmodel!(cdfy, modelstate)
+else
+    cdf_model = gpu(cdfy)
+    fit_cdf!(cdf_model, gpu(reshape(Float32.(y), 1, T)),
+             maxiter=10000, λ=1e4 )
+    cdfy = cpu(cdf_model)
+    modelstate = Flux.state(cdfy)
+    JLD2.@save modelfile modelstate
 end
 pdfy = make_pdf(cdfy, 1)
 
@@ -470,19 +481,24 @@ The estimated pdf looks pretty good.
 We will estimate the joint cdf and pdf similarly.
 ```julia
 modelfile=joinpath(docdir,"jmd","models","cdfx.jld2")
+K = 100
+cdfx =  Chain(
+    Dense(3, K, Flux.σ),
+    Dense(K, K, Flux.σ),
+    Dense(K, K, Flux.σ),
+    Dense(K, K, Flux.σ),
+    Dense(K, 1, Flux.σ)
+  )
 if isfile(modelfile) && !rerun
-  JLD2.@load modelfile cdfx
+    JLD2.@load modelfile modelstate
+    Flux.loadmodel!(cdfx, modelstate)
 else
-  cdf_model = Chain(
-    Dense(3, 30, Flux.σ),
-    Dense(30, 20, Flux.σ),
-    Dense(20, 10, Flux.σ),
-    Dense(10, 1, Flux.σ)
-  ) |> gpu
-  @time fit_cdf!(cdf_model, gpu(Float32.(x)), opt=NADAM(),
-                 maxiter=10000, λ=0, n_extra=10000)
-  cdfx = cpu(cdf_model)
-  JLD2.@save modelfile cdfx
+    cdf_model = gpu(cdfx)
+    @time fit_cdf!(cdf_model, gpu(Float32.(x)), opt=Flux.setup(NADAM(),cdf_model),
+                   maxiter=10000, λ=0, n_extra=20_000)
+    cdfx = cpu(cdf_model)
+    modelstate = Flux.state(cdfx)
+    JLD2.@save modelfile modelstate
 end
 pdfx = make_pdf(cdfx, size(x,1))
 @show sum(pdfx(x).<0)
@@ -508,10 +524,10 @@ histogram(x[1,:], bins=100, normalize=:pdf)
 scatter!(x[1,:], px1[:], leg=false)
 ```
 
-The marginal pdf implied by the joint cdf looks pretty good.
+The marginal pdf implied by the joint cdf looks okay.
 
 Note, however, that to get this result, I had to specify a fairly
-complex network, which took around 10 minutes to fit. There are many
+complex network, which took around a minute to fit. There are many
 other ways to estimate densities, and another approach might have made
 more sense here.
 
@@ -522,11 +538,10 @@ model. Then, we can simply fit a feed forward network to predict $y_t$
 given $x_t = (y_{t-1}, y_{t-2}, y_{t-3})$.
 
 ```julia
-
 function fit_ce!(model, x, y;
                  opt=Flux.setup(Flux.NADAM(),model), maxiter=1000, batchsize=length(y))
   loss(model,x,y) = Flux.mse(model(x), y)
-  @show bestloss = loss(x,y)+1
+  @show bestloss = loss(model,x,y)+1
   lastimprove=0
   p = Progress(maxiter, 1)
   data = [(x[:,p], y[:,p]) for p in partition(1:size(x,2), batchsize)]
@@ -540,8 +555,8 @@ function fit_ce!(model, x, y;
       bestloss=obj
       lastimprove=i
     end
-    if (i - lastimprove > 100)
-      @warn "no improvement for 100 iterations, stopping"
+    if (i - lastimprove > 300)
+      @warn "no improvement for 300 iterations, stopping"
       break
     end
   end
@@ -553,17 +568,22 @@ Y = copy(reduce(hcat,[y[(L+r):(end-R+r)] for r in 1:R])')
 X = x[:,1:(end-R)]
 
 modelfile=joinpath(docdir,"jmd","models","ce.jld2")
+K = 100
+ce_model = Chain(Dense(size(X,1), K, relu),
+                 Dense(K, K, relu),
+                 Dense(K, K, relu),
+                 Dense(K, size(Y,1))) |> gpu
 if !isfile(modelfile) || rerun
-  ce_model = Chain(Dense(size(X,1), 16, relu),
-                   Dense(16, 16, relu),
-                   Dense(16, 16, relu),
-                   Dense(16, size(Y,1))) |> gpu
-  fit_ce!(ce_model, gpu(Float32.(X)), gpu(Float32.(Y)), opt=Flux.NADAM(),
-          maxiter=20000, batchsize=size(Y,2))
-  cpum = cpu(ce_model)
-  JLD2.@save modelfile cpum
+    fit_ce!(ce_model, gpu(Float32.(X)), gpu(Float32.(Y)),
+            opt=Flux.setup(Flux.NADAM(),ce_model),
+            maxiter=20000, batchsize=size(Y,2))
+    cpum = cpu(ce_model)
+    modelstate = Flux.state(cpum)
+    JLD2.@save modelfile modelstate
 end
-JLD2.@load modelfile cpum
+cpum = cpu(ce_model)
+JLD2.@load modelfile modelstate
+Flux.loadmodel!(cpum, modelstate)
 ce_model = gpu(cpum)
 
 μhat(x) = let m=cpu(ce_model)
@@ -640,67 +660,4 @@ plot!(mean(θi, dims=2), leg=false, linewidth=5, color=:green,
 The plot now has 90\% pointwise confidence bands around the
 orthogonalized estimates.
 
-# Automating Orthogonalization
-
-A downside of the above approach is it requires an orthogonal moment
-conditioon for each parameter of interest. Analytic orthogonalization
-is labor intensive, error prone, and may not even be possible in some
-cases. @ceinr2016 review some techniques for constructing orthogonal
-moments.
-
-
-@cnr2018 have a mathematically elegant method for automatically
-constructing orthogonal moments. The focus on estimators that are
-linear in their nonparametric component.
-$$
-\theta_0 = \Er[m(x,\gamma_0(x))]
-$$
-where $\gamma(x)$ is an estimate of $\Er[y|x]$, $m()$ is a known
-function, $m$ is linear in $\gamma$, and $\theta \in \R$. If we focus
-on one horizon, our example above falls into this setup. Anyway, since
-$m$ is linear, $\gamma \to \Er[m(x,\gamma(x))]$ is a linear
-functional. If $\gamma \in V$, a vector space of functions, then by
-definition, $\exists \alpha^\ast \in V^\ast$ such that
-$$
-\alpha^\ast \gamma = \Er[m(x,\gamma(x))]
-$$
-for all $\gamma \in V$. Without more structure on $V^\ast$, this is
-little more than alternate notation for
-$\Er[m(x,\gamma(x))]$. Fortunately in most applications, an
-appropriate space for $\Er[y|x]$ is $V=\mathcal{L}^2(P_x)$. In this case,
-$V = V^\ast$, and we know that $\alpha^\ast$ is of the form
-$$
-\alpha^\ast \gamma = \Er[\gamma(x) \alpha^\ast(x)]
-$$
-
-In the example from the previous section, $\alpha^\ast$ can be
-explicitly calculated. It is
-$$
-\alpha^\ast(x) = \frac{-f_x(x-\Delta)+f_x(x)} {f_x(x)}.
-$$
-In the new notation of this section, the orthogonal moment condition
-we used in the previous section becomes
-$$
-\theta = \Er[ m(x, \gamma(x)) + \alpha^\ast(x)(y - \gamma(x))
-$$
-It is straightforward to verify that this moment condition is
-orthogonal for any $m$ that is linear in $\gamma$.
-
-The above observations can be turned into an estimator by first fixing
-an approximing space for $V$, $V_n$ (e.g. the set neural network with a
-given architecture). Then estimate $\gamma$ as above
-$$
-\hat{\gamma} = \argmin_{\gamma \in V_n} \En[ (y-\gamma(x))^2 ].
-$$
-Estimate $\alpha$ by solving
-$$
-\hat{\alpha} = \argmin_{\alpha \in V_n} \sup_{\gamma \in V_n}
-\left(\En[m(x,\gamma(x))] - \En[\alpha(x) \gamma(x)] \right)^2
-$$
-@cnr2018 work with $V_n$ that are linear in parameters, which helps
-simplify the estimation of $\alpha$. A practical and efficient method
-for estimating $\alpha$ with neural networks would require some
-thought.
-
-Finally, plug-in the estimates of $\gamma$ and $\alpha$ and take an
-average to compute $\hat{\theta}$.
+For an approach to debiased ML without analytically deriving orthogonal moment conditions, see [the next section](autodml.md).
